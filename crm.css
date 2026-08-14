@@ -3069,16 +3069,16 @@ textarea:focus-visible {
 ========================================================= */
 
 .crm-header .crm-brand .crm-logo {
-  width: 42px !important;
-  height: 42px !important;
-  max-width: 42px !important;
-  max-height: 42px !important;
-  min-width: 42px !important;
-  min-height: 42px !important;
+  width: 84px !important;
+  height: 84px !important;
+  max-width: 84px !important;
+  max-height: 84px !important;
+  min-width: 84px !important;
+  min-height: 84px !important;
 
   object-fit: contain !important;
   display: block !important;
-  flex: 0 0 42px !important;
+  flex: 0 0 84px !important;
 
   margin: 0 !important;
   padding: 0 !important;
