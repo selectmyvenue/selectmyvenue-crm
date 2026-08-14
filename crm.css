@@ -3058,8 +3058,8 @@ textarea:focus-visible {
 .dashboard-logo,
 .logo,
 .main-logo {
-  width: 150px !important;
+  width: 100px !important;
   height: auto !important;
-  max-width: 150px !important;
+  max-width: 100px !important;
   object-fit: contain !important;
 }
