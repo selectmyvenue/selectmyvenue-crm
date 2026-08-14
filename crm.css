@@ -3049,3 +3049,17 @@ textarea:focus-visible {
 .crm-main {
     padding-top: 12px !important;
 }
+
+/* =========================================================
+   CRM DASHBOARD LOGO — SIZE FIX
+   ========================================================= */
+
+.header-logo,
+.dashboard-logo,
+.logo,
+.main-logo {
+  width: 150px !important;
+  height: auto !important;
+  max-width: 150px !important;
+  object-fit: contain !important;
+}
