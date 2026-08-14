@@ -3083,3 +3083,106 @@ textarea:focus-visible {
   margin: 0 !important;
   padding: 0 !important;
 }
+
+/* =========================================================
+   SELECT MY VENUE CRM — FINAL HEADER / LOGO
+   Premium header — logo 150px
+   ========================================================= */
+
+.crm-header {
+    min-height: 88px !important;
+    height: 88px !important;
+    padding: 10px 32px !important;
+}
+
+.crm-brand {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.crm-header .crm-header-logo {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+
+    height: 58px !important;
+    min-height: 58px !important;
+    max-height: 58px !important;
+
+    object-fit: contain !important;
+    object-position: left center !important;
+
+    display: block !important;
+    flex: 0 0 150px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    filter: drop-shadow(0 3px 7px rgba(6, 100, 78, 0.10)) !important;
+}
+
+/* Keep the CRM title premium */
+.crm-brand-text strong {
+    font-size: 25px !important;
+    font-weight: 850 !important;
+    white-space: nowrap !important;
+}
+
+/* Keep centre title balanced */
+.crm-header-title {
+    font-size: 22px !important;
+}
+
+/* Desktop */
+@media (min-width: 1151px) {
+    .crm-header {
+        min-height: 88px !important;
+        height: 88px !important;
+    }
+
+    .crm-header .crm-header-logo {
+        width: 150px !important;
+        min-width: 150px !important;
+        max-width: 150px !important;
+        height: 58px !important;
+        min-height: 58px !important;
+        max-height: 58px !important;
+    }
+}
+
+/* Tablet */
+@media (max-width: 1150px) {
+    .crm-header {
+        min-height: 88px !important;
+        height: 88px !important;
+    }
+
+    .crm-header .crm-header-logo {
+        width: 150px !important;
+        min-width: 150px !important;
+        max-width: 150px !important;
+        height: 56px !important;
+        min-height: 56px !important;
+        max-height: 56px !important;
+    }
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+    .crm-header {
+        min-height: auto !important;
+        height: auto !important;
+        padding: 10px 14px !important;
+    }
+
+    .crm-header .crm-header-logo {
+        width: 150px !important;
+        min-width: 150px !important;
+        max-width: 150px !important;
+        height: 52px !important;
+        min-height: 52px !important;
+        max-height: 52px !important;
+        flex: 0 0 150px !important;
+    }
+}
