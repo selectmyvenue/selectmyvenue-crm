@@ -1,0 +1,3051 @@
+/* =========================================================
+   SELECT MY VENUE CRM
+   PREMIUM LIGHT GREEN THEME
+   COMPLETE REPLACEMENT crm.css
+   ========================================================= */
+
+
+/* =========================================================
+   ROOT VARIABLES
+   ========================================================= */
+
+:root {
+
+    --green-900: #075f4d;
+    --green-800: #08745d;
+    --green-700: #0b8067;
+    --green-600: #119879;
+    --green-500: #18a982;
+
+    --green-light: #eaf9f3;
+    --green-soft: #f2fbf7;
+    --green-pale: #f7fcfa;
+
+    --text-dark: #17352f;
+    --text-main: #28453f;
+    --text-muted: #71837e;
+
+    --white: #ffffff;
+
+    --border: #dcebe5;
+    --border-light: #eaf2ef;
+
+    --shadow-sm:
+        0 2px 10px rgba(9, 92, 72, 0.06);
+
+    --shadow:
+        0 8px 25px rgba(9, 92, 72, 0.08);
+
+    --shadow-lg:
+        0 18px 45px rgba(9, 92, 72, 0.12);
+
+    --radius-sm: 8px;
+    --radius: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+
+    --transition:
+        all 0.22s ease;
+
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+
+    margin: 0;
+
+    min-height: 100vh;
+
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f5fcf9 0%,
+            #edf9f4 48%,
+            #f8fcfa 100%
+        );
+
+    color: var(--text-main);
+
+    -webkit-font-smoothing: antialiased;
+
+}
+
+
+button,
+input,
+select,
+textarea {
+
+    font: inherit;
+
+}
+
+
+button {
+
+    cursor: pointer;
+
+}
+
+
+button:disabled {
+
+    cursor: not-allowed;
+
+    opacity: 0.65;
+
+}
+
+
+a {
+
+    color: inherit;
+
+    text-decoration: none;
+
+}
+
+
+/* =========================================================
+   MAIN CRM APP
+   ========================================================= */
+
+.crm-app {
+
+    min-height: 100vh;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(241, 251, 247, 0.98),
+            rgba(250, 253, 251, 0.98)
+        );
+
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.crm-header {
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 100;
+
+    min-height: 100px;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(280px, 1fr)
+        auto
+        minmax(280px, 1fr);
+
+    align-items: center;
+
+    gap: 24px;
+
+    padding: 14px 32px;
+
+    background:
+        rgba(255, 255, 255, 0.97);
+
+    border-bottom:
+        1px solid var(--border);
+
+    box-shadow:
+        0 4px 18px rgba(6, 85, 67, 0.07);
+
+    backdrop-filter:
+        blur(14px);
+
+}
+
+
+/* =========================================================
+   BRAND
+   ========================================================= */
+
+.crm-brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    min-width: 0;
+
+}
+
+
+.crm-header-logo {
+
+    width: 118px;
+
+    height: 72px;
+
+    object-fit: contain;
+
+    object-position: center;
+
+    flex-shrink: 0;
+
+    filter:
+        drop-shadow(
+            0 4px 8px rgba(6, 100, 78, 0.10)
+        );
+
+}
+
+
+.crm-brand-text {
+
+    min-width: 0;
+
+}
+
+
+.crm-brand-text strong {
+
+    display: block;
+
+    font-size: 27px;
+
+    line-height: 1.1;
+
+    font-weight: 850;
+
+    letter-spacing: -0.7px;
+
+    color: var(--green-900);
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   TOP HEADLINE — LEAD MANAGEMENT
+   ========================================================= */
+
+.crm-header-title {
+
+    position: relative;
+
+    font-size: 24px;
+
+    line-height: 1;
+
+    font-weight: 850;
+
+    letter-spacing: -0.45px;
+
+    color: var(--green-700);
+
+    text-align: center;
+
+    white-space: nowrap;
+
+}
+
+
+.crm-header-title::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+
+    bottom: -9px;
+
+    width: 38px;
+
+    height: 3px;
+
+    transform: translateX(-50%);
+
+    border-radius: 99px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--green-500),
+            var(--green-800)
+        );
+
+}
+
+
+/* =========================================================
+   HEADER ACTIONS
+   ========================================================= */
+
+.crm-header-actions {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    align-items: center;
+
+    gap: 14px;
+
+}
+
+
+.staff-name {
+
+    padding: 9px 14px;
+
+    border-radius: 999px;
+
+    background: var(--green-soft);
+
+    border: 1px solid var(--border);
+
+    color: var(--green-800);
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+}
+
+
+.logout-btn {
+
+    border: 1px solid #cce5dc;
+
+    background: #ffffff;
+
+    color: var(--green-800);
+
+    padding: 9px 15px;
+
+    border-radius: 9px;
+
+    font-size: 13px;
+
+    font-weight: 750;
+
+    transition: var(--transition);
+
+}
+
+
+.logout-btn:hover {
+
+    background: var(--green-800);
+
+    border-color: var(--green-800);
+
+    color: #ffffff;
+
+    transform: translateY(-1px);
+
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+   ========================================================= */
+
+.crm-main {
+
+    width: min(1700px, calc(100% - 48px));
+
+    margin: 0 auto;
+
+    padding: 34px 0 60px;
+
+}
+
+
+/* =========================================================
+   PAGE HEADING
+   ========================================================= */
+
+.page-heading {
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    margin-bottom: 28px;
+
+}
+
+
+.page-heading-content h1 {
+
+    margin: 0;
+
+    font-size: 32px;
+
+    line-height: 1.15;
+
+    font-weight: 850;
+
+    letter-spacing: -0.8px;
+
+    color: var(--text-dark);
+
+}
+
+
+.page-heading-content h1 span {
+
+    color: var(--green-700);
+
+}
+
+
+.page-heading-content p {
+
+    margin: 8px 0 0;
+
+    color: var(--text-muted);
+
+    font-size: 14px;
+
+    line-height: 1.6;
+
+}
+
+
+.heading-actions {
+
+    display: flex;
+
+    gap: 10px;
+
+    flex-shrink: 0;
+
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.primary-btn,
+.secondary-btn {
+
+    min-height: 42px;
+
+    padding: 10px 17px;
+
+    border-radius: 10px;
+
+    font-weight: 750;
+
+    font-size: 13px;
+
+    transition: var(--transition);
+
+}
+
+
+.primary-btn {
+
+    border: 1px solid var(--green-700);
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--green-700),
+            var(--green-500)
+        );
+
+    color: #ffffff;
+
+    box-shadow:
+        0 5px 14px rgba(9, 128, 103, 0.16);
+
+}
+
+
+.primary-btn:hover {
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 8px 18px rgba(9, 128, 103, 0.22);
+
+}
+
+
+.secondary-btn {
+
+    border: 1px solid var(--border);
+
+    background: #ffffff;
+
+    color: var(--green-800);
+
+}
+
+
+.secondary-btn:hover {
+
+    background: var(--green-soft);
+
+    border-color: #b9ddd1;
+
+}
+
+
+/* =========================================================
+   STATISTICS
+   ========================================================= */
+
+.stats-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 16px;
+
+    margin-bottom: 24px;
+
+}
+
+
+.stat-card {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    min-height: 100px;
+
+    padding: 17px 19px;
+
+    text-align: left;
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    background: #ffffff;
+
+    color: var(--text-main);
+
+    box-shadow: var(--shadow-sm);
+
+    transition: var(--transition);
+
+}
+
+
+.stat-card:hover {
+
+    transform: translateY(-2px);
+
+    border-color: #b9ddd1;
+
+    box-shadow: var(--shadow);
+
+}
+
+
+.stat-card.active {
+
+    border-color: #9fd4c4;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f0fbf7,
+            #ffffff
+        );
+
+}
+
+
+.stat-icon {
+
+    width: 45px;
+
+    height: 45px;
+
+    display: grid;
+
+    place-items: center;
+
+    flex-shrink: 0;
+
+    border-radius: 12px;
+
+    background: var(--green-light);
+
+    color: var(--green-700);
+
+    font-size: 20px;
+
+    font-weight: 800;
+
+}
+
+
+.stat-content {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+}
+
+
+.stat-content span {
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.8px;
+
+    color: var(--text-muted);
+
+}
+
+
+.stat-content strong {
+
+    font-size: 27px;
+
+    line-height: 1;
+
+    color: var(--green-900);
+
+}
+
+
+/* =========================================================
+   LEADS SECTION
+   ========================================================= */
+
+.leads-section {
+
+    overflow: hidden;
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-xl);
+
+    background: #ffffff;
+
+    box-shadow: var(--shadow);
+
+}
+
+
+/* =========================================================
+   FILTER BAR
+   ========================================================= */
+
+.filter-bar {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(280px, 1fr)
+        180px
+        180px;
+
+    gap: 12px;
+
+    padding: 18px;
+
+    border-bottom: 1px solid var(--border-light);
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff,
+            #fbfefd
+        );
+
+}
+
+
+.search-box {
+
+    position: relative;
+
+}
+
+
+.search-icon {
+
+    position: absolute;
+
+    left: 14px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: var(--green-600);
+
+    font-size: 19px;
+
+    pointer-events: none;
+
+}
+
+
+.search-box input,
+.filter-bar select {
+
+    width: 100%;
+
+    height: 42px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    outline: none;
+
+    background: #ffffff;
+
+    color: var(--text-main);
+
+    font-size: 13px;
+
+    transition: var(--transition);
+
+}
+
+
+.search-box input {
+
+    padding:
+        0 14px 0 42px;
+
+}
+
+
+.filter-bar select {
+
+    padding: 0 12px;
+
+}
+
+
+.search-box input:focus,
+.filter-bar select:focus {
+
+    border-color: #8fcdbb;
+
+    box-shadow:
+        0 0 0 3px rgba(24, 169, 130, 0.09);
+
+}
+
+
+/* =========================================================
+   TABLE WRAPPER
+   ========================================================= */
+
+.table-wrapper {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    -webkit-overflow-scrolling: touch;
+
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.leads-table {
+
+    width: 100%;
+
+    min-width: 1120px;
+
+    border-collapse: separate;
+
+    border-spacing: 0;
+
+}
+
+
+.leads-table th {
+
+    height: 47px;
+
+    padding: 0 14px;
+
+    background: #f4fbf8;
+
+    border-bottom: 1px solid var(--border);
+
+    color: #59746d;
+
+    font-size: 10px;
+
+    font-weight: 850;
+
+    letter-spacing: 0.75px;
+
+    text-align: left;
+
+    white-space: nowrap;
+
+}
+
+
+.leads-table td {
+
+    padding: 14px;
+
+    border-bottom: 1px solid #edf3f0;
+
+    color: var(--text-main);
+
+    font-size: 12px;
+
+    vertical-align: middle;
+
+}
+
+
+.leads-table tbody tr {
+
+    transition: var(--transition);
+
+}
+
+
+.leads-table tbody tr:hover {
+
+    background: #f8fcfa;
+
+}
+
+
+.leads-table tbody tr:last-child td {
+
+    border-bottom: 0;
+
+}
+
+
+/* =========================================================
+   CUSTOMER NAME
+   ========================================================= */
+
+.leads-table td:first-child {
+
+    font-weight: 800;
+
+    color: var(--green-900);
+
+}
+
+
+/* =========================================================
+   ACTION COLUMN
+   ========================================================= */
+
+.action-column {
+
+    width: 150px;
+
+    text-align: center !important;
+
+}
+
+
+.leads-table td:last-child {
+
+    text-align: center;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   ACTION CONTAINER
+   Works with common crm.js generated markup
+   ========================================================= */
+
+.action-buttons,
+.actions,
+.lead-actions {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 5px;
+
+}
+
+
+/* =========================================================
+   SMALL ICON BUTTONS
+   PENCIL + EYE
+   ========================================================= */
+
+.action-btn,
+.edit-btn,
+.view-btn,
+.comment-edit-btn,
+.comment-view-btn {
+
+    width: 29px;
+
+    height: 29px;
+
+    min-width: 29px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid #d9ebe5;
+
+    border-radius: 8px;
+
+    background: #f7fcfa;
+
+    color: var(--green-700);
+
+    font-size: 13px;
+
+    line-height: 1;
+
+    transition:
+        transform 0.18s ease,
+        background 0.18s ease,
+        border-color 0.18s ease,
+        color 0.18s ease,
+        box-shadow 0.18s ease;
+
+}
+
+
+/* Pencil */
+
+.edit-btn,
+.comment-edit-btn {
+
+    color: #137b65;
+
+}
+
+
+/* Eye */
+
+.view-btn,
+.comment-view-btn {
+
+    color: #4c746a;
+
+}
+
+
+.action-btn:hover,
+.edit-btn:hover,
+.view-btn:hover,
+.comment-edit-btn:hover,
+.comment-view-btn:hover {
+
+    transform: translateY(-1px);
+
+    background: #eaf8f3;
+
+    border-color: #a9d7c9;
+
+    color: var(--green-900);
+
+    box-shadow:
+        0 4px 9px rgba(8, 116, 93, 0.10);
+
+}
+
+
+/* =========================================================
+   VIEW DETAILS BUTTON
+   ========================================================= */
+
+.view-details,
+.view-details-btn,
+.details-btn,
+.action-details {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 29px;
+
+    padding: 0 9px;
+
+    border: 1px solid #cce5dc;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: var(--green-800);
+
+    font-size: 10px;
+
+    line-height: 1;
+
+    font-weight: 800;
+
+    letter-spacing: 0.1px;
+
+    white-space: nowrap;
+
+    transition: var(--transition);
+
+}
+
+
+.view-details:hover,
+.view-details-btn:hover,
+.details-btn:hover,
+.action-details:hover {
+
+    background: var(--green-700);
+
+    border-color: var(--green-700);
+
+    color: #ffffff;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 10px rgba(8, 116, 93, 0.14);
+
+}
+
+
+/* =========================================================
+   COMMENT CELL
+   ========================================================= */
+
+.comment-cell {
+
+    min-width: 120px;
+
+}
+
+
+.comment-actions {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+}
+
+
+/* Y indicator */
+
+.comment-indicator,
+.comment-y,
+.has-comment {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 18px;
+
+    height: 18px;
+
+    border-radius: 50%;
+
+    background: #dff5eb;
+
+    color: var(--green-800);
+
+    font-size: 9px;
+
+    font-weight: 900;
+
+}
+
+
+/* =========================================================
+   STATUS BADGES
+   ========================================================= */
+
+.status-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 25px;
+
+    padding: 4px 9px;
+
+    border-radius: 999px;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+
+    border: 1px solid transparent;
+
+}
+
+
+/* NEW */
+
+.status-new {
+
+    background: #eaf3ff;
+
+    color: #28609c;
+
+    border-color: #d2e4fa;
+
+}
+
+
+/* CONTACTED */
+
+.status-contacted {
+
+    background: #e7f8ee;
+
+    color: #23824e;
+
+    border-color: #ccebd9;
+
+}
+
+
+/* FOLLOW UP */
+
+.status-follow-up {
+
+    background: #fff5d9;
+
+    color: #966d0c;
+
+    border-color: #f4e3ac;
+
+}
+
+
+/* INTERESTED */
+
+.status-interested {
+
+    background: #e8f7f3;
+
+    color: #087b67;
+
+    border-color: #c9e9df;
+
+}
+
+
+/* QUALIFIED */
+
+.status-qualified {
+
+    background: #eaf0ff;
+
+    color: #4a60a5;
+
+    border-color: #d8e0fa;
+
+}
+
+
+/* SITE VISIT */
+
+.status-site-visit {
+
+    background: #f0eaff;
+
+    color: #7151a2;
+
+    border-color: #e0d5f5;
+
+}
+
+
+/* NEGOTIATION */
+
+.status-negotiation {
+
+    background: #fff0e4;
+
+    color: #a85d22;
+
+    border-color: #f3d7bf;
+
+}
+
+
+/* BOOKED */
+
+.status-booked {
+
+    background: #dcf8ed;
+
+    color: #08745d;
+
+    border-color: #bfe8d8;
+
+}
+
+
+/* CONVERTED */
+
+.status-converted {
+
+    background: #dff7e8;
+
+    color: #17723d;
+
+    border-color: #c1e8cf;
+
+}
+
+
+/* CLOSED */
+
+.status-closed {
+
+    background: #edf1f0;
+
+    color: #52645f;
+
+    border-color: #dce4e1;
+
+}
+
+
+/* LOST */
+
+.status-lost {
+
+    background: #ffe9eb;
+
+    color: #b4232d;
+
+    border-color: #f6cdd1;
+
+}
+
+
+/* NOT INTERESTED */
+
+.status-not-interested {
+
+    background: #ffe5e7;
+
+    color: #b4232d;
+
+    border-color: #f5c5ca;
+
+}
+
+
+/* =========================================================
+   PRIORITY COMPATIBILITY
+   Kept only so old data does not break visually.
+   ========================================================= */
+
+.priority-badge {
+
+    display: inline-flex;
+
+    padding: 4px 8px;
+
+    border-radius: 999px;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+}
+
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.loading-cell {
+
+    height: 180px;
+
+    text-align: center !important;
+
+    color: var(--text-muted) !important;
+
+    font-size: 13px !important;
+
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-state {
+
+    padding: 60px 20px;
+
+    text-align: center;
+
+}
+
+
+.empty-icon {
+
+    width: 54px;
+
+    height: 54px;
+
+    margin: 0 auto 15px;
+
+    display: grid;
+
+    place-items: center;
+
+    border-radius: 16px;
+
+    background: var(--green-light);
+
+    color: var(--green-700);
+
+    font-size: 24px;
+
+}
+
+
+.empty-state h3 {
+
+    margin: 0;
+
+    color: var(--text-dark);
+
+    font-size: 17px;
+
+}
+
+
+.empty-state p {
+
+    margin: 7px 0 0;
+
+    color: var(--text-muted);
+
+    font-size: 13px;
+
+}
+
+
+/* =========================================================
+   MODAL OVERLAY
+   ========================================================= */
+
+.modal-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 500;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 22px;
+
+    background:
+        rgba(10, 46, 39, 0.38);
+
+    backdrop-filter:
+        blur(6px);
+
+}
+
+
+.modal-overlay[hidden] {
+
+    display: none;
+
+}
+
+
+/* =========================================================
+   MODAL CARDS
+   ========================================================= */
+
+.lead-modal-card,
+.add-enquiry-card {
+
+    width: min(900px, 100%);
+
+    max-height: calc(100vh - 44px);
+
+    overflow-y: auto;
+
+    border: 1px solid #d9ebe5;
+
+    border-radius: 20px;
+
+    background: #ffffff;
+
+    box-shadow: var(--shadow-lg);
+
+}
+
+
+.add-enquiry-card {
+
+    width: min(980px, 100%);
+
+}
+
+
+/* =========================================================
+   MODAL HEADER
+   ========================================================= */
+
+.modal-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 22px 24px;
+
+    border-bottom: 1px solid var(--border);
+
+    background:
+        linear-gradient(
+            135deg,
+            #f1fbf7,
+            #ffffff
+        );
+
+}
+
+
+.modal-kicker {
+
+    margin-bottom: 5px;
+
+    color: var(--green-600);
+
+    font-size: 9px;
+
+    font-weight: 900;
+
+    letter-spacing: 1.2px;
+
+}
+
+
+.modal-header h2 {
+
+    margin: 0;
+
+    color: var(--green-900);
+
+    font-size: 22px;
+
+    font-weight: 850;
+
+}
+
+
+.close-modal {
+
+    width: 34px;
+
+    height: 34px;
+
+    display: grid;
+
+    place-items: center;
+
+    border: 1px solid var(--border);
+
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: var(--text-muted);
+
+    font-size: 21px;
+
+    line-height: 1;
+
+    transition: var(--transition);
+
+}
+
+
+.close-modal:hover {
+
+    background: #fff1f2;
+
+    color: #b4232d;
+
+    border-color: #f2cbd0;
+
+}
+
+
+/* =========================================================
+   LEAD INFO GRID
+   ========================================================= */
+
+.lead-info-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 12px;
+
+    padding: 20px 24px;
+
+}
+
+
+.info-card {
+
+    min-width: 0;
+
+    padding: 13px;
+
+    border: 1px solid var(--border-light);
+
+    border-radius: 12px;
+
+    background: var(--green-pale);
+
+}
+
+
+.info-card > span {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: var(--text-muted);
+
+    font-size: 9px;
+
+    font-weight: 850;
+
+    letter-spacing: 0.7px;
+
+}
+
+
+.info-card strong {
+
+    color: var(--text-dark);
+
+    font-size: 13px;
+
+    word-break: break-word;
+
+}
+
+
+.locked-detail {
+
+    color: #42635b !important;
+
+}
+
+
+/* =========================================================
+   CONTACT ACTIONS
+   ========================================================= */
+
+.contact-actions {
+
+    display: flex;
+
+    gap: 5px;
+
+    margin-top: 8px;
+
+}
+
+
+.contact-actions a,
+.contact-actions button {
+
+    min-height: 25px;
+
+    padding: 4px 8px;
+
+    border: 1px solid #d4e9e1;
+
+    border-radius: 7px;
+
+    background: #ffffff;
+
+    color: var(--green-700);
+
+    font-size: 9px;
+
+    font-weight: 750;
+
+}
+
+
+/* =========================================================
+   DETAIL SECTION
+   ========================================================= */
+
+.detail-section-title,
+.form-section-title {
+
+    margin: 0 24px;
+
+    padding: 15px 0 9px;
+
+    border-bottom: 1px solid var(--border);
+
+    color: var(--green-800);
+
+    font-size: 10px;
+
+    font-weight: 900;
+
+    letter-spacing: 0.9px;
+
+}
+
+
+/* =========================================================
+   CONTROLS
+   ========================================================= */
+
+.crm-controls,
+.form-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 14px;
+
+    padding: 17px 24px;
+
+}
+
+
+.control-group {
+
+    min-width: 0;
+
+}
+
+
+.control-group label,
+.detail-block label {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #627872;
+
+    font-size: 9px;
+
+    font-weight: 850;
+
+    letter-spacing: 0.7px;
+
+}
+
+
+.control-group input,
+.control-group select,
+.detail-edit-input,
+.detail-edit-textarea,
+.detail-block textarea,
+.form-grid input,
+.form-grid select,
+.form-grid textarea {
+
+    width: 100%;
+
+    border: 1px solid var(--border);
+
+    border-radius: 9px;
+
+    outline: none;
+
+    background: #ffffff;
+
+    color: var(--text-main);
+
+    transition: var(--transition);
+
+}
+
+
+.control-group input,
+.control-group select,
+.detail-edit-input,
+.form-grid input,
+.form-grid select {
+
+    height: 41px;
+
+    padding: 0 11px;
+
+}
+
+
+.control-group input:focus,
+.control-group select:focus,
+.detail-edit-input:focus,
+.detail-edit-textarea:focus,
+.detail-block textarea:focus,
+.form-grid input:focus,
+.form-grid select:focus {
+
+    border-color: #8fcdbb;
+
+    box-shadow:
+        0 0 0 3px rgba(24, 169, 130, 0.08);
+
+}
+
+
+/* =========================================================
+   TEXTAREAS
+   ========================================================= */
+
+.detail-block {
+
+    padding: 0 24px 16px;
+
+}
+
+
+.detail-edit-textarea,
+.detail-block textarea {
+
+    min-height: 95px;
+
+    padding: 11px;
+
+    resize: vertical;
+
+}
+
+
+.detail-block + .detail-block {
+
+    padding-top: 0;
+
+}
+
+
+/* =========================================================
+   ADD ENQUIRY FORM
+   ========================================================= */
+
+.add-enquiry-form {
+
+    padding-bottom: 5px;
+
+}
+
+
+.full-width {
+
+    padding: 0 24px;
+
+}
+
+
+.full-width .control-group {
+
+    width: 100%;
+
+}
+
+
+/* =========================================================
+   FORM MESSAGE
+   ========================================================= */
+
+.form-message {
+
+    display: none;
+
+    margin: 0 24px 14px;
+
+    border-radius: 10px;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   MODAL ACTIONS
+   ========================================================= */
+
+.modal-actions {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 9px;
+
+    padding: 17px 24px;
+
+    border-top: 1px solid var(--border);
+
+    background: #fbfefd;
+
+}
+
+
+.cancel-btn,
+.save-btn {
+
+    min-height: 40px;
+
+    padding: 9px 16px;
+
+    border-radius: 9px;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+}
+
+
+.cancel-btn {
+
+    border: 1px solid var(--border);
+
+    background: #ffffff;
+
+    color: var(--text-muted);
+
+}
+
+
+.cancel-btn:hover {
+
+    background: #f5f8f7;
+
+}
+
+
+.save-btn {
+
+    border: 1px solid var(--green-700);
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--green-700),
+            var(--green-500)
+        );
+
+    color: #ffffff;
+
+    box-shadow:
+        0 5px 14px rgba(8, 116, 93, 0.14);
+
+}
+
+
+.save-btn:hover {
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 8px 18px rgba(8, 116, 93, 0.20);
+
+}
+
+
+/* =========================================================
+   SCROLLBARS
+   ========================================================= */
+
+* {
+
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        #b9dacf
+        #f2f8f5;
+
+}
+
+
+::-webkit-scrollbar {
+
+    width: 8px;
+
+    height: 8px;
+
+}
+
+
+::-webkit-scrollbar-track {
+
+    background: #f2f8f5;
+
+}
+
+
+::-webkit-scrollbar-thumb {
+
+    background: #b9dacf;
+
+    border-radius: 999px;
+
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+
+    background: #8fc7b7;
+
+}
+
+
+/* =========================================================
+   MOBILE — TABLET
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .crm-header {
+
+        grid-template-columns:
+            1fr auto;
+
+    }
+
+
+    .crm-header-title {
+
+        grid-column: 1 / -1;
+
+        grid-row: 2;
+
+        padding-bottom: 7px;
+
+        order: 3;
+
+    }
+
+
+    .crm-header-actions {
+
+        grid-column: 2;
+
+    }
+
+
+    .stats-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+
+    .filter-bar {
+
+        grid-template-columns:
+            1fr
+            1fr;
+
+    }
+
+
+    .search-box {
+
+        grid-column: 1 / -1;
+
+    }
+
+
+    .lead-info-grid {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .crm-header {
+
+        position: relative;
+
+        display: flex;
+
+        flex-wrap: wrap;
+
+        justify-content: space-between;
+
+        gap: 8px 12px;
+
+        padding: 10px 14px;
+
+        min-height: auto;
+
+    }
+
+
+    .crm-brand {
+
+        gap: 10px;
+
+    }
+
+
+    .crm-header-logo {
+
+        width: 92px;
+
+        height: 62px;
+
+    }
+
+
+    .crm-brand-text strong {
+
+        font-size: 20px;
+
+        letter-spacing: -0.4px;
+
+    }
+
+
+    .crm-header-actions {
+
+        gap: 6px;
+
+    }
+
+
+    .staff-name {
+
+        display: none;
+
+    }
+
+
+    .logout-btn {
+
+        padding: 8px 10px;
+
+        font-size: 11px;
+
+    }
+
+
+    .crm-header-title {
+
+        width: 100%;
+
+        order: 3;
+
+        padding: 4px 0 5px;
+
+        font-size: 20px;
+
+        text-align: left;
+
+    }
+
+
+    .crm-header-title::after {
+
+        left: 0;
+
+        transform: none;
+
+        bottom: -2px;
+
+        width: 30px;
+
+    }
+
+
+    .crm-main {
+
+        width: min(
+            100% - 20px,
+            1700px
+        );
+
+        padding-top: 22px;
+
+    }
+
+
+    .page-heading {
+
+        align-items: stretch;
+
+        flex-direction: column;
+
+        gap: 15px;
+
+        margin-bottom: 20px;
+
+    }
+
+
+    .page-heading-content h1 {
+
+        font-size: 25px;
+
+    }
+
+
+    .heading-actions {
+
+        width: 100%;
+
+    }
+
+
+    .heading-actions button {
+
+        flex: 1;
+
+    }
+
+
+    .stats-grid {
+
+        grid-template-columns:
+            1fr 1fr;
+
+        gap: 9px;
+
+    }
+
+
+    .stat-card {
+
+        min-height: 82px;
+
+        padding: 12px;
+
+        gap: 9px;
+
+    }
+
+
+    .stat-icon {
+
+        width: 36px;
+
+        height: 36px;
+
+        border-radius: 9px;
+
+        font-size: 16px;
+
+    }
+
+
+    .stat-content span {
+
+        font-size: 8px;
+
+    }
+
+
+    .stat-content strong {
+
+        font-size: 21px;
+
+    }
+
+
+    .filter-bar {
+
+        grid-template-columns: 1fr;
+
+        padding: 12px;
+
+    }
+
+
+    .search-box {
+
+        grid-column: auto;
+
+    }
+
+
+    .leads-section {
+
+        border-radius: 14px;
+
+    }
+
+
+    .lead-info-grid {
+
+        grid-template-columns: 1fr;
+
+        padding: 15px;
+
+    }
+
+
+    .crm-controls,
+    .form-grid {
+
+        grid-template-columns: 1fr;
+
+        padding: 14px 15px;
+
+    }
+
+
+    .detail-section-title,
+    .form-section-title {
+
+        margin: 0 15px;
+
+    }
+
+
+    .detail-block,
+    .full-width {
+
+        padding-left: 15px;
+
+        padding-right: 15px;
+
+    }
+
+
+    .form-message {
+
+        margin-left: 15px;
+
+        margin-right: 15px;
+
+    }
+
+
+    .modal-actions {
+
+        padding: 13px 15px;
+
+    }
+
+
+    .cancel-btn,
+    .save-btn {
+
+        flex: 1;
+
+    }
+
+
+    .modal-overlay {
+
+        align-items: flex-end;
+
+        padding: 0;
+
+    }
+
+
+    .lead-modal-card,
+    .add-enquiry-card {
+
+        width: 100%;
+
+        max-height: 94vh;
+
+        border-radius:
+            20px 20px 0 0;
+
+    }
+
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 420px) {
+
+    .crm-header-logo {
+
+        width: 82px;
+
+        height: 56px;
+
+    }
+
+
+    .crm-brand-text strong {
+
+        font-size: 17px;
+
+    }
+
+
+    .crm-header-title {
+
+        font-size: 18px;
+
+    }
+
+
+    .stats-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .heading-actions {
+
+        flex-direction: column;
+
+    }
+
+
+    .heading-actions button {
+
+        width: 100%;
+
+    }
+
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+
+    outline: 3px solid rgba(24, 169, 130, 0.18);
+
+    outline-offset: 2px;
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+
+        scroll-behavior: auto !important;
+
+        transition: none !important;
+
+    }
+
+}
+/* =========================================================
+   SELECT MY VENUE CRM — FINAL PREMIUM UI POLISH
+   Logo + View Details + Comment Controls
+   NO LAYOUT REPOSITIONING
+   ========================================================= */
+
+
+/* =========================================================
+   1. LOGO — SLIGHTLY LARGER
+   Keeps the existing header position stable
+   ========================================================= */
+
+.crm-header-logo {
+  width: 190px !important;
+  min-width: 190px !important;
+  max-width: 190px !important;
+
+  height: 46px !important;
+  max-height: 46px !important;
+
+  object-fit: contain !important;
+  object-position: left center !important;
+
+  display: block !important;
+  flex-shrink: 0 !important;
+}
+
+
+/* Keep brand spacing controlled */
+.crm-brand {
+  gap: 10px !important;
+  min-width: 0 !important;
+}
+
+
+/* =========================================================
+   2. VIEW DETAILS — PREMIUM BUTTON
+   No default HTML-button appearance
+   ========================================================= */
+
+.action-column {
+  text-align: center !important;
+  white-space: nowrap !important;
+}
+
+
+/* Main button */
+.view-lead-btn {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  min-width: 92px !important;
+  height: 30px !important;
+
+  padding: 0 11px !important;
+
+  border: 1px solid #b9ddd2 !important;
+  border-radius: 999px !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f7fdfb 0%,
+      #eaf8f3 100%
+    ) !important;
+
+  color: #167763 !important;
+
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Arial,
+    sans-serif !important;
+
+  font-size: 10px !important;
+  font-weight: 850 !important;
+
+  line-height: 1 !important;
+  letter-spacing: .1px !important;
+
+  box-shadow:
+    0 2px 7px rgba(22,139,115,.07),
+    inset 0 1px 0 rgba(255,255,255,.85) !important;
+
+  cursor: pointer !important;
+
+  transition:
+    transform .18s ease,
+    background .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease !important;
+}
+
+
+/* Small premium icon before View Details */
+.view-lead-btn::before {
+  content: "◉";
+
+  display: inline-block !important;
+
+  margin-right: 5px !important;
+
+  color: #168b73 !important;
+
+  font-size: 7px !important;
+  line-height: 1 !important;
+}
+
+
+/* Hover */
+.view-lead-btn:hover {
+  transform: translateY(-1px) !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      #eaf8f3 0%,
+      #dff4ec 100%
+    ) !important;
+
+  border-color: #8fc8ba !important;
+
+  color: #0f6755 !important;
+
+  box-shadow:
+    0 5px 12px rgba(22,139,115,.12),
+    inset 0 1px 0 rgba(255,255,255,.9) !important;
+}
+
+
+/* Click */
+.view-lead-btn:active {
+  transform: translateY(0) !important;
+
+  box-shadow:
+    0 2px 5px rgba(22,139,115,.08) !important;
+}
+
+
+/* Keyboard focus */
+.view-lead-btn:focus-visible {
+  outline: none !important;
+
+  border-color: #168b73 !important;
+
+  box-shadow:
+    0 0 0 3px rgba(22,139,115,.12) !important;
+}
+
+
+/* =========================================================
+   3. COMMENT CELL — STRICT COMPACT WIDTH
+   Prevents icons from going outside the box
+   ========================================================= */
+
+.comment-cell {
+  width: 72px !important;
+  min-width: 72px !important;
+  max-width: 72px !important;
+
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+
+  text-align: center !important;
+
+  overflow: hidden !important;
+}
+
+
+/* =========================================================
+   4. COMMENT ACTION ROW
+   ========================================================= */
+
+.crm-comment-actions {
+  width: 100% !important;
+
+  display: inline-flex !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 3px !important;
+
+  min-width: 0 !important;
+  max-width: 100% !important;
+
+  overflow: hidden !important;
+
+  white-space: nowrap !important;
+}
+
+
+/* =========================================================
+   5. PENCIL + EYE
+   Replace large emoji appearance with tiny premium icons
+   ========================================================= */
+
+.comment-action-btn {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  width: 19px !important;
+  height: 19px !important;
+
+  min-width: 19px !important;
+  max-width: 19px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  display: inline-flex !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  flex: 0 0 19px !important;
+
+  border: 1px solid #cfe4dd !important;
+
+  border-radius: 6px !important;
+
+  background: #f7fcfa !important;
+
+  color: #277a69 !important;
+
+  font-size: 0 !important;
+  line-height: 1 !important;
+
+  box-shadow:
+    0 1px 4px rgba(22,139,115,.05) !important;
+
+  overflow: hidden !important;
+
+  transition:
+    transform .16s ease,
+    background .16s ease,
+    border-color .16s ease,
+    box-shadow .16s ease !important;
+}
+
+
+/* =========================================================
+   6. PENCIL — CLEAN SMALL ICON
+   ========================================================= */
+
+.comment-edit-btn::before {
+  content: "✎";
+
+  display: block !important;
+
+  color: #168b73 !important;
+
+  font-family:
+    "Segoe UI Symbol",
+    "Arial Unicode MS",
+    Arial,
+    sans-serif !important;
+
+  font-size: 11px !important;
+
+  font-weight: 700 !important;
+
+  line-height: 1 !important;
+}
+
+
+/* =========================================================
+   7. EYE — CLEAN SMALL ICON
+   ========================================================= */
+
+.comment-view-btn::before {
+  content: "◉";
+
+  display: block !important;
+
+  color: #168b73 !important;
+
+  font-family:
+    "Segoe UI Symbol",
+    "Arial Unicode MS",
+    Arial,
+    sans-serif !important;
+
+  font-size: 8px !important;
+
+  font-weight: 900 !important;
+
+  line-height: 1 !important;
+}
+
+
+/* =========================================================
+   8. COMMENT BUTTON HOVER
+   ========================================================= */
+
+.comment-action-btn:hover {
+  transform: translateY(-1px) !important;
+
+  background: #eaf8f3 !important;
+
+  border-color: #9dcebf !important;
+
+  color: #0f6755 !important;
+
+  box-shadow:
+    0 3px 8px rgba(22,139,115,.10) !important;
+}
+
+
+.comment-action-btn:active {
+  transform: translateY(0) !important;
+}
+
+
+.comment-action-btn:focus-visible {
+  outline: none !important;
+
+  border-color: #168b73 !important;
+
+  box-shadow:
+    0 0 0 2px rgba(22,139,115,.10) !important;
+}
+
+
+/* =========================================================
+   9. Y INDICATOR — VERY SMALL PREMIUM DOT
+   ========================================================= */
+
+.comment-exists-indicator {
+  width: 17px !important;
+  height: 17px !important;
+
+  min-width: 17px !important;
+  max-width: 17px !important;
+
+  display: inline-flex !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  flex: 0 0 17px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border-radius: 50% !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      #168b73,
+      #0f705d
+    ) !important;
+
+  border: 1px solid #b9e2d0 !important;
+
+  color: #ffffff !important;
+
+  font-family:
+    Inter,
+    Arial,
+    sans-serif !important;
+
+  font-size: 7px !important;
+
+  font-weight: 950 !important;
+
+  line-height: 1 !important;
+
+  box-shadow:
+    0 2px 5px rgba(22,139,115,.10) !important;
+}
+
+
+/* =========================================================
+   10. COMMENT CELL — ONLY SHOW Y WHEN COMMENT EXISTS
+   Existing JS already controls whether Y appears.
+   ========================================================= */
+
+.comment-cell .crm-comment-actions > * {
+  flex-shrink: 0 !important;
+}
+
+
+/* =========================================================
+   11. TABLE CELL SAFETY
+   Prevent anything from spilling outside its cell
+   ========================================================= */
+
+.leads-table td.comment-cell,
+.leads-table td.action-column {
+  overflow: hidden !important;
+}
+
+
+/* =========================================================
+   12. DESKTOP — LOGO
+   ========================================================= */
+
+@media (min-width: 1151px) {
+
+  .crm-header-logo {
+    width: 190px !important;
+    min-width: 190px !important;
+    max-width: 190px !important;
+
+    height: 46px !important;
+    max-height: 46px !important;
+  }
+
+}
+
+
+/* =========================================================
+   13. TABLET
+   ========================================================= */
+
+@media (max-width: 1150px) {
+
+  .crm-header-logo {
+    width: 175px !important;
+    min-width: 175px !important;
+    max-width: 175px !important;
+
+    height: 44px !important;
+    max-height: 44px !important;
+  }
+
+}
+
+
+/* =========================================================
+   14. MOBILE
+   Keep logo larger without changing header structure
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .crm-header-logo {
+    width: 160px !important;
+    min-width: 160px !important;
+    max-width: 160px !important;
+
+    height: 42px !important;
+    max-height: 42px !important;
+  }
+
+  .comment-cell {
+    width: 68px !important;
+    min-width: 68px !important;
+    max-width: 68px !important;
+  }
+
+  .comment-action-btn {
+    width: 18px !important;
+    height: 18px !important;
+
+    min-width: 18px !important;
+    max-width: 18px !important;
+
+    flex-basis: 18px !important;
+  }
+
+  .comment-edit-btn::before {
+    font-size: 10px !important;
+  }
+
+  .comment-view-btn::before {
+    font-size: 7px !important;
+  }
+
+  .comment-exists-indicator {
+    width: 16px !important;
+    height: 16px !important;
+
+    min-width: 16px !important;
+    max-width: 16px !important;
+
+    flex-basis: 16px !important;
+
+    font-size: 6px !important;
+  }
+
+  .view-lead-btn {
+    min-width: 84px !important;
+    height: 29px !important;
+
+    padding: 0 8px !important;
+
+    font-size: 9px !important;
+  }
+
+}
+
+
+/* =========================================================
+   15. SMALL PHONE
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+  .crm-header-logo {
+    width: 140px !important;
+    min-width: 140px !important;
+    max-width: 140px !important;
+
+    height: 38px !important;
+    max-height: 38px !important;
+  }
+
+  .comment-cell {
+    width: 64px !important;
+    min-width: 64px !important;
+    max-width: 64px !important;
+
+    padding-left: 3px !important;
+    padding-right: 3px !important;
+  }
+
+  .crm-comment-actions {
+    gap: 2px !important;
+  }
+
+  .comment-action-btn {
+    width: 17px !important;
+    height: 17px !important;
+
+    min-width: 17px !important;
+    max-width: 17px !important;
+
+    flex-basis: 17px !important;
+  }
+
+  .comment-exists-indicator {
+    width: 15px !important;
+    height: 15px !important;
+
+    min-width: 15px !important;
+    max-width: 15px !important;
+
+    flex-basis: 15px !important;
+
+    font-size: 6px !important;
+  }
+
+  .view-lead-btn {
+    min-width: 80px !important;
+    height: 28px !important;
+
+    padding: 0 7px !important;
+
+    font-size: 9px !important;
+  }
+
+  .view-lead-btn::before {
+    font-size: 6px !important;
+    margin-right: 4px !important;
+  }
+
+}
+
+/* Tighten spacing between statistics and Customer Enquiries */
+
+.stats-grid {
+    margin-bottom: 8px !important;
+}
+
+.leads-section {
+    margin-top: 0 !important;
+}
+
+/* Tighten spacing between statistics and Customer Enquiries */
+
+/* Reduce space above Customer Enquiries */
+
+.crm-main {
+    padding-top: 12px !important;
+}

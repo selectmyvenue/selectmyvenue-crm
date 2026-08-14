@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Select My Venue CRM — Lead Management</title>
+
+    <link rel="stylesheet" href="crm.css">
+
+
+    <!-- =====================================================
+         SUPABASE CONFIG
+    ====================================================== -->
+
+    <script>
+        window.SUPABASE_URL =
+            "https://uajqwyoqbbswkfiwosyw.supabase.co";
+
+        window.SUPABASE_ANON_KEY =
+            "sb_publishable_hfiuO4ZRn4VZmEkrN2RV-A_lZX_R3z7";
+    </script>
+
+
+    <!-- =====================================================
+         SUPABASE JS
+    ====================================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+    <!-- =====================================================
+         CRM JS
+    ====================================================== -->
+
+    <script
+        src="crm.js"
+        defer
+    ></script>
+
+</head>
+
+
+<body>
+
+<div class="crm-app">
+
+
+    <!-- =====================================================
+         CRM HEADER
+    ====================================================== -->
+
+    <header class="crm-header">
+
+        <div class="crm-brand">
+
+            <img
+                src="../logo.png"
+                alt="Select My Venue"
+                class="crm-header-logo"
+            >
+
+            <div class="crm-brand-text">
+
+                <strong>
+                    Select My Venue CRM
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="crm-header-title">
+            Lead Management
+        </div>
+
+
+        <div class="crm-header-actions">
+
+            <div
+                id="staffName"
+                class="staff-name"
+            >
+                Employee
+            </div>
+
+            <button
+                type="button"
+                id="logoutBtn"
+                class="logout-btn"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="crm-main">
+
+
+        <!-- =================================================
+             PAGE HEADER
+        ================================================== -->
+
+        <section class="page-heading">
+
+            <div class="page-heading-content">
+
+                <h1>
+                    Customer <span>Enquiries</span>
+                </h1>
+
+                <p>
+                    Manage customer enquiries, follow-ups and
+                    lead progress from one place.
+                </p>
+
+            </div>
+
+
+            <div class="heading-actions">
+
+                <button
+                    type="button"
+                    id="addEnquiryBtn"
+                    class="primary-btn"
+                >
+                    <span>+</span>
+                    Add Enquiry
+                </button>
+
+                <button
+                    type="button"
+                    id="refreshBtn"
+                    class="secondary-btn"
+                >
+                    <span>↻</span>
+                    Refresh
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             STATISTICS
+        ================================================== -->
+
+        <section class="stats-grid">
+
+
+            <!-- TOTAL -->
+
+            <button
+                type="button"
+                class="stat-card active"
+                id="statAll"
+                data-status-filter="all"
+            >
+
+                <div class="stat-icon">
+                    ≡
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        TOTAL ENQUIRIES
+                    </span>
+
+                    <strong id="totalCount">
+                        0
+                    </strong>
+
+                </div>
+
+            </button>
+
+
+            <!-- NEW -->
+
+            <button
+                type="button"
+                class="stat-card"
+                id="statNew"
+                data-status-filter="new"
+            >
+
+                <div class="stat-icon">
+                    +
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        NEW
+                    </span>
+
+                    <strong id="newCount">
+                        0
+                    </strong>
+
+                </div>
+
+            </button>
+
+
+            <!-- CONTACTED -->
+
+            <button
+                type="button"
+                class="stat-card"
+                id="statContacted"
+                data-status-filter="contacted"
+            >
+
+                <div class="stat-icon">
+                    ✓
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        CONTACTED
+                    </span>
+
+                    <strong id="contactedCount">
+                        0
+                    </strong>
+
+                </div>
+
+            </button>
+
+
+            <!-- CLOSED -->
+
+            <button
+                type="button"
+                class="stat-card"
+                id="statClosed"
+                data-status-filter="closed"
+            >
+
+                <div class="stat-icon">
+                    ●
+                </div>
+
+                <div class="stat-content">
+
+                    <span>
+                        CLOSED
+                    </span>
+
+                    <strong id="closedCount">
+                        0
+                    </strong>
+
+                </div>
+
+            </button>
+
+        </section>
+
+
+        <!-- =================================================
+             CUSTOMER ENQUIRIES
+        ================================================== -->
+
+        <section class="leads-section">
+
+
+            <!-- FILTER BAR -->
+
+            <div class="filter-bar">
+
+                <div class="search-box">
+
+                    <span class="search-icon">
+                        ⌕
+                    </span>
+
+                    <input
+                        type="search"
+                        id="searchInput"
+                        placeholder="Search customer, phone, email, source, venue or event..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <select
+                    id="statusFilter"
+                    aria-label="Filter by status"
+                >
+
+                    <option value="all">
+                        All Status
+                    </option>
+
+                    <option value="new">
+                        New
+                    </option>
+
+                    <option value="contacted">
+                        Contacted
+                    </option>
+
+                    <option value="follow-up">
+                        Follow-up
+                    </option>
+
+                    <option value="interested">
+                        Interested
+                    </option>
+
+                    <option value="qualified">
+                        Qualified
+                    </option>
+
+                    <option value="site-visit">
+                        Site Visit
+                    </option>
+
+                    <option value="negotiation">
+                        Negotiation
+                    </option>
+
+                    <option value="booked">
+                        Booked
+                    </option>
+
+                    <option value="converted">
+                        Converted
+                    </option>
+
+                    <option value="closed">
+                        Closed
+                    </option>
+
+                    <option value="lost">
+                        Lost
+                    </option>
+
+                    <option value="not-interested">
+                        Not Interested
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- =================================================
+                 TABLE
+            ================================================== -->
+
+            <div class="table-wrapper">
+
+                <table class="leads-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                CUSTOMER
+                            </th>
+
+                            <th>
+                                PHONE
+                            </th>
+
+                            <th>
+                                CREATED DATE
+                            </th>
+
+                            <th>
+                                EMAIL
+                            </th>
+
+                            <th>
+                                SOURCE
+                            </th>
+
+                            <th>
+                                EVENT
+                            </th>
+
+                            <th>
+                                EVENT DATE
+                            </th>
+
+                            <th>
+                                GUESTS
+                            </th>
+
+                            <th>
+                                LOCATION
+                            </th>
+
+                            <th>
+                                STATUS
+                            </th>
+
+                            <th>
+                                COMMENT
+                            </th>
+
+                            <th class="action-column">
+                                ACTION
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="leadsTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="12"
+                                class="loading-cell"
+                            >
+                                Loading customer enquiries...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- EMPTY STATE -->
+
+            <div
+                id="emptyState"
+                class="empty-state"
+                hidden
+            >
+
+                <div class="empty-icon">
+                    ⌕
+                </div>
+
+                <h3>
+                    No enquiries found
+                </h3>
+
+                <p>
+                    Try changing your search or filter.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         VIEW / EDIT LEAD MODAL
+    ====================================================== -->
+
+    <div
+        id="leadModal"
+        class="modal-overlay"
+        hidden
+    >
+
+        <div
+            class="lead-modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="leadModalTitle"
+        >
+
+
+            <!-- MODAL HEADER -->
+
+            <div class="modal-header">
+
+                <div>
+
+                    <div class="modal-kicker">
+                        ENQUIRY DETAILS
+                    </div>
+
+                    <h2 id="leadModalTitle">
+                        Customer Enquiry
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="close-modal"
+                    id="closeLeadModal"
+                    aria-label="Close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- CUSTOMER SUMMARY -->
+
+            <div class="lead-info-grid">
+
+
+                <!-- CUSTOMER -->
+
+                <div class="info-card">
+
+                    <span>
+                        CUSTOMER
+                    </span>
+
+                    <strong
+                        id="detailCustomerName"
+                        class="locked-detail"
+                    >
+                        —
+                    </strong>
+
+                </div>
+
+
+                <!-- PHONE -->
+
+                <div class="info-card">
+
+                    <span>
+                        PHONE
+                    </span>
+
+                    <strong
+                        id="detailPhone"
+                        class="locked-detail"
+                    >
+                        —
+                    </strong>
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="info-card">
+
+                    <span>
+                        EMAIL
+                    </span>
+
+                    <input
+                        type="email"
+                        id="detailEmail"
+                        class="detail-edit-input"
+                        placeholder="Email address"
+                    >
+
+                </div>
+
+
+                <!-- SOURCE -->
+
+                <div class="info-card">
+
+                    <span>
+                        LEAD SOURCE
+                    </span>
+
+                    <input
+                        type="text"
+                        id="detailSource"
+                        class="detail-edit-input"
+                        placeholder="Lead source"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 ENQUIRY INFORMATION
+            ================================================== -->
+
+            <div class="detail-section-title">
+                ENQUIRY INFORMATION
+            </div>
+
+
+            <div class="crm-controls">
+
+
+                <!-- EVENT TYPE -->
+
+                <div class="control-group">
+
+                    <label for="detailEventType">
+                        EVENT TYPE
+                    </label>
+
+                    <select id="detailEventType">
+
+                        <option value="">
+                            Select Event
+                        </option>
+
+                        <option value="Wedding">
+                            Wedding
+                        </option>
+
+                        <option value="Engagement">
+                            Engagement
+                        </option>
+
+                        <option value="Birthday">
+                            Birthday
+                        </option>
+
+                        <option value="Corporate">
+                            Corporate
+                        </option>
+
+                        <option value="Anniversary">
+                            Anniversary
+                        </option>
+
+                        <option value="Party">
+                            Party
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- LOCATION -->
+
+                <div class="control-group">
+
+                    <label for="detailVenue">
+                        VENUE / LOCATION
+                    </label>
+
+                    <input
+                        type="text"
+                        id="detailVenue"
+                        placeholder="Venue or location"
+                    >
+
+                </div>
+
+
+                <!-- EVENT DATE -->
+
+                <div class="control-group">
+
+                    <label for="detailEventDate">
+                        EVENT DATE
+                    </label>
+
+                    <input
+                        type="date"
+                        id="detailEventDate"
+                    >
+
+                </div>
+
+
+                <!-- GUESTS -->
+
+                <div class="control-group">
+
+                    <label for="detailGuests">
+                        GUESTS
+                    </label>
+
+                    <input
+                        type="number"
+                        id="detailGuests"
+                        min="0"
+                        placeholder="Number of guests"
+                    >
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="control-group">
+
+                    <label for="detailStatus">
+                        STATUS
+                    </label>
+
+                    <select id="detailStatus">
+
+                        <option value="new">
+                            New
+                        </option>
+
+                        <option value="contacted">
+                            Contacted
+                        </option>
+
+                        <option value="follow-up">
+                            Follow-up
+                        </option>
+
+                        <option value="interested">
+                            Interested
+                        </option>
+
+                        <option value="qualified">
+                            Qualified
+                        </option>
+
+                        <option value="site-visit">
+                            Site Visit
+                        </option>
+
+                        <option value="negotiation">
+                            Negotiation
+                        </option>
+
+                        <option value="booked">
+                            Booked
+                        </option>
+
+                        <option value="converted">
+                            Converted
+                        </option>
+
+                        <option value="closed">
+                            Closed
+                        </option>
+
+                        <option value="lost">
+                            Lost
+                        </option>
+
+                        <option value="not-interested">
+                            Not Interested
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- FOLLOW-UP -->
+
+                <div class="control-group">
+
+                    <label for="detailFollowUp">
+                        FOLLOW-UP
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="detailFollowUp"
+                    >
+
+                </div>
+
+
+                <!-- ASSIGNED TO -->
+
+                <div class="control-group">
+
+                    <label for="detailAssignedTo">
+                        ASSIGNED TO
+                    </label>
+
+                    <input
+                        type="text"
+                        id="detailAssignedTo"
+                        placeholder="Employee UUID"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- CUSTOMER MESSAGE -->
+
+            <div class="detail-block">
+
+                <label for="detailMessage">
+                    CUSTOMER MESSAGE
+                </label>
+
+                <textarea
+                    id="detailMessage"
+                    class="detail-edit-textarea"
+                    placeholder="Customer enquiry / requirement..."
+                ></textarea>
+
+            </div>
+
+
+            <!-- COMMENT -->
+
+            <div class="detail-block">
+
+                <label for="detailRemarks">
+                    COMMENT
+                </label>
+
+                <textarea
+                    id="detailRemarks"
+                    placeholder="Add comment..."
+                ></textarea>
+
+            </div>
+
+
+            <!-- MODAL MESSAGE -->
+
+            <div
+                id="leadModalMessage"
+                class="form-message"
+                role="status"
+                aria-live="polite"
+            ></div>
+
+
+            <!-- MODAL ACTIONS -->
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelLeadEdit"
+                    class="cancel-btn"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    id="saveLeadBtn"
+                    class="save-btn"
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ADD ENQUIRY MODAL
+    ====================================================== -->
+
+    <div
+        id="addEnquiryModal"
+        class="modal-overlay"
+        hidden
+    >
+
+        <div
+            class="add-enquiry-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="addEnquiryTitle"
+        >
+
+
+            <!-- MODAL HEADER -->
+
+            <div class="modal-header">
+
+                <div>
+
+                    <div class="modal-kicker">
+                        NEW LEAD
+                    </div>
+
+                    <h2 id="addEnquiryTitle">
+                        Add Customer Enquiry
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="close-modal"
+                    id="closeAddEnquiry"
+                    aria-label="Close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- =================================================
+                 ADD FORM
+            ================================================== -->
+
+            <form
+                id="addEnquiryForm"
+                class="add-enquiry-form"
+            >
+
+
+                <!-- CUSTOMER DETAILS -->
+
+                <div class="form-section-title">
+                    CUSTOMER DETAILS
+                </div>
+
+
+                <div class="form-grid">
+
+
+                    <!-- CUSTOMER -->
+
+                    <div class="control-group">
+
+                        <label for="customerName">
+                            CUSTOMER NAME
+                        </label>
+
+                        <input
+                            type="text"
+                            id="customerName"
+                            name="customer_name"
+                            placeholder="Customer name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- PHONE -->
+
+                    <div class="control-group">
+
+                        <label for="customerPhone">
+                            PHONE
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="customerPhone"
+                            name="mobile"
+                            placeholder="Phone number"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="control-group">
+
+                        <label for="customerEmail">
+                            EMAIL
+                        </label>
+
+                        <input
+                            type="email"
+                            id="customerEmail"
+                            name="email"
+                            placeholder="Email address"
+                        >
+
+                    </div>
+
+
+                    <!-- SOURCE -->
+
+                    <div class="control-group">
+
+                        <label for="leadSource">
+                            LEAD SOURCE
+                        </label>
+
+                        <select
+                            id="leadSource"
+                            name="source"
+                        >
+
+                            <option value="">
+                                Select Source
+                            </option>
+
+                            <option value="Website">
+                                Website
+                            </option>
+
+                            <option value="WhatsApp">
+                                WhatsApp
+                            </option>
+
+                            <option value="Phone">
+                                Phone
+                            </option>
+
+                            <option value="Facebook">
+                                Facebook
+                            </option>
+
+                            <option value="Instagram">
+                                Instagram
+                            </option>
+
+                            <option value="Referral">
+                                Referral
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- EVENT DETAILS -->
+
+                <div class="form-section-title">
+                    EVENT DETAILS
+                </div>
+
+
+                <div class="form-grid">
+
+
+                    <!-- EVENT -->
+
+                    <div class="control-group">
+
+                        <label for="eventType">
+                            EVENT TYPE
+                        </label>
+
+                        <select
+                            id="eventType"
+                            name="occasion"
+                        >
+
+                            <option value="">
+                                Select Event
+                            </option>
+
+                            <option value="Wedding">
+                                Wedding
+                            </option>
+
+                            <option value="Engagement">
+                                Engagement
+                            </option>
+
+                            <option value="Birthday">
+                                Birthday
+                            </option>
+
+                            <option value="Corporate">
+                                Corporate
+                            </option>
+
+                            <option value="Anniversary">
+                                Anniversary
+                            </option>
+
+                            <option value="Party">
+                                Party
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- LOCATION -->
+
+                    <div class="control-group">
+
+                        <label for="venueName">
+                            VENUE / LOCATION
+                        </label>
+
+                        <input
+                            type="text"
+                            id="venueName"
+                            name="location"
+                            placeholder="Venue or location"
+                        >
+
+                    </div>
+
+
+                    <!-- EVENT DATE -->
+
+                    <div class="control-group">
+
+                        <label for="eventDate">
+                            EVENT DATE
+                        </label>
+
+                        <input
+                            type="date"
+                            id="eventDate"
+                            name="event_date"
+                        >
+
+                    </div>
+
+
+                    <!-- GUESTS -->
+
+                    <div class="control-group">
+
+                        <label for="guestCount">
+                            GUESTS
+                        </label>
+
+                        <input
+                            type="number"
+                            id="guestCount"
+                            name="guests"
+                            min="0"
+                            placeholder="Number of guests"
+                        >
+
+                    </div>
+
+
+                    <!-- STATUS -->
+
+                    <div class="control-group">
+
+                        <label for="newStatus">
+                            STATUS
+                        </label>
+
+                        <select
+                            id="newStatus"
+                            name="status"
+                        >
+
+                            <option value="new">
+                                New
+                            </option>
+
+                            <option value="contacted">
+                                Contacted
+                            </option>
+
+                            <option value="follow-up">
+                                Follow-up
+                            </option>
+
+                            <option value="interested">
+                                Interested
+                            </option>
+
+                            <option value="qualified">
+                                Qualified
+                            </option>
+
+                            <option value="site-visit">
+                                Site Visit
+                            </option>
+
+                            <option value="negotiation">
+                                Negotiation
+                            </option>
+
+                            <option value="booked">
+                                Booked
+                            </option>
+
+                            <option value="converted">
+                                Converted
+                            </option>
+
+                            <option value="closed">
+                                Closed
+                            </option>
+
+                            <option value="lost">
+                                Lost
+                            </option>
+
+                            <option value="not-interested">
+                                Not Interested
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- FOLLOW-UP -->
+
+                <div class="form-section-title">
+                    FOLLOW-UP
+                </div>
+
+
+                <div class="form-grid">
+
+
+                    <div class="control-group">
+
+                        <label for="newFollowUp">
+                            FOLLOW-UP DATE & TIME
+                        </label>
+
+                        <input
+                            type="datetime-local"
+                            id="newFollowUp"
+                            name="follow_up_at"
+                        >
+
+                    </div>
+
+
+                    <div class="control-group">
+
+                        <label for="newAssignedTo">
+                            ASSIGNED TO
+                        </label>
+
+                        <input
+                            type="text"
+                            id="newAssignedTo"
+                            name="assigned_to"
+                            placeholder="Employee UUID"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- CUSTOMER MESSAGE -->
+
+                <div class="form-section-title">
+                    CUSTOMER MESSAGE
+                </div>
+
+
+                <div class="full-width">
+
+                    <div class="control-group">
+
+                        <label for="customerMessage">
+                            MESSAGE
+                        </label>
+
+                        <textarea
+                            id="customerMessage"
+                            name="requirements"
+                            placeholder="Customer enquiry / requirement..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <!-- COMMENT -->
+
+                <div class="form-section-title">
+                    COMMENT
+                </div>
+
+
+                <div class="full-width">
+
+                    <div class="control-group">
+
+                        <label for="newRemarks">
+                            INTERNAL COMMENT
+                        </label>
+
+                        <textarea
+                            id="newRemarks"
+                            name="internal_notes"
+                            placeholder="Internal comment for employees..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <!-- FORM MESSAGE -->
+
+                <div
+                    id="addEnquiryMessage"
+                    class="form-message"
+                    role="status"
+                    aria-live="polite"
+                ></div>
+
+
+                <!-- FORM ACTIONS -->
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        id="cancelAddEnquiry"
+                        class="cancel-btn"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        id="submitEnquiryBtn"
+                        class="save-btn"
+                    >
+                        Add Enquiry
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+</body>
+
+</html>
