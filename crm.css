@@ -3086,7 +3086,7 @@ textarea:focus-visible {
 
 /* =========================================================
    SELECT MY VENUE CRM — FINAL HEADER / LOGO
-   Premium header — logo 175px
+   Premium header — logo 210px
    Header height stays exactly 88px
    ========================================================= */
 
@@ -3103,23 +3103,23 @@ textarea:focus-visible {
 }
 
 /* =========================================================
-   LOGO — 175px
+   LOGO — 210px DESKTOP
    ========================================================= */
 
 .crm-header .crm-header-logo {
-    width: 175px !important;
-    min-width: 175px !important;
-    max-width: 175px !important;
+    width: 210px !important;
+    min-width: 210px !important;
+    max-width: 210px !important;
 
-    height: 62px !important;
-    min-height: 62px !important;
-    max-height: 62px !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    max-height: 68px !important;
 
     object-fit: contain !important;
     object-position: left center !important;
 
     display: block !important;
-    flex: 0 0 175px !important;
+    flex: 0 0 210px !important;
 
     margin: 0 !important;
     padding: 0 !important;
@@ -3159,15 +3159,15 @@ textarea:focus-visible {
     }
 
     .crm-header .crm-header-logo {
-        width: 175px !important;
-        min-width: 175px !important;
-        max-width: 175px !important;
+        width: 210px !important;
+        min-width: 210px !important;
+        max-width: 210px !important;
 
-        height: 62px !important;
-        min-height: 62px !important;
-        max-height: 62px !important;
+        height: 68px !important;
+        min-height: 68px !important;
+        max-height: 68px !important;
 
-        flex: 0 0 175px !important;
+        flex: 0 0 210px !important;
     }
 }
 
@@ -3183,15 +3183,15 @@ textarea:focus-visible {
     }
 
     .crm-header .crm-header-logo {
-        width: 165px !important;
-        min-width: 165px !important;
-        max-width: 165px !important;
+        width: 190px !important;
+        min-width: 190px !important;
+        max-width: 190px !important;
 
-        height: 58px !important;
-        min-height: 58px !important;
-        max-height: 58px !important;
+        height: 62px !important;
+        min-height: 62px !important;
+        max-height: 62px !important;
 
-        flex: 0 0 165px !important;
+        flex: 0 0 190px !important;
     }
 }
 
@@ -3208,14 +3208,14 @@ textarea:focus-visible {
     }
 
     .crm-header .crm-header-logo {
-        width: 150px !important;
-        min-width: 150px !important;
-        max-width: 150px !important;
+        width: 170px !important;
+        min-width: 170px !important;
+        max-width: 170px !important;
 
-        height: 52px !important;
-        min-height: 52px !important;
-        max-height: 52px !important;
+        height: 55px !important;
+        min-height: 55px !important;
+        max-height: 55px !important;
 
-        flex: 0 0 150px !important;
+        flex: 0 0 170px !important;
     }
 }
