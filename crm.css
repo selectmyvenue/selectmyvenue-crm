@@ -3086,7 +3086,8 @@ textarea:focus-visible {
 
 /* =========================================================
    SELECT MY VENUE CRM — FINAL HEADER / LOGO
-   Premium header — logo 150px
+   Premium header — logo 175px
+   Header height stays exactly 88px
    ========================================================= */
 
 .crm-header {
@@ -3101,75 +3102,105 @@ textarea:focus-visible {
     gap: 12px !important;
 }
 
-.crm-header .crm-header-logo {
-    width: 150px !important;
-    min-width: 150px !important;
-    max-width: 150px !important;
+/* =========================================================
+   LOGO — 175px
+   ========================================================= */
 
-    height: 58px !important;
-    min-height: 58px !important;
-    max-height: 58px !important;
+.crm-header .crm-header-logo {
+    width: 175px !important;
+    min-width: 175px !important;
+    max-width: 175px !important;
+
+    height: 62px !important;
+    min-height: 62px !important;
+    max-height: 62px !important;
 
     object-fit: contain !important;
     object-position: left center !important;
 
     display: block !important;
-    flex: 0 0 150px !important;
+    flex: 0 0 175px !important;
 
     margin: 0 !important;
     padding: 0 !important;
 
-    filter: drop-shadow(0 3px 7px rgba(6, 100, 78, 0.10)) !important;
+    filter: drop-shadow(
+        0 3px 7px rgba(6, 100, 78, 0.10)
+    ) !important;
 }
 
-/* Keep the CRM title premium */
+/* =========================================================
+   BRAND NAME
+   ========================================================= */
+
 .crm-brand-text strong {
     font-size: 25px !important;
     font-weight: 850 !important;
     white-space: nowrap !important;
 }
 
-/* Keep centre title balanced */
+/* =========================================================
+   CENTRE TITLE
+   ========================================================= */
+
 .crm-header-title {
     font-size: 22px !important;
 }
 
-/* Desktop */
+/* =========================================================
+   DESKTOP
+   ========================================================= */
+
 @media (min-width: 1151px) {
+
     .crm-header {
         min-height: 88px !important;
         height: 88px !important;
     }
 
     .crm-header .crm-header-logo {
-        width: 150px !important;
-        min-width: 150px !important;
-        max-width: 150px !important;
+        width: 175px !important;
+        min-width: 175px !important;
+        max-width: 175px !important;
+
+        height: 62px !important;
+        min-height: 62px !important;
+        max-height: 62px !important;
+
+        flex: 0 0 175px !important;
+    }
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1150px) {
+
+    .crm-header {
+        min-height: 88px !important;
+        height: 88px !important;
+    }
+
+    .crm-header .crm-header-logo {
+        width: 165px !important;
+        min-width: 165px !important;
+        max-width: 165px !important;
+
         height: 58px !important;
         min-height: 58px !important;
         max-height: 58px !important;
+
+        flex: 0 0 165px !important;
     }
 }
 
-/* Tablet */
-@media (max-width: 1150px) {
-    .crm-header {
-        min-height: 88px !important;
-        height: 88px !important;
-    }
+/* =========================================================
+   MOBILE
+   ========================================================= */
 
-    .crm-header .crm-header-logo {
-        width: 150px !important;
-        min-width: 150px !important;
-        max-width: 150px !important;
-        height: 56px !important;
-        min-height: 56px !important;
-        max-height: 56px !important;
-    }
-}
-
-/* Mobile */
 @media (max-width: 700px) {
+
     .crm-header {
         min-height: auto !important;
         height: auto !important;
@@ -3180,9 +3211,11 @@ textarea:focus-visible {
         width: 150px !important;
         min-width: 150px !important;
         max-width: 150px !important;
+
         height: 52px !important;
         min-height: 52px !important;
         max-height: 52px !important;
+
         flex: 0 0 150px !important;
     }
 }
