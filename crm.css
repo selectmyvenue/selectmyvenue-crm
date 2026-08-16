@@ -3221,31 +3221,66 @@ textarea:focus-visible {
 }
 
 /* =========================================================
-   SELECT MY VENUE CRM — CENTER COMMENT / LEAD MODAL
-   Keep modal directly in front of the user
+   SMV CRM — COMMENT / NOTE FLOATING WINDOW
+   Opens directly over the current CRM table
    ========================================================= */
 
-.modal-overlay {
+.crm-floating-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    padding: 14px !important;
+
+    padding: 20px !important;
+    box-sizing: border-box !important;
+
+    background: rgba(14, 20, 33, 0.48) !important;
+
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
+
+    z-index: 99999 !important;
+
+    overflow: hidden !important;
 }
 
-.lead-modal-card {
-    width: min(900px, calc(100vw - 28px)) !important;
-    max-height: calc(100vh - 28px) !important;
-    margin: 0 auto !important;
+.crm-floating-card {
+    position: relative !important;
+
+    width: min(560px, calc(100vw - 40px)) !important;
+    max-width: 560px !important;
+    max-height: calc(100vh - 40px) !important;
+
+    margin: 0 !important;
+
+    box-sizing: border-box !important;
+
+    overflow-y: auto !important;
+
+    background: #ffffff !important;
+
+    border-radius: 20px !important;
+
+    box-shadow:
+        0 30px 90px rgba(10, 18, 35, 0.28) !important;
 }
+
+/* Smaller screens */
 
 @media (max-width: 700px) {
-    .modal-overlay {
-        align-items: center !important;
-        justify-content: center !important;
+
+    .crm-floating-overlay {
         padding: 12px !important;
     }
 
-    .lead-modal-card {
+    .crm-floating-card {
         width: calc(100vw - 24px) !important;
+        max-width: none !important;
         max-height: calc(100vh - 24px) !important;
         border-radius: 18px !important;
     }
