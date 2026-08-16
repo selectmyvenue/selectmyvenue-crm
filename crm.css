@@ -3219,3 +3219,34 @@ textarea:focus-visible {
         flex: 0 0 170px !important;
     }
 }
+
+/* =========================================================
+   SELECT MY VENUE CRM — CENTER COMMENT / LEAD MODAL
+   Keep modal directly in front of the user
+   ========================================================= */
+
+.modal-overlay {
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 14px !important;
+}
+
+.lead-modal-card {
+    width: min(900px, calc(100vw - 28px)) !important;
+    max-height: calc(100vh - 28px) !important;
+    margin: 0 auto !important;
+}
+
+@media (max-width: 700px) {
+    .modal-overlay {
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 12px !important;
+    }
+
+    .lead-modal-card {
+        width: calc(100vw - 24px) !important;
+        max-height: calc(100vh - 24px) !important;
+        border-radius: 18px !important;
+    }
+}
