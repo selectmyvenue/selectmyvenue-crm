@@ -724,74 +724,21 @@ function getEventOptions() {
    ========================================================= */
 
 function getStatusOptions() {
-
-    return [
-
-        {
-            value: "new",
-            label: "New"
-        },
-
-        {
-            value: "contacted",
-            label: "Contacted"
-        },
-
-        {
-            value: "follow-up",
-            label: "Follow-up"
-        },
-
-        {
-            value: "detail-shared",
-            label: "Detail Shared"
-        },
-
-        {
-            value: "interested",
-            label: "Interested"
-        },
-
-        {
-            value: "qualified",
-            label: "Qualified"
-        },
-
-        {
-            value: "site-visit",
-            label: "Site Visit"
-        },
-
-        {
-            value: "negotiation",
-            label: "Negotiation"
-        },
-
-        {
-            value: "booked",
-            label: "Booked"
-        },
-
-        {
-            value: "converted",
-            label: "Converted"
-        },
-
-        {
-            value: "closed",
-            label: "Closed"
-        },
-
-        {
-            value: "lost",
-            label: "Lost"
-        },
-
-        {
-            value: "not-interested",
-            label: "Not Interested"
-        }
-    ];
+  return [
+    { value: "new",           label: "New" },
+    { value: "contacted",     label: "Contacted" },
+    { value: "follow-up",     label: "Follow-up" },
+    { value: "detail-shared", label: "Detail Shared" },
+    { value: "interested",    label: "Interested" },
+    { value: "qualified",     label: "Qualified" },
+    { value: "site-visit",    label: "Site Visit" },
+    { value: "negotiation",   label: "Negotiation" },
+    { value: "booked",        label: "Booked" },
+    { value: "converted",     label: "Converted" },
+    { value: "closed",        label: "Closed" },
+    { value: "lost",          label: "Lost" },
+    { value: "not-interested",label: "Not Interested" }
+  ];
 }
 
 /* =========================================================
