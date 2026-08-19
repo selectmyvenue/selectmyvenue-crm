@@ -3964,6 +3964,36 @@ textarea:focus-visible {
     gap: 12px;
 }
 
+
+.assigned-venues-heading {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+}
+
+.assign-another-venue-btn {
+    border: 1px solid #cfe4da;
+    border-radius: 9px;
+    background: #f5fbf8;
+    color: #16734a;
+    padding: 7px 11px;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.assign-another-venue-btn:hover {
+    background: #eaf7f1;
+    border-color: #b8d9ca;
+}
+
+.assign-another-venue-btn:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
 .assigned-venue-count {
     display: inline-flex;
     align-items: center;
@@ -4081,6 +4111,20 @@ textarea:focus-visible {
 }
 
 @media (max-width: 760px) {
+    .assigned-venues-title-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .assigned-venues-heading {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .assign-another-venue-btn {
+        width: 100%;
+    }
+
     .lead-venue-assignment-card {
         align-items: stretch;
         flex-direction: column;
