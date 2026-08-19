@@ -3990,6 +3990,11 @@ function setupKeyboard() {
                     "addEnquiryModal"
                 );
 
+            const venueModal =
+                document.getElementById(
+                    "venueModal"
+                );
+
             if (
                 leadModal &&
                 !leadModal.hidden
@@ -4002,6 +4007,13 @@ function setupKeyboard() {
                 !addModal.hidden
             ) {
                 closeAddEnquiryModal();
+            }
+
+            if (
+                venueModal &&
+                !venueModal.hidden
+            ) {
+                closeVenueModal();
             }
 
             closeFloatingOverlay();
@@ -4148,6 +4160,939 @@ function isUUID(
         );
 }
 
+
+/* =========================================================
+   SELECT MY VENUE — VENUE MANAGEMENT
+   STAGE 2 — ADDITIVE MODULE
+   ---------------------------------------------------------
+   Does not replace or modify existing lead-management
+   functions. It adds venue CRUD on the new venues table.
+   ========================================================= */
+
+let allVenues = [];
+let venueSearch = "";
+let venueStatusFilter = "all";
+let venueVerificationFilter = "all";
+
+function setupVenueManagement() {
+
+    const venueBtn = document.getElementById("venueManagementBtn");
+    const backBtn = document.getElementById("backToLeadsBtn");
+    const addBtn = document.getElementById("addVenueBtn");
+    const refreshBtn = document.getElementById("refreshVenuesBtn");
+    const closeBtn = document.getElementById("closeVenueModal");
+    const cancelBtn = document.getElementById("cancelVenueBtn");
+    const form = document.getElementById("venueForm");
+    const search = document.getElementById("venueSearchInput");
+    const status = document.getElementById("venueStatusFilter");
+    const verification = document.getElementById("venueVerificationFilter");
+    const table = document.getElementById("venueTableBody");
+
+    if (!venueBtn || !form || !table) {
+        return;
+    }
+
+    venueBtn.addEventListener("click", openVenueManagement);
+    backBtn?.addEventListener("click", showLeadManagement);
+    addBtn?.addEventListener("click", () => openVenueModal());
+    refreshBtn?.addEventListener("click", loadVenues);
+    closeBtn?.addEventListener("click", closeVenueModal);
+    cancelBtn?.addEventListener("click", closeVenueModal);
+
+    form.addEventListener("submit", saveVenue);
+
+    search?.addEventListener("input", event => {
+        venueSearch = safeValue(event.target.value).trim().toLowerCase();
+        renderVenues();
+    });
+
+    status?.addEventListener("change", event => {
+        venueStatusFilter = event.target.value;
+        renderVenues();
+    });
+
+    verification?.addEventListener("change", event => {
+        venueVerificationFilter = event.target.value;
+        renderVenues();
+    });
+
+    table.addEventListener("click", handleVenueTableClick);
+
+    document.getElementById("venueModal")?.addEventListener("click", event => {
+        if (event.target === event.currentTarget) {
+            closeVenueModal();
+        }
+    });
+}
+
+function openVenueManagement() {
+    const main = document.querySelector(".crm-main");
+    const venueSection = document.getElementById("venueManagementSection");
+    const title = document.getElementById("crmPageTitle");
+
+    if (!main || !venueSection) {
+        return;
+    }
+
+    main.hidden = true;
+    venueSection.hidden = false;
+
+    if (title) {
+        title.textContent = "Venue Management";
+    }
+
+    loadVenues();
+}
+
+function showLeadManagement() {
+    const main = document.querySelector(".crm-main");
+    const venueSection = document.getElementById("venueManagementSection");
+    const title = document.getElementById("crmPageTitle");
+
+    if (!main || !venueSection) {
+        return;
+    }
+
+    venueSection.hidden = true;
+    main.hidden = false;
+
+    if (title) {
+        title.textContent = "Lead Management";
+    }
+}
+
+async function loadVenues() {
+
+    const client = getSupabaseClient();
+
+    if (!client) {
+        return;
+    }
+
+    const tbody = document.getElementById("venueTableBody");
+
+    if (tbody) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="9" class="venue-loading-cell">
+                    Loading venues...
+                </td>
+            </tr>
+        `;
+    }
+
+    const { data, error } = await client
+        .from("venues")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+
+        console.error("Venue load error:", error);
+
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="venue-loading-cell">
+                        Unable to load venues.
+                    </td>
+                </tr>
+            `;
+        }
+
+        showToast(
+            "Unable to load venues: " + error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    allVenues = Array.isArray(data) ? data : [];
+
+    updateVenueStats();
+    renderVenues();
+}
+
+function updateVenueStats() {
+
+    const total = allVenues.length;
+
+    const approved =
+        allVenues.filter(
+            venue => safeValue(venue.venue_status) === "approved"
+        ).length;
+
+    const pending =
+        allVenues.filter(
+            venue => safeValue(venue.venue_status) === "pending"
+        ).length;
+
+    const verified =
+        allVenues.filter(
+            venue => safeValue(venue.verification_status) === "verified"
+        ).length;
+
+    const values = {
+        venueTotalCount: total,
+        venueApprovedCount: approved,
+        venuePendingCount: pending,
+        venueVerifiedCount: verified
+    };
+
+    Object.entries(values).forEach(([id, value]) => {
+
+        const element = document.getElementById(id);
+
+        if (element) {
+            element.textContent = value;
+        }
+    });
+}
+
+function getFilteredVenues() {
+
+    return allVenues.filter(venue => {
+
+        const searchable = [
+            venue.venue_name,
+            venue.contact_person,
+            venue.contact_mobile,
+            venue.city,
+            venue.area,
+            venue.venue_type
+        ]
+            .map(safeValue)
+            .join(" ")
+            .toLowerCase();
+
+        if (
+            venueSearch &&
+            !searchable.includes(venueSearch)
+        ) {
+            return false;
+        }
+
+        if (
+            venueStatusFilter !== "all" &&
+            safeValue(venue.venue_status) !== venueStatusFilter
+        ) {
+            return false;
+        }
+
+        if (
+            venueVerificationFilter !== "all" &&
+            safeValue(venue.verification_status) !== venueVerificationFilter
+        ) {
+            return false;
+        }
+
+        return true;
+    });
+}
+
+function renderVenues() {
+
+    const tbody = document.getElementById("venueTableBody");
+    const empty = document.getElementById("venueEmptyState");
+
+    if (!tbody) {
+        return;
+    }
+
+    const venues = getFilteredVenues();
+
+    if (!venues.length) {
+
+        tbody.innerHTML = "";
+
+        if (empty) {
+            empty.hidden = false;
+        }
+
+        return;
+    }
+
+    if (empty) {
+        empty.hidden = true;
+    }
+
+    tbody.innerHTML = venues.map(venue => {
+
+        const capacity =
+            venue.capacity_min || venue.capacity_max
+                ? `${escapeHTML(
+                    safeValue(venue.capacity_min) || "—"
+                )}–${escapeHTML(
+                    safeValue(venue.capacity_max) || "—"
+                )}`
+                : "—";
+
+        const price =
+            venue.price_min_per_person ||
+            venue.price_max_per_person
+                ? `₹${escapeHTML(
+                    safeValue(venue.price_min_per_person) || "—"
+                )}–₹${escapeHTML(
+                    safeValue(venue.price_max_per_person) || "—"
+                )}`
+                : "—";
+
+        return `
+            <tr data-venue-id="${escapeHTML(venue.id)}">
+
+                <td>
+                    <div class="venue-name-cell">
+                        <strong>${escapeHTML(
+                            safeValue(venue.venue_name) || "Unnamed Venue"
+                        )}</strong>
+                        <small>${escapeHTML(
+                            safeValue(venue.contact_person) || "No contact person"
+                        )}</small>
+                    </div>
+                </td>
+
+                <td>
+                    <div>${escapeHTML(
+                        safeValue(venue.contact_mobile) || "—"
+                    )}</div>
+                    <small class="venue-muted">${escapeHTML(
+                        safeValue(venue.contact_email) || ""
+                    )}</small>
+                </td>
+
+                <td>
+                    <div>${escapeHTML(
+                        safeValue(venue.city) || "—"
+                    )}</div>
+                    <small class="venue-muted">${escapeHTML(
+                        safeValue(venue.area) || ""
+                    )}</small>
+                </td>
+
+                <td>${escapeHTML(
+                    safeValue(venue.venue_type) || "—"
+                )}</td>
+
+                <td>${capacity}</td>
+
+                <td>${price}</td>
+
+                <td>
+                    <span class="venue-pill ${escapeHTML(
+                        safeValue(venue.venue_status) || "pending"
+                    )}">
+                        ${escapeHTML(
+                            formatVenueLabel(venue.venue_status)
+                        )}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="venue-pill ${escapeHTML(
+                        safeValue(venue.verification_status) || "pending"
+                    )}">
+                        ${escapeHTML(
+                            formatVenueLabel(venue.verification_status)
+                        )}
+                    </span>
+                </td>
+
+                <td>
+                    <div class="venue-row-actions">
+                        <button
+                            type="button"
+                            class="venue-row-btn"
+                            data-venue-action="edit"
+                            data-venue-id="${escapeHTML(venue.id)}"
+                        >
+                            Edit
+                        </button>
+
+                        ${
+                            safeValue(venue.venue_status) === "approved"
+                                ? `
+                                    <button
+                                        type="button"
+                                        class="venue-row-btn"
+                                        data-venue-action="deactivate"
+                                        data-venue-id="${escapeHTML(venue.id)}"
+                                    >
+                                        Deactivate
+                                    </button>
+                                `
+                                : `
+                                    <button
+                                        type="button"
+                                        class="venue-row-btn"
+                                        data-venue-action="approve"
+                                        data-venue-id="${escapeHTML(venue.id)}"
+                                    >
+                                        Approve
+                                    </button>
+                                `
+                        }
+
+                        <button
+                            type="button"
+                            class="venue-row-btn danger"
+                            data-venue-action="delete"
+                            data-venue-id="${escapeHTML(venue.id)}"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </td>
+
+            </tr>
+        `;
+    }).join("");
+}
+
+function formatVenueLabel(value) {
+
+    if (!value) {
+        return "Pending";
+    }
+
+    return String(value)
+        .replace(/[-_]/g, " ")
+        .replace(/\b\w/g, char => char.toUpperCase());
+}
+
+function openVenueModal(venue = null) {
+
+    const modal = document.getElementById("venueModal");
+    const form = document.getElementById("venueForm");
+
+    if (!modal || !form) {
+        return;
+    }
+
+    form.reset();
+
+    document.getElementById("venueId").value =
+        venue?.id || "";
+
+    document.getElementById("venueModalTitle").textContent =
+        venue ? "Edit Venue" : "Add New Venue";
+
+    setVenueField("venueName", venue?.venue_name);
+    setVenueField("venueType", venue?.venue_type);
+    setVenueField("venueDescription", venue?.description);
+
+    setVenueField("venueContactPerson", venue?.contact_person);
+    setVenueField("venueMobile", venue?.contact_mobile);
+    setVenueField("venueWhatsapp", venue?.whatsapp_number);
+    setVenueField("venueEmail", venue?.contact_email);
+
+    setVenueField("venueCity", venue?.city);
+    setVenueField("venueArea", venue?.area);
+    setVenueField("venueAddress", venue?.address);
+    setVenueField("venueState", venue?.state);
+    setVenueField("venuePincode", venue?.pincode);
+    setVenueField("venueMaps", venue?.google_maps_url);
+
+    setVenueField("venueCapacityMin", venue?.capacity_min);
+    setVenueField("venueCapacityMax", venue?.capacity_max);
+    setVenueField("venuePriceMin", venue?.price_min_per_person);
+    setVenueField("venuePriceMax", venue?.price_max_per_person);
+
+    setVenueField("venueWebsite", venue?.website_url);
+    setVenueField("venueInstagram", venue?.instagram_url);
+    setVenueField("venueFacebook", venue?.facebook_url);
+
+    setVenueField(
+        "venueStatus",
+        venue?.venue_status || "pending"
+    );
+
+    setVenueField(
+        "venueVerification",
+        venue?.verification_status || "pending"
+    );
+
+    setVenueChecked(
+        "venueFoodVeg",
+        venue?.food_veg !== false
+    );
+
+    setVenueChecked(
+        "venueFoodNonVeg",
+        venue?.food_non_veg === true
+    );
+
+    setVenueChecked(
+        "venueParking",
+        venue?.parking_available === true
+    );
+
+    setVenueChecked(
+        "venueRooms",
+        venue?.rooms_available === true
+    );
+
+    setVenueChecked(
+        "venueCatering",
+        venue?.catering_available === true
+    );
+
+    setVenueChecked(
+        "venueDecoration",
+        venue?.decoration_available === true
+    );
+
+    setVenueChecked(
+        "venueFeatured",
+        venue?.featured === true
+    );
+
+    modal.hidden = false;
+}
+
+function setVenueField(id, value) {
+
+    const element = document.getElementById(id);
+
+    if (element) {
+        element.value =
+            value === null ||
+            value === undefined
+                ? ""
+                : value;
+    }
+}
+
+function setVenueChecked(id, value) {
+
+    const element = document.getElementById(id);
+
+    if (element) {
+        element.checked = Boolean(value);
+    }
+}
+
+function closeVenueModal() {
+
+    const modal = document.getElementById("venueModal");
+
+    if (modal) {
+        modal.hidden = true;
+    }
+}
+
+function getVenueFormData() {
+
+    const numberOrNull = id => {
+
+        const value =
+            safeValue(
+                document.getElementById(id)?.value
+            ).trim();
+
+        if (!value) {
+            return null;
+        }
+
+        const number = Number(value);
+
+        return Number.isFinite(number)
+            ? number
+            : null;
+    };
+
+    const checked = id =>
+        Boolean(
+            document.getElementById(id)?.checked
+        );
+
+    return {
+
+        venue_name:
+            safeValue(
+                document.getElementById("venueName")?.value
+            ).trim(),
+
+        venue_type:
+            safeValue(
+                document.getElementById("venueType")?.value
+            ).trim() || null,
+
+        description:
+            safeValue(
+                document.getElementById("venueDescription")?.value
+            ).trim() || null,
+
+        contact_person:
+            safeValue(
+                document.getElementById("venueContactPerson")?.value
+            ).trim() || null,
+
+        contact_mobile:
+            safeValue(
+                document.getElementById("venueMobile")?.value
+            ).trim() || null,
+
+        whatsapp_number:
+            safeValue(
+                document.getElementById("venueWhatsapp")?.value
+            ).trim() || null,
+
+        contact_email:
+            safeValue(
+                document.getElementById("venueEmail")?.value
+            ).trim() || null,
+
+        city:
+            safeValue(
+                document.getElementById("venueCity")?.value
+            ).trim() || null,
+
+        area:
+            safeValue(
+                document.getElementById("venueArea")?.value
+            ).trim() || null,
+
+        address:
+            safeValue(
+                document.getElementById("venueAddress")?.value
+            ).trim() || null,
+
+        state:
+            safeValue(
+                document.getElementById("venueState")?.value
+            ).trim() || null,
+
+        pincode:
+            safeValue(
+                document.getElementById("venuePincode")?.value
+            ).trim() || null,
+
+        google_maps_url:
+            safeValue(
+                document.getElementById("venueMaps")?.value
+            ).trim() || null,
+
+        capacity_min:
+            numberOrNull("venueCapacityMin"),
+
+        capacity_max:
+            numberOrNull("venueCapacityMax"),
+
+        price_min_per_person:
+            numberOrNull("venuePriceMin"),
+
+        price_max_per_person:
+            numberOrNull("venuePriceMax"),
+
+        food_veg:
+            checked("venueFoodVeg"),
+
+        food_non_veg:
+            checked("venueFoodNonVeg"),
+
+        parking_available:
+            checked("venueParking"),
+
+        rooms_available:
+            checked("venueRooms"),
+
+        catering_available:
+            checked("venueCatering"),
+
+        decoration_available:
+            checked("venueDecoration"),
+
+        website_url:
+            safeValue(
+                document.getElementById("venueWebsite")?.value
+            ).trim() || null,
+
+        instagram_url:
+            safeValue(
+                document.getElementById("venueInstagram")?.value
+            ).trim() || null,
+
+        facebook_url:
+            safeValue(
+                document.getElementById("venueFacebook")?.value
+            ).trim() || null,
+
+        venue_status:
+            safeValue(
+                document.getElementById("venueStatus")?.value
+            ) || "pending",
+
+        verification_status:
+            safeValue(
+                document.getElementById("venueVerification")?.value
+            ) || "pending",
+
+        featured:
+            checked("venueFeatured")
+    };
+}
+
+async function saveVenue(event) {
+
+    event.preventDefault();
+
+    const client = getSupabaseClient();
+
+    if (!client) {
+        return;
+    }
+
+    const id =
+        safeValue(
+            document.getElementById("venueId")?.value
+        ).trim();
+
+    const payload = getVenueFormData();
+
+    if (!payload.venue_name) {
+
+        showToast(
+            "Venue name is required.",
+            "error"
+        );
+
+        document.getElementById("venueName")?.focus();
+
+        return;
+    }
+
+    const button =
+        document.getElementById("saveVenueBtn");
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Saving...";
+    }
+
+    let result;
+
+    if (id) {
+
+        result = await client
+            .from("venues")
+            .update(payload)
+            .eq("id", id)
+            .select()
+            .single();
+
+    }
+    else {
+
+        result = await client
+            .from("venues")
+            .insert({
+                ...payload,
+                created_by:
+                    (
+                        await client.auth.getUser()
+                    ).data?.user?.id || null
+            })
+            .select()
+            .single();
+    }
+
+    if (button) {
+        button.disabled = false;
+        button.textContent = "Save Venue";
+    }
+
+    if (result.error) {
+
+        console.error(
+            "Venue save error:",
+            result.error
+        );
+
+        showToast(
+            "Unable to save venue: " +
+            result.error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    closeVenueModal();
+
+    showToast(
+        id
+            ? "Venue updated successfully."
+            : "Venue added successfully.",
+        "success"
+    );
+
+    await loadVenues();
+}
+
+async function handleVenueTableClick(event) {
+
+    const button =
+        event.target.closest(
+            "[data-venue-action]"
+        );
+
+    if (!button) {
+        return;
+    }
+
+    const id =
+        safeValue(
+            button.dataset.venueId
+        );
+
+    const action =
+        safeValue(
+            button.dataset.venueAction
+        );
+
+    const venue =
+        allVenues.find(
+            item => String(item.id) === String(id)
+        );
+
+    if (!venue) {
+        return;
+    }
+
+    if (action === "edit") {
+
+        openVenueModal(venue);
+        return;
+    }
+
+    if (action === "approve") {
+
+        await updateVenueStatus(
+            venue,
+            "approved",
+            "pending"
+        );
+
+        return;
+    }
+
+    if (action === "deactivate") {
+
+        await updateVenueStatus(
+            venue,
+            "inactive",
+            venue.verification_status
+        );
+
+        return;
+    }
+
+    if (action === "delete") {
+
+        const confirmed =
+            window.confirm(
+                `Delete "${venue.venue_name}"?\n\nThis venue record will be permanently removed.`
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+        await deleteVenue(venue);
+    }
+}
+
+async function updateVenueStatus(
+    venue,
+    venueStatus,
+    verificationStatus
+) {
+
+    const client = getSupabaseClient();
+
+    if (!client) {
+        return;
+    }
+
+    const { error } =
+        await client
+            .from("venues")
+            .update({
+                venue_status: venueStatus,
+                verification_status: verificationStatus
+            })
+            .eq("id", venue.id);
+
+    if (error) {
+
+        console.error(
+            "Venue status update error:",
+            error
+        );
+
+        showToast(
+            "Unable to update venue: " +
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    showToast(
+        venueStatus === "approved"
+            ? "Venue approved."
+            : "Venue deactivated.",
+        "success"
+    );
+
+    await loadVenues();
+}
+
+async function deleteVenue(venue) {
+
+    const client = getSupabaseClient();
+
+    if (!client) {
+        return;
+    }
+
+    const { error } =
+        await client
+            .from("venues")
+            .delete()
+            .eq("id", venue.id);
+
+    if (error) {
+
+        console.error(
+            "Venue delete error:",
+            error
+        );
+
+        showToast(
+            "Unable to delete venue: " +
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+    showToast(
+        "Venue deleted.",
+        "success"
+    );
+
+    await loadVenues();
+}
+
+/* =========================================================
+   END VENUE MANAGEMENT — STAGE 2
+   ========================================================= */
+
+
 /* =========================================================
    INITIALIZE
    ========================================================= */
@@ -4184,6 +5129,8 @@ async function initializeCRM() {
     setupLogout();
 
     setupKeyboard();
+
+    setupVenueManagement();
 
     setupAuthListener();
 
