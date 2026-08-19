@@ -5777,10 +5777,31 @@ async function saveVenueAssignments() {
         await loadVenueAssignments();
         applyFilters();
         closeVenueAssignmentModal();
-        showToast(
-            `${rows.length || selected.length} venue${(rows.length || selected.length) === 1 ? "" : "s"} assigned successfully.`,
-            "success"
-        );
+        if (rows.length > 0) {
+            const assignedText =
+                `${rows.length} new venue${rows.length === 1 ? "" : "s"} assigned successfully.`;
+
+            const skippedCount = selected.length - rows.length;
+
+            if (skippedCount > 0) {
+                showToast(
+                    `${assignedText} ${skippedCount} venue${skippedCount === 1 ? " was" : "s were"} already assigned.`,
+                    "success"
+                );
+            } else {
+                showToast(
+                    assignedText,
+                    "success"
+                );
+            }
+        } else {
+            const alreadyCount = selected.length;
+
+            showToast(
+                `${alreadyCount} venue${alreadyCount === 1 ? " is" : "s are"} already assigned to this enquiry. No new assignment was created.`,
+                "info"
+            );
+        }
     }
     catch (error) {
         console.error("Venue assignment save error:", error);
