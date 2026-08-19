@@ -340,6 +340,8 @@ async function loadEnquiries() {
                 ? data
                 : [];
 
+        await loadVenueAssignments();
+
         applyFilters();
         updateStats();
 
@@ -1122,6 +1124,17 @@ const email =
                 >
                     <span class="view-icon">◉</span>
                     <span>View Details</span>
+                </button>
+
+                <button
+                    type="button"
+                    class="venue-assign-btn"
+                    data-action="assign-venue"
+                    data-id="${escapeHTML(id)}"
+                    title="Assign this enquiry to approved and verified venues"
+                >
+                    🏨 Assign Venue
+                    ${getAssignmentCount(id) ? `<span class="venue-assignment-count">${getAssignmentCount(id)}</span>` : ""}
                 </button>
 
             </td>
@@ -3772,6 +3785,20 @@ function setupGlobalClicks() {
                 return;
             }
 
+            const assignVenue =
+                event.target.closest(
+                    "[data-action='assign-venue']"
+                );
+
+            if (assignVenue) {
+
+                openVenueAssignmentModal(
+                    assignVenue.dataset.id
+                );
+
+                return;
+            }
+
             const view =
                 event.target.closest(
                     "[data-action='view']"
@@ -4173,6 +4200,14 @@ let allVenues = [];
 let venueSearch = "";
 let venueStatusFilter = "all";
 let venueVerificationFilter = "all";
+
+/* =========================================================
+   STAGE 3 — VENUE ENQUIRY ASSIGNMENTS
+   ========================================================= */
+let allVenueAssignments = [];
+let assignmentCurrentLead = null;
+let assignmentVenueRows = [];
+let assignmentSearch = "";
 
 function setupVenueManagement() {
 
@@ -5158,6 +5193,394 @@ async function deleteVenue(venue) {
     await loadVenues();
 }
 
+
+/* =========================================================
+   STAGE 3 — INTERNAL VENUE ASSIGNMENT
+   ---------------------------------------------------------
+   Only approved + verified venues are offered to staff.
+   Partner access is intentionally NOT implemented here.
+   ========================================================= */
+
+function getAssignmentCount(enquiryId) {
+    return allVenueAssignments.filter(
+        item => String(item.enquiry_id) === String(enquiryId)
+    ).length;
+}
+
+async function loadVenueAssignments() {
+    const client = getSupabaseClient();
+
+    if (!client) {
+        allVenueAssignments = [];
+        return;
+    }
+
+    try {
+        const { data, error } = await client
+            .from("venue_enquiry_assignments")
+            .select("*")
+            .order("assigned_at", { ascending: false });
+
+        if (error) {
+            console.warn(
+                "Venue assignments are not available yet:",
+                error.message
+            );
+            allVenueAssignments = [];
+            return;
+        }
+
+        allVenueAssignments = Array.isArray(data) ? data : [];
+    }
+    catch (error) {
+        console.warn(
+            "Venue assignment load error:",
+            error
+        );
+        allVenueAssignments = [];
+    }
+}
+
+function setupVenueAssignment() {
+    const modal = document.getElementById("venueAssignmentModal");
+    const close = document.getElementById("closeVenueAssignmentModal");
+    const cancel = document.getElementById("cancelVenueAssignment");
+    const save = document.getElementById("saveVenueAssignment");
+    const search = document.getElementById("assignmentVenueSearch");
+
+    if (!modal) {
+        return;
+    }
+
+    close?.addEventListener("click", closeVenueAssignmentModal);
+    cancel?.addEventListener("click", closeVenueAssignmentModal);
+    save?.addEventListener("click", saveVenueAssignments);
+
+    search?.addEventListener("input", event => {
+        assignmentSearch = safeValue(event.target.value).trim().toLowerCase();
+        renderAssignmentVenues();
+    });
+
+    modal.addEventListener("click", event => {
+        if (event.target === modal) {
+            closeVenueAssignmentModal();
+        }
+    });
+}
+
+async function openVenueAssignmentModal(enquiryId) {
+    const lead = allLeads.find(
+        item => String(item.id) === String(enquiryId)
+    );
+
+    const modal = document.getElementById("venueAssignmentModal");
+
+    if (!lead || !modal) {
+        return;
+    }
+
+    assignmentCurrentLead = lead;
+    assignmentSearch = "";
+
+    const search = document.getElementById("assignmentVenueSearch");
+    if (search) {
+        search.value = "";
+    }
+
+    setText(
+        "#assignmentCustomerSummary",
+        `${lead.customer_name || "Customer"} • ${lead.occasion || "Event"}`
+    );
+
+    const requirement = [
+        lead.location ? `Location: ${lead.location}` : null,
+        lead.guests ? `Guests: ${lead.guests}` : null,
+        lead.event_date ? `Event date: ${formatDate(lead.event_date)}` : null,
+        lead.budget_per_person ? `Budget: ₹${lead.budget_per_person}/person` : null
+    ].filter(Boolean).join("  •  ");
+
+    setText(
+        "#assignmentRequirementSummary",
+        requirement || "Select approved and verified venues to receive this enquiry."
+    );
+
+    const list = document.getElementById("venueAssignmentList");
+    if (list) {
+        list.innerHTML = '<div class="venue-assignment-loading">Loading approved & verified venues...</div>';
+    }
+
+    const message = document.getElementById("venueAssignmentMessage");
+    if (message) {
+        message.textContent = "";
+    }
+
+    const note = document.getElementById("venueAssignmentNote");
+    if (note) {
+        note.value = "";
+    }
+
+    modal.hidden = false;
+    document.body.style.overflow = "hidden";
+
+    await loadAssignmentVenueOptions();
+}
+
+async function loadAssignmentVenueOptions() {
+    const client = getSupabaseClient();
+    const list = document.getElementById("venueAssignmentList");
+
+    if (!client || !list || !assignmentCurrentLead) {
+        return;
+    }
+
+    const { data, error } = await client
+        .from("venues")
+        .select("*")
+        .eq("venue_status", "approved")
+        .eq("verification_status", "verified")
+        .order("venue_name", { ascending: true });
+
+    if (error) {
+        console.error("Assignment venue load error:", error);
+        list.innerHTML = `<div class="venue-assignment-empty">Unable to load approved and verified venues.</div>`;
+        showAssignmentMessage(error.message || "Unable to load venues.", "error");
+        return;
+    }
+
+    assignmentVenueRows = Array.isArray(data) ? data : [];
+    renderAssignmentVenues();
+}
+
+function isVenueAlreadyAssigned(venueId) {
+    if (!assignmentCurrentLead) {
+        return false;
+    }
+
+    return allVenueAssignments.some(item =>
+        String(item.enquiry_id) === String(assignmentCurrentLead.id) &&
+        String(item.venue_id) === String(venueId) &&
+        item.assignment_status !== "cancelled"
+    );
+}
+
+function isRecommendedAssignmentVenue(venue, lead) {
+    const venueCity = safeValue(venue.city).toLowerCase();
+    const leadLocation = safeValue(lead.location).toLowerCase();
+    const venueType = safeValue(venue.venue_type).toLowerCase();
+    const occasion = safeValue(lead.occasion).toLowerCase();
+
+    const locationMatch = venueCity && leadLocation && (
+        leadLocation.includes(venueCity) ||
+        venueCity.includes(leadLocation)
+    );
+
+    const guests = Number(lead.guests);
+    const maxCapacity = Number(venue.capacity_max);
+    const capacityMatch = Number.isFinite(guests) && Number.isFinite(maxCapacity)
+        ? maxCapacity >= guests
+        : false;
+
+    const typeMatch = (
+        occasion.includes("wedding") && venueType.includes("banquet")
+    ) || (
+        occasion.includes("party") && venueType.includes("party")
+    );
+
+    return Boolean(locationMatch || capacityMatch || typeMatch);
+}
+
+function renderAssignmentVenues() {
+    const list = document.getElementById("venueAssignmentList");
+    const count = document.getElementById("assignmentVenueCount");
+
+    if (!list || !assignmentCurrentLead) {
+        return;
+    }
+
+    const search = assignmentSearch;
+
+    const venues = assignmentVenueRows.filter(venue => {
+        if (!search) {
+            return true;
+        }
+
+        const searchable = [
+            venue.venue_name,
+            venue.contact_person,
+            venue.city,
+            venue.area,
+            venue.venue_type
+        ].map(safeValue).join(" ").toLowerCase();
+
+        return searchable.includes(search);
+    });
+
+    if (count) {
+        count.textContent = `${venues.length} venue${venues.length === 1 ? "" : "s"}`;
+    }
+
+    if (!venues.length) {
+        list.innerHTML = '<div class="venue-assignment-empty">No approved and verified venues match this search.</div>';
+        return;
+    }
+
+    list.innerHTML = venues.map(venue => {
+        const assigned = isVenueAlreadyAssigned(venue.id);
+        const recommended = isRecommendedAssignmentVenue(venue, assignmentCurrentLead);
+        const capacity = venue.capacity_min || venue.capacity_max
+            ? `${safeValue(venue.capacity_min) || "—"}–${safeValue(venue.capacity_max) || "—"}`
+            : "Capacity not set";
+        const price = venue.price_min_per_person || venue.price_max_per_person
+            ? `₹${safeValue(venue.price_min_per_person) || "—"}–₹${safeValue(venue.price_max_per_person) || "—"}/person`
+            : "Price not set";
+        const location = [venue.city, venue.area].filter(Boolean).join(" • ") || "Location not set";
+
+        return `
+            <label class="venue-assignment-item">
+                <input
+                    type="checkbox"
+                    class="venue-assignment-checkbox"
+                    value="${escapeHTML(venue.id)}"
+                    ${assigned ? "checked" : ""}
+                >
+                <div class="venue-assignment-item-main">
+                    <div class="venue-assignment-item-title">
+                        <strong>${escapeHTML(venue.venue_name || "Unnamed Venue")}</strong>
+                        ${recommended ? '<span class="venue-assignment-recommended">Recommended</span>' : ""}
+                    </div>
+                    <div class="venue-assignment-item-meta">
+                        <span>📍 ${escapeHTML(location)}</span>
+                        <span>👥 ${escapeHTML(capacity)}</span>
+                        <span>₹ ${escapeHTML(price.replace(/^₹\s*/, ""))}</span>
+                        <span>${escapeHTML(venue.venue_type || "Venue")}</span>
+                    </div>
+                </div>
+                <span class="venue-assignment-item-status">Verified</span>
+            </label>
+        `;
+    }).join("");
+}
+
+function showAssignmentMessage(message, type = "") {
+    const element = document.getElementById("venueAssignmentMessage");
+    if (!element) {
+        return;
+    }
+
+    element.textContent = safeValue(message);
+    element.className = `form-message ${type ? `assignment-${type}` : ""}`.trim();
+}
+
+async function saveVenueAssignments() {
+    const client = getSupabaseClient();
+    const saveButton = document.getElementById("saveVenueAssignment");
+
+    if (!client || !assignmentCurrentLead) {
+        return;
+    }
+
+    const selected = Array.from(
+        document.querySelectorAll(
+            ".venue-assignment-checkbox:checked"
+        )
+    ).map(input => input.value);
+
+    if (!selected.length) {
+        showAssignmentMessage(
+            "Select at least one approved and verified venue.",
+            "error"
+        );
+        return;
+    }
+
+    if (saveButton) {
+        saveButton.disabled = true;
+        saveButton.textContent = "Assigning...";
+    }
+
+    try {
+        const { data: userData } = await client.auth.getUser();
+        const assignedBy = userData?.user?.id || null;
+        const note = safeValue(
+            document.getElementById("venueAssignmentNote")?.value
+        ).trim() || null;
+
+        const rows = selected
+            .filter(venueId => !isVenueAlreadyAssigned(venueId))
+            .map(venueId => ({
+                enquiry_id: assignmentCurrentLead.id,
+                venue_id: venueId,
+                assignment_status: "assigned",
+                assignment_note: note,
+                assigned_by: assignedBy
+            }));
+
+        if (rows.length) {
+            const { error } = await client
+                .from("venue_enquiry_assignments")
+                .insert(rows);
+
+            if (error) {
+                throw error;
+            }
+        }
+
+        /* Keep a lightweight internal activity record where available. */
+        try {
+            await client
+                .from("crm_activity_log")
+                .insert({
+                    lead_id: assignmentCurrentLead.id,
+                    activity_type: "venue_assigned",
+                    description: `Venue assignment: ${selected.length} venue(s) assigned.`,
+                    new_value: selected.join(","),
+                    created_by: assignedBy
+                });
+        }
+        catch (activityError) {
+            console.warn(
+                "Assignment activity log was not written:",
+                activityError
+            );
+        }
+
+        await loadVenueAssignments();
+        applyFilters();
+        closeVenueAssignmentModal();
+        showToast(
+            `${rows.length || selected.length} venue${(rows.length || selected.length) === 1 ? "" : "s"} assigned successfully.`,
+            "success"
+        );
+    }
+    catch (error) {
+        console.error("Venue assignment save error:", error);
+        showAssignmentMessage(
+            error.message || "Unable to assign venues.",
+            "error"
+        );
+    }
+    finally {
+        if (saveButton) {
+            saveButton.disabled = false;
+            saveButton.textContent = "Assign Selected Venues";
+        }
+    }
+}
+
+function closeVenueAssignmentModal() {
+    const modal = document.getElementById("venueAssignmentModal");
+
+    if (!modal) {
+        return;
+    }
+
+    modal.hidden = true;
+    document.body.style.overflow = "";
+    assignmentCurrentLead = null;
+    assignmentVenueRows = [];
+    assignmentSearch = "";
+}
+
 /* =========================================================
    END VENUE MANAGEMENT — STAGE 2
    ========================================================= */
@@ -5201,6 +5624,8 @@ async function initializeCRM() {
     setupKeyboard();
 
     setupVenueManagement();
+
+    setupVenueAssignment();
 
     setupAuthListener();
 
