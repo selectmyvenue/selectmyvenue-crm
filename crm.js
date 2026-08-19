@@ -4533,6 +4533,38 @@ function renderVenues() {
                                 `
                         }
 
+                        ${
+                            safeValue(venue.venue_status) === "approved" &&
+                            safeValue(venue.verification_status) === "pending"
+                                ? `
+                                    <button
+                                        type="button"
+                                        class="venue-row-btn"
+                                        data-venue-action="verify"
+                                        data-venue-id="${escapeHTML(venue.id)}"
+                                    >
+                                        Verify
+                                    </button>
+                                `
+                                : ""
+                        }
+
+                        ${
+                            safeValue(venue.venue_status) !== "rejected" &&
+                            safeValue(venue.venue_status) !== "approved"
+                                ? `
+                                    <button
+                                        type="button"
+                                        class="venue-row-btn danger"
+                                        data-venue-action="reject"
+                                        data-venue-id="${escapeHTML(venue.id)}"
+                                    >
+                                        Reject
+                                    </button>
+                                `
+                                : ""
+                        }
+
                         <button
                             type="button"
                             class="venue-row-btn danger"
@@ -4971,7 +5003,38 @@ async function handleVenueTableClick(event) {
         await updateVenueStatus(
             venue,
             "approved",
-            "pending"
+            venue.verification_status || "pending"
+        );
+
+        return;
+    }
+
+    if (action === "verify") {
+
+        await updateVenueStatus(
+            venue,
+            "approved",
+            "verified"
+        );
+
+        return;
+    }
+
+    if (action === "reject") {
+
+        const confirmed =
+            window.confirm(
+                `Reject "${venue.venue_name}"?\n\nThe venue will remain in the CRM but will not be treated as an approved partner.`
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+        await updateVenueStatus(
+            venue,
+            "rejected",
+            "rejected"
         );
 
         return;
@@ -5040,12 +5103,19 @@ async function updateVenueStatus(
         return;
     }
 
-    showToast(
-        venueStatus === "approved"
-            ? "Venue approved."
-            : "Venue deactivated.",
-        "success"
-    );
+    let message = "Venue updated successfully.";
+
+    if (venueStatus === "approved" && verificationStatus === "verified") {
+        message = "Venue verified and approved.";
+    } else if (venueStatus === "approved") {
+        message = "Venue approved. Verification is still pending.";
+    } else if (venueStatus === "rejected") {
+        message = "Venue rejected.";
+    } else if (venueStatus === "inactive") {
+        message = "Venue deactivated.";
+    }
+
+    showToast(message, "success");
 
     await loadVenues();
 }
