@@ -80,7 +80,14 @@
 
 
         <div class="crm-header-title">
-            Lead Management
+            <span id="crmPageTitle">Lead Management</span>
+            <button
+                type="button"
+                id="venueManagementBtn"
+                class="venue-nav-btn"
+            >
+                🏨 Venue Management
+            </button>
         </div>
 
 
@@ -105,6 +112,111 @@
 
     </header>
 
+
+
+    <!-- =====================================================
+         VENUE MANAGEMENT — STAGE 2
+         Additive module. Existing customer CRM remains intact.
+    ====================================================== -->
+
+    <section id="venueManagementSection" class="venue-management-section" hidden>
+
+        <div class="venue-page-heading">
+            <div>
+                <div class="venue-kicker">PARTNER NETWORK</div>
+                <h1>Venue <span>Management</span></h1>
+                <p>Add, review and manage Select My Venue partner venues.</p>
+            </div>
+
+            <div class="venue-heading-actions">
+                <button type="button" id="backToLeadsBtn" class="secondary-btn">
+                    ← Customer Enquiries
+                </button>
+                <button type="button" id="addVenueBtn" class="primary-btn">
+                    <span>+</span> Add New Venue
+                </button>
+                <button type="button" id="refreshVenuesBtn" class="secondary-btn">
+                    <span>↻</span> Refresh
+                </button>
+            </div>
+        </div>
+
+        <div class="venue-stats-grid">
+            <div class="venue-stat-card">
+                <span>TOTAL VENUES</span>
+                <strong id="venueTotalCount">0</strong>
+            </div>
+            <div class="venue-stat-card">
+                <span>APPROVED</span>
+                <strong id="venueApprovedCount">0</strong>
+            </div>
+            <div class="venue-stat-card">
+                <span>PENDING</span>
+                <strong id="venuePendingCount">0</strong>
+            </div>
+            <div class="venue-stat-card">
+                <span>VERIFIED</span>
+                <strong id="venueVerifiedCount">0</strong>
+            </div>
+        </div>
+
+        <div class="venue-toolbar">
+            <input
+                type="search"
+                id="venueSearchInput"
+                class="venue-search-input"
+                placeholder="Search venue, contact, city or area..."
+                autocomplete="off"
+            >
+
+            <select id="venueStatusFilter" class="venue-filter-select">
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+                <option value="inactive">Inactive</option>
+                <option value="suspended">Suspended</option>
+            </select>
+
+            <select id="venueVerificationFilter" class="venue-filter-select">
+                <option value="all">All Verification</option>
+                <option value="pending">Pending</option>
+                <option value="verified">Verified</option>
+                <option value="rejected">Rejected</option>
+            </select>
+        </div>
+
+        <div class="venue-table-wrapper">
+            <table class="venue-table">
+                <thead>
+                    <tr>
+                        <th>VENUE</th>
+                        <th>CONTACT</th>
+                        <th>LOCATION</th>
+                        <th>TYPE</th>
+                        <th>CAPACITY</th>
+                        <th>PRICE</th>
+                        <th>STATUS</th>
+                        <th>VERIFICATION</th>
+                        <th>ACTION</th>
+                    </tr>
+                </thead>
+                <tbody id="venueTableBody">
+                    <tr>
+                        <td colspan="9" class="venue-loading-cell">
+                            Loading venues...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="venueEmptyState" class="venue-empty-state" hidden>
+            <div>🏨</div>
+            <h3>No venues found</h3>
+            <p>Add your first venue or change the filters.</p>
+        </div>
+    </section>
 
     <!-- =====================================================
          MAIN
@@ -479,6 +591,189 @@
 
     </main>
 
+
+
+    <!-- =====================================================
+         ADD / EDIT VENUE MODAL — STAGE 2
+    ====================================================== -->
+
+    <div id="venueModal" class="modal-overlay" hidden>
+        <div class="venue-modal-card" role="dialog" aria-modal="true" aria-labelledby="venueModalTitle">
+
+            <div class="modal-header">
+                <div>
+                    <div class="modal-kicker">VENUE PARTNER</div>
+                    <h2 id="venueModalTitle">Add New Venue</h2>
+                </div>
+                <button type="button" class="close-modal" id="closeVenueModal" aria-label="Close">×</button>
+            </div>
+
+            <form id="venueForm" class="venue-form">
+
+                <input type="hidden" id="venueId">
+
+                <div class="venue-form-section-title">BASIC INFORMATION</div>
+
+                <div class="venue-form-grid">
+                    <div class="venue-field venue-field-wide">
+                        <label for="venueName">VENUE NAME *</label>
+                        <input id="venueName" required maxlength="200" placeholder="e.g. Grand Celebration Banquet">
+                    </div>
+
+                    <div class="venue-field">
+                        <label for="venueType">VENUE TYPE</label>
+                        <select id="venueType">
+                            <option value="">Select type</option>
+                            <option>Banquet Hall</option>
+                            <option>Hotel</option>
+                            <option>Resort</option>
+                            <option>Lawn</option>
+                            <option>Farmhouse</option>
+                            <option>Party Hall</option>
+                            <option>Restaurant</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+
+                    <div class="venue-field venue-field-wide">
+                        <label for="venueDescription">DESCRIPTION</label>
+                        <textarea id="venueDescription" rows="3" maxlength="2000" placeholder="Short venue description"></textarea>
+                    </div>
+                </div>
+
+                <div class="venue-form-section-title">CONTACT</div>
+
+                <div class="venue-form-grid">
+                    <div class="venue-field">
+                        <label for="venueContactPerson">CONTACT PERSON</label>
+                        <input id="venueContactPerson" maxlength="150" placeholder="Owner / Manager">
+                    </div>
+                    <div class="venue-field">
+                        <label for="venueMobile">MOBILE</label>
+                        <input id="venueMobile" maxlength="30" placeholder="10-digit mobile number">
+                    </div>
+                    <div class="venue-field">
+                        <label for="venueWhatsapp">WHATSAPP</label>
+                        <input id="venueWhatsapp" maxlength="30" placeholder="WhatsApp number">
+                    </div>
+                    <div class="venue-field">
+                        <label for="venueEmail">EMAIL</label>
+                        <input id="venueEmail" type="email" maxlength="200" placeholder="venue@email.com">
+                    </div>
+                </div>
+
+                <div class="venue-form-section-title">LOCATION</div>
+
+                <div class="venue-form-grid">
+                    <div class="venue-field">
+                        <label for="venueCity">CITY</label>
+                        <input id="venueCity" maxlength="100" placeholder="Delhi / Gurgaon / Noida">
+                    </div>
+                    <div class="venue-field">
+                        <label for="venueArea">AREA</label>
+                        <input id="venueArea" maxlength="150" placeholder="Area / locality">
+                    </div>
+                    <div class="venue-field venue-field-wide">
+                        <label for="venueAddress">ADDRESS</label>
+                        <input id="venueAddress" maxlength="500" placeholder="Full venue address">
+                    </div>
+                    <div class="venue-field">
+                        <label for="venueState">STATE</label>
+                        <input id="venueState" maxlength="100" placeholder="Haryana">
+                    </div>
+                    <div class="venue-field">
+                        <label for="venuePincode">PINCODE</label>
+                        <input id="venuePincode" maxlength="10" placeholder="110001">
+                    </div>
+                    <div class="venue-field venue-field-wide">
+                        <label for="venueMaps">GOOGLE MAPS URL</label>
+                        <input id="venueMaps" type="url" maxlength="1000" placeholder="https://maps.google.com/...">
+                    </div>
+                </div>
+
+                <div class="venue-form-section-title">VENUE DETAILS</div>
+
+                <div class="venue-form-grid">
+                    <div class="venue-field">
+                        <label for="venueCapacityMin">MIN CAPACITY</label>
+                        <input id="venueCapacityMin" type="number" min="0" placeholder="50">
+                    </div>
+                    <div class="venue-field">
+                        <label for="venueCapacityMax">MAX CAPACITY</label>
+                        <input id="venueCapacityMax" type="number" min="0" placeholder="500">
+                    </div>
+                    <div class="venue-field">
+                        <label for="venuePriceMin">MIN PRICE / PERSON</label>
+                        <input id="venuePriceMin" type="number" min="0" step="0.01" placeholder="1000">
+                    </div>
+                    <div class="venue-field">
+                        <label for="venuePriceMax">MAX PRICE / PERSON</label>
+                        <input id="venuePriceMax" type="number" min="0" step="0.01" placeholder="2500">
+                    </div>
+                </div>
+
+                <div class="venue-check-grid">
+                    <label><input type="checkbox" id="venueFoodVeg" checked> Vegetarian</label>
+                    <label><input type="checkbox" id="venueFoodNonVeg"> Non-Vegetarian</label>
+                    <label><input type="checkbox" id="venueParking"> Parking</label>
+                    <label><input type="checkbox" id="venueRooms"> Rooms</label>
+                    <label><input type="checkbox" id="venueCatering"> Catering</label>
+                    <label><input type="checkbox" id="venueDecoration"> Decoration</label>
+                </div>
+
+                <div class="venue-form-section-title">ONLINE PRESENCE</div>
+
+                <div class="venue-form-grid">
+                    <div class="venue-field">
+                        <label for="venueWebsite">WEBSITE</label>
+                        <input id="venueWebsite" type="url" maxlength="1000" placeholder="https://...">
+                    </div>
+                    <div class="venue-field">
+                        <label for="venueInstagram">INSTAGRAM</label>
+                        <input id="venueInstagram" type="url" maxlength="1000" placeholder="https://instagram.com/...">
+                    </div>
+                    <div class="venue-field">
+                        <label for="venueFacebook">FACEBOOK</label>
+                        <input id="venueFacebook" type="url" maxlength="1000" placeholder="https://facebook.com/...">
+                    </div>
+                </div>
+
+                <div class="venue-form-section-title">ADMIN STATUS</div>
+
+                <div class="venue-form-grid">
+                    <div class="venue-field">
+                        <label for="venueStatus">VENUE STATUS</label>
+                        <select id="venueStatus">
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="suspended">Suspended</option>
+                        </select>
+                    </div>
+                    <div class="venue-field">
+                        <label for="venueVerification">VERIFICATION</label>
+                        <select id="venueVerification">
+                            <option value="pending">Pending</option>
+                            <option value="verified">Verified</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="venue-field venue-field-check">
+                        <label>
+                            <input type="checkbox" id="venueFeatured">
+                            Featured venue
+                        </label>
+                    </div>
+                </div>
+
+                <div class="venue-form-actions">
+                    <button type="button" id="cancelVenueBtn" class="secondary-btn">Cancel</button>
+                    <button type="submit" id="saveVenueBtn" class="primary-btn">Save Venue</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- =====================================================
          VIEW / EDIT LEAD MODAL
