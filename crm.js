@@ -2713,6 +2713,8 @@ function populateLeadModal(
         "#detailEventType",
         lead.occasion
     );
+
+    renderLeadVenueAssignments(lead.id);
 }
 
 /* =========================================================
@@ -4205,6 +4207,7 @@ let venueVerificationFilter = "all";
    STAGE 3 — VENUE ENQUIRY ASSIGNMENTS
    ========================================================= */
 let allVenueAssignments = [];
+let assignedVenueDetails = {};
 let assignmentCurrentLead = null;
 let assignmentVenueRows = [];
 let assignmentSearch = "";
@@ -5203,7 +5206,9 @@ async function deleteVenue(venue) {
 
 function getAssignmentCount(enquiryId) {
     return allVenueAssignments.filter(
-        item => String(item.enquiry_id) === String(enquiryId)
+        item =>
+            String(item.enquiry_id) === String(enquiryId) &&
+            safeValue(item.assignment_status) !== "cancelled"
     ).length;
 }
 
@@ -5212,6 +5217,7 @@ async function loadVenueAssignments() {
 
     if (!client) {
         allVenueAssignments = [];
+        assignedVenueDetails = {};
         return;
     }
 
@@ -5227,10 +5233,43 @@ async function loadVenueAssignments() {
                 error.message
             );
             allVenueAssignments = [];
+            assignedVenueDetails = {};
             return;
         }
 
         allVenueAssignments = Array.isArray(data) ? data : [];
+        assignedVenueDetails = {};
+
+        const venueIds = [
+            ...new Set(
+                allVenueAssignments
+                    .map(item => item.venue_id)
+                    .filter(Boolean)
+                    .map(String)
+            )
+        ];
+
+        if (venueIds.length) {
+            const { data: venues, error: venueError } = await client
+                .from("venues")
+                .select("id, venue_name, city, area, venue_type")
+                .in("id", venueIds);
+
+            if (venueError) {
+                console.warn(
+                    "Assigned venue details could not be loaded:",
+                    venueError.message
+                );
+            } else {
+                (venues || []).forEach(venue => {
+                    assignedVenueDetails[String(venue.id)] = venue;
+                });
+            }
+        }
+
+        if (currentLead) {
+            renderLeadVenueAssignments(currentLead.id);
+        }
     }
     catch (error) {
         console.warn(
@@ -5238,111 +5277,212 @@ async function loadVenueAssignments() {
             error
         );
         allVenueAssignments = [];
+        assignedVenueDetails = {};
     }
 }
 
-function setupVenueAssignment() {
+function getAssignmentStatusLabel(status) {
+    const labels = {
+        assigned: "Assigned",
+        viewed: "Viewed",
+        contacted: "Contacted",
+        detailed_shared: "Details Shared",
+        follow_up: "Follow-up",
+        site_visit: "Site Visit",
+        negotiation: "Negotiation",
+        booked: "Booked",
+        lost: "Lost",
+        cancelled: "Cancelled"
+    };
 
-    const modal = document.getElementById("venueAssignmentModal");
+    return labels[safeValue(status)] || "Assigned";
+}
 
-    if (!modal) {
-        console.warn("Venue assignment modal not found.");
+function getAssignmentStatusOptions() {
+    return [
+        { value: "assigned", label: "Assigned" },
+        { value: "viewed", label: "Viewed" },
+        { value: "contacted", label: "Contacted" },
+        { value: "detailed_shared", label: "Details Shared" },
+        { value: "follow_up", label: "Follow-up" },
+        { value: "site_visit", label: "Site Visit" },
+        { value: "negotiation", label: "Negotiation" },
+        { value: "booked", label: "Booked" },
+        { value: "lost", label: "Lost" },
+        { value: "cancelled", label: "Cancelled" }
+    ];
+}
+
+function renderLeadVenueAssignments(enquiryId) {
+    const container = document.getElementById("leadVenueAssignments");
+    const count = document.getElementById("leadVenueAssignmentCount");
+
+    if (!container) {
         return;
     }
 
-    /*
-     * Use event delegation for the assignment buttons.
-     * This keeps the button working even if CRM content is re-rendered.
-     */
-    document.addEventListener("click", function venueAssignmentClickHandler(event) {
+    const assignments = allVenueAssignments.filter(
+        item => String(item.enquiry_id) === String(enquiryId)
+    );
 
-        const saveButton =
-            event.target.closest("#saveVenueAssignment");
+    const activeAssignments = assignments.filter(
+        item => safeValue(item.assignment_status) !== "cancelled"
+    );
 
-        if (saveButton) {
+    if (count) {
+        count.textContent = `${activeAssignments.length} active`;
+    }
 
-            event.preventDefault();
-            event.stopPropagation();
+    if (!assignments.length) {
+        container.innerHTML = `
+            <div class="lead-venue-empty">
+                No venues assigned to this enquiry yet.
+                Use <strong>Assign Venue</strong> to send this enquiry to a verified partner.
+            </div>
+        `;
+        return;
+    }
 
-            console.log(
-                "Assign Selected Venues clicked."
-            );
+    container.innerHTML = assignments.map(assignment => {
+        const venue = assignedVenueDetails[String(assignment.venue_id)] || {};
+        const status = safeValue(assignment.assignment_status) || "assigned";
+        const location = [venue.city, venue.area].filter(Boolean).join(" • ") || "Location not set";
+        const assignedAt = assignment.assigned_at
+            ? formatDateTime(assignment.assigned_at)
+            : "—";
+        const isCancelled = status === "cancelled";
 
-            saveVenueAssignments();
+        return `
+            <div class="lead-venue-assignment-card ${isCancelled ? "is-cancelled" : ""}" data-assignment-id="${escapeHTML(assignment.id)}">
+                <div class="lead-venue-assignment-main">
+                    <div class="lead-venue-assignment-title">
+                        <strong>🏨 ${escapeHTML(venue.venue_name || "Assigned Venue")}</strong>
+                        <span>${escapeHTML(location)}</span>
+                    </div>
+                    <div class="lead-venue-assignment-meta">
+                        <span>Assigned: ${escapeHTML(assignedAt)}</span>
+                        ${assignment.assignment_note ? `<span>Note: ${escapeHTML(assignment.assignment_note)}</span>` : ""}
+                    </div>
+                </div>
+                <div class="lead-venue-assignment-controls">
+                    <select
+                        class="venue-assignment-status-select"
+                        data-assignment-id="${escapeHTML(assignment.id)}"
+                        aria-label="Assignment status for ${escapeHTML(venue.venue_name || "venue")}"
+                    >
+                        ${getAssignmentStatusOptions().map(option => `
+                            <option value="${option.value}" ${option.value === status ? "selected" : ""}>${escapeHTML(option.label)}</option>
+                        `).join("")}
+                    </select>
+                    ${!isCancelled ? `
+                        <button
+                            type="button"
+                            class="venue-assignment-remove-btn"
+                            data-assignment-action="cancel"
+                            data-assignment-id="${escapeHTML(assignment.id)}"
+                            title="Cancel this venue assignment"
+                        >
+                            Remove
+                        </button>
+                    ` : ""}
+                </div>
+            </div>
+        `;
+    }).join("");
+}
 
-            return;
+async function updateVenueAssignmentStatus(assignmentId, status) {
+    const client = getSupabaseClient();
+
+    if (!client || !assignmentId) {
+        return;
+    }
+
+    try {
+        const { error } = await client
+            .from("venue_enquiry_assignments")
+            .update({ assignment_status: status })
+            .eq("id", assignmentId);
+
+        if (error) {
+            throw error;
         }
 
-        const closeButton =
-            event.target.closest("#closeVenueAssignmentModal");
+        await loadVenueAssignments();
+        applyFilters();
 
-        if (closeButton) {
-
-            event.preventDefault();
-
-            closeVenueAssignmentModal();
-
-            return;
+        if (currentLead) {
+            renderLeadVenueAssignments(currentLead.id);
         }
 
-        const cancelButton =
-            event.target.closest("#cancelVenueAssignment");
-
-        if (cancelButton) {
-
-            event.preventDefault();
-
-            closeVenueAssignmentModal();
-
-            return;
-        }
-
-    }, false);
-
-
-    /*
-     * Venue search
-     */
-    const search =
-        document.getElementById(
-            "assignmentVenueSearch"
+        showToast(
+            `Venue assignment updated to ${getAssignmentStatusLabel(status)}.`,
+            "success"
         );
-
-    search?.addEventListener(
-        "input",
-        event => {
-
-            assignmentSearch =
-                safeValue(
-                    event.target.value
-                )
-                .trim()
-                .toLowerCase();
-
-            renderAssignmentVenues();
-
+    }
+    catch (error) {
+        console.error("Venue assignment status update error:", error);
+        showToast(
+            error.message || "Unable to update venue assignment.",
+            "error"
+        );
+        if (currentLead) {
+            renderLeadVenueAssignments(currentLead.id);
         }
-    );
+    }
+}
 
+async function cancelVenueAssignment(assignmentId) {
+    return updateVenueAssignmentStatus(assignmentId, "cancelled");
+}
 
-    /*
-     * Close when clicking outside the modal
-     */
-    modal.addEventListener(
-        "click",
-        event => {
+function setupVenueAssignment() {
+    const modal = document.getElementById("venueAssignmentModal");
+    const close = document.getElementById("closeVenueAssignmentModal");
+    const cancel = document.getElementById("cancelVenueAssignment");
+    const save = document.getElementById("saveVenueAssignment");
+    const search = document.getElementById("assignmentVenueSearch");
 
-            if (
-                event.target === modal
-            ) {
+    if (!modal) {
+        return;
+    }
 
-                closeVenueAssignmentModal();
+    close?.addEventListener("click", closeVenueAssignmentModal);
+    cancel?.addEventListener("click", closeVenueAssignmentModal);
+    save?.addEventListener("click", saveVenueAssignments);
 
-            }
+    search?.addEventListener("input", event => {
+        assignmentSearch = safeValue(event.target.value).trim().toLowerCase();
+        renderAssignmentVenues();
+    });
 
+    modal.addEventListener("click", event => {
+        if (event.target === modal) {
+            closeVenueAssignmentModal();
         }
-    );
+    });
 
+    document.addEventListener("change", event => {
+        const select = event.target.closest(".venue-assignment-status-select");
+        if (!select) {
+            return;
+        }
+
+        updateVenueAssignmentStatus(
+            select.dataset.assignmentId,
+            select.value
+        );
+    });
+
+    document.addEventListener("click", event => {
+        const removeButton = event.target.closest("[data-assignment-action='cancel']");
+        if (!removeButton) {
+            return;
+        }
+
+        event.preventDefault();
+        cancelVenueAssignment(removeButton.dataset.assignmentId);
+    });
 }
 
 async function openVenueAssignmentModal(enquiryId) {
@@ -5549,256 +5689,99 @@ function showAssignmentMessage(message, type = "") {
 }
 
 async function saveVenueAssignments() {
+    const client = getSupabaseClient();
+    const saveButton = document.getElementById("saveVenueAssignment");
 
-    const client =
-        getSupabaseClient();
-
-    const saveButton =
-        document.getElementById(
-            "saveVenueAssignment"
-        );
-
-    if (
-        !client ||
-        !assignmentCurrentLead
-    ) {
-
-        showAssignmentMessage(
-            "Unable to assign venues. Please refresh the CRM.",
-            "error"
-        );
-
+    if (!client || !assignmentCurrentLead) {
         return;
     }
 
-
-    /*
-     * Get selected venues
-     */
-    const selected =
-        Array.from(
-            document.querySelectorAll(
-                ".venue-assignment-checkbox:checked"
-            )
+    const selected = Array.from(
+        document.querySelectorAll(
+            ".venue-assignment-checkbox:checked"
         )
-        .map(
-            input => input.value
-        );
-
+    ).map(input => input.value);
 
     if (!selected.length) {
-
         showAssignmentMessage(
-            "Please select at least one venue.",
+            "Select at least one approved and verified venue.",
             "error"
         );
-
         return;
     }
 
-
-    /*
-     * Prevent double click
-     */
     if (saveButton) {
-
         saveButton.disabled = true;
-        saveButton.textContent =
-            "Assigning...";
-
+        saveButton.textContent = "Assigning...";
     }
-
 
     try {
+        const { data: userData } = await client.auth.getUser();
+        const assignedBy = userData?.user?.id || null;
+        const note = safeValue(
+            document.getElementById("venueAssignmentNote")?.value
+        ).trim() || null;
 
-        /*
-         * Current logged-in CRM user
-         */
-        const {
-            data: userData,
-            error: userError
-        } =
-            await client.auth.getUser();
+        const rows = selected
+            .filter(venueId => !isVenueAlreadyAssigned(venueId))
+            .map(venueId => ({
+                enquiry_id: assignmentCurrentLead.id,
+                venue_id: venueId,
+                assignment_status: "assigned",
+                assignment_note: note,
+                assigned_by: assignedBy
+            }));
 
+        if (rows.length) {
+            const { error } = await client
+                .from("venue_enquiry_assignments")
+                .insert(rows);
 
-        if (userError) {
-            throw userError;
+            if (error) {
+                throw error;
+            }
         }
 
-
-        const assignedBy =
-            userData?.user?.id || null;
-
-
-        if (!assignedBy) {
-
-            throw new Error(
-                "CRM session expired. Please refresh and log in again."
-            );
-
-        }
-
-
-        /*
-         * Assignment note
-         */
-        const note =
-            safeValue(
-                document.getElementById(
-                    "venueAssignmentNote"
-                )?.value
-            ).trim() || null;
-
-
-        /*
-         * Remove venues that are already assigned
-         */
-        const newVenueIds =
-            selected.filter(
-                venueId =>
-                    !isVenueAlreadyAssigned(
-                        venueId
-                    )
-            );
-
-
-        if (!newVenueIds.length) {
-
-            showAssignmentMessage(
-                "The selected venues are already assigned to this enquiry.",
-                "error"
-            );
-
-            return;
-        }
-
-
-        /*
-         * Build assignment rows
-         */
-        const rows =
-            newVenueIds.map(
-                venueId => ({
-
-                    enquiry_id:
-                        Number(
-                            assignmentCurrentLead.id
-                        ),
-
-                    venue_id:
-                        venueId,
-
-                    assignment_status:
-                        "assigned",
-
-                    assignment_note:
-                        note,
-
-                    assigned_by:
-                        assignedBy
-
-                })
-            );
-
-
-        console.log(
-            "Saving venue assignments:",
-            rows
-        );
-
-
-        /*
-         * INSERT INTO venue_enquiry_assignments
-         */
-        const {
-            data,
-            error
-        } =
+        /* Keep a lightweight internal activity record where available. */
+        try {
             await client
-                .from(
-                    "venue_enquiry_assignments"
-                )
-                .insert(rows)
-                .select();
-
-
-        if (error) {
-
-            console.error(
-                "Venue assignment Supabase error:",
-                error
+                .from("crm_activity_log")
+                .insert({
+                    lead_id: assignmentCurrentLead.id,
+                    activity_type: "venue_assigned",
+                    description: `Venue assignment: ${selected.length} venue(s) assigned.`,
+                    new_value: selected.join(","),
+                    created_by: assignedBy
+                });
+        }
+        catch (activityError) {
+            console.warn(
+                "Assignment activity log was not written:",
+                activityError
             );
-
-            throw error;
-
         }
 
-
-        console.log(
-            "Venue assignments saved:",
-            data
-        );
-
-
-        /*
-         * Reload assignments
-         */
         await loadVenueAssignments();
-
-
-        /*
-         * Refresh enquiry display
-         */
         applyFilters();
-
-
-        /*
-         * Close modal
-         */
         closeVenueAssignmentModal();
-
-
-        /*
-         * Success message
-         */
         showToast(
-            `${newVenueIds.length} venue${
-                newVenueIds.length === 1
-                    ? ""
-                    : "s"
-            } assigned successfully.`,
+            `${rows.length || selected.length} venue${(rows.length || selected.length) === 1 ? "" : "s"} assigned successfully.`,
             "success"
         );
-
     }
     catch (error) {
-
-        console.error(
-            "Venue assignment save error:",
-            error
-        );
-
-
+        console.error("Venue assignment save error:", error);
         showAssignmentMessage(
-            error?.message ||
-            "Unable to assign venues.",
+            error.message || "Unable to assign venues.",
             "error"
         );
-
     }
     finally {
-
         if (saveButton) {
-
             saveButton.disabled = false;
-
-            saveButton.textContent =
-                "Assign Selected Venues";
-
+            saveButton.textContent = "Assign Selected Venues";
         }
-
     }
-
 }
 
 function closeVenueAssignmentModal() {
