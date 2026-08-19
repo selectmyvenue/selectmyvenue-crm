@@ -5333,6 +5333,12 @@ function renderLeadVenueAssignments(enquiryId) {
         count.textContent = `${activeAssignments.length} active`;
     }
 
+    const assignButton = document.getElementById("assignAnotherVenueBtn");
+    if (assignButton) {
+        assignButton.disabled = !enquiryId;
+        assignButton.onclick = () => openVenueAssignmentModal(enquiryId);
+    }
+
     if (!assignments.length) {
         container.innerHTML = `
             <div class="lead-venue-empty">
@@ -5350,6 +5356,9 @@ function renderLeadVenueAssignments(enquiryId) {
         const assignedAt = assignment.assigned_at
             ? formatDateTime(assignment.assigned_at)
             : "—";
+        const updatedAt = assignment.updated_at
+            ? formatDateTime(assignment.updated_at)
+            : null;
         const isCancelled = status === "cancelled";
 
         return `
@@ -5361,6 +5370,7 @@ function renderLeadVenueAssignments(enquiryId) {
                     </div>
                     <div class="lead-venue-assignment-meta">
                         <span>Assigned: ${escapeHTML(assignedAt)}</span>
+                        ${updatedAt ? `<span>Updated: ${escapeHTML(updatedAt)}</span>` : ""}
                         ${assignment.assignment_note ? `<span>Note: ${escapeHTML(assignment.assignment_note)}</span>` : ""}
                     </div>
                 </div>
@@ -5481,7 +5491,10 @@ function setupVenueAssignment() {
         }
 
         event.preventDefault();
-        cancelVenueAssignment(removeButton.dataset.assignmentId);
+        const ok = window.confirm("Cancel this venue assignment? The assignment history will be retained.");
+        if (ok) {
+            cancelVenueAssignment(removeButton.dataset.assignmentId);
+        }
     });
 }
 
