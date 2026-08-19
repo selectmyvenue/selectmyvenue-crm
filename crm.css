@@ -3669,3 +3669,286 @@ textarea:focus-visible {
         padding: 0 15px 18px;
     }
 }
+
+/* =========================================================
+   STAGE 3 — VENUE ASSIGNMENT MODAL
+   ========================================================= */
+.venue-assignment-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 22px;
+    background: rgba(12, 31, 28, .42);
+    backdrop-filter: blur(5px);
+}
+
+.venue-assignment-modal[hidden] {
+    display: none !important;
+}
+
+.venue-assignment-card {
+    width: min(820px, 100%);
+    max-height: min(88vh, 760px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid #dcebe6;
+    border-radius: 18px;
+    box-shadow: 0 28px 70px rgba(0, 72, 60, .20);
+}
+
+.venue-assignment-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 22px 24px 16px;
+    border-bottom: 1px solid #edf3f1;
+}
+
+.venue-assignment-header h2 {
+    margin: 3px 0 5px;
+    color: #123c35;
+    font-size: 25px;
+    line-height: 1.15;
+}
+
+.venue-assignment-header h2 span {
+    color: #0c927f;
+}
+
+.venue-assignment-header p {
+    margin: 0;
+    color: #71817d;
+    font-size: 13px;
+}
+
+.venue-assignment-requirement {
+    margin: 14px 20px 8px;
+    padding: 12px 14px;
+    border: 1px solid #d7ece6;
+    border-radius: 12px;
+    background: #f4fbf9;
+    color: #315b53;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.venue-assignment-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px 12px;
+}
+
+.venue-assignment-toolbar input {
+    flex: 1;
+    min-width: 0;
+    height: 42px;
+    padding: 0 13px;
+    border: 1px solid #d9e7e3;
+    border-radius: 10px;
+    outline: none;
+    color: #28453f;
+    background: #fff;
+}
+
+.venue-assignment-toolbar input:focus {
+    border-color: #75cbbd;
+    box-shadow: 0 0 0 3px rgba(13, 149, 136, .08);
+}
+
+.venue-assignment-toolbar span {
+    white-space: nowrap;
+    color: #70807b;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.venue-assignment-list {
+    min-height: 120px;
+    max-height: 380px;
+    overflow: auto;
+    padding: 0 20px 10px;
+}
+
+.venue-assignment-loading,
+.venue-assignment-empty {
+    padding: 35px 18px;
+    text-align: center;
+    color: #778783;
+    font-size: 13px;
+}
+
+.venue-assignment-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 12px;
+    margin-bottom: 8px;
+    border: 1px solid #e4eeeb;
+    border-radius: 12px;
+    background: #fff;
+    transition: .15s ease;
+}
+
+.venue-assignment-item:hover {
+    border-color: #b8ded5;
+    background: #fbfefd;
+}
+
+.venue-assignment-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+    accent-color: #0d9588;
+}
+
+.venue-assignment-item-main {
+    min-width: 0;
+    flex: 1;
+}
+
+.venue-assignment-item-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.venue-assignment-item-title strong {
+    color: #173d36;
+    font-size: 14px;
+}
+
+.venue-assignment-recommended {
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: #e5f7f1;
+    color: #0a7d6c;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.venue-assignment-item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin-top: 4px;
+    color: #72817d;
+    font-size: 11px;
+}
+
+.venue-assignment-item-status {
+    color: #148064;
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.venue-assignment-note {
+    padding: 8px 20px 0;
+}
+
+.venue-assignment-note label {
+    display: block;
+    margin-bottom: 6px;
+    color: #63736e;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: .08em;
+}
+
+.venue-assignment-note textarea {
+    width: 100%;
+    min-height: 70px;
+    padding: 10px 12px;
+    resize: vertical;
+    border: 1px solid #d9e7e3;
+    border-radius: 10px;
+    outline: none;
+    color: #29443f;
+    font: inherit;
+    font-size: 12px;
+}
+
+.venue-assignment-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+    padding: 16px 20px 20px;
+}
+
+.venue-assignment-actions .save-btn:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.venue-assign-btn {
+    width: 100%;
+    min-height: 34px;
+    margin-top: 7px;
+    padding: 0 10px;
+    border: 1px solid #bfe1d9;
+    border-radius: 9px;
+    background: #f4fbf9;
+    color: #087f6c;
+    font-size: 11px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.venue-assign-btn:hover {
+    background: #e5f6f1;
+    border-color: #8fcfc2;
+}
+
+.venue-assignment-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 17px;
+    height: 17px;
+    margin-left: 4px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: #0d9588;
+    color: #fff;
+    font-size: 9px;
+}
+
+@media (max-width: 650px) {
+    .venue-assignment-modal {
+        padding: 8px;
+    }
+
+    .venue-assignment-card {
+        max-height: 94vh;
+        border-radius: 14px;
+    }
+
+    .venue-assignment-header {
+        padding: 18px 16px 14px;
+    }
+
+    .venue-assignment-toolbar,
+    .venue-assignment-list,
+    .venue-assignment-note {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .venue-assignment-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .venue-assignment-actions {
+        padding: 14px 16px 16px;
+    }
+}
