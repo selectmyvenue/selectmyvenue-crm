@@ -3952,3 +3952,145 @@ textarea:focus-visible {
         padding: 14px 16px 16px;
     }
 }
+
+/* =========================================================
+   STAGE 4 — ASSIGNED VENUES / ASSIGNMENT STATUS
+   ========================================================= */
+
+.assigned-venues-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.assigned-venue-count {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: #edf8f4;
+    color: #16734a;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .03em;
+}
+
+.lead-venue-assignments {
+    display: grid;
+    gap: 10px;
+    margin: 10px 0 20px;
+}
+
+.lead-venue-empty {
+    padding: 14px 15px;
+    border: 1px dashed #d7e2dd;
+    border-radius: 12px;
+    background: #fafcfb;
+    color: #718078;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.lead-venue-assignment-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 13px 14px;
+    border: 1px solid #e3ebe7;
+    border-radius: 13px;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(20, 55, 40, .04);
+}
+
+.lead-venue-assignment-card.is-cancelled {
+    opacity: .65;
+    background: #f8faf9;
+}
+
+.lead-venue-assignment-main {
+    min-width: 0;
+    flex: 1;
+}
+
+.lead-venue-assignment-title {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+}
+
+.lead-venue-assignment-title strong {
+    color: #18352a;
+    font-size: 13px;
+}
+
+.lead-venue-assignment-title span {
+    color: #7a8580;
+    font-size: 11px;
+}
+
+.lead-venue-assignment-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin-top: 6px;
+    color: #7a8580;
+    font-size: 10px;
+}
+
+.lead-venue-assignment-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.venue-assignment-status-select {
+    min-width: 130px;
+    border: 1px solid #dfe7e2;
+    border-radius: 9px;
+    background: #fff;
+    color: #24463a;
+    padding: 8px 10px;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    outline: none;
+}
+
+.venue-assignment-status-select:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 3px rgba(25, 135, 84, .08);
+}
+
+.venue-assignment-remove-btn {
+    border: 1px solid #f0d8d8;
+    border-radius: 9px;
+    background: #fff7f7;
+    color: #a33a3a;
+    padding: 8px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.venue-assignment-remove-btn:hover {
+    background: #fff0f0;
+}
+
+@media (max-width: 760px) {
+    .lead-venue-assignment-card {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .lead-venue-assignment-controls {
+        width: 100%;
+    }
+
+    .venue-assignment-status-select {
+        flex: 1;
+    }
+}
