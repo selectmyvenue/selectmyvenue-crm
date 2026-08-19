@@ -1670,6 +1670,78 @@
     </div>
 
 
+    <!-- =====================================================
+         VENUE ASSIGNMENT MODAL — STAGE 3
+    ====================================================== -->
+
+    <div
+        id="venueAssignmentModal"
+        class="venue-assignment-modal"
+        hidden
+    >
+        <div class="venue-assignment-card">
+
+            <div class="venue-assignment-header">
+                <div>
+                    <div class="venue-kicker">INTERNAL ASSIGNMENT</div>
+                    <h2>Assign <span>Venues</span></h2>
+                    <p id="assignmentCustomerSummary">Customer enquiry</p>
+                </div>
+
+                <button
+                    type="button"
+                    id="closeVenueAssignmentModal"
+                    class="close-modal"
+                    aria-label="Close"
+                >×</button>
+            </div>
+
+            <div class="venue-assignment-requirement" id="assignmentRequirementSummary">
+                Select approved and verified venues to receive this enquiry.
+            </div>
+
+            <div class="venue-assignment-toolbar">
+                <input
+                    type="search"
+                    id="assignmentVenueSearch"
+                    placeholder="Search approved & verified venues..."
+                    autocomplete="off"
+                >
+                <span id="assignmentVenueCount">0 venues</span>
+            </div>
+
+            <div id="venueAssignmentList" class="venue-assignment-list">
+                <div class="venue-assignment-loading">Loading venues...</div>
+            </div>
+
+            <div class="venue-assignment-note">
+                <label for="venueAssignmentNote">INTERNAL ASSIGNMENT NOTE</label>
+                <textarea
+                    id="venueAssignmentNote"
+                    rows="3"
+                    placeholder="Optional note for the selected venue partners..."
+                ></textarea>
+            </div>
+
+            <div id="venueAssignmentMessage" class="form-message" role="status" aria-live="polite"></div>
+
+            <div class="venue-assignment-actions">
+                <button
+                    type="button"
+                    id="cancelVenueAssignment"
+                    class="cancel-btn"
+                >Cancel</button>
+                <button
+                    type="button"
+                    id="saveVenueAssignment"
+                    class="save-btn"
+                >Assign Selected Venues</button>
+            </div>
+
+        </div>
+    </div>
+
+
 </div>
 
 </body>
