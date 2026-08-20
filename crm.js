@@ -196,93 +196,33 @@ async function checkCRMAuth() {
             return null;
         }
 
+        /* -------------------------------------------------
+           MASTER CRM = STAFF ONLY
 
-        /* =====================================================
-           MASTER CRM ACCESS CONTROL
-           
-           Only active staff/admin users are allowed here.
+           Verify the authenticated user against the existing
+           SECURITY DEFINER staff-access function.
+        ------------------------------------------------- */
 
-           Partner accounts must NEVER enter Master CRM.
-        ===================================================== */
+        const { data: isActiveStaff, error: staffError } =
+            await client.rpc("smv_is_active_staff");
 
-        const {
-            data: profile,
-            error: profileError
-        } =
-            await client
-                .from("profiles")
-                .select(
-                    "user_id, role, is_active"
-                )
-                .eq(
-                    "user_id",
-                    session.user.id
-                )
-                .maybeSingle();
-
-
-        if (profileError) {
-
-            console.error(
-                "Master CRM profile check error:",
-                profileError
-            );
-
+        if (staffError) {
+            console.error("Staff access verification error:", staffError);
             await client.auth.signOut();
-
-            window.location.href =
-                "login.html";
-
+            window.location.href = "login.html?error=staff_verification";
             return null;
         }
 
-
-        const role =
-            String(
-                profile?.role || ""
-            )
-                .trim()
-                .toLowerCase();
-
-
-        const isActive =
-            profile?.is_active === true;
-
-
-        const allowedMasterRoles = [
-            "staff",
-            "admin"
-        ];
-
-
-        if (
-            !profile ||
-            !isActive ||
-            !allowedMasterRoles.includes(role)
-        ) {
-
-            console.warn(
-                "Unauthorized account attempted to access Master CRM:",
-                session.user.email,
-                role
-            );
-
-
+        if (isActiveStaff !== true) {
+            console.warn("Authenticated user is not an active staff member.");
             await client.auth.signOut();
-
-
-            window.location.href =
-                "login.html?access=denied";
-
-
+            window.location.href = "login.html?error=staff_only";
             return null;
         }
-
 
         updateStaffName(
             session.user
         );
-
 
         return session;
 
@@ -296,6 +236,28 @@ async function checkCRMAuth() {
 
         return null;
     }
+}
+
+function updateStaffName(user) {
+
+    const element =
+        document.getElementById(
+            "staffName"
+        );
+
+    if (!element || !user) {
+        return;
+    }
+
+    const metadata =
+        user.user_metadata || {};
+
+    element.textContent =
+        metadata.full_name ||
+        metadata.name ||
+        metadata.display_name ||
+        user.email ||
+        "CRM User";
 }
 
 /* =========================================================
@@ -3255,6 +3217,30 @@ function closeLeadModal() {
 }
 
 /* =========================================================
+   CANCEL VIEW / EDIT LEAD MODAL
+   ========================================================= */
+
+function setupLeadModalCancel() {
+
+    const button =
+        document.getElementById(
+            "cancelLeadEdit"
+        );
+
+    if (!button) {
+        return;
+    }
+
+    button.addEventListener(
+        "click",
+        event => {
+            event.preventDefault();
+            closeLeadModal();
+        }
+    );
+}
+
+/* =========================================================
    ADD ENQUIRY MODAL
    ========================================================= */
 
@@ -5931,6 +5917,8 @@ async function initializeCRM() {
     setupAddForm();
 
     setupModalSave();
+
+    setupLeadModalCancel();
 
     setupLogout();
 
