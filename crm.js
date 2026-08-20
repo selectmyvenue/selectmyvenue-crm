@@ -208,12 +208,28 @@ async function checkCRMAuth() {
 
         if (staffError) {
             console.error("Staff access verification error:", staffError);
-            await client.auth.signOut();
-            window.location.href = "login.html?error=staff_verification";
+
+            /*
+               Do not immediately sign the user out here. A transient
+               RPC/schema-cache/network error used to create a login
+               loop: login succeeded, dashboard loaded, verification
+               failed, session was signed out, and the user was sent
+               back to login.
+            */
+            showToast(
+                "Unable to verify CRM access. Please refresh and try again.",
+                "error"
+            );
             return null;
         }
 
-        if (isActiveStaff !== true) {
+        const staffAllowed =
+            isActiveStaff === true ||
+            isActiveStaff === "true" ||
+            isActiveStaff === 1 ||
+            isActiveStaff === "1";
+
+        if (!staffAllowed) {
             console.warn("Authenticated user is not an active staff member.");
             await client.auth.signOut();
             window.location.href = "login.html?error=staff_only";
