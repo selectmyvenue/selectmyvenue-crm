@@ -961,37 +961,111 @@
        EXISTING SESSION
     ====================================================== */
 
-    (async function() {
+    (async function checkExistingMasterSession() {
 
-        try {
+    try {
 
-            const result =
-                await supabaseLogin
-                    .auth
-                    .getSession();
+        const result =
+            await supabaseLogin
+                .auth
+                .getSession();
 
 
-            if (
-                result.data &&
-                result.data.session
-            ) {
+        const session =
+            result?.data?.session;
 
-                window.location.href =
-                    "./dashboard.html";
 
-            }
+        if (
+            !session ||
+            !session.user
+        ) {
+            return;
+        }
 
-        } catch (error) {
 
-            console.error(
-                "Session check failed:",
+        /*
+         * Verify that the existing session belongs
+         * to an active Master CRM staff/admin user.
+         */
+
+        const {
+            data: profile,
+            error
+        } =
+            await supabaseLogin
+                .from("profiles")
+                .select(
+                    "user_id, role, is_active"
+                )
+                .eq(
+                    "user_id",
+                    session.user.id
+                )
+                .maybeSingle();
+
+
+        if (error) {
+
+            console.warn(
+                "Master session profile check failed:",
                 error
             );
 
+            return;
         }
 
-    })();
 
+        const role =
+            String(
+                profile?.role || ""
+            )
+                .trim()
+                .toLowerCase();
+
+
+        const allowedRoles = [
+            "staff",
+            "admin"
+        ];
+
+
+        if (
+            profile &&
+            profile.is_active === true &&
+            allowedRoles.includes(role)
+        ) {
+
+            window.location.href =
+                "./dashboard.html";
+
+            return;
+        }
+
+
+        /*
+         * Existing session belongs to a partner
+         * or another non-Master account.
+         *
+         * Do NOT open Master CRM.
+         */
+
+        console.warn(
+            "Existing session is not authorized for Master CRM."
+        );
+
+        await supabaseLogin.auth.signOut();
+
+    }
+    catch (error) {
+
+        console.error(
+            "Session check failed:",
+            error
+        );
+
+    }
+
+})();
 </script>
 ```
 
