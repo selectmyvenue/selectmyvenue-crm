@@ -1503,11 +1503,177 @@ function renderAssignments() {
 }
 
 
-function renderAssignmentRow(assignment) {
+function renderAssignmentRow(
+  assignment
+) {
 
   const enquiry =
     assignment.customer_enquiry ||
     {};
+
+
+  const customerName =
+    enquiry.customer_name ||
+    enquiry.name ||
+    enquiry.full_name ||
+    "Customer";
+
+
+  const phone =
+    enquiry.mobile ||
+    enquiry.phone ||
+    enquiry.phone_number ||
+    "";
+
+
+  const email =
+    enquiry.email ||
+    "";
+
+
+  const event =
+    enquiry.occasion ||
+    enquiry.event ||
+    enquiry.event_type ||
+    enquiry.event_name ||
+    "—";
+
+
+  const eventDate =
+    enquiry.event_date ||
+    "";
+
+
+  const guests =
+    enquiry.guests ??
+    enquiry.guest_count ??
+    enquiry.number_of_guests ??
+    "—";
+
+
+  const location =
+    enquiry.location ||
+    enquiry.city ||
+    enquiry.area ||
+    "—";
+
+
+  const status =
+    String(
+      assignment.assignment_status ||
+      "assigned"
+    ).toLowerCase();
+
+
+  return `
+    <tr>
+
+      <!-- CUSTOMER -->
+
+      <td>
+        <div class="customer-name">
+          ${escapeHtml(customerName)}
+        </div>
+      </td>
+
+
+      <!-- PHONE -->
+
+      <td>
+        ${
+          phone
+            ? escapeHtml(phone)
+            : "—"
+        }
+      </td>
+
+
+      <!-- EMAIL -->
+
+      <td>
+        ${
+          email
+            ? escapeHtml(email)
+            : "—"
+        }
+      </td>
+
+
+      <!-- EVENT -->
+
+      <td>
+        ${escapeHtml(event)}
+      </td>
+
+
+      <!-- EVENT DATE -->
+
+      <td>
+        ${escapeHtml(
+          formatDate(eventDate)
+        )}
+      </td>
+
+
+      <!-- GUESTS -->
+
+      <td>
+        ${escapeHtml(
+          safeValue(guests)
+        )}
+      </td>
+
+
+      <!-- LOCATION -->
+
+      <td>
+        ${escapeHtml(location)}
+      </td>
+
+
+      <!-- ASSIGNMENT -->
+
+      <td>
+
+        <span
+          class="status ${statusClass(status)}"
+        >
+          ${escapeHtml(
+            formatStatus(status)
+          )}
+        </span>
+
+        <div class="secondary">
+          ${escapeHtml(
+            formatDate(
+              assignment.assigned_at
+            )
+          )}
+        </div>
+
+      </td>
+
+
+      <!-- UPDATE STATUS -->
+
+      <td>
+
+        <select
+          class="status-select"
+          data-assignment-id="${escapeHtml(
+            assignment.id
+          )}"
+        >
+
+          ${renderStatusOptions(status)}
+
+        </select>
+
+      </td>
+
+    </tr>
+  `;
+}
 
   /*
      =========================================================
