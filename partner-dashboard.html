@@ -1501,64 +1501,321 @@ function renderAssignments() {
 }
 
 
-function renderAssignmentRow(
-  assignment
-) {
+function renderAssignmentRow(assignment) {
 
   const enquiry =
     assignment.customer_enquiry ||
     {};
 
   /*
-     These aliases make the first test page tolerant
-     of the existing customer_enquiries naming.
+     =========================================================
+     SMART CUSTOMER ENQUIRY FIELD RESOLVER
+     =========================================================
+
+     Your Master CRM already works with the existing
+     customer_enquiries schema.
+
+     Instead of assuming one exact column name, this resolver
+     checks several known/possible field names and also performs
+     a normalized-key lookup.
+
+     This makes the Partner Dashboard much safer if the
+     database uses slightly different naming.
+  */
+
+  function getField(object, candidates, fallback = "") {
+
+    if (!object || typeof object !== "object") {
+      return fallback;
+    }
+
+    // 1. Exact candidate match
+    for (const key of candidates) {
+
+      if (
+        Object.prototype.hasOwnProperty.call(
+          object,
+          key
+        )
+      ) {
+
+        const value =
+          object[key];
+
+        if (
+          value !== null &&
+          value !== undefined &&
+          String(value).trim() !== ""
+        ) {
+          return value;
+        }
+      }
+    }
+
+    // 2. Normalized-key match
+    const normalizeKey = key =>
+      String(key)
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
+
+    const normalizedCandidates =
+      candidates.map(
+        normalizeKey
+      );
+
+    for (const actualKey of Object.keys(object)) {
+
+      const normalizedActual =
+        normalizeKey(actualKey);
+
+      if (
+        normalizedCandidates.includes(
+          normalizedActual
+        )
+      ) {
+
+        const value =
+          object[actualKey];
+
+        if (
+          value !== null &&
+          value !== undefined &&
+          String(value).trim() !== ""
+        ) {
+          return value;
+        }
+      }
+    }
+
+    return fallback;
+  }
+
+
+  /*
+     CUSTOMER
   */
 
   const customerName =
-    enquiry.name ||
-    enquiry.customer_name ||
-    enquiry.full_name ||
-    "Customer";
+    getField(
+      enquiry,
+      [
+        "name",
+        "customer_name",
+        "full_name",
+        "customer",
+        "customerName",
+        "fullName"
+      ],
+      "Customer"
+    );
+
+
+  /*
+     PHONE
+  */
 
   const phone =
-    enquiry.phone ||
-    enquiry.mobile ||
-    enquiry.phone_number ||
-    "";
+    getField(
+      enquiry,
+      [
+        "phone",
+        "mobile",
+        "phone_number",
+        "mobile_number",
+        "customer_phone",
+        "customer_mobile",
+        "contact_number",
+        "contact"
+      ],
+      ""
+    );
+
+
+  /*
+     EVENT
+
+     The existing Master CRM displays values such as:
+     Wedding
+     Engagement
+     Anniversary
+     Kitty Party
+     Other
+
+     Therefore we check all common event/occasion fields.
+  */
 
   const event =
-    enquiry.event ||
-    enquiry.event_type ||
-    enquiry.event_name ||
-    "—";
+    getField(
+      enquiry,
+      [
+        "event",
+        "event_type",
+        "event_name",
+        "occasion",
+        "occasion_type",
+        "function_type",
+        "function",
+        "celebration_type",
+        "event_category",
+        "eventType",
+        "eventName",
+        "occasionType"
+      ],
+      "—"
+    );
+
+
+  /*
+     EVENT DATE
+  */
 
   const eventDate =
-    enquiry.event_date ||
-    "";
+    getField(
+      enquiry,
+      [
+        "event_date",
+        "eventDate",
+        "date_of_event",
+        "event_day",
+        "function_date",
+        "occasion_date",
+        "booking_date",
+        "date"
+      ],
+      ""
+    );
+
+
+  /*
+     GUESTS
+  */
 
   const guests =
-    enquiry.guests ||
-    enquiry.guest_count ||
-    enquiry.number_of_guests ||
-    "—";
+    getField(
+      enquiry,
+      [
+        "guests",
+        "guest_count",
+        "guestCount",
+        "number_of_guests",
+        "numberOfGuests",
+        "no_of_guests",
+        "noOfGuests",
+        "expected_guests",
+        "expectedGuests",
+        "pax",
+        "guest_number"
+      ],
+      "—"
+    );
 
-  const location =
-    enquiry.location ||
-    enquiry.city ||
-    enquiry.area ||
-    "—";
+
+  /*
+     LOCATION
+
+     Prefer a combined location if the enquiry has one.
+     Otherwise build it from city + area.
+  */
+
+  let location =
+    getField(
+      enquiry,
+      [
+        "location",
+        "city_location",
+        "event_location",
+        "preferred_location",
+        "preferred_city",
+        "customer_location"
+      ],
+      ""
+    );
+
+
+  if (!location) {
+
+    const city =
+      getField(
+        enquiry,
+        [
+          "city",
+          "customer_city",
+          "preferred_city"
+        ],
+        ""
+      );
+
+    const area =
+      getField(
+        enquiry,
+        [
+          "area",
+          "locality",
+          "customer_area",
+          "preferred_area"
+        ],
+        ""
+      );
+
+    location =
+      [area, city]
+        .filter(
+          value =>
+            value !== null &&
+            value !== undefined &&
+            String(value).trim() !== ""
+        )
+        .join(", ");
+  }
+
+
+  if (!location) {
+    location = "—";
+  }
+
+
+  /*
+     ASSIGNMENT STATUS
+  */
 
   const status =
     String(
       assignment.assignment_status ||
       "assigned"
-    ).toLowerCase();
+    )
+      .toLowerCase()
+      .trim();
+
+
+  /*
+     DEBUG INFORMATION
+
+     Only visible in browser console.
+
+     This is useful during testing and can be removed
+     later once the production portal is finalized.
+  */
+
+  console.debug(
+    "SMV Partner Enquiry:",
+    {
+      assignmentId: assignment.id,
+      enquiryId: assignment.enquiry_id,
+      customerName,
+      event,
+      eventDate,
+      guests,
+      location,
+      availableFields: Object.keys(enquiry)
+    }
+  );
 
 
   return `
     <tr>
 
       <td>
+
         <div class="customer-name">
           ${escapeHtml(customerName)}
         </div>
@@ -1572,11 +1829,14 @@ function renderAssignmentRow(
             `
             : ""
         }
+
       </td>
+
 
       <td>
         ${escapeHtml(event)}
       </td>
+
 
       <td>
         ${escapeHtml(
@@ -1584,13 +1844,16 @@ function renderAssignmentRow(
         )}
       </td>
 
+
       <td>
         ${escapeHtml(guests)}
       </td>
 
+
       <td>
         ${escapeHtml(location)}
       </td>
+
 
       <td>
 
@@ -1611,6 +1874,7 @@ function renderAssignmentRow(
         </div>
 
       </td>
+
 
       <td>
 
