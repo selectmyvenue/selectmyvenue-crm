@@ -196,9 +196,93 @@ async function checkCRMAuth() {
             return null;
         }
 
+
+        /* =====================================================
+           MASTER CRM ACCESS CONTROL
+           
+           Only active staff/admin users are allowed here.
+
+           Partner accounts must NEVER enter Master CRM.
+        ===================================================== */
+
+        const {
+            data: profile,
+            error: profileError
+        } =
+            await client
+                .from("profiles")
+                .select(
+                    "user_id, role, is_active"
+                )
+                .eq(
+                    "user_id",
+                    session.user.id
+                )
+                .maybeSingle();
+
+
+        if (profileError) {
+
+            console.error(
+                "Master CRM profile check error:",
+                profileError
+            );
+
+            await client.auth.signOut();
+
+            window.location.href =
+                "login.html";
+
+            return null;
+        }
+
+
+        const role =
+            String(
+                profile?.role || ""
+            )
+                .trim()
+                .toLowerCase();
+
+
+        const isActive =
+            profile?.is_active === true;
+
+
+        const allowedMasterRoles = [
+            "staff",
+            "admin"
+        ];
+
+
+        if (
+            !profile ||
+            !isActive ||
+            !allowedMasterRoles.includes(role)
+        ) {
+
+            console.warn(
+                "Unauthorized account attempted to access Master CRM:",
+                session.user.email,
+                role
+            );
+
+
+            await client.auth.signOut();
+
+
+            window.location.href =
+                "login.html?access=denied";
+
+
+            return null;
+        }
+
+
         updateStaffName(
             session.user
         );
+
 
         return session;
 
@@ -212,28 +296,6 @@ async function checkCRMAuth() {
 
         return null;
     }
-}
-
-function updateStaffName(user) {
-
-    const element =
-        document.getElementById(
-            "staffName"
-        );
-
-    if (!element || !user) {
-        return;
-    }
-
-    const metadata =
-        user.user_metadata || {};
-
-    element.textContent =
-        metadata.full_name ||
-        metadata.name ||
-        metadata.display_name ||
-        user.email ||
-        "CRM User";
 }
 
 /* =========================================================
