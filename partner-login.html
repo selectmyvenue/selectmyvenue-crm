@@ -1,0 +1,588 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Select My Venue | Partner Login</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg: #061316;
+      --card: #0d2024;
+      --card-2: #10272b;
+      --line: #1d3b40;
+      --teal: #16c7b7;
+      --teal-dark: #0d9d93;
+      --gold: #e5b85c;
+      --text: #f5fafa;
+      --muted: #91a8ab;
+      --danger: #ff7777;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      background:
+        radial-gradient(
+          circle at 50% 0%,
+          #12383d 0%,
+          var(--bg) 48%,
+          #03090b 100%
+        );
+      color: var(--text);
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .login-shell {
+      width: 100%;
+      max-width: 430px;
+    }
+
+    .login-card {
+      background: rgba(13, 32, 36, 0.97);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 34px;
+      box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .brand-mark {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 15px;
+      border-radius: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(
+        135deg,
+        var(--teal),
+        var(--teal-dark)
+      );
+      color: #031113;
+      font-size: 27px;
+      font-weight: 900;
+      box-shadow: 0 10px 30px rgba(22, 199, 183, 0.22);
+    }
+
+    .brand-title {
+      font-size: 25px;
+      font-weight: 850;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-subtitle {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .portal-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 11px;
+      margin-bottom: 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(22, 199, 183, 0.28);
+      background: rgba(22, 199, 183, 0.06);
+      color: var(--teal);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+    }
+
+    .field {
+      margin-bottom: 17px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: #bfd0d2;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    input {
+      width: 100%;
+      height: 47px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      outline: none;
+      background: #08191c;
+      color: var(--text);
+      font-size: 14px;
+      transition: 0.2s ease;
+    }
+
+    input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(22, 199, 183, 0.08);
+    }
+
+    .login-button {
+      width: 100%;
+      height: 48px;
+      margin-top: 4px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(
+        135deg,
+        var(--teal),
+        var(--teal-dark)
+      );
+      color: #031113;
+      font-weight: 850;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .login-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(22, 199, 183, 0.18);
+    }
+
+    .login-button:disabled {
+      opacity: 0.65;
+      cursor: wait;
+      transform: none;
+    }
+
+    .message {
+      min-height: 20px;
+      margin-top: 14px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .message.error {
+      color: var(--danger);
+    }
+
+    .security-note {
+      margin-top: 24px;
+      padding-top: 19px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .security-note strong {
+      color: #c9d7d8;
+    }
+
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 26px 21px;
+        border-radius: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="login-shell">
+
+    <section class="login-card">
+
+      <div class="brand">
+
+        <div class="portal-badge">
+          VENUE PARTNER PORTAL
+        </div>
+
+        <div class="brand-mark">
+          SMV
+        </div>
+
+        <div class="brand-title">
+          Select My Venue
+        </div>
+
+        <div class="brand-subtitle">
+          Partner CRM
+        </div>
+
+      </div>
+
+      <form id="partnerLoginForm">
+
+        <div class="field">
+          <label for="partnerEmail">
+            Email Address
+          </label>
+
+          <input
+            id="partnerEmail"
+            type="email"
+            autocomplete="username"
+            value="partner.test@selectmyvenue.com"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label for="partnerPassword">
+            Password
+          </label>
+
+          <input
+            id="partnerPassword"
+            type="password"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <button
+          id="loginButton"
+          class="login-button"
+          type="submit"
+        >
+          Sign In to Partner CRM
+        </button>
+
+        <div
+          id="loginMessage"
+          class="message"
+          aria-live="polite"
+        ></div>
+
+      </form>
+
+      <div class="security-note">
+        <strong>Secure Partner Access</strong><br>
+        Your account can access only the venue and enquiries assigned
+        to your partner profile.
+      </div>
+
+    </section>
+
+  </main>
+
+  <script>
+    "use strict";
+
+    /* =====================================================
+       SELECT MY VENUE — PARTNER LOGIN
+       ===================================================== */
+
+    const SUPABASE_URL =
+      window.SUPABASE_URL ||
+      "https://uajqwyoqbbswkfiwosyw.supabase.co";
+
+    const SUPABASE_ANON_KEY =
+      window.SUPABASE_ANON_KEY ||
+      "sb_publishable_hfiuO4ZRn4VZmEkrN2RV-A_lZX_R3z7";
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+      );
+
+    const loginForm =
+      document.getElementById("partnerLoginForm");
+
+    const emailInput =
+      document.getElementById("partnerEmail");
+
+    const passwordInput =
+      document.getElementById("partnerPassword");
+
+    const loginButton =
+      document.getElementById("loginButton");
+
+    const loginMessage =
+      document.getElementById("loginMessage");
+
+
+    function showMessage(message, isError = false) {
+
+      loginMessage.textContent = message;
+
+      loginMessage.classList.toggle(
+        "error",
+        Boolean(isError)
+      );
+    }
+
+
+    async function getPartnerProfile(userId) {
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("venue_partner_profiles")
+        .select(`
+          id,
+          venue_id,
+          user_id,
+          full_name,
+          designation,
+          email,
+          mobile,
+          whatsapp_number,
+          partner_role,
+          is_primary,
+          is_active
+        `)
+        .eq("user_id", userId)
+        .eq("is_active", true)
+        .order("is_primary", {
+          ascending: false
+        })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+
+        console.error(
+          "Partner profile lookup error:",
+          error
+        );
+
+        throw error;
+      }
+
+      return data;
+    }
+
+
+    loginForm.addEventListener(
+      "submit",
+      async function (event) {
+
+        event.preventDefault();
+
+        const email =
+          emailInput.value.trim();
+
+        const password =
+          passwordInput.value;
+
+        if (!email || !password) {
+
+          showMessage(
+            "Please enter your email and password.",
+            true
+          );
+
+          return;
+        }
+
+        loginButton.disabled = true;
+
+        loginButton.textContent =
+          "Signing in...";
+
+        showMessage(
+          "Authenticating your partner account..."
+        );
+
+        try {
+
+          /*
+             Clear any old partner session data.
+          */
+
+          sessionStorage.removeItem(
+            "smv_partner_profile"
+          );
+
+
+          /*
+             Sign in through Supabase Auth.
+          */
+
+          const {
+            data: authData,
+            error: authError
+          } =
+            await supabaseClient.auth.signInWithPassword({
+              email,
+              password
+            });
+
+
+          if (authError) {
+
+            throw authError;
+          }
+
+
+          if (
+            !authData ||
+            !authData.user
+          ) {
+
+            throw new Error(
+              "Authentication succeeded but no user account was returned."
+            );
+          }
+
+
+          /*
+             Find the active partner profile.
+
+             IMPORTANT:
+             We do NOT trust a role stored in
+             browser storage.
+
+             Supabase remains the source of truth.
+          */
+
+          const partnerProfile =
+            await getPartnerProfile(
+              authData.user.id
+            );
+
+
+          if (!partnerProfile) {
+
+            await supabaseClient.auth.signOut();
+
+            throw new Error(
+              "This account is not connected to an active Venue Partner profile."
+            );
+          }
+
+
+          /*
+             Save only the profile information needed
+             by the partner frontend.
+
+             RLS remains responsible for actual
+             database security.
+          */
+
+          sessionStorage.setItem(
+            "smv_partner_profile",
+            JSON.stringify(partnerProfile)
+          );
+
+
+          showMessage(
+            "Login successful. Opening Partner CRM..."
+          );
+
+
+          window.location.href =
+            "partner-dashboard.html";
+
+        } catch (error) {
+
+          console.error(
+            "Partner login error:",
+            error
+          );
+
+          showMessage(
+            error && error.message
+              ? error.message
+              : "Unable to sign in. Please check your credentials.",
+            true
+          );
+
+          loginButton.disabled = false;
+
+          loginButton.textContent =
+            "Sign In to Partner CRM";
+        }
+
+      }
+    );
+
+
+    /*
+       If an authenticated partner already has a valid
+       session, allow them to continue directly.
+    */
+
+    (async function checkExistingSession() {
+
+      try {
+
+        const {
+          data
+        } =
+          await supabaseClient.auth.getSession();
+
+        if (
+          data &&
+          data.session &&
+          data.session.user
+        ) {
+
+          const profile =
+            await getPartnerProfile(
+              data.session.user.id
+            );
+
+          if (profile) {
+
+            sessionStorage.setItem(
+              "smv_partner_profile",
+              JSON.stringify(profile)
+            );
+
+            window.location.href =
+              "partner-dashboard.html";
+          }
+
+        }
+
+      } catch (error) {
+
+        console.warn(
+          "Existing partner session check failed:",
+          error
+        );
+
+      }
+
+    })();
+  </script>
+
+</body>
+</html>
+```
