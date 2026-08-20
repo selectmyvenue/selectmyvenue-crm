@@ -1,586 +1,1032 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Select My Venue | Partner Login</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
 
-  <style>
-    :root {
-      --bg: #061316;
-      --card: #0d2024;
-      --card-2: #10272b;
-      --line: #1d3b40;
-      --teal: #16c7b7;
-      --teal-dark: #0d9d93;
-      --gold: #e5b85c;
-      --text: #f5fafa;
-      --muted: #91a8ab;
-      --danger: #ff7777;
-    }
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Select My Venue | Venue Partner CRM</title>
+
+<link
+    rel="stylesheet"
+    href="./crm.css"
+>
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+<style>
+
+    /* =====================================================
+       FULL SCREEN CORPORATE CRM LOGIN
+    ===================================================== */
 
     * {
-      box-sizing: border-box;
+        box-sizing: border-box;
     }
 
-    html,
-    body {
-      margin: 0;
-      min-height: 100%;
-      font-family:
-        Inter,
-        ui-sans-serif,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-      background:
-        radial-gradient(
-          circle at 50% 0%,
-          #12383d 0%,
-          var(--bg) 48%,
-          #03090b 100%
-        );
-      color: var(--text);
+    html {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
     }
 
     body {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+        width: 100%;
+        min-width: 100%;
+        height: 100%;
+        min-height: 100vh;
+
+        margin: 0;
+        padding: 0;
+
+        overflow-x: hidden;
+
+        font-family:
+            Inter,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Arial,
+            sans-serif;
+
+        background:
+            #071018;
+
+        color: #ffffff;
     }
 
-    .login-shell {
-      width: 100%;
-      max-width: 430px;
+
+    /* =====================================================
+       FULL VIEWPORT BACKGROUND
+    ===================================================== */
+
+    .login-page {
+
+        position: fixed;
+
+        inset: 0;
+
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+
+        min-height: 100vh;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        padding: 40px;
+
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        background:
+
+            radial-gradient(
+                circle at 50% 35%,
+                rgba(21, 154, 140, 0.14),
+                transparent 35%
+            ),
+
+            radial-gradient(
+                circle at 15% 90%,
+                rgba(21, 154, 140, 0.08),
+                transparent 35%
+            ),
+
+            radial-gradient(
+                circle at 85% 10%,
+                rgba(255, 190, 70, 0.035),
+                transparent 30%
+            ),
+
+            linear-gradient(
+                135deg,
+                #050b12 0%,
+                #09131d 48%,
+                #050b12 100%
+            );
+
     }
+
+
+    /* =====================================================
+       CORPORATE BACKGROUND GRID
+    ===================================================== */
+
+    .login-page::before {
+
+        content: "";
+
+        position: absolute;
+
+        inset: 0;
+
+        pointer-events: none;
+
+        opacity: 0.18;
+
+        background-image:
+
+            linear-gradient(
+                rgba(255,255,255,0.025) 1px,
+                transparent 1px
+            ),
+
+            linear-gradient(
+                90deg,
+                rgba(255,255,255,0.025) 1px,
+                transparent 1px
+            );
+
+        background-size:
+            60px 60px;
+
+    }
+
+
+    /* =====================================================
+       SOFT CENTER LIGHT
+    ===================================================== */
+
+    .login-page::after {
+
+        content: "";
+
+        position: absolute;
+
+        width: 700px;
+        height: 700px;
+
+        left: 50%;
+        top: 50%;
+
+        transform:
+            translate(-50%, -50%);
+
+        border-radius: 50%;
+
+        background:
+            radial-gradient(
+                circle,
+                rgba(21,154,140,0.08) 0%,
+                rgba(21,154,140,0.025) 40%,
+                transparent 72%
+            );
+
+        pointer-events: none;
+
+    }
+
+
+    /* =====================================================
+       LOGIN CARD
+    ===================================================== */
 
     .login-card {
-      background: rgba(13, 32, 36, 0.97);
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      padding: 34px;
-      box-shadow:
-        0 30px 80px rgba(0, 0, 0, 0.42),
-        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+
+        position: relative;
+
+        z-index: 5;
+
+        width: 440px;
+        max-width: 100%;
+
+        padding:
+            46px
+            44px
+            34px;
+
+        border-radius: 26px;
+
+        background:
+
+            linear-gradient(
+                145deg,
+                rgba(18, 30, 44, 0.97),
+                rgba(8, 17, 27, 0.98)
+            );
+
+        border:
+            1px solid
+            rgba(255,255,255,0.10);
+
+        box-shadow:
+
+            0 40px 100px
+            rgba(0,0,0,0.60),
+
+            0 0 80px
+            rgba(21,154,140,0.08);
+
+        backdrop-filter:
+            blur(18px);
+
+        -webkit-backdrop-filter:
+            blur(18px);
+
     }
 
-    .brand {
-      text-align: center;
-      margin-bottom: 30px;
+
+    /* =====================================================
+       LOGO
+    ===================================================== */
+
+    .login-logo {
+
+        display: block;
+
+        width: 150px;
+        height: 150px;
+
+        object-fit: contain;
+
+        margin:
+            0 auto 26px;
+
+        border-radius: 24px;
+
+        filter:
+            drop-shadow(
+                0 12px 25px
+                rgba(0,0,0,0.35)
+            );
+
     }
 
-    .brand-mark {
-      width: 58px;
-      height: 58px;
-      margin: 0 auto 15px;
-      border-radius: 17px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(
-        135deg,
-        var(--teal),
-        var(--teal-dark)
-      );
-      color: #031113;
-      font-size: 27px;
-      font-weight: 900;
-      box-shadow: 0 10px 30px rgba(22, 199, 183, 0.22);
+
+    /* =====================================================
+       BRAND
+    ===================================================== */
+
+    .login-brand {
+
+        text-align: center;
+
+        margin-bottom: 32px;
+
     }
 
-    .brand-title {
-      font-size: 25px;
-      font-weight: 850;
-      letter-spacing: -0.5px;
+
+    .login-brand h1 {
+
+        margin: 0;
+
+        font-size: 27px;
+
+        line-height: 1.2;
+
+        font-weight: 750;
+
+        letter-spacing:
+            -0.5px;
+
+        color: #ffffff;
+
     }
 
-    .brand-subtitle {
-      margin-top: 7px;
-      color: var(--muted);
-      font-size: 13px;
+
+    .login-brand p {
+
+        margin:
+            10px 0 0;
+
+        font-size: 13px;
+
+        line-height: 1.5;
+
+        color:
+            rgba(255,255,255,0.55);
+
+        letter-spacing:
+            0.2px;
+
     }
 
-    .portal-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 6px 11px;
-      margin-bottom: 13px;
-      border-radius: 999px;
-      border: 1px solid rgba(22, 199, 183, 0.28);
-      background: rgba(22, 199, 183, 0.06);
-      color: var(--teal);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.8px;
+
+    /* =====================================================
+       FORM
+    ===================================================== */
+
+    .login-form {
+
+        display: grid;
+
+        gap: 19px;
+
     }
 
-    .field {
-      margin-bottom: 17px;
+
+    .login-field {
+
+        display: grid;
+
+        gap: 8px;
+
     }
 
-    label {
-      display: block;
-      margin-bottom: 7px;
-      color: #bfd0d2;
-      font-size: 13px;
-      font-weight: 650;
+
+    .login-field label {
+
+        font-size: 11px;
+
+        font-weight: 750;
+
+        letter-spacing:
+            0.10em;
+
+        color:
+            rgba(255,255,255,0.68);
+
     }
 
-    input {
-      width: 100%;
-      height: 47px;
-      padding: 0 14px;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      outline: none;
-      background: #08191c;
-      color: var(--text);
-      font-size: 14px;
-      transition: 0.2s ease;
+
+    .login-field input {
+
+        width: 100%;
+
+        height: 50px;
+
+        padding:
+            0 15px;
+
+        border-radius: 12px;
+
+        border:
+            1px solid
+            rgba(255,255,255,0.11);
+
+        background:
+            rgba(255,255,255,0.045);
+
+        color: #ffffff;
+
+        outline: none;
+
+        font-size: 15px;
+
+        transition:
+            0.2s ease;
+
     }
 
-    input:focus {
-      border-color: var(--teal);
-      box-shadow: 0 0 0 3px rgba(22, 199, 183, 0.08);
+
+    .login-field input::placeholder {
+
+        color:
+            rgba(255,255,255,0.30);
+
     }
 
-    .login-button {
-      width: 100%;
-      height: 48px;
-      margin-top: 4px;
-      border: 0;
-      border-radius: 12px;
-      background: linear-gradient(
-        135deg,
-        var(--teal),
-        var(--teal-dark)
-      );
-      color: #031113;
-      font-weight: 850;
-      cursor: pointer;
-      transition: 0.2s ease;
+
+    .login-field input:hover {
+
+        border-color:
+            rgba(255,255,255,0.18);
+
     }
 
-    .login-button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 25px rgba(22, 199, 183, 0.18);
+
+    .login-field input:focus {
+
+        border-color:
+            rgba(21,154,140,0.85);
+
+        background:
+            rgba(255,255,255,0.06);
+
+        box-shadow:
+
+            0 0 0 3px
+            rgba(21,154,140,0.10);
+
     }
 
-    .login-button:disabled {
-      opacity: 0.65;
-      cursor: wait;
-      transform: none;
+
+    /* =====================================================
+       LOGIN BUTTON
+    ===================================================== */
+
+    .login-btn {
+
+        width: 100%;
+
+        height: 50px;
+
+        margin-top: 3px;
+
+        border: 0;
+
+        border-radius: 12px;
+
+        cursor: pointer;
+
+        font-size: 15px;
+
+        font-weight: 750;
+
+        color: #ffffff;
+
+        background:
+
+            linear-gradient(
+                135deg,
+                #18a997,
+                #087f73
+            );
+
+        box-shadow:
+
+            0 10px 28px
+            rgba(8,127,115,0.25);
+
+        transition:
+            0.2s ease;
+
     }
 
-    .message {
-      min-height: 20px;
-      margin-top: 14px;
-      text-align: center;
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.45;
+
+    .login-btn:hover {
+
+        transform:
+            translateY(-1px);
+
+        box-shadow:
+
+            0 14px 32px
+            rgba(8,127,115,0.35);
+
     }
 
-    .message.error {
-      color: var(--danger);
+
+    .login-btn:active {
+
+        transform:
+            translateY(0);
+
     }
 
-    .security-note {
-      margin-top: 24px;
-      padding-top: 19px;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-      text-align: center;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.6;
+
+    .login-btn:disabled {
+
+        opacity: 0.55;
+
+        cursor:
+            not-allowed;
+
+        transform:
+            none;
+
     }
 
-    .security-note strong {
-      color: #c9d7d8;
+
+    /* =====================================================
+       MESSAGE
+    ===================================================== */
+
+    .login-message {
+
+        min-height: 20px;
+
+        margin-top: 1px;
+
+        text-align: center;
+
+        font-size: 13px;
+
+        line-height: 1.4;
+
     }
 
-    @media (max-width: 480px) {
-      .login-card {
-        padding: 26px 21px;
-        border-radius: 20px;
-      }
+
+    .login-message.error {
+
+        color:
+            #ff8f8f;
+
     }
-  </style>
+
+
+    .login-message.success {
+
+        color:
+            #63e6be;
+
+    }
+
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+
+    .login-footer {
+
+        margin-top: 27px;
+
+        padding-top: 20px;
+
+        border-top:
+            1px solid
+            rgba(255,255,255,0.06);
+
+        text-align: center;
+
+        font-size: 10px;
+
+        letter-spacing:
+            0.3px;
+
+        color:
+            rgba(255,255,255,0.32);
+
+    }
+
+
+    /* =====================================================
+       MOBILE
+    ===================================================== */
+
+    @media (max-width: 600px) {
+
+        .login-page {
+
+            padding:
+                24px 16px;
+
+        }
+
+        .login-card {
+
+            width: 100%;
+
+            padding:
+                36px 25px 28px;
+
+            border-radius:
+                22px;
+
+        }
+
+        .login-logo {
+
+            width: 120px;
+            height: 120px;
+
+            margin-bottom:
+                21px;
+
+        }
+
+        .login-brand h1 {
+
+            font-size:
+                23px;
+
+        }
+
+    }
+
+
+    /* =====================================================
+       SMALL HEIGHT SCREENS
+    ===================================================== */
+
+    @media (max-height: 700px) {
+
+        .login-page {
+
+            align-items:
+                flex-start;
+
+            padding-top:
+                25px;
+
+            padding-bottom:
+                25px;
+
+        }
+
+        .login-card {
+
+            padding-top:
+                30px;
+
+        }
+
+        .login-logo {
+
+            width: 105px;
+            height: 105px;
+
+            margin-bottom:
+                16px;
+
+        }
+
+        .login-brand {
+
+            margin-bottom:
+                22px;
+
+        }
+
+    }
+
+</style>
+
+
 </head>
 
 <body>
 
-  <main class="login-shell">
+
+<!-- =====================================================
+     FULL SCREEN LOGIN
+====================================================== -->
+
+<main class="login-page">
+
 
     <section class="login-card">
 
-      <div class="brand">
 
-        <div class="portal-badge">
-          VENUE PARTNER PORTAL
+        <!-- LOGO -->
+
+       <img
+    src="logo.png"
+    alt="Select My Venue"
+    class="login-logo"
+>
+
+
+        <!-- BRAND -->
+
+        <div class="login-brand">
+
+            <h1>
+                Select My Venue
+            </h1>
+
+            <p>
+                Venue Partner CRM
+            </p>
+
         </div>
 
-        <div class="brand-mark">
-          SMV
-        </div>
 
-        <div class="brand-title">
-          Select My Venue
-        </div>
+        <!-- LOGIN FORM -->
 
-        <div class="brand-subtitle">
-          Partner CRM
-        </div>
-
-      </div>
-
-      <form id="partnerLoginForm">
-
-        <div class="field">
-          <label for="partnerEmail">
-            Email Address
-          </label>
-
-          <input
-            id="partnerEmail"
-            type="email"
-            autocomplete="username"
-            value="partner.test@selectmyvenue.com"
-            required
-          >
-        </div>
-
-        <div class="field">
-          <label for="partnerPassword">
-            Password
-          </label>
-
-          <input
-            id="partnerPassword"
-            type="password"
-            autocomplete="current-password"
-            required
-          >
-        </div>
-
-        <button
-          id="loginButton"
-          class="login-button"
-          type="submit"
+        <form
+            id="loginForm"
+            class="login-form"
+            autocomplete="on"
         >
-          Sign In to Partner CRM
-        </button>
 
-        <div
-          id="loginMessage"
-          class="message"
-          aria-live="polite"
-        ></div>
 
-      </form>
+            <div class="login-field">
 
-      <div class="security-note">
-        <strong>Secure Partner Access</strong><br>
-        Your account can access only the venue and enquiries assigned
-        to your partner profile.
-      </div>
+                <label
+                    for="email"
+                >
+                    EMAIL ADDRESS
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+
+            <div class="login-field">
+
+                <label
+                    for="password"
+                >
+                    PASSWORD
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                id="loginBtn"
+                class="login-btn"
+            >
+                Login to Partner CRM
+            </button>
+
+
+            <div
+                id="loginMessage"
+                class="login-message"
+                role="alert"
+                aria-live="polite"
+            ></div>
+
+
+        </form>
+
+
+        <div class="login-footer">
+
+            Select My Venue · Secure Venue Partner Portal
+
+        </div>
+
 
     </section>
 
-  </main>
 
-  <script>
-    "use strict";
-
-    /* =====================================================
-       SELECT MY VENUE — PARTNER LOGIN
-       ===================================================== */
-
-    const SUPABASE_URL =
-      window.SUPABASE_URL ||
-      "https://uajqwyoqbbswkfiwosyw.supabase.co";
-
-    const SUPABASE_ANON_KEY =
-      window.SUPABASE_ANON_KEY ||
-      "sb_publishable_hfiuO4ZRn4VZmEkrN2RV-A_lZX_R3z7";
-
-    const supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
-      );
-
-    const loginForm =
-      document.getElementById("partnerLoginForm");
-
-    const emailInput =
-      document.getElementById("partnerEmail");
-
-    const passwordInput =
-      document.getElementById("partnerPassword");
-
-    const loginButton =
-      document.getElementById("loginButton");
-
-    const loginMessage =
-      document.getElementById("loginMessage");
+</main>
 
 
-    function showMessage(message, isError = false) {
+<!-- =====================================================
+     SUPABASE CONFIGURATION
+====================================================== -->
 
-      loginMessage.textContent = message;
+<script>
 
-      loginMessage.classList.toggle(
-        "error",
-        Boolean(isError)
-      );
-    }
+    window.SUPABASE_URL =
+        "https://uajqwyoqbbswkfiwosyw.supabase.co";
+
+    window.SUPABASE_ANON_KEY =
+        "sb_publishable_hfiuO4ZRn4VZmEkrN2RV-A_lZX_R3z7";
+
+</script>
 
 
-    async function getPartnerProfile(userId) {
+<!-- =====================================================
+     LOGIN LOGIC
+====================================================== -->
 
-      const {
-        data,
-        error
-      } = await supabaseClient
-        .from("venue_partner_profiles")
-        .select(`
-          id,
-          venue_id,
-          user_id,
-          full_name,
-          designation,
-          email,
-          mobile,
-          whatsapp_number,
-          partner_role,
-          is_primary,
-          is_active
-        `)
-        .eq("user_id", userId)
-        .eq("is_active", true)
-        .order("is_primary", {
-          ascending: false
-        })
-        .limit(1)
-        .maybeSingle();
+<script>
 
-      if (error) {
-
-        console.error(
-          "Partner profile lookup error:",
-          error
+    const supabaseLogin =
+        window.supabase.createClient(
+            window.SUPABASE_URL,
+            window.SUPABASE_ANON_KEY
         );
 
-        throw error;
-      }
 
-      return data;
+    const loginForm =
+        document.getElementById(
+            "loginForm"
+        );
+
+    const loginBtn =
+        document.getElementById(
+            "loginBtn"
+        );
+
+    const loginMessage =
+        document.getElementById(
+            "loginMessage"
+        );
+
+
+    function showLoginMessage(
+        message,
+        type = ""
+    ) {
+
+        loginMessage.textContent =
+            message;
+
+        loginMessage.className =
+            "login-message " + type;
+
     }
 
 
     loginForm.addEventListener(
-      "submit",
-      async function (event) {
+        "submit",
+        async function(event) {
 
-        event.preventDefault();
+            event.preventDefault();
 
-        const email =
-          emailInput.value.trim();
 
-        const password =
-          passwordInput.value;
+            const email =
+                document
+                    .getElementById("email")
+                    .value
+                    .trim();
 
-        if (!email || !password) {
 
-          showMessage(
-            "Please enter your email and password.",
-            true
-          );
+            const password =
+                document
+                    .getElementById("password")
+                    .value;
 
-          return;
+
+            if (
+                !email ||
+                !password
+            ) {
+
+                showLoginMessage(
+                    "Please enter email and password.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            loginBtn.disabled =
+                true;
+
+            loginBtn.textContent =
+                "Signing in...";
+
+            showLoginMessage("");
+
+
+            try {
+
+                const result =
+                    await supabaseLogin
+                        .auth
+                        .signInWithPassword({
+
+                            email:
+                                email,
+
+                            password:
+                                password
+
+                        });
+
+
+                if (
+                    result.error
+                ) {
+
+                    console.error(
+                        "Login error:",
+                        result.error
+                    );
+
+                    showLoginMessage(
+                        result.error.message ||
+                        "Invalid email or password.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    result.data &&
+                    result.data.session
+                ) {
+
+                    const { data: partnerProfile, error: partnerError } =
+                        await supabaseLogin
+                            .from("venue_partner_profiles")
+                            .select("id, venue_id, user_id, full_name, designation, email, mobile, whatsapp_number, partner_role, is_primary, is_active")
+                            .eq("user_id", result.data.session.user.id)
+                            .eq("is_active", true)
+                            .order("is_primary", { ascending: false })
+                            .limit(1)
+                            .maybeSingle();
+
+                    if (partnerError || !partnerProfile) {
+                        await supabaseLogin.auth.signOut();
+
+                        showLoginMessage(
+                            "This account is not authorized for the Venue Partner CRM.",
+                            "error"
+                        );
+
+                        return;
+                    }
+
+                    showLoginMessage(
+                        "Login successful. Opening Partner CRM...",
+                        "success"
+                    );
+
+                    setTimeout(
+                        function() {
+                            window.location.href =
+                                "./partner-dashboard.html";
+                        },
+                        350
+                    );
+
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Login exception:",
+                    error
+                );
+
+                showLoginMessage(
+                    "Unable to connect to Supabase.",
+                    "error"
+                );
+
+            } finally {
+
+                loginBtn.disabled =
+                    false;
+
+                loginBtn.textContent =
+                    "Login to Partner CRM";
+
+            }
+
         }
-
-        loginButton.disabled = true;
-
-        loginButton.textContent =
-          "Signing in...";
-
-        showMessage(
-          "Authenticating your partner account..."
-        );
-
-        try {
-
-          /*
-             Clear any old partner session data.
-          */
-
-          sessionStorage.removeItem(
-            "smv_partner_profile"
-          );
-
-
-          /*
-             Sign in through Supabase Auth.
-          */
-
-          const {
-            data: authData,
-            error: authError
-          } =
-            await supabaseClient.auth.signInWithPassword({
-              email,
-              password
-            });
-
-
-          if (authError) {
-
-            throw authError;
-          }
-
-
-          if (
-            !authData ||
-            !authData.user
-          ) {
-
-            throw new Error(
-              "Authentication succeeded but no user account was returned."
-            );
-          }
-
-
-          /*
-             Find the active partner profile.
-
-             IMPORTANT:
-             We do NOT trust a role stored in
-             browser storage.
-
-             Supabase remains the source of truth.
-          */
-
-          const partnerProfile =
-            await getPartnerProfile(
-              authData.user.id
-            );
-
-
-          if (!partnerProfile) {
-
-            await supabaseClient.auth.signOut();
-
-            throw new Error(
-              "This account is not connected to an active Venue Partner profile."
-            );
-          }
-
-
-          /*
-             Save only the profile information needed
-             by the partner frontend.
-
-             RLS remains responsible for actual
-             database security.
-          */
-
-          sessionStorage.setItem(
-            "smv_partner_profile",
-            JSON.stringify(partnerProfile)
-          );
-
-
-          showMessage(
-            "Login successful. Opening Partner CRM..."
-          );
-
-
-          window.location.href =
-            "partner-dashboard.html";
-
-        } catch (error) {
-
-          console.error(
-            "Partner login error:",
-            error
-          );
-
-          showMessage(
-            error && error.message
-              ? error.message
-              : "Unable to sign in. Please check your credentials.",
-            true
-          );
-
-          loginButton.disabled = false;
-
-          loginButton.textContent =
-            "Sign In to Partner CRM";
-        }
-
-      }
     );
 
 
-    /*
-       If an authenticated partner already has a valid
-       session, allow them to continue directly.
-    */
+    /* =====================================================
+       EXISTING SESSION
+    ====================================================== */
 
-    (async function checkExistingSession() {
+    (async function() {
 
-      try {
+        try {
 
-        const {
-          data
-        } =
-          await supabaseClient.auth.getSession();
+            const result =
+                await supabaseLogin
+                    .auth
+                    .getSession();
 
-        if (
-          data &&
-          data.session &&
-          data.session.user
-        ) {
 
-          const profile =
-            await getPartnerProfile(
-              data.session.user.id
+            if (
+                result.data &&
+                result.data.session
+            ) {
+
+                const { data: partnerProfile, error: partnerError } =
+                    await supabaseLogin
+                        .from("venue_partner_profiles")
+                        .select("id")
+                        .eq("user_id", result.data.session.user.id)
+                        .eq("is_active", true)
+                        .limit(1)
+                        .maybeSingle();
+
+                if (partnerError || !partnerProfile) {
+                    await supabaseLogin.auth.signOut();
+                    return;
+                }
+
+                window.location.href =
+                    "./partner-dashboard.html";
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Session check failed:",
+                error
             );
-
-          if (profile) {
-
-            sessionStorage.setItem(
-              "smv_partner_profile",
-              JSON.stringify(profile)
-            );
-
-            window.location.href =
-              "partner-dashboard.html";
-          }
 
         }
 
-      } catch (error) {
-
-        console.warn(
-          "Existing partner session check failed:",
-          error
-        );
-
-      }
-
     })();
-  </script>
+
+</script>
+
 
 </body>
+
 </html>
