@@ -631,8 +631,9 @@
         </span>
 
         <h1>
-          Welcome back
-        </h1>
+  Welcome back,
+  <span id="partnerWelcomeName">Partner</span>
+</h1>
 
         <p class="welcome-text">
           Manage customer enquiries assigned to your venue.
@@ -2290,6 +2291,19 @@ async function initializePartnerDashboard() {
       partnerProfile.full_name ||
       partnerProfile.email ||
       "Venue Partner";
+    const welcomeName =
+  document.getElementById(
+    "partnerWelcomeName"
+  );
+
+if (welcomeName) {
+
+  welcomeName.textContent =
+    partnerProfile.full_name ||
+    partnerProfile.email ||
+    "Partner";
+
+}
 
 
     /*
