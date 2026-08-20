@@ -1462,8 +1462,6 @@ a {
 
     overflow-y: auto;
 
-    position: relative;
-
     border: 1px solid #d9ebe5;
 
     border-radius: 20px;
@@ -1482,12 +1480,15 @@ a {
 }
 
 
-
 /* =========================================================
    MODAL HEADER
    ========================================================= */
 
 .modal-header {
+
+    position: sticky;
+    top: 0;
+    z-index: 20;
 
     display: flex;
 
@@ -1576,20 +1577,6 @@ a {
 
 }
 
-/* =========================================================
-   STICKY MODAL HEADER
-   Keeps the Close × button visible while scrolling.
-   ========================================================= */
-
-.lead-modal-card .modal-header {
-
-    position: sticky;
-
-    top: 0;
-
-    z-index: 20;
-
-}
 
 /* =========================================================
    LEAD INFO GRID
@@ -1898,6 +1885,10 @@ a {
    ========================================================= */
 
 .modal-actions {
+
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
 
     display: flex;
 
