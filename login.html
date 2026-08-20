@@ -915,7 +915,28 @@
                     const { data: isActiveStaff, error: staffError } =
                         await supabaseLogin.rpc("smv_is_active_staff");
 
-                    if (staffError || isActiveStaff !== true) {
+                    console.log("SMV staff verification:", {
+                        isActiveStaff,
+                        staffError,
+                        userId: result.data.session.user.id
+                    });
+
+                    if (staffError) {
+                        console.error("Unable to verify CRM access:", staffError);
+                        showLoginMessage(
+                            "Unable to verify CRM access. Please try again.",
+                            "error"
+                        );
+                        return;
+                    }
+
+                    const staffAllowed =
+                        isActiveStaff === true ||
+                        isActiveStaff === "true" ||
+                        isActiveStaff === 1 ||
+                        isActiveStaff === "1";
+
+                    if (!staffAllowed) {
                         await supabaseLogin.auth.signOut();
 
                         showLoginMessage(
@@ -990,7 +1011,24 @@
                 const { data: isActiveStaff, error: staffError } =
                     await supabaseLogin.rpc("smv_is_active_staff");
 
-                if (staffError || isActiveStaff !== true) {
+                console.log("SMV existing-session staff verification:", {
+                    isActiveStaff,
+                    staffError,
+                    userId: result.data.session.user.id
+                });
+
+                if (staffError) {
+                    console.error("Existing-session CRM verification failed:", staffError);
+                    return;
+                }
+
+                const staffAllowed =
+                    isActiveStaff === true ||
+                    isActiveStaff === "true" ||
+                    isActiveStaff === 1 ||
+                    isActiveStaff === "1";
+
+                if (!staffAllowed) {
                     await supabaseLogin.auth.signOut();
                     return;
                 }
