@@ -907,28 +907,97 @@
                 }
 
 
-                if (
-                    result.data &&
-                    result.data.session
-                ) {
+               if (
+    result.data &&
+    result.data.session
+) {
 
-                    showLoginMessage(
-                        "Login successful. Opening CRM...",
-                        "success"
-                    );
+    const loggedInUser =
+        result.data.session.user;
 
 
-                    setTimeout(
-                        function() {
+    const {
+        data: profile,
+        error: profileError
+    } =
+        await supabaseLogin
+            .from("profiles")
+            .select(
+                "user_id, role, is_active"
+            )
+            .eq(
+                "user_id",
+                loggedInUser.id
+            )
+            .maybeSingle();
 
-                            window.location.href =
-                                "./dashboard.html";
 
-                        },
-                        500
-                    );
+    if (profileError) {
 
-                }
+        console.error(
+            "CRM profile verification error:",
+            profileError
+        );
+
+        await supabaseLogin.auth.signOut();
+
+        showLoginMessage(
+            "Unable to verify CRM access.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const role =
+        String(
+            profile?.role || ""
+        )
+            .trim()
+            .toLowerCase();
+
+
+    const allowedRoles = [
+        "staff",
+        "admin"
+    ];
+
+
+    if (
+        !profile ||
+        profile.is_active !== true ||
+        !allowedRoles.includes(role)
+    ) {
+
+        await supabaseLogin.auth.signOut();
+
+        showLoginMessage(
+            "This account is not authorized for Employee CRM. Please use Venue Partner CRM.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    showLoginMessage(
+        "Login successful. Opening CRM...",
+        "success"
+    );
+
+
+    setTimeout(
+        function() {
+
+            window.location.href =
+                "./dashboard.html";
+
+        },
+        500
+    );
+
+}
 
 
             } catch (error) {
