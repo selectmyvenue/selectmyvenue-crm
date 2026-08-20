@@ -4,7 +4,7 @@
 
 <head>
 
-```
+
 <meta charset="UTF-8">
 
 <meta
@@ -646,13 +646,13 @@
     }
 
 </style>
-```
+
 
 </head>
 
 <body>
 
-```
+
 <!-- =====================================================
      FULL SCREEN LOGIN
 ====================================================== -->
@@ -907,97 +907,39 @@
                 }
 
 
-               if (
-    result.data &&
-    result.data.session
-) {
+                if (
+                    result.data &&
+                    result.data.session
+                ) {
 
-    const loggedInUser =
-        result.data.session.user;
+                    const { data: isActiveStaff, error: staffError } =
+                        await supabaseLogin.rpc("smv_is_active_staff");
 
+                    if (staffError || isActiveStaff !== true) {
+                        await supabaseLogin.auth.signOut();
 
-    const {
-        data: profile,
-        error: profileError
-    } =
-        await supabaseLogin
-            .from("profiles")
-            .select(
-                "user_id, role, is_active"
-            )
-            .eq(
-                "user_id",
-                loggedInUser.id
-            )
-            .maybeSingle();
+                        showLoginMessage(
+                            "This account is not authorized for the Staff CRM.",
+                            "error"
+                        );
 
+                        return;
+                    }
 
-    if (profileError) {
+                    showLoginMessage(
+                        "Login successful. Opening CRM...",
+                        "success"
+                    );
 
-        console.error(
-            "CRM profile verification error:",
-            profileError
-        );
+                    setTimeout(
+                        function() {
+                            window.location.href =
+                                "./dashboard.html";
+                        },
+                        350
+                    );
 
-        await supabaseLogin.auth.signOut();
-
-        showLoginMessage(
-            "Unable to verify CRM access.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    const role =
-        String(
-            profile?.role || ""
-        )
-            .trim()
-            .toLowerCase();
-
-
-    const allowedRoles = [
-        "staff",
-        "admin"
-    ];
-
-
-    if (
-        !profile ||
-        profile.is_active !== true ||
-        !allowedRoles.includes(role)
-    ) {
-
-        await supabaseLogin.auth.signOut();
-
-        showLoginMessage(
-            "This account is not authorized for Employee CRM. Please use Venue Partner CRM.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    showLoginMessage(
-        "Login successful. Opening CRM...",
-        "success"
-    );
-
-
-    setTimeout(
-        function() {
-
-            window.location.href =
-                "./dashboard.html";
-
-        },
-        500
-    );
-
-}
+                }
 
 
             } catch (error) {
@@ -1030,113 +972,47 @@
        EXISTING SESSION
     ====================================================== */
 
-    (async function checkExistingMasterSession() {
+    (async function() {
 
-    try {
+        try {
 
-        const result =
-            await supabaseLogin
-                .auth
-                .getSession();
-
-
-        const session =
-            result?.data?.session;
+            const result =
+                await supabaseLogin
+                    .auth
+                    .getSession();
 
 
-        if (
-            !session ||
-            !session.user
-        ) {
-            return;
-        }
+            if (
+                result.data &&
+                result.data.session
+            ) {
 
+                const { data: isActiveStaff, error: staffError } =
+                    await supabaseLogin.rpc("smv_is_active_staff");
 
-        /*
-         * Verify that the existing session belongs
-         * to an active Master CRM staff/admin user.
-         */
+                if (staffError || isActiveStaff !== true) {
+                    await supabaseLogin.auth.signOut();
+                    return;
+                }
 
-        const {
-            data: profile,
-            error
-        } =
-            await supabaseLogin
-                .from("profiles")
-                .select(
-                    "user_id, role, is_active"
-                )
-                .eq(
-                    "user_id",
-                    session.user.id
-                )
-                .maybeSingle();
+                window.location.href =
+                    "./dashboard.html";
 
+            }
 
-        if (error) {
+        } catch (error) {
 
-            console.warn(
-                "Master session profile check failed:",
+            console.error(
+                "Session check failed:",
                 error
             );
 
-            return;
         }
 
+    })();
 
-        const role =
-            String(
-                profile?.role || ""
-            )
-                .trim()
-                .toLowerCase();
-
-
-        const allowedRoles = [
-            "staff",
-            "admin"
-        ];
-
-
-        if (
-            profile &&
-            profile.is_active === true &&
-            allowedRoles.includes(role)
-        ) {
-
-            window.location.href =
-                "./dashboard.html";
-
-            return;
-        }
-
-
-        /*
-         * Existing session belongs to a partner
-         * or another non-Master account.
-         *
-         * Do NOT open Master CRM.
-         */
-
-        console.warn(
-            "Existing session is not authorized for Master CRM."
-        );
-
-        await supabaseLogin.auth.signOut();
-
-    }
-    catch (error) {
-
-        console.error(
-            "Session check failed:",
-            error
-        );
-
-    }
-
-})();
 </script>
-```
+
 
 </body>
 
