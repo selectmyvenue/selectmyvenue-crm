@@ -42,7 +42,15 @@ function getSupabaseClient() {
     supabaseClient =
         window.supabase.createClient(
             CRM_SUPABASE_URL,
-            CRM_SUPABASE_ANON_KEY
+            CRM_SUPABASE_ANON_KEY,
+            {
+                auth: {
+                    storageKey: "smv-master-crm-auth",
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true
+                }
+            }
         );
 
     return supabaseClient;
