@@ -48,7 +48,18 @@
 "use strict";
 const SUPABASE_URL = window.SUPABASE_URL || "https://uajqwyoqbbswkfiwosyw.supabase.co";
 const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || "sb_publishable_hfiuO4ZRn4VZmEkrN2RV-A_lZX_R3z7";
-const supabaseClient = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY,
+  {
+    auth: {
+      storageKey: "smv-partner-crm-auth",
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  }
+);
 let currentUser=null, partnerProfile=null, venue=null, assignments=[], toastTimer=null;
 const STATUS_OPTIONS=["assigned","viewed","contacted","detailed_shared","follow_up","site_visit","negotiation","booked","lost","cancelled"];
 function safe(v){return v===null||v===undefined||v===""?"—":String(v)}
