@@ -98,7 +98,16 @@ document.addEventListener("keydown", function(e) {
     .detail-value{margin-top:5px;color:#eef6f6;font-size:12px;line-height:1.5;word-break:break-word}
     .activity-box{margin-top:18px;padding-top:17px;border-top:1px solid var(--line)}.activity-title{font-size:12px;font-weight:850}
     .activity-note{margin-top:4px;color:var(--muted);font-size:10px}.activity-row{margin-top:10px;padding:10px 12px;border:1px solid rgba(255,255,255,.05);border-radius:10px}
-    .activity-status{font-weight:800;color:var(--teal);font-size:11px}.activity-time{margin-top:3px;color:var(--muted);font-size:9px}
+    
+.activity-timeline{margin-top:12px;padding-left:2px}
+.timeline-item{position:relative;display:grid;grid-template-columns:18px 1fr;gap:10px;padding-bottom:13px}
+.timeline-item:last-child{padding-bottom:0}
+.timeline-track{position:relative;display:flex;justify-content:center}
+.timeline-dot{width:9px;height:9px;margin-top:4px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 4px rgba(22,199,183,.08)}
+.timeline-item:not(:last-child) .timeline-track::after{content:"";position:absolute;top:14px;bottom:-1px;width:1px;background:rgba(22,199,183,.18)}
+.timeline-label{font-size:11px;font-weight:800;color:#e9f3f4}
+.timeline-time{margin-top:3px;color:var(--muted);font-size:9px}
+.activity-status{font-weight:800;color:var(--teal);font-size:11px}.activity-time{margin-top:3px;color:var(--muted);font-size:9px}
     .detail-footer{position:sticky;bottom:0;display:flex;justify-content:flex-end;padding:12px 19px;background:rgba(11,29,33,.96);border-top:1px solid var(--line)}
     @media(max-width:600px){.detail-grid{grid-template-columns:1fr}.detail-item.full{grid-column:auto}}
 
@@ -125,11 +134,11 @@ document.addEventListener("keydown", function(e) {
 <body>
 <div class="app">
 <header class="topbar">
-  <div class="top-brand"><div class="top-logo">SMV</div><div><div class="top-title">Select My Venue</div><div class="top-subtitle">Venue Partner CRM</div></div></div>
+  <div class="top-brand"><div class="top-logo" aria-label="Select My Venue">SMV</div><div><div class="top-title">Select My Venue</div><div class="top-subtitle">Venue Partner CRM</div></div></div>
   <div class="top-right"><div id="partnerName" class="partner-name">Venue Partner</div><button id="logoutButton" class="logout-btn" type="button">Logout</button></div>
 </header>
 <main class="content">
-  <section class="welcome"><div><span class="eyebrow">PARTNER DASHBOARD</span><h1>Welcome back</h1><p class="welcome-text">Manage customer enquiries assigned to your venue.</p></div></section>
+  <section class="welcome"><div><span class="eyebrow">PARTNER DASHBOARD</span><h1>Your Venue, Your Leads</h1><p class="welcome-text">Manage and grow the customer enquiries assigned to your venue.</p></div></section>
   <section id="venueCard" class="venue-card"><div class="venue-info"><div class="venue-icon">🏨</div><div><div class="venue-label">Your Venue</div><div id="venueName" class="venue-name">Loading...</div><div id="venueLocation" class="venue-location">—</div></div></div><div class="partner-badge">✓ Partner Active</div></section>
   <section class="stats">
     <div class="stat-card"><div class="stat-label">Assigned</div><div id="statAssigned" class="stat-value">0</div><div class="stat-note">Active enquiries</div></div>
@@ -254,7 +263,26 @@ function openEnquiryDetails(id){
       <div class="detail-item"><div class="detail-label">Assignment Status</div><div class="detail-value">${v(fmtStatus(a.assignment_status||"assigned"))}</div></div>
       <div class="detail-item"><div class="detail-label">Assigned On</div><div class="detail-value">${v(fmtDate(a.assigned_at))}</div></div>
     </div>
-    <div class="activity-box"><div class="activity-title">Partner Activity</div><div class="activity-note">Current progress for this enquiry.</div><div class="activity-row"><div class="activity-status">${v(fmtStatus(a.assignment_status||"assigned"))}</div><div class="activity-time">${v(fmtDate(a.updated_at||a.assigned_at))}</div></div></div>`;
+    <div class="activity-box">
+  <div class="activity-title">Partner Activity</div>
+  <div class="activity-note">Current progress for this enquiry.</div>
+  <div class="activity-timeline">
+    <div class="timeline-item">
+      <div class="timeline-track"><span class="timeline-dot"></span></div>
+      <div>
+        <div class="timeline-label">${v(fmtStatus(a.assignment_status||"assigned"))}</div>
+        <div class="timeline-time">${v(fmtDate(a.updated_at||a.assigned_at))}</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-track"><span class="timeline-dot"></span></div>
+      <div>
+        <div class="timeline-label">Assigned</div>
+        <div class="timeline-time">${v(fmtDate(a.assigned_at))}</div>
+      </div>
+    </div>
+  </div>
+</div>`;
   const m=document.getElementById("detailModal");m.classList.add("show");m.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
 }
 function closeEnquiryDetails(){const m=document.getElementById("detailModal");m.classList.remove("show");m.setAttribute("aria-hidden","true");document.body.style.overflow=""}
