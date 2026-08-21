@@ -793,7 +793,15 @@
     const supabaseLogin =
         window.supabase.createClient(
             window.SUPABASE_URL,
-            window.SUPABASE_ANON_KEY
+            window.SUPABASE_ANON_KEY,
+            {
+                auth: {
+                    storageKey: "smv-partner-crm-auth",
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true
+                }
+            }
         );
 
 
