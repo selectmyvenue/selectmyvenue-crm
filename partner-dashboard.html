@@ -4,7 +4,71 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Select My Venue | Venue Partner CRM</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+function findAssignment(assignmentId) {
+  return assignments.find(a => String(a.id) === String(assignmentId)) || null;
+}
+
+function detailValue(value) {
+  return escapeHtml(value === null || value === undefined || value === "" ? "—" : value);
+}
+
+function openEnquiryDetails(assignmentId) {
+  const assignment = findAssignment(assignmentId);
+  if (!assignment) { showToast("Unable to find this enquiry.", true); return; }
+
+  const e = assignment.customer_enquiry || {};
+  document.getElementById("detailTitle").textContent = e.customer_name || "Customer Enquiry";
+  document.getElementById("detailSubtitle").textContent =
+    `${formatStatus(assignment.assignment_status || "assigned")} · Assigned ${formatDate(assignment.assigned_at)}`;
+
+  document.getElementById("detailBody").innerHTML = `
+    <div class="detail-grid">
+      <div class="detail-item"><div class="detail-label">Customer Name</div><div class="detail-value">${detailValue(e.customer_name)}</div></div>
+      <div class="detail-item"><div class="detail-label">Mobile</div><div class="detail-value">${detailValue(e.mobile)}</div></div>
+      <div class="detail-item"><div class="detail-label">Email</div><div class="detail-value">${detailValue(e.email)}</div></div>
+      <div class="detail-item"><div class="detail-label">Occasion</div><div class="detail-value">${detailValue(e.occasion)}</div></div>
+      <div class="detail-item"><div class="detail-label">Event Date</div><div class="detail-value">${detailValue(formatDate(e.event_date))}</div></div>
+      <div class="detail-item"><div class="detail-label">Guests</div><div class="detail-value">${detailValue(e.guests)}</div></div>
+      <div class="detail-item"><div class="detail-label">Location</div><div class="detail-value">${detailValue(e.location)}</div></div>
+      <div class="detail-item"><div class="detail-label">Budget / Person</div><div class="detail-value">${detailValue(e.budget_per_person)}</div></div>
+      <div class="detail-item full"><div class="detail-label">Food Preference</div><div class="detail-value">${detailValue(e.food_preference)}</div></div>
+      <div class="detail-item full"><div class="detail-label">Customer Requirements</div><div class="detail-value">${detailValue(e.requirements)}</div></div>
+      <div class="detail-item"><div class="detail-label">Assignment Status</div><div class="detail-value">${detailValue(formatStatus(assignment.assignment_status || "assigned"))}</div></div>
+      <div class="detail-item"><div class="detail-label">Assigned On</div><div class="detail-value">${detailValue(formatDate(assignment.assigned_at))}</div></div>
+    </div>
+    <div class="activity-box">
+      <div class="activity-title">Partner Activity</div>
+      <div class="activity-note">Current progress for this enquiry.</div>
+      <div class="activity-row">
+        <div class="activity-status">${detailValue(formatStatus(assignment.assignment_status || "assigned"))}</div>
+        <div class="activity-time">${detailValue(formatDate(assignment.updated_at || assignment.assigned_at))}</div>
+      </div>
+    </div>`;
+
+  const modal=document.getElementById("detailModal");
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden","false");
+  document.body.style.overflow="hidden";
+}
+
+function closeEnquiryDetails() {
+  const modal=document.getElementById("detailModal");
+  modal.classList.remove("show");
+  modal.setAttribute("aria-hidden","true");
+  document.body.style.overflow="";
+}
+
+document.getElementById("detailClose").addEventListener("click", closeEnquiryDetails);
+document.getElementById("detailCloseBottom").addEventListener("click", closeEnquiryDetails);
+document.getElementById("detailModal").addEventListener("click", function(e) {
+  if (e.target === this) closeEnquiryDetails();
+});
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") closeEnquiryDetails();
+});
+
+</script>
   <style>
     :root{--bg:#071417;--panel:#0d2024;--panel2:#10272b;--line:#1c393e;--teal:#16c7b7;--teal2:#0e9d94;--gold:#e5b85c;--text:#f4f8f8;--muted:#91a8ab;--green:#4bd59a;--orange:#f1b866;--red:#ff7474;--blue:#79aef8;--radius:17px}
     *{box-sizing:border-box}
@@ -19,7 +83,44 @@
     .empty{padding:55px 25px;text-align:center;color:var(--muted)}.empty-icon{margin-bottom:10px;font-size:32px;opacity:.7}.error-box{margin:18px 21px;padding:12px 14px;border-radius:11px;border:1px solid rgba(255,116,116,.2);background:rgba(255,116,116,.06);color:#ffb0b0;font-size:12px;display:none}.error-box.show{display:block}.toast{position:fixed;right:22px;bottom:22px;z-index:100;max-width:360px;padding:12px 15px;border:1px solid var(--line);border-radius:12px;background:#10272b;color:#e9f2f3;box-shadow:0 18px 50px rgba(0,0,0,.35);font-size:12px;opacity:0;pointer-events:none;transform:translateY(10px);transition:.2s ease}.toast.show{opacity:1;transform:translateY(0)}.toast.error{border-color:rgba(255,116,116,.3);color:#ffb0b0}
     @media(max-width:1050px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.welcome{align-items:flex-start;flex-direction:column}.venue-card{align-items:flex-start;flex-direction:column}}
     @media(max-width:600px){.topbar{padding:0 16px}.partner-name{display:none}.content{width:min(100% - 24px,1400px);padding-top:20px}.stats{grid-template-columns:1fr 1fr;gap:9px}.stat-card{padding:14px}.stat-value{font-size:23px}.section-head{align-items:flex-start;flex-direction:column}}
-  </style>
+  
+    .detail-btn{padding:7px 10px;border-radius:9px;border:1px solid rgba(22,199,183,.22);background:rgba(22,199,183,.07);color:var(--teal);cursor:pointer;font-size:10px;font-weight:800;white-space:nowrap}
+    .detail-btn:hover{background:rgba(22,199,183,.13)}
+    .modal-backdrop{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.66);backdrop-filter:blur(8px)}
+    .modal-backdrop.show{display:flex}
+    .detail-modal{width:min(760px,100%);max-height:86vh;overflow:auto;border:1px solid var(--line);border-radius:18px;background:#0b1d21;box-shadow:0 30px 90px rgba(0,0,0,.55)}
+    .detail-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:17px 19px;background:rgba(11,29,33,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+    .detail-title{font-size:16px;font-weight:900}.detail-subtitle{margin-top:3px;color:var(--muted);font-size:11px}
+    .detail-close{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--panel-2);color:#dce8e9;cursor:pointer;font-size:18px}
+    .detail-body{padding:19px}.detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+    .detail-item{padding:13px;border:1px solid rgba(255,255,255,.055);border-radius:12px;background:rgba(255,255,255,.018)}
+    .detail-item.full{grid-column:1/-1}.detail-label{color:var(--muted);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.65px}
+    .detail-value{margin-top:5px;color:#eef6f6;font-size:12px;line-height:1.5;word-break:break-word}
+    .activity-box{margin-top:18px;padding-top:17px;border-top:1px solid var(--line)}.activity-title{font-size:12px;font-weight:850}
+    .activity-note{margin-top:4px;color:var(--muted);font-size:10px}.activity-row{margin-top:10px;padding:10px 12px;border:1px solid rgba(255,255,255,.05);border-radius:10px}
+    .activity-status{font-weight:800;color:var(--teal);font-size:11px}.activity-time{margin-top:3px;color:var(--muted);font-size:9px}
+    .detail-footer{position:sticky;bottom:0;display:flex;justify-content:flex-end;padding:12px 19px;background:rgba(11,29,33,.96);border-top:1px solid var(--line)}
+    @media(max-width:600px){.detail-grid{grid-template-columns:1fr}.detail-item.full{grid-column:auto}}
+
+
+    .detail-btn{padding:7px 10px;border-radius:9px;border:1px solid rgba(22,199,183,.22);background:rgba(22,199,183,.07);color:var(--teal);cursor:pointer;font-size:10px;font-weight:800;white-space:nowrap}
+    .detail-btn:hover{background:rgba(22,199,183,.13)}
+    .modal-backdrop{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.66);backdrop-filter:blur(8px)}
+    .modal-backdrop.show{display:flex}
+    .detail-modal{width:min(760px,100%);max-height:86vh;overflow:auto;border:1px solid var(--line);border-radius:18px;background:#0b1d21;box-shadow:0 30px 90px rgba(0,0,0,.55)}
+    .detail-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:17px 19px;background:rgba(11,29,33,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+    .detail-title{font-size:16px;font-weight:900}.detail-subtitle{margin-top:3px;color:var(--muted);font-size:11px}
+    .detail-close{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--panel-2);color:#dce8e9;cursor:pointer;font-size:18px}
+    .detail-body{padding:19px}.detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+    .detail-item{padding:13px;border:1px solid rgba(255,255,255,.055);border-radius:12px;background:rgba(255,255,255,.018)}
+    .detail-item.full{grid-column:1/-1}.detail-label{color:var(--muted);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.65px}
+    .detail-value{margin-top:5px;color:#eef6f6;font-size:12px;line-height:1.5;word-break:break-word}
+    .activity-box{margin-top:18px;padding-top:17px;border-top:1px solid var(--line)}.activity-title{font-size:12px;font-weight:850}
+    .activity-note{margin-top:4px;color:var(--muted);font-size:10px}.activity-row{margin-top:10px;padding:10px 12px;border:1px solid rgba(255,255,255,.05);border-radius:10px}
+    .activity-status{font-weight:800;color:var(--teal);font-size:11px}.activity-time{margin-top:3px;color:var(--muted);font-size:9px}
+    .detail-footer{position:sticky;bottom:0;display:flex;justify-content:flex-end;padding:12px 19px;background:rgba(11,29,33,.96);border-top:1px solid var(--line)}
+    @media(max-width:600px){.detail-grid{grid-template-columns:1fr}.detail-item.full{grid-column:auto}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -39,11 +140,11 @@
   <section class="section">
     <div class="section-head"><div><div class="section-title">Assigned Customer Enquiries</div><div class="section-subtitle">Only enquiries assigned to your venue are shown here.</div></div><button id="refreshButton" class="refresh-btn" type="button">↻ Refresh</button></div>
     <div id="loadError" class="error-box"></div>
-    <div class="table-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>Email</th><th>Event</th><th>Event Date</th><th>Guests</th><th>Location</th><th>Assignment</th><th>Update Status</th></tr></thead><tbody id="enquiriesBody"><tr><td colspan="9"><div class="empty"><div class="empty-icon">⏳</div>Loading assigned enquiries...</div></td></tr></tbody></table></div>
+    <div class="table-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>Email</th><th>Event</th><th>Event Date</th><th>Guests</th><th>Location</th><th>Assignment</th><th>Details</th><th>Update Status</th></tr></thead><tbody id="enquiriesBody"><tr><td colspan="9"><div class="empty"><div class="empty-icon">⏳</div>Loading assigned enquiries...</div></td></tr></tbody></table></div>
   </section>
 </main>
 </div>
-<div id="toast" class="toast"></div>
+<div id="detailModal" class="modal-backdrop" aria-hidden="true"><div class="detail-modal"><div class="detail-head"><div><div id="detailTitle" class="detail-title">Enquiry Details</div><div id="detailSubtitle" class="detail-subtitle">Assigned enquiry</div></div><button id="detailClose" class="detail-close" type="button">×</button></div><div id="detailBody" class="detail-body"></div><div class="detail-footer"><button id="detailCloseBottom" class="refresh-btn" type="button">Close</button></div></div></div><div id="toast" class="toast"></div>
 <script>
 "use strict";
 const SUPABASE_URL = window.SUPABASE_URL || "https://uajqwyoqbbswkfiwosyw.supabase.co";
@@ -125,10 +226,42 @@ function renderAssignments(){
     const event=e.occasion||e.event||e.event_type||e.event_name||"—";
     const guests=e.guests??e.guest_count??e.number_of_guests??"—";
     const location=e.location||e.city||e.area||"—";
-    return `<tr><td><div class="customer-name">${esc(name)}</div></td><td>${esc(phone)}</td><td>${esc(email)}</td><td>${esc(event)}</td><td>${esc(fmtDate(e.event_date))}</td><td>${esc(guests)}</td><td>${esc(location)}</td><td><span class="status ${statusClass(status)}">${esc(fmtStatus(status))}</span><div class="secondary">Assigned ${esc(fmtDate(a.assigned_at))}</div></td><td><select class="status-select" data-assignment-id="${esc(a.id)}">${options(status)}</select></td></tr>`;
+    return `<tr><td><div class="customer-name">${esc(name)}</div></td><td>${esc(phone)}</td><td>${esc(email)}</td><td>${esc(event)}</td><td>${esc(fmtDate(e.event_date))}</td><td>${esc(guests)}</td><td>${esc(location)}</td><td><span class="status ${statusClass(status)}">${esc(fmtStatus(status))}</span><div class="secondary">Assigned ${esc(fmtDate(a.assigned_at))}</div></td><td><button type="button" class="detail-btn" data-detail-id="${esc(a.id)}">View Details</button></td><td><select class="status-select" data-assignment-id="${esc(a.id)}">${options(status)}</select></td></tr>`;
   }).join("");
   body.querySelectorAll(".status-select").forEach(select=>select.addEventListener("change",()=>updateStatus(select.dataset.assignmentId,select.value)));
+  body.querySelectorAll(".detail-btn").forEach(button=>button.addEventListener("click",()=>openEnquiryDetails(button.dataset.detailId)));
 }
+
+function openEnquiryDetails(id){
+  const a=assignments.find(x=>String(x.id)===String(id));
+  if(!a){showToast("Unable to find this enquiry.",true);return}
+  const e=a.customer_enquiry||{};
+  document.getElementById("detailTitle").textContent=e.customer_name||"Customer Enquiry";
+  document.getElementById("detailSubtitle").textContent=`${fmtStatus(a.assignment_status||"assigned")} · Assigned ${fmtDate(a.assigned_at)}`;
+  const v=x=>esc(x===null||x===undefined||x===""?"—":x);
+  document.getElementById("detailBody").innerHTML=`
+    <div class="detail-grid">
+      <div class="detail-item"><div class="detail-label">Customer Name</div><div class="detail-value">${v(e.customer_name)}</div></div>
+      <div class="detail-item"><div class="detail-label">Mobile</div><div class="detail-value">${v(e.mobile)}</div></div>
+      <div class="detail-item"><div class="detail-label">Email</div><div class="detail-value">${v(e.email)}</div></div>
+      <div class="detail-item"><div class="detail-label">Occasion</div><div class="detail-value">${v(e.occasion)}</div></div>
+      <div class="detail-item"><div class="detail-label">Event Date</div><div class="detail-value">${v(fmtDate(e.event_date))}</div></div>
+      <div class="detail-item"><div class="detail-label">Guests</div><div class="detail-value">${v(e.guests)}</div></div>
+      <div class="detail-item"><div class="detail-label">Location</div><div class="detail-value">${v(e.location)}</div></div>
+      <div class="detail-item"><div class="detail-label">Budget / Person</div><div class="detail-value">${v(e.budget_per_person)}</div></div>
+      <div class="detail-item full"><div class="detail-label">Food Preference</div><div class="detail-value">${v(e.food_preference)}</div></div>
+      <div class="detail-item full"><div class="detail-label">Requirements</div><div class="detail-value">${v(e.requirements)}</div></div>
+      <div class="detail-item"><div class="detail-label">Assignment Status</div><div class="detail-value">${v(fmtStatus(a.assignment_status||"assigned"))}</div></div>
+      <div class="detail-item"><div class="detail-label">Assigned On</div><div class="detail-value">${v(fmtDate(a.assigned_at))}</div></div>
+    </div>
+    <div class="activity-box"><div class="activity-title">Partner Activity</div><div class="activity-note">Current progress for this enquiry.</div><div class="activity-row"><div class="activity-status">${v(fmtStatus(a.assignment_status||"assigned"))}</div><div class="activity-time">${v(fmtDate(a.updated_at||a.assigned_at))}</div></div></div>`;
+  const m=document.getElementById("detailModal");m.classList.add("show");m.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
+}
+function closeEnquiryDetails(){const m=document.getElementById("detailModal");m.classList.remove("show");m.setAttribute("aria-hidden","true");document.body.style.overflow=""}
+document.getElementById("detailClose").addEventListener("click",closeEnquiryDetails);
+document.getElementById("detailCloseBottom").addEventListener("click",closeEnquiryDetails);
+document.getElementById("detailModal").addEventListener("click",e=>{if(e.target===e.currentTarget)closeEnquiryDetails()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeEnquiryDetails()});
 async function updateStatus(id,status){
   if(!id)return;
   try{
