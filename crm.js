@@ -969,9 +969,7 @@ function createCommentCell(
                             class="crm-comment-indicator"
                             title="Comment exists"
                             aria-label="Comment exists"
-                        >
-                            Y
-                        </span>
+                        ></span>
                     `
                     : ""
             }
@@ -984,7 +982,7 @@ function createCommentCell(
                 title="Edit comment"
                 aria-label="Edit comment"
             >
-                ✏️
+                <span aria-hidden="true">✎</span>
             </button>
 
             ${
@@ -998,7 +996,7 @@ function createCommentCell(
                             title="View comment"
                             aria-label="View comment"
                         >
-                            👁
+                            <span aria-hidden="true">◉</span>
                         </button>
                     `
                     : ""
@@ -1170,7 +1168,6 @@ const email =
                         ai.recommendation
                     )}"
                 >
-                    <span class="view-icon">◉</span>
                     <span>Details</span>
                 </button>
 
@@ -1181,7 +1178,8 @@ const email =
                     data-id="${escapeHTML(id)}"
                     title="Assign this enquiry to approved and verified venues"
                 >
-                    🏨 Assign Venue
+                    <span class="assign-icon" aria-hidden="true">＋</span>
+                    <span>Assign</span>
                     ${getAssignmentCount(id) ? `<span class="venue-assignment-count">${getAssignmentCount(id)}</span>` : ""}
                 </button>
 
