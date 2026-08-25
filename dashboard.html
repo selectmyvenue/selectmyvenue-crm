@@ -49,7 +49,7 @@
 </head>
 
 
-<!-- Stage 7B: Master CRM Production UI + Integration Polish -->
+<!-- Stage 7B.1: Final World-Class Master CRM UI -->
 <body>
 
 <div class="crm-app">
@@ -72,7 +72,7 @@
             <div class="crm-brand-text">
 
                 <strong>
-                    Select My Venue CRM
+                    Master CRM
                 </strong>
 
             </div>
@@ -243,9 +243,14 @@
                 </h1>
 
                 <p>
-                    Manage customer enquiries, follow-ups and
-                    lead progress from one place.
+                    Manage customer enquiries, venue assignments and partner progress from one command center.
                 </p>
+
+                <div class="command-health">
+                    <span class="command-health-dot"></span>
+                    <strong>Live Operations</strong>
+                    <span>Master CRM + Venue Partner network connected</span>
+                </div>
 
             </div>
 
@@ -484,7 +489,7 @@
 
                 <div class="filter-workspace-note">
                     <span class="workspace-live-dot"></span>
-                    Live lead workspace
+                    <span id="leadResultCount">Live lead workspace</span>
                 </div>
 
             </div>
@@ -501,55 +506,13 @@
                     <thead>
 
                         <tr>
-
-                            <th>
-                                CUSTOMER
-                            </th>
-
-                            <th>
-                                PHONE
-                            </th>
-
-                            <th>
-                                CREATED DATE
-                            </th>
-
-                            <th>
-                                EMAIL
-                            </th>
-
-                            <th>
-                                SOURCE
-                            </th>
-
-                            <th>
-                                EVENT
-                            </th>
-
-                            <th>
-                                EVENT DATE
-                            </th>
-
-                            <th>
-                                GUESTS
-                            </th>
-
-                            <th>
-                                LOCATION
-                            </th>
-
-                            <th>
-                                STATUS
-                            </th>
-
-                            <th>
-                                COMMENT
-                            </th>
-
-                            <th class="action-column">
-                                ACTION
-                            </th>
-
+                            <th class="customer-column">CUSTOMER</th>
+                            <th class="event-column">EVENT</th>
+                            <th>LOCATION</th>
+                            <th>STATUS</th>
+                            <th class="venue-progress-column">VENUE / PARTNER PROGRESS</th>
+                            <th>CREATED</th>
+                            <th class="action-column">ACTIONS</th>
                         </tr>
 
                     </thead>
@@ -560,7 +523,7 @@
                         <tr>
 
                             <td
-                                colspan="12"
+                                colspan="7"
                                 class="loading-cell"
                             >
                                 Loading customer enquiries...
