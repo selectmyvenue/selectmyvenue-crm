@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Select My Venue | Venue Partner CRM</title>
-  <!-- Stage 6L.1: Scheduled Follow-up Enforcement | includes 6L Partner Lead Workspace -->
+  <!-- Stage 6M: Partner Contact Log & Permanent Notes | includes Stage 6L.1 -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1097,6 +1097,38 @@
     @media(max-width:600px){.followup-form{grid-template-columns:1fr}.followup-field.full,.followup-actions{grid-column:auto}.followup-head{flex-direction:column}}
 
 
+
+
+    /* =========================================================
+       STAGE 6M — PARTNER CONTACT LOG
+    ========================================================= */
+    .contact-log-box{
+      margin-top:18px;
+      padding:16px;
+      border:1px solid rgba(121,174,248,.14);
+      border-radius:14px;
+      background:linear-gradient(135deg,rgba(121,174,248,.045),rgba(255,255,255,.012));
+    }
+    .contact-log-title{font-size:12px;font-weight:900;color:#eef8f8}
+    .contact-log-note{margin-top:4px;color:var(--muted);font-size:9px;line-height:1.45}
+    .contact-log-form{display:grid;grid-template-columns:190px 1fr auto;gap:9px;margin-top:12px;align-items:start}
+    .contact-log-select,.contact-log-input{
+      width:100%;min-height:38px;padding:9px 10px;border:1px solid var(--line);
+      border-radius:10px;outline:none;background:#08191c;color:#dce8e9;font-size:11px
+    }
+    .contact-log-input{min-height:70px;resize:vertical;line-height:1.45}
+    .contact-log-select:focus,.contact-log-input:focus{border-color:rgba(22,199,183,.58);box-shadow:0 0 0 2px rgba(22,199,183,.055)}
+    .contact-log-save{
+      min-height:38px;padding:9px 12px;border:1px solid rgba(22,199,183,.28);
+      border-radius:10px;background:rgba(22,199,183,.09);color:var(--teal);
+      cursor:pointer;font-size:10px;font-weight:850;white-space:nowrap
+    }
+    .contact-log-save:hover{background:rgba(22,199,183,.14)}
+    .contact-log-save:disabled{opacity:.55;cursor:not-allowed}
+    @media(max-width:760px){
+      .contact-log-form{grid-template-columns:1fr}
+      .contact-log-save{width:100%}
+    }
 
     /* =========================================================
        STAGE 6L.1 — FOLLOW-UP SCHEDULING GUARD
@@ -3262,7 +3294,14 @@ function activityJourneyIcon(type){
     lost:"✕",
     cancelled:"✕",
     status_changed:"↻",
-    activity:"•"
+    activity:"•",
+    call_attempted:"📞",
+    customer_spoke:"☎",
+    whatsapp_shared:"💬",
+    customer_remark:"🗒",
+    site_visit_note:"📍",
+    negotiation_note:"🤝",
+    general_note:"✎"
   };
 
   return icons[normalized] || "•";
@@ -3287,7 +3326,14 @@ function activityJourneyLabel(type){
     lost:"Lost",
     cancelled:"Cancelled",
     status_changed:"Status Updated",
-    activity:"Activity"
+    activity:"Activity",
+    call_attempted:"Call Attempted",
+    customer_spoke:"Customer Spoke",
+    whatsapp_shared:"WhatsApp / Details Shared",
+    customer_remark:"Customer Remark",
+    site_visit_note:"Site Visit Note",
+    negotiation_note:"Negotiation Note",
+    general_note:"General Note"
   };
 
   return labels[normalized] || formatActivityType(normalized);
@@ -3325,6 +3371,27 @@ function formatActivityType(type){
 
     follow_up_scheduled:
       "Follow-up Scheduled",
+
+    call_attempted:
+      "Call Attempted",
+
+    customer_spoke:
+      "Customer Spoke",
+
+    whatsapp_shared:
+      "WhatsApp / Details Shared",
+
+    customer_remark:
+      "Customer Remark",
+
+    site_visit_note:
+      "Site Visit Note",
+
+    negotiation_note:
+      "Negotiation Note",
+
+    general_note:
+      "General Note",
 
     site_visit:
       "Site Visit",
@@ -3425,6 +3492,83 @@ function bindQuickActionButtons(assignmentId){
         }
       });
     });
+}
+
+
+/* ============================================================
+   STAGE 6M — SAVE CONTACT LOG
+============================================================ */
+
+async function savePartnerContactLog(assignmentId){
+  const assignment = findAssignment(assignmentId);
+
+  if(!assignment){
+    showToast("Unable to find this enquiry.",true);
+    return;
+  }
+
+  const typeElement = document.getElementById("contactLogType");
+  const noteElement = document.getElementById("contactLogNote");
+  const saveButton = document.getElementById("saveContactLogButton");
+
+  const activityType = String(typeElement?.value || "general_note").trim();
+  const note = String(noteElement?.value || "").trim();
+
+  if(!note){
+    showToast("Please enter a contact note before saving.",true);
+    noteElement?.focus();
+    return;
+  }
+
+  if(note.length > 1000){
+    showToast("Contact note is too long.",true);
+    return;
+  }
+
+  if(saveButton){
+    saveButton.disabled = true;
+    saveButton.textContent = "Saving...";
+  }
+
+  try{
+    const {error} = await supabaseClient
+      .from("venue_activity_log")
+      .insert({
+        assignment_id: assignment.id,
+        venue_id: assignment.venue_id,
+        enquiry_id: assignment.enquiry_id,
+        user_id: currentUser?.id || null,
+        activity_type: activityType,
+        description: note
+      });
+
+    if(error){
+      throw error;
+    }
+
+    if(noteElement){
+      noteElement.value = "";
+    }
+
+    showToast("Contact note saved to Customer Journey.");
+
+    await loadActivityHistory(
+      assignment.id,
+      "activityTimeline"
+    );
+
+  }catch(error){
+    console.error("Unable to save contact note:",error);
+    showToast(
+      error?.message || "Unable to save contact note.",
+      true
+    );
+  }finally{
+    if(saveButton){
+      saveButton.disabled = false;
+      saveButton.textContent = "Save Note";
+    }
+  }
 }
 
 
@@ -3724,6 +3868,37 @@ async function openEnquiryDetails(
         </div>
 
 
+        <div class="contact-log-box">
+          <div class="contact-log-title">📝 Add Contact Note</div>
+          <div class="contact-log-note">
+            Record what happened with this customer. These notes become part of the permanent Customer Journey.
+          </div>
+
+          <div class="contact-log-form">
+            <select id="contactLogType" class="contact-log-select" aria-label="Contact activity type">
+              <option value="call_attempted">📞 Call Attempted</option>
+              <option value="customer_spoke">☎ Customer Spoke</option>
+              <option value="whatsapp_shared">💬 WhatsApp / Details Shared</option>
+              <option value="customer_remark">🗒 Customer Remark</option>
+              <option value="site_visit_note">📍 Site Visit Note</option>
+              <option value="negotiation_note">🤝 Negotiation Note</option>
+              <option value="general_note">✎ General Note</option>
+            </select>
+
+            <textarea
+              id="contactLogNote"
+              class="contact-log-input"
+              maxlength="1000"
+              placeholder="Example: Customer requested the premium package and will confirm after discussing with family."
+            ></textarea>
+
+            <button id="saveContactLogButton" class="contact-log-save" type="button">
+              Save Note
+            </button>
+          </div>
+        </div>
+
+
         <div class="activity-box">
 
           <div class="journey-head">
@@ -3763,6 +3938,14 @@ async function openEnquiryDetails(
   }
 
   bindQuickActionButtons(assignment.id);
+
+  const saveContactLogButton = document.getElementById("saveContactLogButton");
+  if(saveContactLogButton){
+    saveContactLogButton.addEventListener(
+      "click",
+      () => savePartnerContactLog(assignment.id)
+    );
+  }
 
 
   const modal =
