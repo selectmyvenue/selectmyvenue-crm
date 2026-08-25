@@ -489,6 +489,14 @@
 
       background:rgba(13,32,36,.92);
     }
+    .stat-card[data-filter]{cursor:pointer;transition:.18s ease}
+    .stat-card[data-filter]:hover{transform:translateY(-2px);border-color:rgba(22,199,183,.28);background:rgba(16,39,43,.96)}
+    .stat-card.active-filter{border-color:rgba(22,199,183,.58);box-shadow:0 0 0 1px rgba(22,199,183,.12) inset;background:rgba(22,199,183,.065)}
+    .stat-card.alert-card .stat-value{color:var(--orange)}
+    .stat-card.overdue-card .stat-value{color:var(--red)}
+    .stat-card.success-card .stat-value{color:var(--green)}
+    .filter-summary{display:none;align-items:center;justify-content:space-between;gap:12px;margin:0 21px 14px;padding:10px 13px;border:1px solid rgba(22,199,183,.16);border-radius:11px;background:rgba(22,199,183,.045);color:#cfe0e1;font-size:11px}
+    .filter-summary.show{display:flex}.clear-filter-btn{padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:#08191c;color:var(--muted);cursor:pointer;font-size:10px}
 
     .stat-label{
       color:var(--muted);
@@ -1364,86 +1372,14 @@
     ====================================================== -->
 
     <section class="stats">
-
-      <div class="stat-card">
-
-        <div class="stat-label">
-          Assigned
-        </div>
-
-        <div
-          id="statAssigned"
-          class="stat-value"
-        >
-          0
-        </div>
-
-        <div class="stat-note">
-          Active enquiries
-        </div>
-
-      </div>
-
-
-      <div class="stat-card">
-
-        <div class="stat-label">
-          Contacted
-        </div>
-
-        <div
-          id="statContacted"
-          class="stat-value"
-        >
-          0
-        </div>
-
-        <div class="stat-note">
-          Customer contacted
-        </div>
-
-      </div>
-
-
-      <div class="stat-card">
-
-        <div class="stat-label">
-          Follow-up
-        </div>
-
-        <div
-          id="statFollowUp"
-          class="stat-value"
-        >
-          0
-        </div>
-
-        <div class="stat-note">
-          Follow-up required
-        </div>
-
-      </div>
-
-
-      <div class="stat-card">
-
-        <div class="stat-label">
-          Site Visit
-        </div>
-
-        <div
-          id="statSiteVisit"
-          class="stat-value"
-        >
-          0
-        </div>
-
-        <div class="stat-note">
-          Site visits
-        </div>
-
-      </div>
-
+      <div class="stat-card" data-filter="active" tabindex="0" role="button"><div class="stat-label">Active Leads</div><div id="statAssigned" class="stat-value">0</div><div class="stat-note">Open opportunities</div></div>
+      <div class="stat-card" data-filter="new" tabindex="0" role="button"><div class="stat-label">New / Unviewed</div><div id="statNew" class="stat-value">0</div><div class="stat-note">Needs first action</div></div>
+      <div class="stat-card alert-card" data-filter="today" tabindex="0" role="button"><div class="stat-label">Follow-ups Today</div><div id="statToday" class="stat-value">0</div><div class="stat-note">Due today</div></div>
+      <div class="stat-card overdue-card" data-filter="overdue" tabindex="0" role="button"><div class="stat-label">Overdue</div><div id="statOverdue" class="stat-value">0</div><div class="stat-note">Needs attention</div></div>
+      <div class="stat-card" data-filter="contacted" tabindex="0" role="button"><div class="stat-label">Contacted</div><div id="statContacted" class="stat-value">0</div><div class="stat-note">Customer contacted</div></div>
+      <div class="stat-card" data-filter="site_visit" tabindex="0" role="button"><div class="stat-label">Site Visits</div><div id="statSiteVisit" class="stat-value">0</div><div class="stat-note">Visit stage</div></div>
+      <div class="stat-card" data-filter="negotiation" tabindex="0" role="button"><div class="stat-label">Negotiation</div><div id="statNegotiation" class="stat-value">0</div><div class="stat-note">Booking discussion</div></div>
+      <div class="stat-card success-card" data-filter="booked" tabindex="0" role="button"><div class="stat-label">Booked</div><div id="statBooked" class="stat-value">0</div><div class="stat-note">Confirmed bookings</div></div>
     </section>
 
 
@@ -1483,6 +1419,8 @@
         class="error-box"
       ></div>
 
+
+      <div id="dashboardFilterSummary" class="filter-summary"><span id="dashboardFilterText">Showing filtered enquiries</span><button id="clearDashboardFilter" class="clear-filter-btn" type="button">Show All</button></div>
 
       <div class="table-wrap">
 
@@ -1661,6 +1599,7 @@ let venue = null;
 let assignments = [];
 let notifications = [];
 let toastTimer = null;
+let activeDashboardFilter = "all";
 
 
 /* ============================================================
@@ -1789,8 +1728,10 @@ function followUpState(value){
   const now = new Date();
   const startToday = new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const endToday = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1);
+  const endTomorrow = new Date(now.getFullYear(),now.getMonth(),now.getDate()+2);
   if(follow < now) return {key:"overdue",label:"Overdue"};
   if(follow >= startToday && follow < endToday) return {key:"due",label:"Due today"};
+  if(follow >= endToday && follow < endTomorrow) return {key:"upcoming",label:"Tomorrow"};
   return {key:"upcoming",label:"Upcoming"};
 }
 
@@ -2154,59 +2095,38 @@ async function loadAssignments(){
 ============================================================ */
 
 function renderStats(){
-
-  const activeStatuses = [
-    "assigned",
-    "viewed",
-    "contacted",
-    "detailed_shared",
-    "follow_up",
-    "site_visit",
-    "negotiation"
-  ];
-
-
-  const countStatus =
-    status =>
-      assignments.filter(
-        assignment =>
-          String(
-            assignment.assignment_status || ""
-          ).toLowerCase() === status
-      ).length;
-
-
-  document
-    .getElementById("statAssigned")
-    .textContent =
-      assignments.filter(
-        assignment =>
-          activeStatuses.includes(
-            String(
-              assignment.assignment_status || ""
-            ).toLowerCase()
-          )
-      ).length;
-
-
-  document
-    .getElementById("statContacted")
-    .textContent =
-      countStatus("contacted");
-
-
-  document
-    .getElementById("statFollowUp")
-    .textContent =
-      countStatus("follow_up");
-
-
-  document
-    .getElementById("statSiteVisit")
-    .textContent =
-      countStatus("site_visit");
+  const statusOf=a=>String(a.assignment_status||"").toLowerCase();
+  const active=["assigned","viewed","contacted","detailed_shared","follow_up","site_visit","negotiation"];
+  const countStatus=status=>assignments.filter(a=>statusOf(a)===status).length;
+  document.getElementById("statAssigned").textContent=assignments.filter(a=>active.includes(statusOf(a))).length;
+  document.getElementById("statNew").textContent=assignments.filter(a=>statusOf(a)==="assigned").length;
+  document.getElementById("statToday").textContent=assignments.filter(a=>followUpState(a.follow_up_at).key==="due").length;
+  document.getElementById("statOverdue").textContent=assignments.filter(a=>followUpState(a.follow_up_at).key==="overdue").length;
+  document.getElementById("statContacted").textContent=countStatus("contacted");
+  document.getElementById("statSiteVisit").textContent=countStatus("site_visit");
+  document.getElementById("statNegotiation").textContent=countStatus("negotiation");
+  document.getElementById("statBooked").textContent=countStatus("booked");
+  updateDashboardFilterUI();
 }
 
+function assignmentMatchesDashboardFilter(a){
+  const status=String(a.assignment_status||"").toLowerCase();
+  const active=["assigned","viewed","contacted","detailed_shared","follow_up","site_visit","negotiation"];
+  if(activeDashboardFilter==="all")return true;
+  if(activeDashboardFilter==="active")return active.includes(status);
+  if(activeDashboardFilter==="new")return status==="assigned";
+  if(activeDashboardFilter==="today")return followUpState(a.follow_up_at).key==="due";
+  if(activeDashboardFilter==="overdue")return followUpState(a.follow_up_at).key==="overdue";
+  return status===activeDashboardFilter;
+}
+function updateDashboardFilterUI(){
+  document.querySelectorAll(".stat-card[data-filter]").forEach(card=>card.classList.toggle("active-filter",card.dataset.filter===activeDashboardFilter));
+  const box=document.getElementById("dashboardFilterSummary"), text=document.getElementById("dashboardFilterText"); if(!box||!text)return;
+  const labels={active:"Active Leads",new:"New / Unviewed",today:"Follow-ups Today",overdue:"Overdue Follow-ups",contacted:"Contacted",site_visit:"Site Visits",negotiation:"Negotiation",booked:"Booked"};
+  if(activeDashboardFilter==="all"){box.classList.remove("show");return;}
+  const count=assignments.filter(assignmentMatchesDashboardFilter).length; text.textContent=`Showing ${labels[activeDashboardFilter]||"Filtered"} · ${count} ${count===1?"enquiry":"enquiries"}`; box.classList.add("show");
+}
+function setDashboardFilter(filter){activeDashboardFilter=filter||"all";renderAssignments();updateDashboardFilterUI();}
 
 /* ============================================================
    STATUS OPTIONS
@@ -2259,8 +2179,9 @@ function renderAssignments(){
       "enquiriesBody"
     );
 
+  const visibleAssignments = assignments.filter(assignmentMatchesDashboardFilter);
 
-  if(!assignments.length){
+  if(!visibleAssignments.length){
 
     body.innerHTML =
       `
@@ -2287,7 +2208,7 @@ function renderAssignments(){
 
 
   body.innerHTML =
-    assignments
+    visibleAssignments
       .map(
         assignment => {
 
@@ -4256,6 +4177,13 @@ supabaseClient.auth.onAuthStateChange(
 /* ============================================================
    INITIALIZATION
 ============================================================ */
+
+/* ============================================================
+   STAGE 6K-A — COMMAND CENTER CARD FILTERS
+============================================================ */
+document.querySelectorAll(".stat-card[data-filter]").forEach(card=>{const activate=()=>setDashboardFilter(card.dataset.filter);card.addEventListener("click",activate);card.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();activate();}});});
+const clearDashboardFilterButton=document.getElementById("clearDashboardFilter");
+if(clearDashboardFilterButton){clearDashboardFilterButton.addEventListener("click",()=>setDashboardFilter("all"));}
 
 (async function(){
 
