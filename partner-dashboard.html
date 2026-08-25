@@ -1063,6 +1063,30 @@
       border-top:1px solid var(--line);
     }
 
+
+
+    /* =========================================================
+       STAGE 6J — PARTNER FOLLOW-UP MANAGEMENT
+    ========================================================= */
+
+    .followup-box{margin-top:18px;padding:16px;border:1px solid rgba(241,184,102,.18);border-radius:14px;background:rgba(241,184,102,.035)}
+    .followup-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:13px}
+    .followup-title{font-size:12px;font-weight:900;color:#f2f7f7}.followup-note{margin-top:4px;color:var(--muted);font-size:10px;line-height:1.45}
+    .followup-state{padding:6px 9px;border-radius:999px;font-size:9px;font-weight:900;white-space:nowrap;border:1px solid var(--line);color:var(--muted)}
+    .followup-state.due{color:var(--orange);border-color:rgba(241,184,102,.25);background:rgba(241,184,102,.08)}
+    .followup-state.overdue{color:var(--red);border-color:rgba(255,116,116,.24);background:rgba(255,116,116,.07)}
+    .followup-state.upcoming{color:var(--teal);border-color:rgba(22,199,183,.22);background:rgba(22,199,183,.07)}
+    .followup-form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:11px}.followup-field{display:flex;flex-direction:column;gap:6px}.followup-field.full{grid-column:1/-1}
+    .followup-field label{color:var(--muted);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.55px}
+    .followup-input,.followup-textarea{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:10px;background:#08191c;color:#eaf3f4;outline:none;font:inherit;font-size:11px}
+    .followup-input:focus,.followup-textarea:focus{border-color:rgba(22,199,183,.5)}.followup-textarea{min-height:72px;resize:vertical;line-height:1.45}
+    .followup-actions{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}.followup-save,.followup-clear{padding:8px 11px;border-radius:9px;cursor:pointer;font-size:10px;font-weight:850}
+    .followup-save{border:1px solid rgba(22,199,183,.28);background:rgba(22,199,183,.09);color:var(--teal)}.followup-clear{border:1px solid var(--line);background:#08191c;color:#b8cacc}
+    .followup-save:disabled,.followup-clear:disabled{opacity:.55;cursor:not-allowed}.followup-current{margin-top:11px;padding:10px 11px;border:1px solid rgba(255,255,255,.05);border-radius:10px;background:rgba(255,255,255,.018);font-size:10px;color:#c8d7d8;line-height:1.5}
+    .followup-table{margin-top:5px;display:inline-flex;align-items:center;gap:5px;padding:4px 7px;border-radius:999px;font-size:8px;font-weight:800;border:1px solid rgba(241,184,102,.18);color:var(--orange);background:rgba(241,184,102,.05)}
+    .followup-table.overdue{color:var(--red);border-color:rgba(255,116,116,.2);background:rgba(255,116,116,.05)}.followup-table.upcoming{color:var(--teal);border-color:rgba(22,199,183,.18);background:rgba(22,199,183,.05)}
+    @media(max-width:600px){.followup-form{grid-template-columns:1fr}.followup-field.full,.followup-actions{grid-column:auto}.followup-head{flex-direction:column}}
+
     /* =========================================================
        RESPONSIVE
     ========================================================= */
@@ -1750,6 +1774,27 @@ function formatDateTime(value){
   );
 }
 
+function formatForDateTimeLocal(value){
+  if(!value) return "";
+  const date = new Date(value);
+  if(Number.isNaN(date.getTime())) return "";
+  const pad = number => String(number).padStart(2,"0");
+  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function followUpState(value){
+  if(!value) return {key:"none",label:"Not scheduled"};
+  const follow = new Date(value);
+  if(Number.isNaN(follow.getTime())) return {key:"none",label:"Not scheduled"};
+  const now = new Date();
+  const startToday = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const endToday = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1);
+  if(follow < now) return {key:"overdue",label:"Overdue"};
+  if(follow >= startToday && follow < endToday) return {key:"due",label:"Due today"};
+  return {key:"upcoming",label:"Upcoming"};
+}
+
+
 
 /* ============================================================
    TOAST
@@ -2354,6 +2399,11 @@ function renderAssignments(){
                     )
                   )}
                 </div>
+
+                ${assignment.follow_up_at ? (() => {
+                  const followState = followUpState(assignment.follow_up_at);
+                  return `<div class="followup-table ${followState.key}">⏰ ${escapeHtml(followState.label)} · ${escapeHtml(formatDateTime(assignment.follow_up_at))}</div>`;
+                })() : ""}
 
               </td>
 
@@ -3000,6 +3050,37 @@ async function openEnquiryDetails(
         </div>
 
 
+        <div class="followup-box">
+          <div class="followup-head">
+            <div>
+              <div class="followup-title">⏰ Partner Follow-up</div>
+              <div class="followup-note">Schedule the next customer follow-up and keep a partner note for this enquiry.</div>
+            </div>
+            <div id="followUpState" class="followup-state ${followUpState(assignment.follow_up_at).key}">${escapeHtml(followUpState(assignment.follow_up_at).label)}</div>
+          </div>
+
+          <div class="followup-form">
+            <div class="followup-field">
+              <label for="partnerFollowUpAt">Follow-up date & time</label>
+              <input id="partnerFollowUpAt" class="followup-input" type="datetime-local" value="${escapeHtml(formatForDateTimeLocal(assignment.follow_up_at))}">
+            </div>
+            <div class="followup-field">
+              <label for="partnerFollowUpNote">Partner note</label>
+              <textarea id="partnerFollowUpNote" class="followup-textarea" maxlength="1000" placeholder="Example: Customer asked to call after 6 PM regarding package options.">${escapeHtml(assignment.partner_note || "")}</textarea>
+            </div>
+            <div class="followup-actions">
+              ${assignment.follow_up_at ? '<button id="clearFollowUpButton" type="button" class="followup-clear">Clear Follow-up</button>' : ''}
+              <button id="saveFollowUpButton" type="button" class="followup-save">Save Follow-up</button>
+            </div>
+          </div>
+
+          <div class="followup-current">
+            <strong>Current follow-up:</strong> ${assignment.follow_up_at ? escapeHtml(formatDateTime(assignment.follow_up_at)) : "Not scheduled"}
+            ${assignment.partner_note ? `<br><strong>Note:</strong> ${escapeHtml(assignment.partner_note)}` : ""}
+          </div>
+        </div>
+
+
         <div class="activity-box">
 
           <div class="activity-title">
@@ -3018,6 +3099,17 @@ async function openEnquiryDetails(
 
         </div>
       `;
+
+
+  const saveFollowUpButton = document.getElementById("saveFollowUpButton");
+  if(saveFollowUpButton){
+    saveFollowUpButton.addEventListener("click", () => savePartnerFollowUp(assignment.id));
+  }
+
+  const clearFollowUpButton = document.getElementById("clearFollowUpButton");
+  if(clearFollowUpButton){
+    clearFollowUpButton.addEventListener("click", () => clearPartnerFollowUp(assignment.id));
+  }
 
 
   const modal =
@@ -3265,6 +3357,118 @@ document
 
     }
   );
+
+
+/* ============================================================
+   STAGE 6J — PARTNER FOLLOW-UP MANAGEMENT
+============================================================ */
+
+async function savePartnerFollowUp(assignmentId){
+  const assignment = findAssignment(assignmentId);
+  const dateInput = document.getElementById("partnerFollowUpAt");
+  const noteInput = document.getElementById("partnerFollowUpNote");
+  const button = document.getElementById("saveFollowUpButton");
+
+  if(!assignment || !dateInput || !noteInput) return;
+  if(!dateInput.value){
+    showToast("Please select a follow-up date and time.",true);
+    dateInput.focus();
+    return;
+  }
+
+  const followDate = new Date(dateInput.value);
+  if(Number.isNaN(followDate.getTime())){
+    showToast("Please select a valid follow-up date and time.",true);
+    return;
+  }
+
+  const note = noteInput.value.trim();
+  const oldStatus = String(assignment.assignment_status || "assigned").toLowerCase();
+  const terminal = ["booked","lost","cancelled","converted","closed"].includes(oldStatus);
+  const payload = {
+    follow_up_at: followDate.toISOString(),
+    partner_note: note || null
+  };
+  if(!terminal) payload.assignment_status = "follow_up";
+
+  if(button){ button.disabled=true; button.textContent="Saving..."; }
+
+  try{
+    const {data,error} = await supabaseClient
+      .from("venue_enquiry_assignments")
+      .update(payload)
+      .eq("id",assignmentId)
+      .eq("venue_id",partnerProfile.venue_id)
+      .select("*")
+      .single();
+    if(error) throw error;
+
+    assignments = assignments.map(item =>
+      String(item.id) === String(assignmentId)
+        ? {...item,...data,customer_enquiry:item.customer_enquiry}
+        : item
+    );
+
+    const activityResult = await logPartnerActivity({
+      assignmentId,
+      activityType:"follow_up",
+      description:`Follow-up scheduled for ${formatDateTime(data.follow_up_at)}${note ? `. Note: ${note}` : "."}`
+    });
+
+    renderStats();
+    renderAssignments();
+    await loadNotifications();
+    showToast(activityResult.success ? "Follow-up saved successfully." : "Follow-up saved, but activity history could not be recorded.",!activityResult.success);
+    await openEnquiryDetails(assignmentId);
+  }catch(error){
+    console.error("Unable to save follow-up:",error);
+    showToast(error?.message || "Unable to save follow-up.",true);
+  }finally{
+    const currentButton=document.getElementById("saveFollowUpButton");
+    if(currentButton){ currentButton.disabled=false; currentButton.textContent="Save Follow-up"; }
+  }
+}
+
+async function clearPartnerFollowUp(assignmentId){
+  const assignment = findAssignment(assignmentId);
+  const button = document.getElementById("clearFollowUpButton");
+  if(!assignment) return;
+  if(button){ button.disabled=true; button.textContent="Clearing..."; }
+
+  try{
+    const {data,error} = await supabaseClient
+      .from("venue_enquiry_assignments")
+      .update({follow_up_at:null,partner_note:null})
+      .eq("id",assignmentId)
+      .eq("venue_id",partnerProfile.venue_id)
+      .select("*")
+      .single();
+    if(error) throw error;
+
+    assignments = assignments.map(item =>
+      String(item.id) === String(assignmentId)
+        ? {...item,...data,customer_enquiry:item.customer_enquiry}
+        : item
+    );
+
+    await logPartnerActivity({
+      assignmentId,
+      activityType:"follow_up",
+      description:"Scheduled follow-up cleared by venue partner."
+    });
+
+    renderStats();
+    renderAssignments();
+    await loadNotifications();
+    showToast("Follow-up cleared.");
+    await openEnquiryDetails(assignmentId);
+  }catch(error){
+    console.error("Unable to clear follow-up:",error);
+    showToast(error?.message || "Unable to clear follow-up.",true);
+    const currentButton=document.getElementById("clearFollowUpButton");
+    if(currentButton){ currentButton.disabled=false; currentButton.textContent="Clear Follow-up"; }
+  }
+}
 
 
 /* ============================================================
