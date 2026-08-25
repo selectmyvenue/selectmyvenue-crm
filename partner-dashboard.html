@@ -3436,9 +3436,22 @@ async function clearPartnerFollowUp(assignmentId){
   if(button){ button.disabled=true; button.textContent="Clearing..."; }
 
   try{
+    const currentStatus = String(assignment.assignment_status || "assigned").toLowerCase();
+    const clearPayload = {
+      follow_up_at: null,
+      partner_note: null
+    };
+
+    // A cleared follow-up must not leave the enquiry in a false
+    // Follow Up state. We do not currently store the pre-follow-up
+    // status, so Contacted is the safe workflow fallback.
+    if(currentStatus === "follow_up"){
+      clearPayload.assignment_status = "contacted";
+    }
+
     const {data,error} = await supabaseClient
       .from("venue_enquiry_assignments")
-      .update({follow_up_at:null,partner_note:null})
+      .update(clearPayload)
       .eq("id",assignmentId)
       .eq("venue_id",partnerProfile.venue_id)
       .select("*")
@@ -3454,7 +3467,9 @@ async function clearPartnerFollowUp(assignmentId){
     await logPartnerActivity({
       assignmentId,
       activityType:"follow_up",
-      description:"Scheduled follow-up cleared by venue partner."
+      description: currentStatus === "follow_up"
+        ? "Scheduled follow-up cleared by venue partner. Status returned to Contacted."
+        : "Scheduled follow-up cleared by venue partner."
     });
 
     renderStats();
