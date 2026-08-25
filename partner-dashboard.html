@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Select My Venue | Venue Partner CRM</title>
-  <!-- Stage 6M: Partner Contact Log & Permanent Notes | includes Stage 6L.1 -->
+  <!-- Stage 6M.1: Contact Log Fix | includes Stage 6M -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -3536,7 +3536,6 @@ async function savePartnerContactLog(assignmentId){
       .insert({
         assignment_id: assignment.id,
         venue_id: assignment.venue_id,
-        enquiry_id: assignment.enquiry_id,
         user_id: currentUser?.id || null,
         activity_type: activityType,
         description: note
@@ -3553,8 +3552,7 @@ async function savePartnerContactLog(assignmentId){
     showToast("Contact note saved to Customer Journey.");
 
     await loadActivityHistory(
-      assignment.id,
-      "activityTimeline"
+      assignment
     );
 
   }catch(error){
