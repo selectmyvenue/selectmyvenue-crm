@@ -133,6 +133,192 @@
       font-weight:650;
     }
 
+    /* =========================================================
+       STAGE 6I — PARTNER NOTIFICATIONS
+    ========================================================= */
+
+    .notification-wrap{
+      position:relative;
+    }
+
+    .notification-btn{
+      position:relative;
+      width:38px;
+      height:38px;
+      display:grid;
+      place-items:center;
+      border-radius:11px;
+      border:1px solid var(--line);
+      background:var(--panel2);
+      color:#dce8e9;
+      cursor:pointer;
+      font-size:17px;
+    }
+
+    .notification-btn:hover,
+    .notification-btn.active{
+      border-color:rgba(22,199,183,.35);
+      color:#fff;
+      background:rgba(22,199,183,.08);
+    }
+
+    .notification-count{
+      position:absolute;
+      top:-5px;
+      right:-5px;
+      min-width:18px;
+      height:18px;
+      padding:0 5px;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      border-radius:999px;
+      background:var(--red);
+      color:#fff;
+      border:2px solid #071417;
+      font-size:9px;
+      line-height:1;
+      font-weight:900;
+    }
+
+    .notification-count.show{
+      display:flex;
+    }
+
+    .notification-panel{
+      position:absolute;
+      top:48px;
+      right:0;
+      z-index:120;
+      width:min(390px,calc(100vw - 24px));
+      max-height:520px;
+      display:none;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#0b1d21;
+      box-shadow:0 26px 70px rgba(0,0,0,.5);
+    }
+
+    .notification-panel.show{
+      display:block;
+    }
+
+    .notification-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 15px;
+      border-bottom:1px solid var(--line);
+      background:rgba(16,39,43,.96);
+    }
+
+    .notification-title{
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .notification-subtitle{
+      margin-top:2px;
+      color:var(--muted);
+      font-size:9px;
+    }
+
+    .mark-all-btn{
+      padding:6px 8px;
+      border-radius:8px;
+      border:1px solid var(--line);
+      background:#08191c;
+      color:var(--teal);
+      cursor:pointer;
+      font-size:9px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .mark-all-btn:hover{
+      border-color:rgba(22,199,183,.3);
+    }
+
+    .mark-all-btn:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+    }
+
+    .notification-list{
+      max-height:450px;
+      overflow-y:auto;
+    }
+
+    .notification-item{
+      position:relative;
+      display:grid;
+      grid-template-columns:34px 1fr;
+      gap:10px;
+      padding:13px 14px;
+      border-bottom:1px solid rgba(255,255,255,.045);
+      cursor:pointer;
+      transition:.15s ease;
+    }
+
+    .notification-item:hover{
+      background:rgba(255,255,255,.025);
+    }
+
+    .notification-item.unread{
+      background:rgba(22,199,183,.045);
+    }
+
+    .notification-item.unread::after{
+      content:"";
+      position:absolute;
+      top:15px;
+      right:12px;
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      background:var(--teal);
+    }
+
+    .notification-icon{
+      width:34px;
+      height:34px;
+      display:grid;
+      place-items:center;
+      border-radius:10px;
+      background:rgba(22,199,183,.08);
+      border:1px solid rgba(22,199,183,.14);
+      font-size:15px;
+    }
+
+    .notification-item-title{
+      padding-right:13px;
+      font-size:11px;
+      font-weight:850;
+      color:#eef6f6;
+    }
+
+    .notification-message{
+      margin-top:4px;
+      color:#b5c6c8;
+      font-size:9px;
+      line-height:1.45;
+    }
+
+    .notification-time{
+      margin-top:5px;
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .notification-empty{
+      padding:34px 18px;
+      text-align:center;
+      color:var(--muted);
+      font-size:10px;
+    }
+
     .logout-btn,
     .refresh-btn{
       padding:8px 12px;
@@ -946,6 +1132,19 @@
       .detail-modal{
         max-height:94vh;
       }
+
+      .notification-panel{
+        position:fixed;
+        top:68px;
+        right:8px;
+        left:8px;
+        width:auto;
+        max-height:70vh;
+      }
+
+      .notification-list{
+        max-height:calc(70vh - 62px);
+      }
     }
   </style>
 </head>
@@ -982,6 +1181,66 @@
     </div>
 
     <div class="top-right">
+
+      <div class="notification-wrap">
+
+        <button
+          id="notificationButton"
+          class="notification-btn"
+          type="button"
+          aria-label="Notifications"
+          aria-expanded="false"
+        >
+          🔔
+
+          <span
+            id="notificationCount"
+            class="notification-count"
+          >0</span>
+        </button>
+
+        <div
+          id="notificationPanel"
+          class="notification-panel"
+        >
+
+          <div class="notification-head">
+
+            <div>
+              <div class="notification-title">
+                Notifications
+              </div>
+
+              <div
+                id="notificationSubtitle"
+                class="notification-subtitle"
+              >
+                Your latest venue updates
+              </div>
+            </div>
+
+            <button
+              id="markAllReadButton"
+              class="mark-all-btn"
+              type="button"
+            >
+              Mark all read
+            </button>
+
+          </div>
+
+          <div
+            id="notificationList"
+            class="notification-list"
+          >
+            <div class="notification-empty">
+              Loading notifications...
+            </div>
+          </div>
+
+        </div>
+
+      </div>
 
       <div
         id="partnerName"
@@ -1376,6 +1635,7 @@ let currentUser = null;
 let partnerProfile = null;
 let venue = null;
 let assignments = [];
+let notifications = [];
 let toastTimer = null;
 
 
@@ -3214,6 +3474,439 @@ async function updateStatus(
 
 
 /* ============================================================
+   STAGE 6I — PARTNER NOTIFICATIONS UI
+============================================================ */
+
+function notificationIcon(type){
+
+  const icons = {
+    new_assignment:"📩",
+    status_update:"🔄",
+    follow_up:"⏰",
+    site_visit:"🏨",
+    booked:"✅",
+    cancelled:"❌",
+    lost:"⚠️"
+  };
+
+  return icons[String(type || "").toLowerCase()] || "🔔";
+}
+
+
+function renderNotifications(){
+
+  const list =
+    document.getElementById("notificationList");
+
+  const count =
+    document.getElementById("notificationCount");
+
+  const subtitle =
+    document.getElementById("notificationSubtitle");
+
+  const markAll =
+    document.getElementById("markAllReadButton");
+
+
+  const unreadCount =
+    notifications.filter(
+      notification => !notification.is_read
+    ).length;
+
+
+  count.textContent =
+    unreadCount > 99 ? "99+" : String(unreadCount);
+
+  count.classList.toggle(
+    "show",
+    unreadCount > 0
+  );
+
+
+  subtitle.textContent =
+    unreadCount > 0
+      ? `${unreadCount} unread notification${unreadCount === 1 ? "" : "s"}`
+      : "You're all caught up";
+
+
+  markAll.disabled =
+    unreadCount === 0;
+
+
+  if(!notifications.length){
+
+    list.innerHTML = `
+      <div class="notification-empty">
+        🔔<br><br>
+        No notifications yet.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  list.innerHTML =
+    notifications
+      .map(
+        notification => `
+          <div
+            class="notification-item ${notification.is_read ? "" : "unread"}"
+            data-notification-id="${escapeHtml(notification.id)}"
+            data-assignment-id="${escapeHtml(notification.assignment_id || "")}"
+            tabindex="0"
+            role="button"
+          >
+
+            <div class="notification-icon">
+              ${notificationIcon(notification.notification_type)}
+            </div>
+
+            <div>
+
+              <div class="notification-item-title">
+                ${escapeHtml(notification.title || "Notification")}
+              </div>
+
+              ${notification.message ? `
+                <div class="notification-message">
+                  ${escapeHtml(notification.message)}
+                </div>
+              ` : ""}
+
+              <div class="notification-time">
+                ${escapeHtml(formatDateTime(notification.created_at))}
+              </div>
+
+            </div>
+
+          </div>
+        `
+      )
+      .join("");
+
+
+  list
+    .querySelectorAll(".notification-item")
+    .forEach(item => {
+
+      const activate = async () => {
+        await handleNotificationClick(
+          item.dataset.notificationId,
+          item.dataset.assignmentId
+        );
+      };
+
+      item.addEventListener("click", activate);
+
+      item.addEventListener(
+        "keydown",
+        event => {
+          if(event.key === "Enter" || event.key === " "){
+            event.preventDefault();
+            activate();
+          }
+        }
+      );
+    });
+}
+
+
+async function loadNotifications(){
+
+  if(!currentUser?.id){
+    return;
+  }
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("venue_notifications")
+    .select(`
+      id,
+      venue_id,
+      user_id,
+      assignment_id,
+      notification_type,
+      title,
+      message,
+      is_read,
+      created_at,
+      read_at
+    `)
+    .eq("user_id", currentUser.id)
+    .order("created_at", {ascending:false})
+    .limit(30);
+
+
+  if(error){
+
+    console.error(
+      "Unable to load notifications:",
+      error
+    );
+
+    document.getElementById("notificationList").innerHTML = `
+      <div class="notification-empty">
+        Unable to load notifications right now.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  notifications =
+    Array.isArray(data) ? data : [];
+
+  renderNotifications();
+}
+
+
+async function markNotificationRead(notificationId){
+
+  const notification =
+    notifications.find(
+      item => String(item.id) === String(notificationId)
+    );
+
+  if(!notification || notification.is_read){
+    return true;
+  }
+
+
+  const {
+    data,
+    error
+  } = await supabaseClient.rpc(
+    "smv_mark_notification_read",
+    {
+      p_notification_id: notificationId
+    }
+  );
+
+
+  if(error){
+    console.error("Unable to mark notification read:", error);
+    return false;
+  }
+
+
+  if(data === true){
+
+    notifications =
+      notifications.map(item =>
+        String(item.id) === String(notificationId)
+          ? {
+              ...item,
+              is_read:true,
+              read_at:item.read_at || new Date().toISOString()
+            }
+          : item
+      );
+
+    renderNotifications();
+  }
+
+  return data === true;
+}
+
+
+async function handleNotificationClick(
+  notificationId,
+  assignmentId
+){
+
+  await markNotificationRead(notificationId);
+
+  closeNotificationPanel();
+
+
+  if(!assignmentId){
+    return;
+  }
+
+
+  let assignment =
+    findAssignment(assignmentId);
+
+
+  if(!assignment){
+
+    try{
+      await loadAssignments();
+      assignment = findAssignment(assignmentId);
+    }catch(error){
+      console.error("Unable to refresh notification assignment:", error);
+    }
+  }
+
+
+  if(assignment){
+    await openEnquiryDetails(assignmentId);
+  }else{
+    showToast(
+      "This enquiry is no longer available in your assigned list.",
+      true
+    );
+  }
+}
+
+
+async function markAllNotificationsRead(){
+
+  const button =
+    document.getElementById("markAllReadButton");
+
+  button.disabled = true;
+  button.textContent = "Marking...";
+
+
+  try{
+
+    const {
+      data,
+      error
+    } = await supabaseClient.rpc(
+      "smv_mark_all_notifications_read"
+    );
+
+
+    if(error){
+      throw error;
+    }
+
+
+    notifications =
+      notifications.map(item => ({
+        ...item,
+        is_read:true,
+        read_at:item.read_at || new Date().toISOString()
+      }));
+
+
+    renderNotifications();
+
+
+    if(Number(data || 0) > 0){
+      showToast(
+        `${data} notification${Number(data) === 1 ? "" : "s"} marked as read.`
+      );
+    }
+
+  }catch(error){
+
+    console.error(
+      "Unable to mark all notifications read:",
+      error
+    );
+
+    showToast(
+      "Unable to mark notifications as read.",
+      true
+    );
+
+  }finally{
+
+    button.textContent =
+      "Mark all read";
+
+    renderNotifications();
+  }
+}
+
+
+function openNotificationPanel(){
+
+  const panel =
+    document.getElementById("notificationPanel");
+
+  const button =
+    document.getElementById("notificationButton");
+
+  panel.classList.add("show");
+  button.classList.add("active");
+  button.setAttribute("aria-expanded", "true");
+
+  loadNotifications();
+}
+
+
+function closeNotificationPanel(){
+
+  const panel =
+    document.getElementById("notificationPanel");
+
+  const button =
+    document.getElementById("notificationButton");
+
+  panel.classList.remove("show");
+  button.classList.remove("active");
+  button.setAttribute("aria-expanded", "false");
+}
+
+
+function toggleNotificationPanel(){
+
+  const panel =
+    document.getElementById("notificationPanel");
+
+  if(panel.classList.contains("show")){
+    closeNotificationPanel();
+  }else{
+    openNotificationPanel();
+  }
+}
+
+
+document
+  .getElementById("notificationButton")
+  .addEventListener(
+    "click",
+    event => {
+      event.stopPropagation();
+      toggleNotificationPanel();
+    }
+  );
+
+
+document
+  .getElementById("notificationPanel")
+  .addEventListener(
+    "click",
+    event => event.stopPropagation()
+  );
+
+
+document
+  .getElementById("markAllReadButton")
+  .addEventListener(
+    "click",
+    event => {
+      event.stopPropagation();
+      markAllNotificationsRead();
+    }
+  );
+
+
+document.addEventListener(
+  "click",
+  () => closeNotificationPanel()
+);
+
+
+document.addEventListener(
+  "keydown",
+  event => {
+    if(event.key === "Escape"){
+      closeNotificationPanel();
+    }
+  }
+);
+
+
+/* ============================================================
    REFRESH
 ============================================================ */
 
@@ -3237,9 +3930,10 @@ async function refresh(){
   try{
 
     await loadAssignments();
+    await loadNotifications();
 
     showToast(
-      "Partner enquiries refreshed."
+      "Partner enquiries and notifications refreshed."
     );
 
   }catch(error){
@@ -3363,6 +4057,8 @@ supabaseClient.auth.onAuthStateChange(
     await loadVenue();
 
     await loadAssignments();
+
+    await loadNotifications();
 
   }catch(error){
 
