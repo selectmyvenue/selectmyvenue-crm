@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Select My Venue | Venue Partner CRM</title>
+  <!-- Stage 6K-B: Customer Journey + Quick Actions -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1094,6 +1095,163 @@
     .followup-table{margin-top:5px;display:inline-flex;align-items:center;gap:5px;padding:4px 7px;border-radius:999px;font-size:8px;font-weight:800;border:1px solid rgba(241,184,102,.18);color:var(--orange);background:rgba(241,184,102,.05)}
     .followup-table.overdue{color:var(--red);border-color:rgba(255,116,116,.2);background:rgba(255,116,116,.05)}.followup-table.upcoming{color:var(--teal);border-color:rgba(22,199,183,.18);background:rgba(22,199,183,.05)}
     @media(max-width:600px){.followup-form{grid-template-columns:1fr}.followup-field.full,.followup-actions{grid-column:auto}.followup-head{flex-direction:column}}
+
+
+    /* =========================================================
+       STAGE 6K-B — CUSTOMER JOURNEY + QUICK ACTIONS
+    ========================================================= */
+
+    .quick-actions-box{
+      margin-top:18px;
+      padding:16px;
+      border:1px solid rgba(22,199,183,.14);
+      border-radius:14px;
+      background:linear-gradient(135deg,rgba(22,199,183,.045),rgba(255,255,255,.012));
+    }
+
+    .quick-actions-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .quick-actions-title{
+      font-size:12px;
+      font-weight:900;
+      color:#eef8f8;
+    }
+
+    .quick-actions-note{
+      margin-top:3px;
+      color:var(--muted);
+      font-size:9px;
+      line-height:1.45;
+    }
+
+    .quick-actions-grid{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .quick-action-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      min-height:34px;
+      padding:7px 10px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:#08191c;
+      color:#dce8e9;
+      cursor:pointer;
+      font-size:10px;
+      font-weight:800;
+      transition:.15s ease;
+    }
+
+    .quick-action-btn:hover{
+      transform:translateY(-1px);
+      border-color:rgba(22,199,183,.35);
+      background:rgba(22,199,183,.07);
+    }
+
+    .quick-action-btn.current{
+      border-color:rgba(22,199,183,.35);
+      background:rgba(22,199,183,.1);
+      color:var(--teal);
+      cursor:default;
+      transform:none;
+    }
+
+    .quick-action-btn.success{
+      border-color:rgba(75,213,154,.24);
+      color:var(--green);
+    }
+
+    .quick-action-btn.warning{
+      border-color:rgba(241,184,102,.22);
+      color:var(--orange);
+    }
+
+    .journey-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .journey-current{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:5px 8px;
+      border:1px solid rgba(22,199,183,.18);
+      border-radius:999px;
+      background:rgba(22,199,183,.06);
+      color:var(--teal);
+      font-size:9px;
+      font-weight:850;
+      white-space:nowrap;
+    }
+
+    .timeline-label{
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .timeline-event-icon{
+      width:18px;
+      height:18px;
+      display:inline-grid;
+      place-items:center;
+      flex:0 0 18px;
+      border-radius:6px;
+      background:rgba(255,255,255,.035);
+      font-size:10px;
+    }
+
+    .timeline-event-copy{
+      min-width:0;
+    }
+
+    .timeline-stage{
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.18px;
+      color:#eef6f6;
+    }
+
+    .timeline-description{
+      max-width:620px;
+    }
+
+    .timeline-item.activity-latest .timeline-content{
+      padding:9px 10px;
+      margin-top:-5px;
+      border:1px solid rgba(22,199,183,.12);
+      border-radius:10px;
+      background:rgba(22,199,183,.025);
+    }
+
+    @media(max-width:600px){
+      .quick-actions-head,
+      .journey-head{
+        flex-direction:column;
+      }
+
+      .quick-actions-grid{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+      }
+
+      .quick-action-btn{
+        justify-content:center;
+      }
+    }
 
     /* =========================================================
        RESPONSIVE
@@ -2602,21 +2760,25 @@ async function loadActivityHistory(assignment){
 
     activityContainer.innerHTML = `
       <div class="activity-timeline">
-        ${activities.map(activity => {
+        ${activities.map((activity,index) => {
           const type = String(activity.activity_type || "activity").toLowerCase();
-          const label = formatActivityType(type);
+          const label = activityJourneyLabel(type);
+          const icon = activityJourneyIcon(type);
           const description = activity.description || "";
           const dotClass = `timeline-dot ${activityDotClass(type)}`;
 
           return `
-            <div class="timeline-item">
+            <div class="timeline-item ${index === 0 ? "activity-latest" : ""}">
               <div class="timeline-track">
                 <span class="${dotClass}"></span>
               </div>
 
               <div class="timeline-content">
                 <div class="timeline-label">
-                  ${escapeHtml(label)}
+                  <span class="timeline-event-icon">${escapeHtml(icon)}</span>
+                  <span class="timeline-event-copy">
+                    <span class="timeline-stage">${escapeHtml(label)}</span>
+                  </span>
                 </div>
 
                 ${description ? `
@@ -2667,6 +2829,7 @@ function activityDotClass(type){
     contacted:"activity-dot-contacted",
     detailed_shared:"activity-dot-detailed",
     follow_up:"activity-dot-followup",
+    follow_up_scheduled:"activity-dot-followup",
     site_visit:"activity-dot-sitevisit",
     negotiation:"activity-dot-negotiation",
     booked:"activity-dot-booked",
@@ -2675,6 +2838,56 @@ function activityDotClass(type){
   };
 
   return map[normalized] || "activity-dot-default";
+}
+
+
+function activityJourneyIcon(type){
+  const normalized = String(type || "activity")
+    .toLowerCase()
+    .replaceAll(" ","_");
+
+  const icons = {
+    assigned:"✦",
+    viewed:"👁",
+    contacted:"📞",
+    detailed_shared:"💬",
+    follow_up:"⏰",
+    follow_up_scheduled:"⏰",
+    site_visit:"📍",
+    negotiation:"🤝",
+    booked:"✓",
+    lost:"✕",
+    cancelled:"✕",
+    status_changed:"↻",
+    activity:"•"
+  };
+
+  return icons[normalized] || "•";
+}
+
+
+function activityJourneyLabel(type){
+  const normalized = String(type || "activity")
+    .toLowerCase()
+    .replaceAll(" ","_");
+
+  const labels = {
+    assigned:"New Enquiry",
+    viewed:"Viewed",
+    contacted:"Customer Contacted",
+    detailed_shared:"Details Shared",
+    follow_up:"Follow-up",
+    follow_up_scheduled:"Follow-up Scheduled",
+    site_visit:"Site Visit",
+    negotiation:"Negotiation",
+    booked:"Booking Confirmed",
+    lost:"Lost",
+    cancelled:"Cancelled",
+    status_changed:"Status Updated",
+    activity:"Activity"
+  };
+
+  return labels[normalized] || formatActivityType(normalized);
 }
 
 
@@ -2707,6 +2920,9 @@ function formatActivityType(type){
     follow_up:
       "Follow Up",
 
+    follow_up_scheduled:
+      "Follow-up Scheduled",
+
     site_visit:
       "Site Visit",
 
@@ -2734,6 +2950,52 @@ function formatActivityType(type){
     labels[normalized.replaceAll(" ","_")] ||
     formatStatus(normalized)
   );
+}
+
+
+/* ============================================================
+   STAGE 6K-B — QUICK ACTIONS
+============================================================ */
+
+function buildQuickActionButton(status,icon,label,currentStatus,extraClass=""){
+  const current = String(currentStatus || "assigned").toLowerCase();
+  const isCurrent = current === status;
+
+  return `
+    <button
+      type="button"
+      class="quick-action-btn ${extraClass} ${isCurrent ? "current" : ""}"
+      data-quick-status="${escapeHtml(status)}"
+      ${isCurrent ? "disabled" : ""}
+    >
+      <span>${escapeHtml(icon)}</span>
+      <span>${escapeHtml(isCurrent ? `${label} ✓` : label)}</span>
+    </button>
+  `;
+}
+
+
+function bindQuickActionButtons(assignmentId){
+  document
+    .querySelectorAll("[data-quick-status]")
+    .forEach(button => {
+      button.addEventListener("click", async () => {
+        const newStatus = button.dataset.quickStatus;
+        if(!newStatus) return;
+
+        button.disabled = true;
+        const originalText = button.innerHTML;
+        button.innerHTML = "<span>…</span><span>Updating</span>";
+
+        try{
+          await updateStatus(assignmentId,newStatus);
+        }catch(error){
+          console.error("Quick action failed:",error);
+          button.disabled = false;
+          button.innerHTML = originalText;
+        }
+      });
+    });
 }
 
 
@@ -2971,6 +3233,25 @@ async function openEnquiryDetails(
         </div>
 
 
+        <div class="quick-actions-box">
+          <div class="quick-actions-head">
+            <div>
+              <div class="quick-actions-title">⚡ Quick Actions</div>
+              <div class="quick-actions-note">Move this enquiry through the customer journey without returning to the table.</div>
+            </div>
+          </div>
+
+          <div class="quick-actions-grid">
+            ${buildQuickActionButton("contacted","📞","Mark Contacted",assignment.assignment_status)}
+            ${buildQuickActionButton("detailed_shared","💬","Details Shared",assignment.assignment_status)}
+            ${buildQuickActionButton("follow_up","⏰","Follow Up",assignment.assignment_status,"warning")}
+            ${buildQuickActionButton("site_visit","📍","Site Visit",assignment.assignment_status,"warning")}
+            ${buildQuickActionButton("negotiation","🤝","Negotiation",assignment.assignment_status,"warning")}
+            ${buildQuickActionButton("booked","✓","Booked",assignment.assignment_status,"success")}
+          </div>
+        </div>
+
+
         <div class="followup-box">
           <div class="followup-head">
             <div>
@@ -3004,12 +3285,20 @@ async function openEnquiryDetails(
 
         <div class="activity-box">
 
-          <div class="activity-title">
-            Partner Activity
-          </div>
+          <div class="journey-head">
+            <div>
+              <div class="activity-title">
+                Customer Journey
+              </div>
 
-          <div class="activity-note">
-            Chronological activity recorded for this enquiry.
+              <div class="activity-note">
+                A clear timeline of every important step on this enquiry.
+              </div>
+            </div>
+
+            <div class="journey-current">
+              Current · ${escapeHtml(formatStatus(assignment.assignment_status || "assigned"))}
+            </div>
           </div>
 
           <div id="activityContent">
@@ -3031,6 +3320,8 @@ async function openEnquiryDetails(
   if(clearFollowUpButton){
     clearFollowUpButton.addEventListener("click", () => clearPartnerFollowUp(assignment.id));
   }
+
+  bindQuickActionButtons(assignment.id);
 
 
   const modal =
