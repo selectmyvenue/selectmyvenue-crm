@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Select My Venue | Venue Partner CRM</title>
-  <!-- Stage 6K-B: Customer Journey + Quick Actions -->
+  <!-- Stage 6L: Partner Lead Workspace | includes 6K-B Customer Journey + Quick Actions -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1097,6 +1097,137 @@
     @media(max-width:600px){.followup-form{grid-template-columns:1fr}.followup-field.full,.followup-actions{grid-column:auto}.followup-head{flex-direction:column}}
 
 
+
+    /* =========================================================
+       STAGE 6L — PARTNER LEAD WORKSPACE
+    ========================================================= */
+
+    .lead-workspace{
+      margin:0 21px 14px;
+      padding:14px;
+      border:1px solid rgba(255,255,255,.055);
+      border-radius:13px;
+      background:rgba(5,15,17,.24);
+    }
+
+    .workspace-top{
+      display:grid;
+      grid-template-columns:minmax(240px,1.7fr) repeat(3,minmax(150px,.75fr)) auto;
+      gap:9px;
+      align-items:center;
+    }
+
+    .workspace-search{
+      position:relative;
+    }
+
+    .workspace-search-icon{
+      position:absolute;
+      left:11px;
+      top:50%;
+      transform:translateY(-50%);
+      color:var(--muted);
+      pointer-events:none;
+      font-size:12px;
+    }
+
+    .workspace-input,
+    .workspace-select{
+      width:100%;
+      min-height:38px;
+      padding:9px 10px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      outline:none;
+      background:#08191c;
+      color:#dce8e9;
+      font-size:11px;
+    }
+
+    .workspace-input{
+      padding-left:32px;
+    }
+
+    .workspace-input::placeholder{
+      color:#6f898c;
+    }
+
+    .workspace-input:focus,
+    .workspace-select:focus{
+      border-color:rgba(22,199,183,.58);
+      box-shadow:0 0 0 2px rgba(22,199,183,.055);
+    }
+
+    .workspace-reset{
+      min-height:38px;
+      padding:8px 11px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      background:var(--panel2);
+      color:#d7e4e5;
+      cursor:pointer;
+      font-size:10px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .workspace-reset:hover{
+      border-color:rgba(255,255,255,.18);
+    }
+
+    .workspace-meta{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:10px;
+      color:var(--muted);
+      font-size:10px;
+    }
+
+    .workspace-result-count{
+      color:#cbdadb;
+      font-weight:750;
+    }
+
+    .workspace-filter-note{
+      text-align:right;
+    }
+
+    @media(max-width:1100px){
+      .workspace-top{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .workspace-search{
+        grid-column:1/-1;
+      }
+    }
+
+    @media(max-width:650px){
+      .lead-workspace{
+        margin:0 12px 12px;
+        padding:11px;
+      }
+
+      .workspace-top{
+        grid-template-columns:1fr;
+      }
+
+      .workspace-search{
+        grid-column:auto;
+      }
+
+      .workspace-meta{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      .workspace-filter-note{
+        text-align:left;
+      }
+    }
+
     /* =========================================================
        STAGE 6K-B — CUSTOMER JOURNEY + QUICK ACTIONS
     ========================================================= */
@@ -1578,6 +1709,66 @@
       ></div>
 
 
+      <div class="lead-workspace" aria-label="Partner Lead Workspace">
+        <div class="workspace-top">
+
+          <div class="workspace-search">
+            <span class="workspace-search-icon">⌕</span>
+            <input
+              id="leadSearchInput"
+              class="workspace-input"
+              type="search"
+              autocomplete="off"
+              placeholder="Search customer, phone, email, location or event..."
+              aria-label="Search enquiries"
+            >
+          </div>
+
+          <select id="leadStatusFilter" class="workspace-select" aria-label="Filter by status">
+            <option value="all">All Statuses</option>
+            <option value="assigned">Assigned / New</option>
+            <option value="viewed">Viewed</option>
+            <option value="contacted">Contacted</option>
+            <option value="detailed_shared">Details Shared</option>
+            <option value="follow_up">Follow Up</option>
+            <option value="site_visit">Site Visit</option>
+            <option value="negotiation">Negotiation</option>
+            <option value="booked">Booked</option>
+            <option value="lost">Lost</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+
+          <select id="leadFollowUpFilter" class="workspace-select" aria-label="Filter by follow-up">
+            <option value="all">All Follow-ups</option>
+            <option value="today">Due Today</option>
+            <option value="overdue">Overdue</option>
+            <option value="tomorrow">Tomorrow</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="scheduled">Any Scheduled</option>
+            <option value="none">No Follow-up</option>
+          </select>
+
+          <select id="leadSortSelect" class="workspace-select" aria-label="Sort enquiries">
+            <option value="assigned_desc">Newest Assignment</option>
+            <option value="assigned_asc">Oldest Assignment</option>
+            <option value="event_asc">Event Date · Earliest</option>
+            <option value="event_desc">Event Date · Latest</option>
+            <option value="followup_asc">Follow-up · Soonest</option>
+            <option value="customer_asc">Customer · A–Z</option>
+          </select>
+
+          <button id="resetLeadWorkspace" class="workspace-reset" type="button">
+            Reset
+          </button>
+
+        </div>
+
+        <div class="workspace-meta">
+          <span id="leadWorkspaceCount" class="workspace-result-count">Showing all enquiries</span>
+          <span class="workspace-filter-note">Search and filters work instantly — no page reload.</span>
+        </div>
+      </div>
+
       <div id="dashboardFilterSummary" class="filter-summary"><span id="dashboardFilterText">Showing filtered enquiries</span><button id="clearDashboardFilter" class="clear-filter-btn" type="button">Show All</button></div>
 
       <div class="table-wrap">
@@ -1758,6 +1949,200 @@ let assignments = [];
 let notifications = [];
 let toastTimer = null;
 let activeDashboardFilter = "all";
+
+let leadWorkspaceState = {
+  search: "",
+  status: "all",
+  followUp: "all",
+  sort: "assigned_desc"
+};
+
+
+/* ============================================================
+   STAGE 6L — PARTNER LEAD WORKSPACE
+============================================================ */
+
+function normalizeLeadSearch(value){
+  return String(value || "")
+    .toLowerCase()
+    .trim();
+}
+
+
+function assignmentMatchesLeadWorkspace(assignment){
+  const enquiry = assignment.customer_enquiry || {};
+  const search = normalizeLeadSearch(leadWorkspaceState.search);
+  const status = String(assignment.assignment_status || "assigned").toLowerCase();
+
+  if(search){
+    const searchable = [
+      enquiry.customer_name,
+      enquiry.name,
+      enquiry.full_name,
+      enquiry.mobile,
+      enquiry.phone,
+      enquiry.phone_number,
+      enquiry.email,
+      enquiry.location,
+      enquiry.city,
+      enquiry.area,
+      enquiry.occasion,
+      enquiry.event,
+      enquiry.event_type,
+      enquiry.event_name
+    ]
+      .filter(value => value !== null && value !== undefined)
+      .join(" ")
+      .toLowerCase();
+
+    if(!searchable.includes(search)){
+      return false;
+    }
+  }
+
+  if(
+    leadWorkspaceState.status !== "all" &&
+    status !== leadWorkspaceState.status
+  ){
+    return false;
+  }
+
+  const followFilter = leadWorkspaceState.followUp;
+
+  if(followFilter !== "all"){
+    const state = followUpState(assignment.follow_up_at);
+
+    if(followFilter === "scheduled"){
+      if(!assignment.follow_up_at) return false;
+    }else if(followFilter === "none"){
+      if(assignment.follow_up_at) return false;
+    }else if(followFilter === "today"){
+      if(state.key !== "due") return false;
+    }else if(followFilter === "overdue"){
+      if(state.key !== "overdue") return false;
+    }else if(followFilter === "tomorrow"){
+      if(state.key !== "tomorrow") return false;
+    }else if(followFilter === "upcoming"){
+      if(!["tomorrow","upcoming"].includes(state.key)) return false;
+    }
+  }
+
+  return true;
+}
+
+
+function assignmentDateValue(value,fallback){
+  if(!value) return fallback;
+  const time = new Date(value).getTime();
+  return Number.isNaN(time) ? fallback : time;
+}
+
+
+function sortLeadWorkspaceAssignments(list){
+  const sorted = [...list];
+  const mode = leadWorkspaceState.sort;
+
+  sorted.sort((a,b) => {
+    const ea = a.customer_enquiry || {};
+    const eb = b.customer_enquiry || {};
+
+    if(mode === "assigned_asc"){
+      return assignmentDateValue(a.assigned_at,Number.MAX_SAFE_INTEGER) -
+             assignmentDateValue(b.assigned_at,Number.MAX_SAFE_INTEGER);
+    }
+
+    if(mode === "event_asc"){
+      return assignmentDateValue(ea.event_date,Number.MAX_SAFE_INTEGER) -
+             assignmentDateValue(eb.event_date,Number.MAX_SAFE_INTEGER);
+    }
+
+    if(mode === "event_desc"){
+      return assignmentDateValue(eb.event_date,0) -
+             assignmentDateValue(ea.event_date,0);
+    }
+
+    if(mode === "followup_asc"){
+      return assignmentDateValue(a.follow_up_at,Number.MAX_SAFE_INTEGER) -
+             assignmentDateValue(b.follow_up_at,Number.MAX_SAFE_INTEGER);
+    }
+
+    if(mode === "customer_asc"){
+      const nameA = String(ea.customer_name || ea.name || "").toLowerCase();
+      const nameB = String(eb.customer_name || eb.name || "").toLowerCase();
+      return nameA.localeCompare(nameB);
+    }
+
+    return assignmentDateValue(b.assigned_at,0) -
+           assignmentDateValue(a.assigned_at,0);
+  });
+
+  return sorted;
+}
+
+
+function getVisibleAssignments(){
+  return sortLeadWorkspaceAssignments(
+    assignments
+      .filter(assignmentMatchesDashboardFilter)
+      .filter(assignmentMatchesLeadWorkspace)
+  );
+}
+
+
+function updateLeadWorkspaceCount(count){
+  const element = document.getElementById("leadWorkspaceCount");
+  if(!element) return;
+
+  const hasWorkspaceFilter =
+    Boolean(leadWorkspaceState.search) ||
+    leadWorkspaceState.status !== "all" ||
+    leadWorkspaceState.followUp !== "all";
+
+  const hasCardFilter = activeDashboardFilter !== "all";
+
+  if(!hasWorkspaceFilter && !hasCardFilter){
+    element.textContent =
+      `Showing all ${count} ${count === 1 ? "enquiry" : "enquiries"}`;
+    return;
+  }
+
+  element.textContent =
+    `Showing ${count} of ${assignments.length} ${assignments.length === 1 ? "enquiry" : "enquiries"}`;
+}
+
+
+function syncLeadWorkspaceControls(){
+  const search = document.getElementById("leadSearchInput");
+  const status = document.getElementById("leadStatusFilter");
+  const follow = document.getElementById("leadFollowUpFilter");
+  const sort = document.getElementById("leadSortSelect");
+
+  if(search && search.value !== leadWorkspaceState.search){
+    search.value = leadWorkspaceState.search;
+  }
+
+  if(status) status.value = leadWorkspaceState.status;
+  if(follow) follow.value = leadWorkspaceState.followUp;
+  if(sort) sort.value = leadWorkspaceState.sort;
+}
+
+
+function resetLeadWorkspace(clearCardFilter = true){
+  leadWorkspaceState = {
+    search: "",
+    status: "all",
+    followUp: "all",
+    sort: "assigned_desc"
+  };
+
+  if(clearCardFilter){
+    activeDashboardFilter = "all";
+  }
+
+  syncLeadWorkspaceControls();
+  renderAssignments();
+  updateDashboardFilterUI();
+}
 
 
 /* ============================================================
@@ -2337,7 +2722,8 @@ function renderAssignments(){
       "enquiriesBody"
     );
 
-  const visibleAssignments = assignments.filter(assignmentMatchesDashboardFilter);
+  const visibleAssignments = getVisibleAssignments();
+  updateLeadWorkspaceCount(visibleAssignments.length);
 
   if(!visibleAssignments.length){
 
@@ -2352,8 +2738,10 @@ function renderAssignments(){
                 📭
               </div>
 
-              No enquiries have been assigned
-              to your venue yet.
+              No enquiries match the current search or filters.
+              <div class="secondary" style="margin-top:7px">
+                Reset the Lead Workspace or choose Show All to view more enquiries.
+              </div>
 
             </div>
 
@@ -4468,6 +4856,53 @@ supabaseClient.auth.onAuthStateChange(
 /* ============================================================
    INITIALIZATION
 ============================================================ */
+
+/* ============================================================
+   STAGE 6L — LEAD WORKSPACE CONTROLS
+============================================================ */
+
+const leadSearchInput = document.getElementById("leadSearchInput");
+const leadStatusFilter = document.getElementById("leadStatusFilter");
+const leadFollowUpFilter = document.getElementById("leadFollowUpFilter");
+const leadSortSelect = document.getElementById("leadSortSelect");
+const resetLeadWorkspaceButton = document.getElementById("resetLeadWorkspace");
+
+if(leadSearchInput){
+  leadSearchInput.addEventListener("input", event => {
+    leadWorkspaceState.search = event.target.value || "";
+    renderAssignments();
+  });
+}
+
+if(leadStatusFilter){
+  leadStatusFilter.addEventListener("change", event => {
+    leadWorkspaceState.status = event.target.value || "all";
+    renderAssignments();
+  });
+}
+
+if(leadFollowUpFilter){
+  leadFollowUpFilter.addEventListener("change", event => {
+    leadWorkspaceState.followUp = event.target.value || "all";
+    renderAssignments();
+  });
+}
+
+if(leadSortSelect){
+  leadSortSelect.addEventListener("change", event => {
+    leadWorkspaceState.sort = event.target.value || "assigned_desc";
+    renderAssignments();
+  });
+}
+
+if(resetLeadWorkspaceButton){
+  resetLeadWorkspaceButton.addEventListener("click", () => {
+    resetLeadWorkspace(true);
+  });
+}
+
+syncLeadWorkspaceControls();
+
 
 /* ============================================================
    STAGE 6K-A — COMMAND CENTER CARD FILTERS
