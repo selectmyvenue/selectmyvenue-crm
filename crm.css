@@ -5330,3 +5330,158 @@ body{
         font-size:23px !important;
     }
 }
+
+
+/* =====================================================================
+   STAGE 7B.3 — FINAL ACTION + COMMENT POLISH
+   No table/layout/database changes.
+   ===================================================================== */
+
+/* Comment column */
+.crm-comment-cell{
+    min-height:32px !important;
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:5px !important;
+    white-space:nowrap !important;
+}
+
+.crm-comment-indicator{
+    width:7px !important;
+    height:7px !important;
+    min-width:7px !important;
+    margin-right:1px !important;
+    padding:0 !important;
+    border:0 !important;
+    border-radius:50% !important;
+    background:#20b685 !important;
+    box-shadow:0 0 0 3px rgba(32,182,133,.09) !important;
+    overflow:hidden !important;
+}
+
+.comment-icon-btn{
+    width:30px !important;
+    height:30px !important;
+    min-width:30px !important;
+    padding:0 !important;
+    display:inline-grid !important;
+    place-items:center !important;
+    border:1px solid #d6e5df !important;
+    border-radius:8px !important;
+    background:#fff !important;
+    color:#526f65 !important;
+    font-family:Arial,sans-serif !important;
+    font-size:13px !important;
+    font-weight:700 !important;
+    line-height:1 !important;
+    box-shadow:0 1px 3px rgba(19,59,48,.025) !important;
+}
+
+.comment-icon-btn span{
+    display:block;
+    line-height:1;
+    transform:translateY(-.25px);
+}
+
+.comment-icon-btn:hover{
+    color:#087b64 !important;
+    border-color:#9fcdbd !important;
+    background:#eef8f4 !important;
+    transform:translateY(-1px) !important;
+}
+
+/* Action column */
+.leads-table th.action-column,
+.leads-table td.action-column{
+    min-width:190px !important;
+    width:190px !important;
+    padding-left:10px !important;
+    padding-right:10px !important;
+}
+
+.leads-table td.action-column{
+    text-align:left !important;
+}
+
+.view-lead-btn,
+.venue-assign-btn{
+    box-sizing:border-box !important;
+    min-height:34px !important;
+    height:34px !important;
+    vertical-align:middle !important;
+    border-radius:9px !important;
+    font-size:10px !important;
+    font-weight:850 !important;
+    line-height:1 !important;
+    white-space:nowrap !important;
+}
+
+.view-lead-btn{
+    min-width:78px !important;
+    padding:0 11px !important;
+    margin:0 !important;
+    border:1px solid #087b64 !important;
+    background:#087b64 !important;
+    color:#fff !important;
+    box-shadow:0 3px 8px rgba(8,123,100,.12) !important;
+}
+
+.view-lead-btn:hover{
+    border-color:#055d4c !important;
+    background:#055d4c !important;
+}
+
+.venue-assign-btn{
+    width:auto !important;
+    min-width:78px !important;
+    margin:0 0 0 5px !important;
+    padding:0 10px !important;
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:4px !important;
+    border:1px solid #c6ddd4 !important;
+    background:#fff !important;
+    color:#176b57 !important;
+}
+
+.venue-assign-btn:hover{
+    border-color:#98c9b8 !important;
+    background:#eef8f4 !important;
+}
+
+.assign-icon{
+    font-size:13px !important;
+    font-weight:500 !important;
+    line-height:1 !important;
+}
+
+.venue-assignment-count{
+    min-width:17px !important;
+    height:17px !important;
+    margin-left:1px !important;
+    padding:0 4px !important;
+    display:inline-grid !important;
+    place-items:center !important;
+    border-radius:999px !important;
+    background:#e4f4ee !important;
+    color:#076d57 !important;
+    font-size:7.5px !important;
+    font-weight:900 !important;
+}
+
+@media(max-width:900px){
+    .leads-table th.action-column,
+    .leads-table td.action-column{
+        min-width:182px !important;
+        width:182px !important;
+    }
+
+    .view-lead-btn,
+    .venue-assign-btn{
+        min-width:74px !important;
+        padding-left:8px !important;
+        padding-right:8px !important;
+    }
+}
