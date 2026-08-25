@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Select My Venue | Venue Partner CRM</title>
-  <!-- Stage 6L: Partner Lead Workspace | includes 6K-B Customer Journey + Quick Actions -->
+  <!-- Stage 6L.1: Scheduled Follow-up Enforcement | includes 6L Partner Lead Workspace -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1099,6 +1099,12 @@
 
 
     /* =========================================================
+       STAGE 6L.1 — FOLLOW-UP SCHEDULING GUARD
+    ========================================================= */
+    .followup-unscheduled-warning{display:flex;flex-direction:column;gap:4px;margin-top:16px;padding:11px 13px;border:1px solid rgba(241,184,102,.22);border-radius:11px;background:rgba(241,184,102,.065);color:var(--orange);font-size:10px;line-height:1.45}
+    .followup-unscheduled-warning span{color:#c9b89b}
+
+    /* =========================================================
        STAGE 6L — PARTNER LEAD WORKSPACE
     ========================================================= */
 
@@ -1744,8 +1750,8 @@
             <option value="overdue">Overdue</option>
             <option value="tomorrow">Tomorrow</option>
             <option value="upcoming">Upcoming</option>
-            <option value="scheduled">Any Scheduled</option>
-            <option value="none">No Follow-up</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="unscheduled">Unscheduled Follow-up</option>
           </select>
 
           <select id="leadSortSelect" class="workspace-select" aria-label="Sort enquiries">
@@ -1765,7 +1771,7 @@
 
         <div class="workspace-meta">
           <span id="leadWorkspaceCount" class="workspace-result-count">Showing all enquiries</span>
-          <span class="workspace-filter-note">Search and filters work instantly — no page reload.</span>
+          <span class="workspace-filter-note">Follow Up requires a scheduled date & time. Search and filters work instantly.</span>
         </div>
       </div>
 
@@ -2014,8 +2020,8 @@ function assignmentMatchesLeadWorkspace(assignment){
 
     if(followFilter === "scheduled"){
       if(!assignment.follow_up_at) return false;
-    }else if(followFilter === "none"){
-      if(assignment.follow_up_at) return false;
+    }else if(followFilter === "unscheduled"){
+      if(status !== "follow_up" || assignment.follow_up_at) return false;
     }else if(followFilter === "today"){
       if(state.key !== "due") return false;
     }else if(followFilter === "overdue"){
@@ -2916,11 +2922,20 @@ function renderAssignments(){
 
         select.addEventListener(
           "change",
-          () =>
-            updateStatus(
-              select.dataset.assignmentId,
-              select.value
-            )
+          async () => {
+            const assignmentId=select.dataset.assignmentId;
+            const selectedStatus=select.value;
+
+            if(selectedStatus === "follow_up"){
+              const assignment=assignments.find(item=>String(item.id)===String(assignmentId));
+              select.value=String(assignment?.assignment_status || "assigned").toLowerCase();
+              await openEnquiryDetails(assignmentId);
+              setTimeout(()=>focusFollowUpScheduler(),300);
+              return;
+            }
+
+            await updateStatus(assignmentId,selectedStatus);
+          }
         );
 
       }
@@ -3342,12 +3357,32 @@ function formatActivityType(type){
 
 
 /* ============================================================
+   STAGE 6L.1 — FOLLOW-UP SCHEDULING GUARD
+============================================================ */
+
+function focusFollowUpScheduler(){
+  const dateInput=document.getElementById("followUpDateTime");
+  if(!dateInput){showToast("Open View Details to schedule the follow-up.",true);return}
+  const box=dateInput.closest(".followup-box");
+  if(box) box.scrollIntoView({behavior:"smooth",block:"center"});
+  setTimeout(()=>{dateInput.focus();if(typeof dateInput.showPicker==="function"){try{dateInput.showPicker()}catch(e){}}},250);
+  showToast("Please select the follow-up date and time, then save.");
+}
+
+function handleFollowUpAction(assignmentId){
+  const assignment=assignments.find(item=>String(item.id)===String(assignmentId));
+  if(!assignment){showToast("Unable to find this enquiry.",true);return}
+  focusFollowUpScheduler();
+}
+
+
+/* ============================================================
    STAGE 6K-B — QUICK ACTIONS
 ============================================================ */
 
 function buildQuickActionButton(status,icon,label,currentStatus,extraClass=""){
   const current = String(currentStatus || "assigned").toLowerCase();
-  const isCurrent = current === status;
+  const isCurrent = current === status && status !== "follow_up";
 
   return `
     <button
@@ -3376,6 +3411,12 @@ function bindQuickActionButtons(assignmentId){
         button.innerHTML = "<span>…</span><span>Updating</span>";
 
         try{
+          if(newStatus === "follow_up"){
+            button.disabled=false;
+            button.innerHTML=originalText;
+            handleFollowUpAction(assignmentId);
+            return;
+          }
           await updateStatus(assignmentId,newStatus);
         }catch(error){
           console.error("Quick action failed:",error);
@@ -3621,6 +3662,18 @@ async function openEnquiryDetails(
         </div>
 
 
+        ${
+          String(assignment.assignment_status || "").toLowerCase() === "follow_up" &&
+          !assignment.follow_up_at
+            ? `
+              <div class="followup-unscheduled-warning">
+                <strong>⚠ Follow-up needs a date & time</strong>
+                <span>This enquiry is marked Follow Up but has no scheduled follow-up. Please schedule it below.</span>
+              </div>
+            `
+            : ""
+        }
+
         <div class="quick-actions-box">
           <div class="quick-actions-head">
             <div>
@@ -3632,7 +3685,7 @@ async function openEnquiryDetails(
           <div class="quick-actions-grid">
             ${buildQuickActionButton("contacted","📞","Mark Contacted",assignment.assignment_status)}
             ${buildQuickActionButton("detailed_shared","💬","Details Shared",assignment.assignment_status)}
-            ${buildQuickActionButton("follow_up","⏰","Follow Up",assignment.assignment_status,"warning")}
+            ${buildQuickActionButton("follow_up","⏰","Schedule Follow-up",assignment.assignment_status,"warning")}
             ${buildQuickActionButton("site_visit","📍","Site Visit",assignment.assignment_status,"warning")}
             ${buildQuickActionButton("negotiation","🤝","Negotiation",assignment.assignment_status,"warning")}
             ${buildQuickActionButton("booked","✓","Booked",assignment.assignment_status,"success")}
@@ -4108,6 +4161,12 @@ async function updateStatus(
 
   if(!assignment){
     return;
+  }
+
+
+  if(String(newStatus || "").toLowerCase() === "follow_up" && !assignment.follow_up_at){
+    showToast("Schedule a date and time before setting Follow Up.",true);
+    return false;
   }
 
 
