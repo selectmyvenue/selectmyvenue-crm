@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Select My Venue | Venue Partner CRM</title>
-  <!-- Stage 6M.1: Contact Log Fix | includes Stage 6M -->
+  <!-- Stage 6N: Final Partner CRM Production Polish | includes Stage 6M.1 -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1100,6 +1100,17 @@
 
 
     /* =========================================================
+       STAGE 6N — FINAL PRODUCTION POLISH
+    ========================================================= */
+    .production-outcome-banner{
+      display:flex;flex-direction:column;gap:4px;margin-top:16px;padding:11px 13px;
+      border:1px solid rgba(75,213,154,.20);border-radius:11px;
+      background:rgba(75,213,154,.055);font-size:10px;line-height:1.45
+    }
+    .production-outcome-banner strong{color:var(--green)}
+    .production-outcome-banner span{color:var(--muted)}
+
+    /* =========================================================
        STAGE 6M — PARTNER CONTACT LOG
     ========================================================= */
     .contact-log-box{
@@ -2050,6 +2061,12 @@ function assignmentMatchesLeadWorkspace(assignment){
   if(followFilter !== "all"){
     const state = followUpState(assignment.follow_up_at);
 
+    const terminalStatus=["booked","lost","cancelled","converted","closed"].includes(status);
+
+    if(["today","overdue","tomorrow","upcoming","scheduled","unscheduled"].includes(followFilter) && terminalStatus){
+      return false;
+    }
+
     if(followFilter === "scheduled"){
       if(!assignment.follow_up_at) return false;
     }else if(followFilter === "unscheduled"){
@@ -2681,8 +2698,9 @@ function renderStats(){
   const countStatus=status=>assignments.filter(a=>statusOf(a)===status).length;
   document.getElementById("statAssigned").textContent=assignments.filter(a=>active.includes(statusOf(a))).length;
   document.getElementById("statNew").textContent=assignments.filter(a=>statusOf(a)==="assigned").length;
-  document.getElementById("statToday").textContent=assignments.filter(a=>followUpState(a.follow_up_at).key==="due").length;
-  document.getElementById("statOverdue").textContent=assignments.filter(a=>followUpState(a.follow_up_at).key==="overdue").length;
+  const terminal=["booked","lost","cancelled","converted","closed"];
+  document.getElementById("statToday").textContent=assignments.filter(a=>!terminal.includes(statusOf(a))&&followUpState(a.follow_up_at).key==="due").length;
+  document.getElementById("statOverdue").textContent=assignments.filter(a=>!terminal.includes(statusOf(a))&&followUpState(a.follow_up_at).key==="overdue").length;
   document.getElementById("statContacted").textContent=countStatus("contacted");
   document.getElementById("statSiteVisit").textContent=countStatus("site_visit");
   document.getElementById("statNegotiation").textContent=countStatus("negotiation");
@@ -2696,8 +2714,9 @@ function assignmentMatchesDashboardFilter(a){
   if(activeDashboardFilter==="all")return true;
   if(activeDashboardFilter==="active")return active.includes(status);
   if(activeDashboardFilter==="new")return status==="assigned";
-  if(activeDashboardFilter==="today")return followUpState(a.follow_up_at).key==="due";
-  if(activeDashboardFilter==="overdue")return followUpState(a.follow_up_at).key==="overdue";
+  const terminal=["booked","lost","cancelled","converted","closed"];
+  if(activeDashboardFilter==="today")return !terminal.includes(status)&&followUpState(a.follow_up_at).key==="due";
+  if(activeDashboardFilter==="overdue")return !terminal.includes(status)&&followUpState(a.follow_up_at).key==="overdue";
   return status===activeDashboardFilter;
 }
 function updateDashboardFilterUI(){
@@ -3805,6 +3824,19 @@ async function openEnquiryDetails(
 
 
         ${
+          ["booked","lost","cancelled","converted","closed"].includes(
+            String(assignment.assignment_status || "").toLowerCase()
+          )
+            ? `
+              <div class="production-outcome-banner">
+                <strong>${String(assignment.assignment_status || "").toLowerCase() === "booked" ? "✓ Booking outcome recorded" : "Lead outcome recorded"}</strong>
+                <span>This enquiry is currently ${escapeHtml(formatStatus(assignment.assignment_status))}. Follow-up reminders are closed automatically. You can move it back to an active stage if the conversation reopens.</span>
+              </div>
+            `
+            : ""
+        }
+
+        ${
           String(assignment.assignment_status || "").toLowerCase() === "follow_up" &&
           !assignment.follow_up_at
             ? `
@@ -4219,11 +4251,17 @@ async function savePartnerFollowUp(assignmentId){
   const note = noteInput.value.trim();
   const oldStatus = String(assignment.assignment_status || "assigned").toLowerCase();
   const terminal = ["booked","lost","cancelled","converted","closed"].includes(oldStatus);
+
+  if(terminal){
+    showToast(`This enquiry is ${formatStatus(oldStatus)}. Reopen it to an active status before scheduling a follow-up.`,true);
+    return;
+  }
+
   const payload = {
     follow_up_at: followDate.toISOString(),
-    partner_note: note || null
+    partner_note: note || null,
+    assignment_status: "follow_up"
   };
-  if(!terminal) payload.assignment_status = "follow_up";
 
   if(button){ button.disabled=true; button.textContent="Saving..."; }
 
@@ -4382,10 +4420,17 @@ async function updateStatus(
     } =
       await supabaseClient
         .from("venue_enquiry_assignments")
-        .update({
-          assignment_status:
-            normalizedNewStatus
-        })
+        .update(
+          ["booked","lost","cancelled","converted","closed"].includes(normalizedNewStatus)
+            ? {
+                assignment_status: normalizedNewStatus,
+                follow_up_at: null,
+                partner_note: null
+              }
+            : {
+                assignment_status: normalizedNewStatus
+              }
+        )
         .eq(
           "id",
           assignmentId
@@ -4440,7 +4485,7 @@ async function updateStatus(
             oldStatus
           )} to ${formatStatus(
             normalizedNewStatus
-          )}.`
+          )}.${["booked","lost","cancelled","converted","closed"].includes(normalizedNewStatus) && assignment.follow_up_at ? " Scheduled follow-up was automatically cleared." : ""}`
       });
 
 
