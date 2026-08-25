@@ -808,6 +808,21 @@
         0 0 0 4px rgba(22,199,183,.08);
     }
 
+    /* =========================================================
+       STAGE 6H ACTIVITY DOT STATES
+    ========================================================= */
+
+    .timeline-dot.activity-dot-assigned{background:var(--blue)}
+    .timeline-dot.activity-dot-viewed{background:#9b8cff}
+    .timeline-dot.activity-dot-contacted{background:var(--teal)}
+    .timeline-dot.activity-dot-detailed{background:#5fd8d0}
+    .timeline-dot.activity-dot-followup{background:var(--orange)}
+    .timeline-dot.activity-dot-sitevisit{background:#f3a65f}
+    .timeline-dot.activity-dot-negotiation{background:#e5b85c}
+    .timeline-dot.activity-dot-booked{background:var(--green)}
+    .timeline-dot.activity-dot-lost,.timeline-dot.activity-dot-cancelled{background:var(--red)}
+    .timeline-dot.activity-dot-default{background:var(--teal)}
+
     .timeline-item:not(:last-child)
     .timeline-track::after{
       content:"";
@@ -820,6 +835,10 @@
       width:1px;
 
       background:rgba(22,199,183,.18);
+    }
+
+    .timeline-content{
+      min-width:0;
     }
 
     .timeline-label{
@@ -2258,204 +2277,173 @@ async function logPartnerActivity({
 
 
 /* ============================================================
-   LOAD PERSISTENT ACTIVITY HISTORY
+   STAGE 6H
+   PERSISTENT ACTIVITY HISTORY — PRODUCTION VERSION
 ============================================================ */
 
-async function loadActivityHistory(
-  assignment
-){
+async function loadActivityHistory(assignment){
 
   const activityContainer =
-    document.getElementById(
-      "activityContent"
-    );
+    document.getElementById("activityContent");
 
-
-  if(!activityContainer){
+  if(!activityContainer || !assignment || !partnerProfile?.venue_id){
     return;
   }
 
-
-  activityContainer.innerHTML =
-    `
-      <div class="activity-loading">
-        Loading activity history...
-      </div>
-    `;
-
+  activityContainer.innerHTML = `
+    <div class="activity-loading">
+      Loading activity history...
+    </div>
+  `;
 
   try{
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("venue_activity_log")
-        .select("*")
-        .eq(
-          "assignment_id",
-          assignment.id
-        )
-        .eq(
-          "venue_id",
-          partnerProfile.venue_id
-        )
-        .order(
-          "created_at",
-          {
-            ascending:false
-          }
-        );
-
+    const { data, error } = await supabaseClient
+      .from("venue_activity_log")
+      .select("id,assignment_id,venue_id,user_id,activity_type,description,created_at")
+      .eq("assignment_id", assignment.id)
+      .eq("venue_id", partnerProfile.venue_id)
+      .order("created_at", { ascending:false });
 
     if(error){
       throw error;
     }
 
-
-    const activities =
-      Array.isArray(data)
-        ? data
-        : [];
-
+    let activities = Array.isArray(data) ? data : [];
 
     /*
-      If no activity exists yet, show the assignment
-      as the initial system event. We do not insert it
-      automatically here because the assignment may
-      have been created by Master CRM.
+      Stage 6H safety:
+      Remove exact duplicate rows from the display only.
+      We do NOT delete database records here.
     */
+    const seen = new Set();
+    activities = activities.filter(activity => {
+      const key = [
+        activity.activity_type || "activity",
+        activity.description || "",
+        activity.created_at || ""
+      ].join("|");
+
+      if(seen.has(key)){
+        return false;
+      }
+
+      seen.add(key);
+      return true;
+    });
+
+    /*
+      The assignment itself is a real system event even when
+      Master CRM created the assignment before Partner Activity
+      Logging existed. Show it virtually when no Assigned activity
+      has been persisted yet. We intentionally do not INSERT it.
+    */
+    const hasAssignedActivity = activities.some(activity =>
+      String(activity.activity_type || "").toLowerCase() === "assigned"
+    );
+
+    if(!hasAssignedActivity && assignment.assigned_at){
+      activities.push({
+        id:`virtual-assigned-${assignment.id}`,
+        assignment_id:assignment.id,
+        venue_id:partnerProfile.venue_id,
+        activity_type:"assigned",
+        description:"Enquiry assigned to your venue.",
+        created_at:assignment.assigned_at,
+        __virtual:true
+      });
+    }
+
+    /* Newest activity first. */
+    activities.sort((a,b) => {
+      const aTime = new Date(a.created_at || 0).getTime();
+      const bTime = new Date(b.created_at || 0).getTime();
+      return bTime - aTime;
+    });
 
     if(!activities.length){
-
-      activityContainer.innerHTML =
-        `
-          <div class="activity-timeline">
-
-            <div class="timeline-item">
-
-              <div class="timeline-track">
-                <span class="timeline-dot"></span>
-              </div>
-
-              <div>
-
-                <div class="timeline-label">
-                  Assigned
-                </div>
-
-                <div class="timeline-description">
-                  Enquiry assigned to your venue.
-                </div>
-
-                <div class="timeline-time">
-                  ${escapeHtml(
-                    formatDateTime(
-                      assignment.assigned_at
-                    )
-                  )}
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-        `;
-
+      activityContainer.innerHTML = `
+        <div class="activity-empty">
+          No activity has been recorded for this enquiry yet.
+        </div>
+      `;
       return;
     }
 
+    activityContainer.innerHTML = `
+      <div class="activity-timeline">
+        ${activities.map(activity => {
+          const type = String(activity.activity_type || "activity").toLowerCase();
+          const label = formatActivityType(type);
+          const description = activity.description || "";
+          const dotClass = `timeline-dot ${activityDotClass(type)}`;
 
-    activityContainer.innerHTML =
-      `
-        <div class="activity-timeline">
+          return `
+            <div class="timeline-item">
+              <div class="timeline-track">
+                <span class="${dotClass}"></span>
+              </div>
 
-          ${activities
-            .map(
-              activity => {
+              <div class="timeline-content">
+                <div class="timeline-label">
+                  ${escapeHtml(label)}
+                </div>
 
-                const type =
-                  activity.activity_type ||
-                  "activity";
-
-
-                const label =
-                  formatActivityType(
-                    type
-                  );
-
-
-                const description =
-                  activity.description ||
-                  "";
-
-
-                return `
-                  <div class="timeline-item">
-
-                    <div class="timeline-track">
-                      <span class="timeline-dot"></span>
-                    </div>
-
-                    <div>
-
-                      <div class="timeline-label">
-                        ${escapeHtml(label)}
-                      </div>
-
-                      ${
-                        description
-                          ? `
-                            <div class="timeline-description">
-                              ${escapeHtml(
-                                description
-                              )}
-                            </div>
-                          `
-                          : ""
-                      }
-
-                      <div class="timeline-time">
-                        ${escapeHtml(
-                          formatDateTime(
-                            activity.created_at
-                          )
-                        )}
-                      </div>
-
-                    </div>
-
+                ${description ? `
+                  <div class="timeline-description">
+                    ${escapeHtml(description)}
                   </div>
-                `;
-              }
-            )
-            .join("")}
+                ` : ""}
 
-        </div>
-      `;
+                <div class="timeline-time">
+                  ${escapeHtml(formatDateTime(activity.created_at))}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    `;
 
   }catch(error){
-
-    console.error(
-      "Unable to load activity history:",
-      error
-    );
-
+    console.error("Unable to load activity history:", error);
 
     /*
-      Do not block View Details just because
-      activity history cannot be loaded.
+      Activity history must never prevent the partner from
+      opening or using the enquiry details window.
     */
-
-    activityContainer.innerHTML =
-      `
-        <div class="activity-empty">
-          Activity history is temporarily unavailable.
-        </div>
-      `;
+    activityContainer.innerHTML = `
+      <div class="activity-empty">
+        Activity history is temporarily unavailable.
+      </div>
+    `;
   }
+}
+
+
+/* ============================================================
+   STAGE 6H
+   ACTIVITY DOT COLOUR
+============================================================ */
+
+function activityDotClass(type){
+  const normalized = String(type || "activity")
+    .toLowerCase()
+    .replaceAll(" ","_");
+
+  const map = {
+    assigned:"activity-dot-assigned",
+    viewed:"activity-dot-viewed",
+    contacted:"activity-dot-contacted",
+    detailed_shared:"activity-dot-detailed",
+    follow_up:"activity-dot-followup",
+    site_visit:"activity-dot-sitevisit",
+    negotiation:"activity-dot-negotiation",
+    booked:"activity-dot-booked",
+    lost:"activity-dot-lost",
+    cancelled:"activity-dot-cancelled"
+  };
+
+  return map[normalized] || "activity-dot-default";
 }
 
 
