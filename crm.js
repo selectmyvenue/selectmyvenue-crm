@@ -4280,6 +4280,10 @@ let venueVerificationFilter = "all";
    ========================================================= */
 let allVenueAssignments = [];
 let assignedVenueDetails = {};
+
+/* Stage 7A — Master CRM Partner Progress Visibility */
+let assignedVenuePartnerProfiles = {};
+let assignmentActivityHistory = {};
 let assignmentCurrentLead = null;
 let assignmentVenueRows = [];
 let assignmentSearch = "";
@@ -5339,6 +5343,53 @@ async function loadVenueAssignments() {
             }
         }
 
+        /* Stage 7A — load partner identities for assigned venues */
+        assignedVenuePartnerProfiles = {};
+
+        if (venueIds.length) {
+            const { data: partnerProfiles, error: partnerProfileError } = await client
+                .from("venue_partner_profiles")
+                .select("id,venue_id,user_id,full_name,designation,email,mobile,is_primary,is_active")
+                .in("venue_id", venueIds)
+                .eq("is_active", true)
+                .order("is_primary", { ascending: false });
+
+            if (partnerProfileError) {
+                console.warn("Partner profiles could not be loaded:", partnerProfileError.message);
+            } else {
+                (partnerProfiles || []).forEach(profile => {
+                    const key = String(profile.venue_id);
+                    if (!assignedVenuePartnerProfiles[key] || profile.is_primary) {
+                        assignedVenuePartnerProfiles[key] = profile;
+                    }
+                });
+            }
+        }
+
+        /* Stage 7A — load partner activity for the assignment cards/journey */
+        assignmentActivityHistory = {};
+        const assignmentIds = allVenueAssignments.map(item => item.id).filter(Boolean);
+
+        if (assignmentIds.length) {
+            const { data: activities, error: activityError } = await client
+                .from("venue_activity_log")
+                .select("id,assignment_id,venue_id,user_id,activity_type,description,created_at")
+                .in("assignment_id", assignmentIds)
+                .order("created_at", { ascending: false });
+
+            if (activityError) {
+                console.warn("Partner activity could not be loaded:", activityError.message);
+            } else {
+                (activities || []).forEach(activity => {
+                    const key = String(activity.assignment_id);
+                    if (!assignmentActivityHistory[key]) {
+                        assignmentActivityHistory[key] = [];
+                    }
+                    assignmentActivityHistory[key].push(activity);
+                });
+            }
+        }
+
         if (currentLead) {
             renderLeadVenueAssignments(currentLead.id);
         }
@@ -5383,6 +5434,78 @@ function getAssignmentStatusOptions() {
         { value: "lost", label: "Lost" },
         { value: "cancelled", label: "Cancelled" }
     ];
+}
+
+
+function getPartnerActivityLabel(type) {
+    const labels = {
+        assigned: "Assigned",
+        viewed: "Viewed",
+        contacted: "Contacted",
+        detailed_shared: "Details Shared",
+        follow_up: "Follow-up",
+        follow_up_scheduled: "Follow-up Scheduled",
+        follow_up_cleared: "Follow-up Cleared",
+        site_visit: "Site Visit",
+        negotiation: "Negotiation",
+        booked: "Booked",
+        lost: "Lost",
+        cancelled: "Cancelled",
+        call_attempted: "Call Attempted",
+        customer_spoke: "Customer Spoke",
+        whatsapp_shared: "WhatsApp / Details Shared",
+        customer_remark: "Customer Remark",
+        site_visit_note: "Site Visit Note",
+        negotiation_note: "Negotiation Note",
+        general_note: "General Note",
+        status_changed: "Status Changed"
+    };
+    return labels[safeValue(type)] || safeValue(type).replaceAll("_", " ").replace(/\b\w/g, c => c.toUpperCase()) || "Activity";
+}
+
+function getPartnerActivityIcon(type) {
+    const icons = {
+        assigned: "📥", viewed: "👁", contacted: "📞", detailed_shared: "💬",
+        follow_up: "⏰", follow_up_scheduled: "⏰", follow_up_cleared: "✓",
+        site_visit: "📍", negotiation: "🤝", booked: "✓", lost: "✕",
+        cancelled: "✕", call_attempted: "📞", customer_spoke: "☎",
+        whatsapp_shared: "💬", customer_remark: "🗒", site_visit_note: "📍",
+        negotiation_note: "🤝", general_note: "✎", status_changed: "↻"
+    };
+    return icons[safeValue(type)] || "•";
+}
+
+function renderPartnerJourney(assignmentId) {
+    const activities = assignmentActivityHistory[String(assignmentId)] || [];
+
+    if (!activities.length) {
+        return `<div class="partner-journey-empty">No partner activity has been recorded yet.</div>`;
+    }
+
+    return `
+        <div class="master-partner-journey">
+            ${activities.map(activity => `
+                <div class="master-partner-journey-item">
+                    <div class="master-partner-journey-icon">${getPartnerActivityIcon(activity.activity_type)}</div>
+                    <div class="master-partner-journey-content">
+                        <strong>${escapeHTML(getPartnerActivityLabel(activity.activity_type))}</strong>
+                        ${activity.description ? `<div>${escapeHTML(activity.description)}</div>` : ""}
+                        <span>${escapeHTML(activity.created_at ? formatDateTime(activity.created_at) : "—")}</span>
+                    </div>
+                </div>
+            `).join("")}
+        </div>
+    `;
+}
+
+function togglePartnerJourney(assignmentId) {
+    const panel = document.querySelector(`[data-partner-journey-panel="${CSS.escape(String(assignmentId))}"]`);
+    const button = document.querySelector(`[data-partner-journey-button="${CSS.escape(String(assignmentId))}"]`);
+    if (!panel) return;
+
+    const opening = panel.hidden;
+    panel.hidden = !opening;
+    if (button) button.textContent = opening ? "Hide Partner Journey" : "View Partner Journey";
 }
 
 function renderLeadVenueAssignments(enquiryId) {
@@ -5432,6 +5555,15 @@ function renderLeadVenueAssignments(enquiryId) {
             ? formatDateTime(assignment.updated_at)
             : null;
         const isCancelled = status === "cancelled";
+        const partner = assignedVenuePartnerProfiles[String(assignment.venue_id)] || {};
+        const activities = assignmentActivityHistory[String(assignment.id)] || [];
+        const latestActivity = activities[0] || null;
+        const followUpAt = assignment.follow_up_at ? formatDateTime(assignment.follow_up_at) : "—";
+        const partnerNote = safeValue(assignment.partner_note).trim();
+        const partnerName = partner.full_name || partner.email || "Partner not linked";
+        const lastActivity = latestActivity
+            ? `${getPartnerActivityLabel(latestActivity.activity_type)} · ${formatDateTime(latestActivity.created_at)}`
+            : (assignment.last_activity_at ? formatDateTime(assignment.last_activity_at) : "No activity yet");
 
         return `
             <div class="lead-venue-assignment-card ${isCancelled ? "is-cancelled" : ""}" data-assignment-id="${escapeHTML(assignment.id)}">
@@ -5444,6 +5576,34 @@ function renderLeadVenueAssignments(enquiryId) {
                         <span>Assigned: ${escapeHTML(assignedAt)}</span>
                         ${updatedAt ? `<span>Updated: ${escapeHTML(updatedAt)}</span>` : ""}
                         ${assignment.assignment_note ? `<span>Note: ${escapeHTML(assignment.assignment_note)}</span>` : ""}
+                    </div>
+                </div>
+                <div class="master-partner-progress">
+                    <div class="master-partner-progress-title">Partner Progress</div>
+                    <div class="master-partner-progress-grid">
+                        <div><span>Partner</span><strong>${escapeHTML(partnerName)}</strong></div>
+                        <div><span>Current Status</span><strong>${escapeHTML(getAssignmentStatusLabel(status))}</strong></div>
+                        <div><span>Follow-up</span><strong>${escapeHTML(followUpAt)}</strong></div>
+                        <div><span>Last Activity</span><strong>${escapeHTML(lastActivity)}</strong></div>
+                    </div>
+                    ${partnerNote ? `
+                        <div class="master-partner-note">
+                            <span>Partner Follow-up Note</span>
+                            <strong>${escapeHTML(partnerNote)}</strong>
+                        </div>
+                    ` : ""}
+                    <button
+                        type="button"
+                        class="master-partner-journey-btn"
+                        data-partner-journey-button="${escapeHTML(assignment.id)}"
+                        onclick="togglePartnerJourney('${escapeHTML(assignment.id)}')"
+                    >View Partner Journey</button>
+                    <div
+                        class="master-partner-journey-panel"
+                        data-partner-journey-panel="${escapeHTML(assignment.id)}"
+                        hidden
+                    >
+                        ${renderPartnerJourney(assignment.id)}
                     </div>
                 </div>
                 <div class="lead-venue-assignment-controls">
