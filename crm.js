@@ -429,7 +429,7 @@ function setTableLoading() {
 
     tbody.innerHTML = `
         <tr>
-            <td colspan="7" class="loading-cell">
+            <td colspan="12" class="loading-cell">
                 Loading customer enquiries...
             </td>
         </tr>
@@ -449,7 +449,7 @@ function renderTableError(message) {
 
     tbody.innerHTML = `
         <tr>
-            <td colspan="7" class="loading-cell">
+            <td colspan="12" class="loading-cell">
                 ${escapeHTML(message)}
             </td>
         </tr>
@@ -1009,130 +1009,186 @@ function createCommentCell(
 }
 
 /* =========================================================
-   STAGE 7B.1 — WORLD-CLASS LEAD WORKSPACE HELPERS
-   ========================================================= */
-
-function getCustomerInitials(name) {
-    const parts = safeValue(name).trim().split(/\s+/).filter(Boolean);
-    if (!parts.length) return "CU";
-    return parts.slice(0,2).map(part => part.charAt(0).toUpperCase()).join("");
-}
-
-function getLeadVenueProgressSummary(leadId) {
-    const assignments = allVenueAssignments
-        .filter(item =>
-            String(item.enquiry_id) === String(leadId) &&
-            String(item.assignment_status || "").toLowerCase() !== "cancelled"
-        )
-        .sort((a,b) => new Date(b.updated_at || b.assigned_at || 0) - new Date(a.updated_at || a.assigned_at || 0));
-
-    if (!assignments.length) {
-        return `
-            <div class="venue-progress-empty">
-                <span class="venue-progress-empty-icon">＋</span>
-                <div>
-                    <strong>Not assigned</strong>
-                    <span>Ready for venue matching</span>
-                </div>
-            </div>`;
-    }
-
-    const primary = assignments[0];
-    const venue = assignedVenueDetails[String(primary.venue_id)] || {};
-    const partner = assignedVenuePartnerProfiles[String(primary.venue_id)] || {};
-    const status = safeValue(primary.assignment_status || "assigned").toLowerCase();
-    const venueName = venue.venue_name || venue.name || "Assigned Venue";
-    const partnerName = partner.full_name || partner.email || "Partner";
-    const remaining = assignments.length - 1;
-
-    return `
-        <div class="venue-progress-summary">
-            <div class="venue-progress-summary-top">
-                <span class="venue-progress-icon">🏨</span>
-                <strong>${escapeHTML(venueName)}</strong>
-                ${remaining > 0 ? `<span class="venue-more-count">+${remaining}</span>` : ""}
-            </div>
-            <div class="venue-progress-summary-bottom">
-                <span class="venue-mini-status venue-mini-status-${escapeHTML(status.replaceAll("_","-"))}">
-                    ${escapeHTML(getAssignmentStatusLabel(status))}
-                </span>
-                <span class="venue-partner-name">${escapeHTML(partnerName)}</span>
-            </div>
-        </div>`;
-}
-
-/* =========================================================
    CREATE LEAD ROW
    ========================================================= */
 
 function createLeadRow(lead) {
-    const id = safeValue(lead.id);
-    const customerName = lead.customer_name || "Unknown Customer";
-    const phone = lead.mobile || "—";
-    const createdDate = lead.created_at ? formatDateTime(lead.created_at) : "—";
-    const email = lead.email || "—";
-    const source = lead.source || "—";
-    const occasion = lead.occasion || "—";
-    const eventDate = lead.event_date || "";
-    const guests = lead.guests ?? "";
-    const location = lead.location || "—";
-    const status = lead.status || "new";
-    const comment = safeValue(lead.internal_notes).trim();
-    const ai = getAILeadAnalysis(lead);
+
+    const id =
+        safeValue(lead.id);
+
+    const customerName =
+        lead.customer_name ||
+        "Unknown Customer";
+
+    const phone =
+    lead.mobile ||
+    "—";
+
+const createdDate =
+    lead.created_at
+        ? formatDateTime(lead.created_at)
+        : "—";
+
+const email =
+    lead.email ||
+    "—";
+   
+    const source =
+        lead.source ||
+        "—";
+
+    const occasion =
+        lead.occasion ||
+        "—";
+
+    const eventDate =
+        lead.event_date ||
+        "";
+
+    const guests =
+        lead.guests ??
+        "";
+
+    const location =
+        lead.location ||
+        "—";
+
+    const status =
+        lead.status ||
+        "new";
+
+    const comment =
+        safeValue(
+            lead.internal_notes
+        ).trim();
+
+    const ai =
+        getAILeadAnalysis(lead);
 
     return `
-        <tr data-lead-id="${escapeHTML(id)}" class="crm-lead-row">
-            <td class="customer-cell customer-command-cell">
-                <div class="customer-command">
-                    <div class="customer-avatar">${escapeHTML(getCustomerInitials(customerName))}</div>
-                    <div class="customer-command-copy">
-                        <strong class="customer-command-name">${escapeHTML(customerName)}</strong>
-                        <div class="customer-command-contact">
-                            <span>☎ ${escapeHTML(phone)}</span>
-                            <span class="customer-contact-separator">•</span>
-                            <span class="customer-email-inline">
-                                ${createInlineField(lead,"email",email,"text")}
-                            </span>
-                        </div>
-                        <div class="customer-source-row">${createSourceField(lead,source)}</div>
-                    </div>
-                </div>
+        <tr
+            data-lead-id="${escapeHTML(id)}"
+            class="crm-lead-row"
+        >
+
+            <td class="customer-cell">
+                <strong>
+                    ${escapeHTML(customerName)}
+                </strong>
             </td>
 
-            <td class="event-command-cell">
-                <div class="event-command-title">${createInlineField(lead,"occasion",occasion,"select",getEventOptions())}</div>
-                <div class="event-command-meta">
-                    <span class="event-date-inline">📅 ${createInlineField(lead,"event_date",eventDate ? formatDate(eventDate) : "Date not set","date",null,eventDate)}</span>
-                    <span class="guest-inline">👥 ${createInlineField(lead,"guests",guests === "" ? "Guests —" : `${guests} guests`,"number")}</span>
-                </div>
+            <td class="phone-cell">
+    ${escapeHTML(phone)}
+</td>
+
+<td class="created-date-cell">
+    ${escapeHTML(createdDate)}
+</td>
+
+<td>
+    ${createInlineField(
+        lead,
+        "email",
+        email,
+        "text"
+    )}
+</td>
+
+            <td>
+                ${createSourceField(
+                    lead,
+                    source
+                )}
             </td>
 
-            <td class="location-command-cell">
-                <span class="location-pin">⌖</span>
-                ${createInlineField(lead,"location",location,"text")}
+            <td>
+                ${createInlineField(
+                    lead,
+                    "occasion",
+                    occasion,
+                    "select",
+                    getEventOptions()
+                )}
             </td>
 
-            <td class="status-command-cell">${createStatusInlineField(lead,status)}</td>
+            <td>
+                ${createInlineField(
+                    lead,
+                    "event_date",
+                    eventDate
+                        ? formatDate(eventDate)
+                        : "—",
+                    "date",
+                    null,
+                    eventDate
+                )}
+            </td>
 
-            <td class="venue-progress-command-cell">${getLeadVenueProgressSummary(id)}</td>
+            <td>
+                ${createInlineField(
+                    lead,
+                    "guests",
+                    guests === ""
+                        ? "—"
+                        : guests,
+                    "number"
+                )}
+            </td>
 
-            <td class="created-command-cell">
-                <span class="created-label">CREATED</span>
-                <strong>${escapeHTML(createdDate)}</strong>
+            <td>
+                ${createInlineField(
+                    lead,
+                    "location",
+                    location,
+                    "text"
+                )}
+            </td>
+
+            <td>
+                ${createStatusInlineField(
+                    lead,
+                    status
+                )}
+            </td>
+
+            <td>
+                ${createCommentCell(
+                    lead,
+                    comment
+                )}
             </td>
 
             <td class="action-column">
-                <div class="row-action-stack">
-                    <button type="button" class="view-lead-btn" data-action="view" data-id="${escapeHTML(id)}" title="${escapeHTML(ai.recommendation)}">
-                        <span class="view-icon">◉</span><span>Open</span>
-                    </button>
-                    <button type="button" class="venue-assign-btn" data-action="assign-venue" data-id="${escapeHTML(id)}" title="Assign this enquiry to approved and verified venues">
-                        <span>🏨</span><span>Assign</span>${getAssignmentCount(id) ? `<span class="venue-assignment-count">${getAssignmentCount(id)}</span>` : ""}
-                    </button>
-                    <div class="row-comment-actions">${createCommentCell(lead,comment)}</div>
-                </div>
+
+                <button
+                    type="button"
+                    class="view-lead-btn"
+                    data-action="view"
+                    data-id="${escapeHTML(id)}"
+                    title="${escapeHTML(
+                        ai.recommendation
+                    )}"
+                >
+                    <span class="view-icon">◉</span>
+                    <span>Details</span>
+                </button>
+
+                <button
+                    type="button"
+                    class="venue-assign-btn"
+                    data-action="assign-venue"
+                    data-id="${escapeHTML(id)}"
+                    title="Assign this enquiry to approved and verified venues"
+                >
+                    🏨 Assign Venue
+                    ${getAssignmentCount(id) ? `<span class="venue-assignment-count">${getAssignmentCount(id)}</span>` : ""}
+                </button>
+
             </td>
-        </tr>`;
+
+        </tr>
+    `;
 }
 
 /* =========================================================
@@ -1145,9 +1201,11 @@ function renderLeads() {
     if (resultCount) {
         const shown = filteredLeads.length;
         const total = allLeads.length;
-        resultCount.textContent = shown === total
-            ? `${total} live ${total === 1 ? "enquiry" : "enquiries"}`
-            : `${shown} of ${total} enquiries`;
+
+        resultCount.textContent =
+            shown === total
+                ? `${total} live ${total === 1 ? "enquiry" : "enquiries"}`
+                : `${shown} of ${total} enquiries`;
     }
 
     const tbody =
@@ -1163,7 +1221,7 @@ function renderLeads() {
 
         tbody.innerHTML = `
             <tr>
-                <td colspan="7">
+                <td colspan="12">
                     <div class="crm-empty-inline">
                         <div>⌕</div>
                         <strong>
