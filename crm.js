@@ -1171,7 +1171,7 @@ const email =
                     )}"
                 >
                     <span class="view-icon">◉</span>
-                    <span>View Details</span>
+                    <span>Details</span>
                 </button>
 
                 <button
@@ -4355,6 +4355,8 @@ function openVenueManagement() {
         title.textContent = "Venue Management";
     }
 
+    document.getElementById("venueManagementBtn")?.classList.add("active");
+
     loadVenues();
 }
 
@@ -4373,6 +4375,8 @@ function showLeadManagement() {
     if (title) {
         title.textContent = "Lead Management";
     }
+
+    document.getElementById("venueManagementBtn")?.classList.remove("active");
 }
 
 async function loadVenues() {
