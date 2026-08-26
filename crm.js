@@ -4283,6 +4283,10 @@ let allVenues = [];
 let venueSearch = "";
 let venueStatusFilter = "all";
 let venueVerificationFilter = "all";
+let venuePlanFilter = "all";
+let stage8SchemaReady = false;
+let stage8Plans = [];
+let stage8ActivePartnerCount = 0;
 
 /* =========================================================
    STAGE 3 — VENUE ENQUIRY ASSIGNMENTS
@@ -4309,6 +4313,7 @@ function setupVenueManagement() {
     const search = document.getElementById("venueSearchInput");
     const status = document.getElementById("venueStatusFilter");
     const verification = document.getElementById("venueVerificationFilter");
+    const plan = document.getElementById("venuePlanFilter");
     const table = document.getElementById("venueTableBody");
 
     if (!venueBtn || !form || !table) {
@@ -4339,6 +4344,11 @@ function setupVenueManagement() {
         renderVenues();
     });
 
+    plan?.addEventListener("change", event => {
+        venuePlanFilter = event.target.value;
+        renderVenues();
+    });
+
     table.addEventListener("click", handleVenueTableClick);
 
     document.getElementById("venueModal")?.addEventListener("click", event => {
@@ -4366,7 +4376,8 @@ function openVenueManagement() {
 
     document.getElementById("venueManagementBtn")?.classList.add("active");
 
-    loadVenues();
+    loadStage8Capabilities()
+        .finally(loadVenues);
 }
 
 function showLeadManagement() {
@@ -4401,7 +4412,7 @@ async function loadVenues() {
     if (tbody) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="9" class="venue-loading-cell">
+                        <td colspan="11" class="venue-loading-cell">
                     Loading venues...
                 </td>
             </tr>
@@ -4420,7 +4431,7 @@ async function loadVenues() {
         if (tbody) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="9" class="venue-loading-cell">
+                    <td colspan="11" class="venue-loading-cell">
                         Unable to load venues.
                     </td>
                 </tr>
@@ -4439,6 +4450,7 @@ async function loadVenues() {
 
     updateVenueStats();
     renderVenues();
+    await loadStage8Analytics();
 }
 
 function updateVenueStats() {
@@ -4460,11 +4472,18 @@ function updateVenueStats() {
             venue => safeValue(venue.verification_status) === "verified"
         ).length;
 
+    const publicVenues =
+        allVenues.filter(
+            venue => venue.public_listing_enabled === true
+        ).length;
+
     const values = {
         venueTotalCount: total,
         venueApprovedCount: approved,
         venuePendingCount: pending,
-        venueVerifiedCount: verified
+        venueVerifiedCount: verified,
+        venuePublicCount: publicVenues,
+        venuePartnerCount: stage8ActivePartnerCount
     };
 
     Object.entries(values).forEach(([id, value]) => {
@@ -4475,6 +4494,257 @@ function updateVenueStats() {
             element.textContent = value;
         }
     });
+}
+
+async function loadStage8Capabilities() {
+    const client = getSupabaseClient();
+    const state = document.getElementById("stage8SchemaState");
+
+    if (!client) {
+        return false;
+    }
+
+    const { data: plans, error: planError } =
+        await client
+            .from("venue_plans")
+            .select("plan_code,plan_name,description,display_order,features,is_active")
+            .eq("is_active", true)
+            .order("display_order", { ascending: true });
+
+    stage8SchemaReady = !planError;
+    stage8Plans = stage8SchemaReady && Array.isArray(plans)
+        ? plans
+        : [];
+
+    if (stage8SchemaReady) {
+        const { data: partnerRows, error: partnerError } =
+            await client
+                .from("venue_partner_profiles")
+                .select("venue_id")
+                .eq("is_active", true);
+
+        stage8ActivePartnerCount = partnerError
+            ? 0
+            : new Set((partnerRows || []).map(row => row.venue_id).filter(Boolean)).size;
+    } else {
+        stage8ActivePartnerCount = 0;
+        console.info(
+            "Stage 8 database migration is not active yet:",
+            planError?.message || "venue_plans unavailable"
+        );
+    }
+
+    if (state) {
+        state.textContent = stage8SchemaReady
+            ? "Stage 8 connected"
+            : "Migration pending";
+        state.classList.toggle("pending", !stage8SchemaReady);
+    }
+
+    populateVenuePlanOptions();
+    setStage8FormAvailability();
+    updateVenueStats();
+
+    return stage8SchemaReady;
+}
+
+function populateVenuePlanOptions() {
+    if (!stage8Plans.length) {
+        return;
+    }
+
+    const options = stage8Plans
+        .map(plan => `
+            <option value="${escapeHTML(plan.plan_code)}">
+                ${escapeHTML(plan.plan_name)}
+            </option>
+        `)
+        .join("");
+
+    const formSelect = document.getElementById("venuePlan");
+    const filterSelect = document.getElementById("venuePlanFilter");
+
+    if (formSelect) {
+        const selected = formSelect.value;
+        formSelect.innerHTML = options;
+        if (selected) {
+            formSelect.value = selected;
+        }
+    }
+
+    if (filterSelect) {
+        const selected = filterSelect.value || "all";
+        filterSelect.innerHTML = `
+            <option value="all">All Plans</option>
+            ${options}
+        `;
+        filterSelect.value = selected;
+    }
+}
+
+function setStage8FormAvailability() {
+    const ids = [
+        "venuePlan",
+        "venuePlanStatus",
+        "venuePlanStartedAt",
+        "venuePlanExpiresAt",
+        "venuePublicListing"
+    ];
+
+    ids.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.disabled = !stage8SchemaReady;
+        }
+    });
+
+    const notice = document.getElementById("stage8FormNotice");
+    if (notice) {
+        notice.hidden = stage8SchemaReady;
+    }
+}
+
+function formatResponseMinutes(value) {
+    const minutes = Number(value);
+
+    if (!Number.isFinite(minutes) || minutes <= 0) {
+        return "—";
+    }
+
+    if (minutes < 60) {
+        return `${Math.round(minutes)} min`;
+    }
+
+    if (minutes < 1440) {
+        return `${(minutes / 60).toFixed(minutes < 600 ? 1 : 0)} hr`;
+    }
+
+    return `${(minutes / 1440).toFixed(1)} day`;
+}
+
+function getLocalNetworkAnalytics() {
+    const total = allVenueAssignments.length;
+    const respondedStatuses = new Set([
+        "contacted",
+        "detailed_shared",
+        "detail-shared",
+        "follow_up",
+        "follow-up",
+        "site_visit",
+        "site-visit",
+        "negotiation",
+        "booked",
+        "converted"
+    ]);
+    const terminal = new Set(["booked", "converted", "lost", "cancelled"]);
+    const now = Date.now();
+
+    const responded = allVenueAssignments.filter(item =>
+        item.first_contacted_at ||
+        respondedStatuses.has(safeValue(item.assignment_status).toLowerCase())
+    ).length;
+
+    const bookings = allVenueAssignments.filter(item =>
+        ["booked", "converted"].includes(
+            safeValue(item.assignment_status).toLowerCase()
+        )
+    ).length;
+
+    const unresponded = allVenueAssignments.filter(item => {
+        const status = safeValue(item.assignment_status).toLowerCase();
+        const assignedAt = new Date(item.assigned_at).getTime();
+        return (
+            !terminal.has(status) &&
+            !item.first_contacted_at &&
+            Number.isFinite(assignedAt) &&
+            now - assignedAt > 24 * 60 * 60 * 1000
+        );
+    }).length;
+
+    const responseTimes = allVenueAssignments
+        .map(item => {
+            const assignedAt = new Date(item.assigned_at).getTime();
+            const contactedAt = new Date(item.first_contacted_at).getTime();
+            return (
+                Number.isFinite(assignedAt) &&
+                Number.isFinite(contactedAt) &&
+                contactedAt >= assignedAt
+            )
+                ? (contactedAt - assignedAt) / 60000
+                : null;
+        })
+        .filter(value => value !== null);
+
+    return {
+        total_assignments: total,
+        responded,
+        bookings,
+        unresponded_24h: unresponded,
+        response_rate: total ? (responded / total) * 100 : 0,
+        conversion_rate: total ? (bookings / total) * 100 : 0,
+        avg_response_minutes: responseTimes.length
+            ? responseTimes.reduce((sum, value) => sum + value, 0) / responseTimes.length
+            : 0
+    };
+}
+
+async function loadStage8Analytics() {
+    const client = getSupabaseClient();
+    let analytics = getLocalNetworkAnalytics();
+
+    if (client && stage8SchemaReady) {
+        const { data, error } = await client.rpc("smv_admin_analytics");
+
+        if (!error && data) {
+            analytics = data;
+        } else if (error) {
+            console.warn("Stage 8 analytics RPC fallback:", error.message);
+        }
+    }
+
+    const values = {
+        networkAssignments: analytics.total_assignments || 0,
+        networkResponseRate: `${Number(analytics.response_rate || 0).toFixed(1)}%`,
+        networkResponseTime: formatResponseMinutes(analytics.avg_response_minutes),
+        networkBookings: analytics.bookings || 0,
+        networkConversionRate: `${Number(analytics.conversion_rate || 0).toFixed(1)}%`,
+        networkUnresponded: analytics.unresponded_24h || 0
+    };
+
+    Object.entries(values).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = value;
+        }
+    });
+
+    renderPlanDistribution();
+}
+
+function renderPlanDistribution() {
+    const container = document.getElementById("planDistribution");
+    if (!container) {
+        return;
+    }
+
+    const planCodes = stage8Plans.length
+        ? stage8Plans.map(plan => plan.plan_code)
+        : ["launch_trial", "partner", "growth", "premium"];
+
+    container.innerHTML = planCodes
+        .map(code => {
+            const count = allVenues.filter(
+                venue => safeValue(venue.partner_plan || "launch_trial") === code
+            ).length;
+
+            return `
+                <span class="plan-distribution-pill">
+                    ${escapeHTML(formatVenuePlan(code))}
+                    <strong>${count}</strong>
+                </span>
+            `;
+        })
+        .join("");
 }
 
 function getFilteredVenues() {
@@ -4510,6 +4780,13 @@ function getFilteredVenues() {
         if (
             venueVerificationFilter !== "all" &&
             safeValue(venue.verification_status) !== venueVerificationFilter
+        ) {
+            return false;
+        }
+
+        if (
+            venuePlanFilter !== "all" &&
+            safeValue(venue.partner_plan || "launch_trial") !== venuePlanFilter
         ) {
             return false;
         }
@@ -4612,6 +4889,18 @@ function renderVenues() {
                         ${escapeHTML(
                             formatVenueLabel(venue.venue_status)
                         )}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="venue-plan-pill">
+                        ${escapeHTML(formatVenuePlan(venue.partner_plan))}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="venue-public-pill ${venue.public_listing_enabled === true ? "live" : "hidden"}">
+                        ${venue.public_listing_enabled === true ? "Live" : "Hidden"}
                     </span>
                 </td>
 
@@ -4719,6 +5008,28 @@ function formatVenueLabel(value) {
         .replace(/\b\w/g, char => char.toUpperCase());
 }
 
+function formatVenuePlan(value) {
+    const labels = {
+        launch_trial: "Launch Trial",
+        partner: "Partner",
+        growth: "Growth",
+        premium: "Premium"
+    };
+
+    return labels[safeValue(value)] || formatVenueLabel(value || "launch_trial");
+}
+
+function toDateInputValue(value) {
+    if (!value) {
+        return "";
+    }
+
+    const date = new Date(value);
+    return Number.isNaN(date.getTime())
+        ? ""
+        : date.toISOString().slice(0, 10);
+}
+
 function openVenueModal(venue = null) {
 
     const modal = document.getElementById("venueModal");
@@ -4771,6 +5082,26 @@ function openVenueModal(venue = null) {
         venue?.verification_status || "pending"
     );
 
+    setVenueField(
+        "venuePlan",
+        venue?.partner_plan || "launch_trial"
+    );
+
+    setVenueField(
+        "venuePlanStatus",
+        venue?.plan_status || "trialing"
+    );
+
+    setVenueField(
+        "venuePlanStartedAt",
+        toDateInputValue(venue?.plan_started_at)
+    );
+
+    setVenueField(
+        "venuePlanExpiresAt",
+        toDateInputValue(venue?.plan_expires_at)
+    );
+
     setVenueChecked(
         "venueFoodVeg",
         venue?.food_veg !== false
@@ -4805,6 +5136,13 @@ function openVenueModal(venue = null) {
         "venueFeatured",
         venue?.featured === true
     );
+
+    setVenueChecked(
+        "venuePublicListing",
+        venue?.public_listing_enabled === true
+    );
+
+    setStage8FormAvailability();
 
     modal.hidden = false;
 }
@@ -4864,6 +5202,33 @@ function getVenueFormData() {
         Boolean(
             document.getElementById(id)?.checked
         );
+
+    const stage8Fields = stage8SchemaReady
+        ? {
+            partner_plan:
+                safeValue(
+                    document.getElementById("venuePlan")?.value
+                ) || "launch_trial",
+
+            plan_status:
+                safeValue(
+                    document.getElementById("venuePlanStatus")?.value
+                ) || "trialing",
+
+            plan_started_at:
+                safeValue(
+                    document.getElementById("venuePlanStartedAt")?.value
+                ) || null,
+
+            plan_expires_at:
+                safeValue(
+                    document.getElementById("venuePlanExpiresAt")?.value
+                ) || null,
+
+            public_listing_enabled:
+                checked("venuePublicListing")
+        }
+        : {};
 
     return {
 
@@ -4988,7 +5353,9 @@ function getVenueFormData() {
             ) || "pending",
 
         featured:
-            checked("venueFeatured")
+            checked("venueFeatured"),
+
+        ...stage8Fields
     };
 }
 
@@ -5018,6 +5385,20 @@ async function saveVenue(event) {
 
         document.getElementById("venueName")?.focus();
 
+        return;
+    }
+
+    if (
+        payload.public_listing_enabled === true &&
+        (
+            payload.venue_status !== "approved" ||
+            payload.verification_status !== "verified"
+        )
+    ) {
+        showToast(
+            "A public venue must be both approved and verified.",
+            "error"
+        );
         return;
     }
 
@@ -5205,13 +5586,19 @@ async function updateVenueStatus(
         return;
     }
 
+    const updatePayload = {
+        venue_status: venueStatus,
+        verification_status: verificationStatus
+    };
+
+    if (stage8SchemaReady && venueStatus !== "approved") {
+        updatePayload.public_listing_enabled = false;
+    }
+
     const { error } =
         await client
             .from("venues")
-            .update({
-                venue_status: venueStatus,
-                verification_status: verificationStatus
-            })
+            .update(updatePayload)
             .eq("id", venue.id);
 
     if (error) {
@@ -5406,6 +5793,8 @@ async function loadVenueAssignments() {
         if (currentLead) {
             renderLeadVenueAssignments(currentLead.id);
         }
+
+        await loadStage8Analytics();
     }
     catch (error) {
         console.warn(
@@ -6126,6 +6515,8 @@ async function initializeCRM() {
     setupVenueAssignment();
 
     setupAuthListener();
+
+    await loadStage8Capabilities();
 
     await loadEnquiries();
 

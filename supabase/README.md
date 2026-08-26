@@ -15,3 +15,22 @@ Do not publish the Partner CRM release as final until this migration has run.
 The assignment-protection trigger permits trusted SQL Editor/service-role
 maintenance where `auth.uid()` is null, while continuing to enforce venue
 ownership and protected-field checks for every authenticated partner user.
+
+## Stage 8
+
+After the security migration above, run
+`20260827_stage8_notifications_analytics_plans.sql`.
+
+The Stage 8 migration is also idempotent. It adds:
+
+1. a separate `public_listing_enabled` control, so approved test/private venues
+   can remain hidden from the website;
+2. the Launch Trial, Partner, Growth and Premium plan catalogue and venue-level
+   plan controls;
+3. automatic Partner CRM notifications whenever staff creates a new venue
+   assignment;
+4. ownership-checked notification read functions; and
+5. secure Partner and Master CRM analytics functions.
+
+New and existing venues default to `public_listing_enabled = false`. Publishing
+a venue therefore always remains a deliberate Master CRM action.
