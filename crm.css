@@ -5507,3 +5507,213 @@ body{
         padding-right:8px !important;
     }
 }
+/* =========================================================
+   STAGE 8 — NETWORK ANALYTICS, PLANS & PUBLIC VISIBILITY
+   ========================================================= */
+
+.stage8-venue-stats {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.network-insights {
+    margin: 18px 0;
+    padding: 22px;
+    border: 1px solid #dbe8e4;
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at 92% 10%, rgba(24, 169, 130, 0.10), transparent 34%),
+        linear-gradient(145deg, #ffffff, #f8fcfb);
+    box-shadow: 0 12px 32px rgba(25, 72, 62, 0.06);
+}
+
+.network-insights-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.network-insights-head h2 {
+    margin: 3px 0 5px;
+    color: #163c34;
+    font-size: 20px;
+}
+
+.network-insights-head p {
+    margin: 0;
+    color: #71827e;
+    font-size: 12px;
+}
+
+.stage8-schema-state {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 6px 10px;
+    border: 1px solid #cfe3dd;
+    border-radius: 999px;
+    background: #f1faf7;
+    color: #22735e;
+    font-size: 10px;
+    font-weight: 850;
+    white-space: nowrap;
+}
+
+.stage8-schema-state.pending {
+    border-color: #f1d49e;
+    background: #fff8e8;
+    color: #956310;
+}
+
+.network-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.network-kpi {
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid #e1ece8;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.86);
+}
+
+.network-kpi span,
+.network-kpi small {
+    display: block;
+}
+
+.network-kpi span {
+    color: #71827e;
+    font-size: 9px;
+    font-weight: 850;
+    letter-spacing: .55px;
+}
+
+.network-kpi strong {
+    display: block;
+    margin: 6px 0 3px;
+    color: #153f35;
+    font-size: 21px;
+}
+
+.network-kpi small {
+    color: #8a9995;
+    font-size: 9px;
+}
+
+.network-kpi.attention strong {
+    color: #b45a29;
+}
+
+.plan-distribution {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #e2ece9;
+    color: #71827e;
+    font-size: 11px;
+}
+
+.plan-distribution-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 10px;
+    border: 1px solid #dbe9e5;
+    border-radius: 999px;
+    background: #fff;
+    color: #45655d;
+    font-weight: 700;
+}
+
+.plan-distribution-pill strong {
+    color: #0b8068;
+}
+
+.public-listing-control {
+    align-items: flex-start;
+}
+
+.public-listing-control small {
+    display: block;
+    margin-top: 7px;
+    color: #7a8c87;
+    font-size: 10px;
+    line-height: 1.45;
+}
+
+.stage8-form-notice {
+    margin: 0 0 18px;
+    padding: 11px 13px;
+    border: 1px solid #f1d49e;
+    border-radius: 10px;
+    background: #fff8e8;
+    color: #8a5d13;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.venue-plan-pill,
+.venue-public-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 25px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: 850;
+    white-space: nowrap;
+}
+
+.venue-plan-pill {
+    border: 1px solid #d6e8e2;
+    background: #f3faf8;
+    color: #29705e;
+}
+
+.venue-public-pill.live {
+    border: 1px solid #bfe7d8;
+    background: #eaf9f2;
+    color: #147454;
+}
+
+.venue-public-pill.hidden {
+    border: 1px solid #e1e6e4;
+    background: #f4f6f5;
+    color: #6d7975;
+}
+
+@media (max-width: 1180px) {
+    .stage8-venue-stats,
+    .network-kpi-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .stage8-venue-stats,
+    .network-kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .network-insights {
+        padding: 16px;
+    }
+
+    .network-insights-head {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 460px) {
+    .stage8-venue-stats,
+    .network-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+}

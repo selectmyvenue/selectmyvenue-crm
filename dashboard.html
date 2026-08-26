@@ -149,7 +149,7 @@
             </div>
         </div>
 
-        <div class="venue-stats-grid">
+        <div class="venue-stats-grid stage8-venue-stats">
             <div class="venue-stat-card">
                 <span>TOTAL VENUES</span>
                 <strong id="venueTotalCount">0</strong>
@@ -166,7 +166,39 @@
                 <span>VERIFIED</span>
                 <strong id="venueVerifiedCount">0</strong>
             </div>
+            <div class="venue-stat-card">
+                <span>PUBLIC</span>
+                <strong id="venuePublicCount">0</strong>
+            </div>
+            <div class="venue-stat-card">
+                <span>ACTIVE PARTNERS</span>
+                <strong id="venuePartnerCount">0</strong>
+            </div>
         </div>
+
+        <section class="network-insights" aria-labelledby="networkInsightsTitle">
+            <div class="network-insights-head">
+                <div>
+                    <div class="venue-kicker">STAGE 8 · NETWORK PERFORMANCE</div>
+                    <h2 id="networkInsightsTitle">Analytics &amp; Partner Plans</h2>
+                    <p>Live performance from venue assignments and partner response activity.</p>
+                </div>
+                <span id="stage8SchemaState" class="stage8-schema-state">Checking Stage 8…</span>
+            </div>
+
+            <div class="network-kpi-grid">
+                <div class="network-kpi"><span>ASSIGNMENTS</span><strong id="networkAssignments">0</strong><small>All venue leads</small></div>
+                <div class="network-kpi"><span>RESPONSE RATE</span><strong id="networkResponseRate">0%</strong><small>Partner-contacted leads</small></div>
+                <div class="network-kpi"><span>AVG. RESPONSE</span><strong id="networkResponseTime">—</strong><small>First partner response</small></div>
+                <div class="network-kpi"><span>BOOKINGS</span><strong id="networkBookings">0</strong><small>Booked / converted</small></div>
+                <div class="network-kpi"><span>CONVERSION</span><strong id="networkConversionRate">0%</strong><small>Assignments to booking</small></div>
+                <div class="network-kpi attention"><span>NO RESPONSE · 24H</span><strong id="networkUnresponded">0</strong><small>Needs admin attention</small></div>
+            </div>
+
+            <div id="planDistribution" class="plan-distribution" aria-live="polite">
+                Plan distribution will appear after venues load.
+            </div>
+        </section>
 
         <div class="venue-toolbar">
             <input
@@ -192,6 +224,14 @@
                 <option value="verified">Verified</option>
                 <option value="rejected">Rejected</option>
             </select>
+
+            <select id="venuePlanFilter" class="venue-filter-select">
+                <option value="all">All Plans</option>
+                <option value="launch_trial">Launch Trial</option>
+                <option value="partner">Partner</option>
+                <option value="growth">Growth</option>
+                <option value="premium">Premium</option>
+            </select>
         </div>
 
         <div class="venue-table-wrapper">
@@ -206,12 +246,14 @@
                         <th>PRICE</th>
                         <th>STATUS</th>
                         <th>VERIFICATION</th>
+                        <th>PLAN</th>
+                        <th>PUBLIC</th>
                         <th>ACTION</th>
                     </tr>
                 </thead>
                 <tbody id="venueTableBody">
                     <tr>
-                        <td colspan="9" class="venue-loading-cell">
+                        <td colspan="11" class="venue-loading-cell">
                             Loading venues...
                         </td>
                     </tr>
@@ -787,6 +829,49 @@
                             Featured venue
                         </label>
                     </div>
+                </div>
+
+                <div class="venue-form-section-title">PARTNER PLAN &amp; WEBSITE</div>
+
+                <div class="venue-form-grid">
+                    <div class="venue-field">
+                        <label for="venuePlan">PARTNER PLAN</label>
+                        <select id="venuePlan">
+                            <option value="launch_trial">Launch Trial</option>
+                            <option value="partner">Partner</option>
+                            <option value="growth">Growth</option>
+                            <option value="premium">Premium</option>
+                        </select>
+                    </div>
+                    <div class="venue-field">
+                        <label for="venuePlanStatus">PLAN STATUS</label>
+                        <select id="venuePlanStatus">
+                            <option value="trialing">Trialing</option>
+                            <option value="active">Active</option>
+                            <option value="paused">Paused</option>
+                            <option value="expired">Expired</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="venue-field">
+                        <label for="venuePlanStartedAt">PLAN START DATE</label>
+                        <input id="venuePlanStartedAt" type="date">
+                    </div>
+                    <div class="venue-field">
+                        <label for="venuePlanExpiresAt">PLAN EXPIRY DATE</label>
+                        <input id="venuePlanExpiresAt" type="date">
+                    </div>
+                    <div class="venue-field venue-field-wide venue-field-check public-listing-control">
+                        <label>
+                            <input type="checkbox" id="venuePublicListing">
+                            Show this venue on selectmyvenue.com
+                        </label>
+                        <small>Approval and verification remain separate. Keep this off for test or private partner venues.</small>
+                    </div>
+                </div>
+
+                <div id="stage8FormNotice" class="stage8-form-notice" hidden>
+                    Apply the Stage 8 database migration before changing plan or website visibility.
                 </div>
 
                 <div class="venue-form-actions">
