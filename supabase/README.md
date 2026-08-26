@@ -11,3 +11,7 @@ The migration is idempotent and performs four production-critical tasks:
 4. exposes only approved and verified venue fields to the public directory.
 
 Do not publish the Partner CRM release as final until this migration has run.
+
+The assignment-protection trigger permits trusted SQL Editor/service-role
+maintenance where `auth.uid()` is null, while continuing to enforce venue
+ownership and protected-field checks for every authenticated partner user.

@@ -157,6 +157,14 @@ security definer
 set search_path = ''
 as $function$
 begin
+  -- SQL Editor, migrations and service-role jobs do not carry an end-user JWT,
+  -- so auth.uid() is NULL. These are trusted administrative operations.
+  -- A logged-in venue partner always has a non-NULL auth.uid() and therefore
+  -- continues through the ownership and protected-field checks below.
+  if auth.uid() is null then
+    return new;
+  end if;
+
   if coalesce(public.smv_is_active_staff(), false) then
     return new;
   end if;
