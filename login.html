@@ -715,7 +715,6 @@
 
             </div>
 
-
             <div class="login-field">
 
                 <label
@@ -733,6 +732,15 @@
                     required
                 >
 
+            </div>
+
+            <div style="text-align:right; margin-top:-7px;">
+                <a
+                    href="forgot-password.html"
+                    style="color:#21c7b7; text-decoration:none; font-size:13px; font-weight:700;"
+                >
+                    Forgot Password?
+                </a>
             </div>
 
 
@@ -832,6 +840,14 @@
         loginMessage.className =
             "login-message " + type;
 
+    }
+
+    if (new URLSearchParams(window.location.search).get("reset") === "success") {
+        showLoginMessage(
+            "Password updated successfully. Please sign in with your new password.",
+            "success"
+        );
+        history.replaceState({}, document.title, "login.html");
     }
 
 

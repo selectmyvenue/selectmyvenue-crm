@@ -4439,6 +4439,28 @@ body{
     font-size:11px !important;
 }
 
+.account-password-btn{
+    min-height:38px;
+    padding:0 13px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid var(--ui-border-strong);
+    border-radius:10px;
+    background:#fff;
+    color:#315f53;
+    text-decoration:none;
+    font-size:11px;
+    font-weight:800;
+    white-space:nowrap;
+}
+
+.account-password-btn:hover{
+    border-color:#9ed1c1;
+    background:var(--ui-brand-soft);
+    color:var(--ui-brand-strong);
+}
+
 /* ---------- Main workspace ---------- */
 
 .crm-main{
