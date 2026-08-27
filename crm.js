@@ -4288,6 +4288,9 @@ let stage8SchemaReady = false;
 let stage8Plans = [];
 let stage8ActivePartnerCount = 0;
 let currentVenuePartnerProfile = null;
+let currentVenueCoverImageUrl = "";
+let pendingVenueCoverImageFile = null;
+let pendingVenueCoverPreviewUrl = "";
 
 /* =========================================================
    STAGE 3 — VENUE ENQUIRY ASSIGNMENTS
@@ -4317,6 +4320,7 @@ function setupVenueManagement() {
     const plan = document.getElementById("venuePlanFilter");
     const table = document.getElementById("venueTableBody");
     const partnerInviteButton = document.getElementById("sendPartnerInviteBtn");
+    const coverImageInput = document.getElementById("venueCoverImage");
 
     if (!venueBtn || !form || !table) {
         return;
@@ -4331,6 +4335,7 @@ function setupVenueManagement() {
 
     form.addEventListener("submit", saveVenue);
     partnerInviteButton?.addEventListener("click", sendPartnerInvite);
+    coverImageInput?.addEventListener("change", handleVenueCoverSelection);
 
     search?.addEventListener("input", event => {
         venueSearch = safeValue(event.target.value).trim().toLowerCase();
@@ -5145,6 +5150,8 @@ function openVenueModal(venue = null) {
         venue?.public_listing_enabled === true
     );
 
+    resetVenueCoverEditor(venue);
+
     resetPartnerAccessPanel(venue);
 
     if (venue?.id) {
@@ -5187,6 +5194,130 @@ function closeVenueModal() {
     }
 
     currentVenuePartnerProfile = null;
+    clearPendingVenueCoverPreview();
+    pendingVenueCoverImageFile = null;
+}
+
+function clearPendingVenueCoverPreview() {
+    if (pendingVenueCoverPreviewUrl) {
+        URL.revokeObjectURL(pendingVenueCoverPreviewUrl);
+        pendingVenueCoverPreviewUrl = "";
+    }
+}
+
+function setVenueMediaStatus(message = "", type = "") {
+    const element = document.getElementById("venueCoverUploadStatus");
+
+    if (!element) {
+        return;
+    }
+
+    element.textContent = message;
+    element.className = `venue-media-status${type ? ` ${type}` : ""}`;
+}
+
+function renderVenueCoverPreview(url, venueName = "Venue") {
+    const preview = document.getElementById("venueCoverPreview");
+    const image = document.getElementById("venueCoverPreviewImage");
+    const label = document.getElementById("venueCoverPreviewLabel");
+
+    if (!preview || !image || !label) {
+        return;
+    }
+
+    const safeUrl = safeValue(url).trim();
+
+    if (!safeUrl) {
+        image.hidden = true;
+        image.removeAttribute("src");
+        image.alt = "Venue cover preview";
+        preview.classList.add("is-empty");
+        label.hidden = false;
+        label.textContent = "No cover image added";
+        return;
+    }
+
+    image.src = safeUrl;
+    image.alt = `${safeValue(venueName).trim() || "Venue"} cover image`;
+    image.hidden = false;
+    preview.classList.remove("is-empty");
+    label.hidden = true;
+}
+
+function resetVenueCoverEditor(venue = null) {
+    clearPendingVenueCoverPreview();
+    pendingVenueCoverImageFile = null;
+    currentVenueCoverImageUrl = safeValue(venue?.cover_image_url).trim();
+
+    const input = document.getElementById("venueCoverImage");
+    if (input) {
+        input.value = "";
+    }
+
+    renderVenueCoverPreview(
+        currentVenueCoverImageUrl,
+        venue?.venue_name || "Venue"
+    );
+
+    setVenueMediaStatus(
+        currentVenueCoverImageUrl
+            ? "Current cover image is live on the public venue profile."
+            : "Choose an image to add a visual public profile."
+    );
+}
+
+function handleVenueCoverSelection(event) {
+    const input = event.currentTarget;
+    const file = input?.files?.[0] || null;
+
+    clearPendingVenueCoverPreview();
+    pendingVenueCoverImageFile = null;
+
+    if (!file) {
+        renderVenueCoverPreview(
+            currentVenueCoverImageUrl,
+            document.getElementById("venueName")?.value || "Venue"
+        );
+        setVenueMediaStatus(
+            currentVenueCoverImageUrl
+                ? "Current cover image will remain unchanged."
+                : "Choose an image to add a visual public profile."
+        );
+        return;
+    }
+
+    const allowedTypes = new Set([
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ]);
+
+    if (!allowedTypes.has(file.type)) {
+        input.value = "";
+        renderVenueCoverPreview(currentVenueCoverImageUrl);
+        setVenueMediaStatus("Please choose a JPG, PNG or WebP image.", "error");
+        return;
+    }
+
+    if (file.size > 6 * 1024 * 1024) {
+        input.value = "";
+        renderVenueCoverPreview(currentVenueCoverImageUrl);
+        setVenueMediaStatus("The cover image must be 6 MB or smaller.", "error");
+        return;
+    }
+
+    pendingVenueCoverImageFile = file;
+    pendingVenueCoverPreviewUrl = URL.createObjectURL(file);
+
+    renderVenueCoverPreview(
+        pendingVenueCoverPreviewUrl,
+        document.getElementById("venueName")?.value || "Venue"
+    );
+
+    setVenueMediaStatus(
+        "Image ready. It will upload when you save the venue.",
+        "success"
+    );
 }
 
 function setPartnerAccessMessage(message, type = "") {
@@ -5573,6 +5704,79 @@ function getVenueFormData() {
     };
 }
 
+function venueCoverExtension(file) {
+    const byType = {
+        "image/jpeg": "jpg",
+        "image/png": "png",
+        "image/webp": "webp"
+    };
+
+    return byType[file?.type] || "jpg";
+}
+
+async function uploadVenueCoverImage(venueId, file) {
+    const client = getSupabaseClient();
+
+    if (!client || !venueId || !file) {
+        throw new Error("Venue image upload is not ready.");
+    }
+
+    const path = `${venueId}/cover-${Date.now()}.${venueCoverExtension(file)}`;
+
+    const { error: uploadError } = await client.storage
+        .from("venue-media")
+        .upload(path, file, {
+            cacheControl: "3600",
+            contentType: file.type,
+            upsert: false
+        });
+
+    if (uploadError) {
+        throw uploadError;
+    }
+
+    const { data: publicUrlData } = client.storage
+        .from("venue-media")
+        .getPublicUrl(path);
+
+    const publicUrl = safeValue(publicUrlData?.publicUrl).trim();
+
+    if (!publicUrl) {
+        throw new Error("The uploaded image URL could not be created.");
+    }
+
+    const { error: updateError } = await client
+        .from("venues")
+        .update({ cover_image_url: publicUrl })
+        .eq("id", venueId);
+
+    if (updateError) {
+        throw updateError;
+    }
+
+    return publicUrl;
+}
+
+function prepareSavedVenueForPartnerAccess(venue) {
+    if (!venue?.id) {
+        return;
+    }
+
+    document.getElementById("venueId").value = venue.id;
+    document.getElementById("venueModalTitle").textContent = "Edit Venue";
+
+    const inviteButton = document.getElementById("sendPartnerInviteBtn");
+    if (inviteButton) {
+        inviteButton.disabled = false;
+        inviteButton.textContent = "Send Partner Invite";
+    }
+
+    setPartnerAccessStatus("Ready to invite", "pending");
+    setPartnerAccessMessage(
+        "Venue saved. You can now send the secure Partner CRM invitation."
+    );
+}
+
 async function saveVenue(event) {
 
     event.preventDefault();
@@ -5651,12 +5855,12 @@ async function saveVenue(event) {
             .single();
     }
 
-    if (button) {
-        button.disabled = false;
-        button.textContent = "Save Venue";
-    }
-
     if (result.error) {
+
+        if (button) {
+            button.disabled = false;
+            button.textContent = "Save Venue";
+        }
 
         console.error(
             "Venue save error:",
@@ -5672,31 +5876,78 @@ async function saveVenue(event) {
         return;
     }
 
+    const savedVenue = result.data;
+    let coverUploadError = null;
+
+    if (pendingVenueCoverImageFile) {
+        if (button) {
+            button.textContent = "Uploading image...";
+        }
+
+        setVenueMediaStatus("Uploading cover image...");
+
+        try {
+            const publicUrl = await uploadVenueCoverImage(
+                savedVenue.id,
+                pendingVenueCoverImageFile
+            );
+
+            savedVenue.cover_image_url = publicUrl;
+            currentVenueCoverImageUrl = publicUrl;
+            pendingVenueCoverImageFile = null;
+            clearPendingVenueCoverPreview();
+
+            const input = document.getElementById("venueCoverImage");
+            if (input) {
+                input.value = "";
+            }
+
+            renderVenueCoverPreview(publicUrl, savedVenue.venue_name);
+            setVenueMediaStatus("Cover image uploaded successfully.", "success");
+        } catch (error) {
+            coverUploadError = error;
+            console.error("Venue cover upload error:", error);
+            setVenueMediaStatus(
+                error.message || "Unable to upload the cover image.",
+                "error"
+            );
+        }
+    }
+
+    if (button) {
+        button.disabled = false;
+        button.textContent = "Save Venue";
+    }
+
     await loadVenues();
 
-    if (id) {
-        closeVenueModal();
-        showToast("Venue updated successfully.", "success");
+    if (!id) {
+        prepareSavedVenueForPartnerAccess(savedVenue);
+    }
+
+    if (coverUploadError) {
+        showToast(
+            "Venue details were saved, but the cover image could not be uploaded. Please try the image again.",
+            "error"
+        );
         return;
     }
 
-    const newVenue = result.data;
-    document.getElementById("venueId").value = newVenue.id;
-    document.getElementById("venueModalTitle").textContent = "Edit Venue";
-
-    const inviteButton = document.getElementById("sendPartnerInviteBtn");
-    if (inviteButton) {
-        inviteButton.disabled = false;
-        inviteButton.textContent = "Send Partner Invite";
+    if (id) {
+        closeVenueModal();
+        showToast(
+            savedVenue.cover_image_url
+                ? "Venue and cover image updated successfully."
+                : "Venue updated successfully.",
+            "success"
+        );
+        return;
     }
 
-    setPartnerAccessStatus("Ready to invite", "pending");
-    setPartnerAccessMessage(
-        "Venue saved. You can now send the secure Partner CRM invitation."
-    );
-
     showToast(
-        "Venue added. Partner access is now ready.",
+        savedVenue.cover_image_url
+            ? "Venue and cover image added. Partner access is now ready."
+            : "Venue added. Partner access is now ready.",
         "success"
     );
 }
