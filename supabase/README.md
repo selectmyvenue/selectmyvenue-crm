@@ -35,6 +35,16 @@ The Growth & Insights migration is also idempotent. It adds:
 New and existing venues default to `public_listing_enabled = false`. Publishing
 a venue therefore always remains a deliberate Master CRM action.
 
+## Venue media & public profiles
+
+After Growth & Insights, run `20260827_venue_media_profiles.sql`.
+
+This idempotent migration adds the staff-managed `venue-media` storage bucket,
+the venue cover-image field and the expanded safe public venue RPC used by the
+homepage showcase, venue directory and individual venue profile page. Public
+visitors receive only approved, verified and explicitly published venue data;
+staff authentication is required to upload, replace or delete storage objects.
+
 ## Partner CRM invitations
 
 Deploy the Edge Function in
