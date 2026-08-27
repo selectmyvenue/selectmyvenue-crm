@@ -4291,6 +4291,7 @@ let currentVenuePartnerProfile = null;
 let currentVenueCoverImageUrl = "";
 let pendingVenueCoverImageFile = null;
 let pendingVenueCoverPreviewUrl = "";
+let pendingVenueCoverRemoval = false;
 
 /* =========================================================
    STAGE 3 — VENUE ENQUIRY ASSIGNMENTS
@@ -4321,6 +4322,8 @@ function setupVenueManagement() {
     const table = document.getElementById("venueTableBody");
     const partnerInviteButton = document.getElementById("sendPartnerInviteBtn");
     const coverImageInput = document.getElementById("venueCoverImage");
+    const replaceCoverButton = document.getElementById("replaceVenueCoverBtn");
+    const removeCoverButton = document.getElementById("removeVenueCoverBtn");
 
     if (!venueBtn || !form || !table) {
         return;
@@ -4336,6 +4339,8 @@ function setupVenueManagement() {
     form.addEventListener("submit", saveVenue);
     partnerInviteButton?.addEventListener("click", sendPartnerInvite);
     coverImageInput?.addEventListener("change", handleVenueCoverSelection);
+    replaceCoverButton?.addEventListener("click", () => coverImageInput?.click());
+    removeCoverButton?.addEventListener("click", handleVenueCoverRemoval);
 
     search?.addEventListener("input", event => {
         venueSearch = safeValue(event.target.value).trim().toLowerCase();
@@ -5196,6 +5201,7 @@ function closeVenueModal() {
     currentVenuePartnerProfile = null;
     clearPendingVenueCoverPreview();
     pendingVenueCoverImageFile = null;
+    pendingVenueCoverRemoval = false;
 }
 
 function clearPendingVenueCoverPreview() {
@@ -5244,9 +5250,40 @@ function renderVenueCoverPreview(url, venueName = "Venue") {
     label.hidden = true;
 }
 
+function updateVenueMediaActions() {
+    const replaceButton = document.getElementById("replaceVenueCoverBtn");
+    const removeButton = document.getElementById("removeVenueCoverBtn");
+
+    if (replaceButton) {
+        replaceButton.textContent = pendingVenueCoverImageFile
+            ? "Choose Different Image"
+            : currentVenueCoverImageUrl && !pendingVenueCoverRemoval
+                ? "Replace Cover Image"
+                : "Add Cover Image";
+    }
+
+    if (!removeButton) {
+        return;
+    }
+
+    removeButton.hidden = !(
+        pendingVenueCoverImageFile ||
+        currentVenueCoverImageUrl ||
+        pendingVenueCoverRemoval
+    );
+    removeButton.classList.toggle("is-undo", pendingVenueCoverRemoval);
+    removeButton.classList.toggle("danger", !pendingVenueCoverRemoval);
+    removeButton.textContent = pendingVenueCoverRemoval
+        ? "Undo Removal"
+        : pendingVenueCoverImageFile
+            ? "Clear Selected Image"
+            : "Remove Cover Image";
+}
+
 function resetVenueCoverEditor(venue = null) {
     clearPendingVenueCoverPreview();
     pendingVenueCoverImageFile = null;
+    pendingVenueCoverRemoval = false;
     currentVenueCoverImageUrl = safeValue(venue?.cover_image_url).trim();
 
     const input = document.getElementById("venueCoverImage");
@@ -5264,6 +5301,53 @@ function resetVenueCoverEditor(venue = null) {
             ? "Current cover image is live on the public venue profile."
             : "Choose an image to add a visual public profile."
     );
+    updateVenueMediaActions();
+}
+
+function handleVenueCoverRemoval() {
+    const input = document.getElementById("venueCoverImage");
+
+    if (pendingVenueCoverImageFile) {
+        clearPendingVenueCoverPreview();
+        pendingVenueCoverImageFile = null;
+        if (input) {
+            input.value = "";
+        }
+        renderVenueCoverPreview(
+            currentVenueCoverImageUrl,
+            document.getElementById("venueName")?.value || "Venue"
+        );
+        setVenueMediaStatus(
+            currentVenueCoverImageUrl
+                ? "Selected replacement cleared. The current cover will remain."
+                : "Selected image cleared."
+        );
+        updateVenueMediaActions();
+        return;
+    }
+
+    if (pendingVenueCoverRemoval) {
+        pendingVenueCoverRemoval = false;
+        renderVenueCoverPreview(
+            currentVenueCoverImageUrl,
+            document.getElementById("venueName")?.value || "Venue"
+        );
+        setVenueMediaStatus("Cover image removal cancelled.");
+        updateVenueMediaActions();
+        return;
+    }
+
+    if (!currentVenueCoverImageUrl) {
+        return;
+    }
+
+    pendingVenueCoverRemoval = true;
+    renderVenueCoverPreview("", document.getElementById("venueName")?.value || "Venue");
+    setVenueMediaStatus(
+        "Cover image will be removed from the public venue profile when you save the venue.",
+        "error"
+    );
+    updateVenueMediaActions();
 }
 
 function handleVenueCoverSelection(event) {
@@ -5272,6 +5356,7 @@ function handleVenueCoverSelection(event) {
 
     clearPendingVenueCoverPreview();
     pendingVenueCoverImageFile = null;
+    pendingVenueCoverRemoval = false;
 
     if (!file) {
         renderVenueCoverPreview(
@@ -5283,6 +5368,7 @@ function handleVenueCoverSelection(event) {
                 ? "Current cover image will remain unchanged."
                 : "Choose an image to add a visual public profile."
         );
+        updateVenueMediaActions();
         return;
     }
 
@@ -5296,6 +5382,7 @@ function handleVenueCoverSelection(event) {
         input.value = "";
         renderVenueCoverPreview(currentVenueCoverImageUrl);
         setVenueMediaStatus("Please choose a JPG, PNG or WebP image.", "error");
+        updateVenueMediaActions();
         return;
     }
 
@@ -5303,10 +5390,12 @@ function handleVenueCoverSelection(event) {
         input.value = "";
         renderVenueCoverPreview(currentVenueCoverImageUrl);
         setVenueMediaStatus("The cover image must be 6 MB or smaller.", "error");
+        updateVenueMediaActions();
         return;
     }
 
     pendingVenueCoverImageFile = file;
+    pendingVenueCoverRemoval = false;
     pendingVenueCoverPreviewUrl = URL.createObjectURL(file);
 
     renderVenueCoverPreview(
@@ -5318,6 +5407,7 @@ function handleVenueCoverSelection(event) {
         "Image ready. It will upload when you save the venue.",
         "success"
     );
+    updateVenueMediaActions();
 }
 
 function setPartnerAccessMessage(message, type = "") {
@@ -5714,6 +5804,39 @@ function venueCoverExtension(file) {
     return byType[file?.type] || "jpg";
 }
 
+function venueCoverStoragePath(url) {
+    const marker = "/storage/v1/object/public/venue-media/";
+    const value = safeValue(url).trim();
+    const index = value.indexOf(marker);
+
+    if (index < 0) {
+        return "";
+    }
+
+    try {
+        return decodeURIComponent(value.slice(index + marker.length));
+    } catch (_) {
+        return value.slice(index + marker.length);
+    }
+}
+
+async function deleteVenueCoverStorageObject(url) {
+    const client = getSupabaseClient();
+    const path = venueCoverStoragePath(url);
+
+    if (!client || !path) {
+        return;
+    }
+
+    const { error } = await client.storage
+        .from("venue-media")
+        .remove([path]);
+
+    if (error) {
+        console.warn("Unable to remove previous venue cover object:", error);
+    }
+}
+
 async function uploadVenueCoverImage(venueId, file) {
     const client = getSupabaseClient();
 
@@ -5751,10 +5874,34 @@ async function uploadVenueCoverImage(venueId, file) {
         .eq("id", venueId);
 
     if (updateError) {
+        await client.storage.from("venue-media").remove([path]);
         throw updateError;
     }
 
+    if (currentVenueCoverImageUrl && currentVenueCoverImageUrl !== publicUrl) {
+        await deleteVenueCoverStorageObject(currentVenueCoverImageUrl);
+    }
+
     return publicUrl;
+}
+
+async function removeVenueCoverImage(venueId, currentUrl) {
+    const client = getSupabaseClient();
+
+    if (!client || !venueId) {
+        throw new Error("Venue image removal is not ready.");
+    }
+
+    const { error } = await client
+        .from("venues")
+        .update({ cover_image_url: null })
+        .eq("id", venueId);
+
+    if (error) {
+        throw error;
+    }
+
+    await deleteVenueCoverStorageObject(currentUrl);
 }
 
 function prepareSavedVenueForPartnerAccess(venue) {
@@ -5877,7 +6024,7 @@ async function saveVenue(event) {
     }
 
     const savedVenue = result.data;
-    let coverUploadError = null;
+    let coverMediaError = null;
 
     if (pendingVenueCoverImageFile) {
         if (button) {
@@ -5895,6 +6042,7 @@ async function saveVenue(event) {
             savedVenue.cover_image_url = publicUrl;
             currentVenueCoverImageUrl = publicUrl;
             pendingVenueCoverImageFile = null;
+            pendingVenueCoverRemoval = false;
             clearPendingVenueCoverPreview();
 
             const input = document.getElementById("venueCoverImage");
@@ -5904,11 +6052,35 @@ async function saveVenue(event) {
 
             renderVenueCoverPreview(publicUrl, savedVenue.venue_name);
             setVenueMediaStatus("Cover image uploaded successfully.", "success");
+            updateVenueMediaActions();
         } catch (error) {
-            coverUploadError = error;
+            coverMediaError = error;
             console.error("Venue cover upload error:", error);
             setVenueMediaStatus(
                 error.message || "Unable to upload the cover image.",
+                "error"
+            );
+        }
+    } else if (pendingVenueCoverRemoval && currentVenueCoverImageUrl) {
+        if (button) {
+            button.textContent = "Removing image...";
+        }
+
+        setVenueMediaStatus("Removing cover image...");
+
+        try {
+            await removeVenueCoverImage(savedVenue.id, currentVenueCoverImageUrl);
+            savedVenue.cover_image_url = null;
+            currentVenueCoverImageUrl = "";
+            pendingVenueCoverRemoval = false;
+            renderVenueCoverPreview("", savedVenue.venue_name);
+            setVenueMediaStatus("Cover image removed successfully.", "success");
+            updateVenueMediaActions();
+        } catch (error) {
+            coverMediaError = error;
+            console.error("Venue cover removal error:", error);
+            setVenueMediaStatus(
+                error.message || "Unable to remove the cover image.",
                 "error"
             );
         }
@@ -5925,9 +6097,9 @@ async function saveVenue(event) {
         prepareSavedVenueForPartnerAccess(savedVenue);
     }
 
-    if (coverUploadError) {
+    if (coverMediaError) {
         showToast(
-            "Venue details were saved, but the cover image could not be uploaded. Please try the image again.",
+            "Venue details were saved, but the cover image change could not be completed. Please try again.",
             "error"
         );
         return;
