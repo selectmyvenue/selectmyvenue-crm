@@ -1,0 +1,3 @@
+[functions.invite-venue-partner]
+verify_jwt = false
+entrypoint = "./functions/invite-venue-partner/index.js"

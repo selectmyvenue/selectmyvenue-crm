@@ -34,3 +34,21 @@ The Growth & Insights migration is also idempotent. It adds:
 
 New and existing venues default to `public_listing_enabled = false`. Publishing
 a venue therefore always remains a deliberate Master CRM action.
+
+## Partner CRM invitations
+
+Deploy the Edge Function in
+`functions/invite-venue-partner/index.js` with JWT verification disabled as
+declared in `config.toml`.
+
+The function:
+
+1. accepts calls only from the Master CRM origin;
+2. verifies the caller's Supabase session and active `staff_profiles` record;
+3. keeps the service-role key inside the Edge Function environment;
+4. sends a Supabase invitation or password-access email;
+5. links the Auth user to the selected venue in `venue_partner_profiles`; and
+6. rejects staff emails and partner accounts already linked to another venue.
+
+Never copy the service-role or secret key into `crm.js`, an HTML file, GitHub,
+email, WhatsApp or a browser configuration.

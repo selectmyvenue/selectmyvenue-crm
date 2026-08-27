@@ -5658,6 +5658,113 @@ body{
     line-height: 1.5;
 }
 
+.partner-access-card {
+    margin: 0 0 18px;
+    padding: 18px;
+    border: 1px solid #cfe4de;
+    border-radius: 15px;
+    background:
+        radial-gradient(circle at 94% 8%, rgba(24, 169, 130, 0.10), transparent 34%),
+        linear-gradient(145deg, #fbfefd, #f3faf8);
+}
+
+.partner-access-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.partner-access-head strong {
+    display: block;
+    color: #173f35;
+    font-size: 13px;
+}
+
+.partner-access-head p {
+    max-width: 650px;
+    margin: 5px 0 0;
+    color: #71847f;
+    font-size: 10px;
+    line-height: 1.55;
+}
+
+.partner-access-status {
+    display: inline-flex;
+    min-height: 28px;
+    align-items: center;
+    padding: 5px 9px;
+    border: 1px solid #bde3d6;
+    border-radius: 999px;
+    background: #eaf8f3;
+    color: #187054;
+    font-size: 9px;
+    font-weight: 850;
+    white-space: nowrap;
+}
+
+.partner-access-status.pending {
+    border-color: #ead9b5;
+    background: #fff9eb;
+    color: #8c651d;
+}
+
+.partner-access-status.error {
+    border-color: #efc7c3;
+    background: #fff2f1;
+    color: #a43f35;
+}
+
+.partner-access-actions {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin-top: 15px;
+}
+
+.partner-access-btn {
+    min-height: 42px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #18a982, #087f6c);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 850;
+    cursor: pointer;
+    box-shadow: 0 10px 24px rgba(8, 127, 108, 0.16);
+}
+
+.partner-access-btn:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.partner-access-actions a {
+    color: #16705b;
+    font-size: 10px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.partner-access-message {
+    min-height: 18px;
+    margin-top: 11px;
+    color: #71847f;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.partner-access-message.success {
+    color: #117054;
+}
+
+.partner-access-message.error {
+    color: #aa4339;
+}
+
 .venue-plan-pill,
 .venue-public-pill {
     display: inline-flex;
@@ -5707,6 +5814,12 @@ body{
     }
 
     .network-insights-head {
+        flex-direction: column;
+    }
+
+    .partner-access-head,
+    .partner-access-actions {
+        align-items: flex-start;
         flex-direction: column;
     }
 }
