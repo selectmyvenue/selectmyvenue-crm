@@ -38,8 +38,9 @@ a venue therefore always remains a deliberate Master CRM action.
 ## Partner CRM invitations
 
 Deploy the Edge Function in
-`functions/invite-venue-partner/index.js` with JWT verification disabled as
-declared in `config.toml`.
+`functions/invite-venue-partner/index.js` under the production function name
+`hyper-service`. JWT verification remains enabled, and the function performs a
+second active-staff authorization check before any privileged operation.
 
 The function:
 

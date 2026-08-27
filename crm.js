@@ -5325,7 +5325,7 @@ async function sendPartnerInvite() {
 
     try {
         const { data, error } = await client.functions.invoke(
-            "invite-venue-partner",
+            "hyper-service",
             {
                 body: {
                     venue_id: venueId,
