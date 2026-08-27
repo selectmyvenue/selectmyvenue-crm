@@ -840,14 +840,23 @@
 
                     <div class="venue-media-controls">
                         <div class="venue-field">
-                            <label for="venueCoverImage">COVER IMAGE</label>
+                            <label>PUBLIC COVER IMAGE</label>
                             <input
                                 id="venueCoverImage"
                                 type="file"
                                 accept="image/jpeg,image/png,image/webp"
+                                hidden
                             >
+                            <div class="venue-media-actions">
+                                <button type="button" id="replaceVenueCoverBtn" class="venue-media-action primary">
+                                    Add Cover Image
+                                </button>
+                                <button type="button" id="removeVenueCoverBtn" class="venue-media-action danger" hidden>
+                                    Remove Cover Image
+                                </button>
+                            </div>
                         </div>
-                        <p>Upload one clear landscape image. JPG, PNG or WebP up to 6 MB. It will appear on the homepage, venue directory and public venue profile.</p>
+                        <p>Add or replace one clear venue/celebration landscape photo. JPG, PNG or WebP up to 6 MB. Avoid CRM screenshots, contact details or documents because this image is public.</p>
                         <div id="venueCoverUploadStatus" class="venue-media-status" role="status" aria-live="polite"></div>
                     </div>
                 </div>
