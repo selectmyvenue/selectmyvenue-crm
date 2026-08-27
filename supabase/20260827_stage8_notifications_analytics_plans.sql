@@ -1,4 +1,4 @@
--- Select My Venue — Stage 8
+-- Select My Venue — Growth & Insights
 -- Notifications + Analytics + Plans + controlled public listing
 -- Safe to run more than once from the Supabase SQL Editor.
 

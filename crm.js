@@ -4529,15 +4529,15 @@ async function loadStage8Capabilities() {
     } else {
         stage8ActivePartnerCount = 0;
         console.info(
-            "Stage 8 database migration is not active yet:",
+            "Growth & Insights database setup is not active yet:",
             planError?.message || "venue_plans unavailable"
         );
     }
 
     if (state) {
         state.textContent = stage8SchemaReady
-            ? "Stage 8 connected"
-            : "Migration pending";
+            ? "Growth tools connected"
+            : "Growth setup pending";
         state.classList.toggle("pending", !stage8SchemaReady);
     }
 
@@ -4698,7 +4698,7 @@ async function loadStage8Analytics() {
         if (!error && data) {
             analytics = data;
         } else if (error) {
-            console.warn("Stage 8 analytics RPC fallback:", error.message);
+            console.warn("Growth analytics RPC fallback:", error.message);
         }
     }
 
