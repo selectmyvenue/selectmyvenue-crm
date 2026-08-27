@@ -4287,6 +4287,7 @@ let venuePlanFilter = "all";
 let stage8SchemaReady = false;
 let stage8Plans = [];
 let stage8ActivePartnerCount = 0;
+let currentVenuePartnerProfile = null;
 
 /* =========================================================
    STAGE 3 — VENUE ENQUIRY ASSIGNMENTS
@@ -4315,6 +4316,7 @@ function setupVenueManagement() {
     const verification = document.getElementById("venueVerificationFilter");
     const plan = document.getElementById("venuePlanFilter");
     const table = document.getElementById("venueTableBody");
+    const partnerInviteButton = document.getElementById("sendPartnerInviteBtn");
 
     if (!venueBtn || !form || !table) {
         return;
@@ -4328,6 +4330,7 @@ function setupVenueManagement() {
     cancelBtn?.addEventListener("click", closeVenueModal);
 
     form.addEventListener("submit", saveVenue);
+    partnerInviteButton?.addEventListener("click", sendPartnerInvite);
 
     search?.addEventListener("input", event => {
         venueSearch = safeValue(event.target.value).trim().toLowerCase();
@@ -5142,6 +5145,12 @@ function openVenueModal(venue = null) {
         venue?.public_listing_enabled === true
     );
 
+    resetPartnerAccessPanel(venue);
+
+    if (venue?.id) {
+        loadVenuePartnerAccess(venue.id);
+    }
+
     setStage8FormAvailability();
 
     modal.hidden = false;
@@ -5175,6 +5184,211 @@ function closeVenueModal() {
 
     if (modal) {
         modal.hidden = true;
+    }
+
+    currentVenuePartnerProfile = null;
+}
+
+function setPartnerAccessMessage(message, type = "") {
+    const element = document.getElementById("partnerAccessMessage");
+
+    if (!element) {
+        return;
+    }
+
+    element.textContent = message;
+    element.className = "partner-access-message" + (type ? ` ${type}` : "");
+}
+
+function setPartnerAccessStatus(message, type = "pending") {
+    const element = document.getElementById("partnerAccessStatus");
+
+    if (!element) {
+        return;
+    }
+
+    element.textContent = message;
+    element.className = "partner-access-status" + (type ? ` ${type}` : "");
+}
+
+function resetPartnerAccessPanel(venue = null) {
+    currentVenuePartnerProfile = null;
+
+    setVenueField("partnerAccessName", venue?.contact_person);
+    setVenueField("partnerAccessEmail", venue?.contact_email);
+    setVenueField("partnerAccessMobile", venue?.contact_mobile);
+    setVenueField("partnerAccessWhatsapp", venue?.whatsapp_number);
+
+    const button = document.getElementById("sendPartnerInviteBtn");
+
+    if (button) {
+        button.disabled = !venue?.id;
+        button.textContent = "Send Partner Invite";
+    }
+
+    if (venue?.id) {
+        setPartnerAccessStatus("Checking access…", "pending");
+        setPartnerAccessMessage("Checking whether this venue already has a Partner CRM login.");
+    } else {
+        setPartnerAccessStatus("Save venue first", "pending");
+        setPartnerAccessMessage("Add and save the venue before creating Partner CRM access.");
+    }
+}
+
+async function loadVenuePartnerAccess(venueId) {
+    const client = getSupabaseClient();
+
+    if (!client || !venueId) {
+        return;
+    }
+
+    const { data, error } = await client
+        .from("venue_partner_profiles")
+        .select("id,venue_id,user_id,full_name,email,mobile,whatsapp_number,is_primary,is_active")
+        .eq("venue_id", venueId)
+        .eq("is_active", true)
+        .order("is_primary", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+    if (error) {
+        console.error("Partner access check failed:", error);
+        setPartnerAccessStatus("Unable to check", "error");
+        setPartnerAccessMessage(
+            "Partner access could not be checked. Refresh the CRM and try again.",
+            "error"
+        );
+        return;
+    }
+
+    currentVenuePartnerProfile = data || null;
+
+    if (data) {
+        setVenueField("partnerAccessName", data.full_name);
+        setVenueField("partnerAccessEmail", data.email);
+        setVenueField("partnerAccessMobile", data.mobile);
+        setVenueField("partnerAccessWhatsapp", data.whatsapp_number);
+        setPartnerAccessStatus("Partner linked", "");
+        setPartnerAccessMessage(
+            `${data.email || "Partner account"} is linked to this venue. Use the button to resend a secure access email.`,
+            "success"
+        );
+
+        const button = document.getElementById("sendPartnerInviteBtn");
+        if (button) {
+            button.disabled = false;
+            button.textContent = "Resend Access Email";
+        }
+    } else {
+        setPartnerAccessStatus("Ready to invite", "pending");
+        setPartnerAccessMessage(
+            "Enter the authorised partner details and send the secure invitation."
+        );
+    }
+}
+
+async function sendPartnerInvite() {
+    const client = getSupabaseClient();
+    const venueId = safeValue(document.getElementById("venueId")?.value).trim();
+    const fullName = safeValue(document.getElementById("partnerAccessName")?.value).trim();
+    const email = safeValue(document.getElementById("partnerAccessEmail")?.value).trim().toLowerCase();
+    const mobile = safeValue(document.getElementById("partnerAccessMobile")?.value).trim();
+    const whatsappNumber = safeValue(document.getElementById("partnerAccessWhatsapp")?.value).trim();
+    const button = document.getElementById("sendPartnerInviteBtn");
+
+    if (!client || !venueId) {
+        setPartnerAccessMessage("Save the venue before creating Partner CRM access.", "error");
+        return;
+    }
+
+    if (fullName.length < 2) {
+        setPartnerAccessMessage("Enter the partner's full name.", "error");
+        document.getElementById("partnerAccessName")?.focus();
+        return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setPartnerAccessMessage("Enter a valid partner login email.", "error");
+        document.getElementById("partnerAccessEmail")?.focus();
+        return;
+    }
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = currentVenuePartnerProfile
+            ? "Sending access email…"
+            : "Creating partner access…";
+    }
+
+    setPartnerAccessStatus("Processing…", "pending");
+    setPartnerAccessMessage("Securely creating and linking the Partner CRM account.");
+
+    try {
+        const { data, error } = await client.functions.invoke(
+            "hyper-service",
+            {
+                body: {
+                    venue_id: venueId,
+                    full_name: fullName,
+                    email,
+                    mobile: mobile || null,
+                    whatsapp_number: whatsappNumber || mobile || null
+                }
+            }
+        );
+
+        if (error) {
+            let message = error.message || "Unable to create Partner CRM access.";
+
+            try {
+                const errorBody = await error.context?.json();
+                message = errorBody?.error || message;
+            }
+            catch (contextError) {
+                console.warn("Partner invite error body unavailable:", contextError);
+            }
+
+            throw new Error(message);
+        }
+
+        if (!data?.ok) {
+            throw new Error(data?.error || "Unable to create Partner CRM access.");
+        }
+
+        const emailMessage = data.email_sent
+            ? `A secure ${data.email_mode === "invite" ? "invitation" : "password access"} email was sent to ${email}.`
+            : `The account was linked, but the email could not be sent. Ask the partner to use Forgot Password.`;
+
+        setPartnerAccessStatus("Partner linked", "");
+        setPartnerAccessMessage(emailMessage, data.email_sent ? "success" : "error");
+        showToast(
+            data.email_sent
+                ? "Partner CRM access created and email sent."
+                : "Partner linked. Access email needs to be resent.",
+            data.email_sent ? "success" : "warning"
+        );
+
+        await loadVenuePartnerAccess(venueId);
+    }
+    catch (error) {
+        console.error("Partner invite failed:", error);
+        setPartnerAccessStatus("Invite failed", "error");
+        setPartnerAccessMessage(
+            error.message || "Unable to create Partner CRM access.",
+            "error"
+        );
+        showToast(
+            error.message || "Unable to create Partner CRM access.",
+            "error"
+        );
+    }
+    finally {
+        if (button) {
+            button.disabled = false;
+            button.textContent = currentVenuePartnerProfile
+                ? "Resend Access Email"
+                : "Send Partner Invite";
+        }
     }
 }
 
@@ -5458,16 +5672,33 @@ async function saveVenue(event) {
         return;
     }
 
-    closeVenueModal();
+    await loadVenues();
 
-    showToast(
-        id
-            ? "Venue updated successfully."
-            : "Venue added successfully.",
-        "success"
+    if (id) {
+        closeVenueModal();
+        showToast("Venue updated successfully.", "success");
+        return;
+    }
+
+    const newVenue = result.data;
+    document.getElementById("venueId").value = newVenue.id;
+    document.getElementById("venueModalTitle").textContent = "Edit Venue";
+
+    const inviteButton = document.getElementById("sendPartnerInviteBtn");
+    if (inviteButton) {
+        inviteButton.disabled = false;
+        inviteButton.textContent = "Send Partner Invite";
+    }
+
+    setPartnerAccessStatus("Ready to invite", "pending");
+    setPartnerAccessMessage(
+        "Venue saved. You can now send the secure Partner CRM invitation."
     );
 
-    await loadVenues();
+    showToast(
+        "Venue added. Partner access is now ready.",
+        "success"
+    );
 }
 
 async function handleVenueTableClick(event) {

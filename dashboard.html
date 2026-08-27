@@ -728,6 +728,48 @@
                     </div>
                 </div>
 
+                <div class="venue-form-section-title">PARTNER CRM ACCESS</div>
+
+                <section class="partner-access-card" aria-labelledby="partnerAccessTitle">
+                    <div class="partner-access-head">
+                        <div>
+                            <strong id="partnerAccessTitle">Create or manage the venue partner login</strong>
+                            <p>The partner receives a secure email link to create a password. Their account is automatically linked to this venue.</p>
+                        </div>
+                        <span id="partnerAccessStatus" class="partner-access-status pending">Save venue first</span>
+                    </div>
+
+                    <div class="venue-form-grid">
+                        <div class="venue-field">
+                            <label for="partnerAccessName">PARTNER NAME *</label>
+                            <input id="partnerAccessName" maxlength="120" placeholder="Owner / authorised manager">
+                        </div>
+                        <div class="venue-field">
+                            <label for="partnerAccessEmail">PARTNER LOGIN EMAIL *</label>
+                            <input id="partnerAccessEmail" type="email" maxlength="254" placeholder="partner@email.com">
+                        </div>
+                        <div class="venue-field">
+                            <label for="partnerAccessMobile">PARTNER MOBILE</label>
+                            <input id="partnerAccessMobile" maxlength="30" placeholder="10-digit mobile number">
+                        </div>
+                        <div class="venue-field">
+                            <label for="partnerAccessWhatsapp">PARTNER WHATSAPP</label>
+                            <input id="partnerAccessWhatsapp" maxlength="30" placeholder="WhatsApp number">
+                        </div>
+                    </div>
+
+                    <div class="partner-access-actions">
+                        <button type="button" id="sendPartnerInviteBtn" class="partner-access-btn" disabled>
+                            Send Partner Invite
+                        </button>
+                        <a href="https://partner.selectmyvenue.com/" target="_blank" rel="noopener">Open Partner CRM ↗</a>
+                    </div>
+
+                    <div id="partnerAccessMessage" class="partner-access-message" role="status" aria-live="polite">
+                        Add and save the venue before creating Partner CRM access.
+                    </div>
+                </section>
+
                 <div class="venue-form-section-title">LOCATION</div>
 
                 <div class="venue-form-grid">
