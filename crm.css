@@ -3619,6 +3619,112 @@ textarea:focus-visible {
     accent-color: #198754;
 }
 
+.venue-media-editor {
+    display: grid;
+    grid-template-columns: minmax(240px, .8fr) minmax(0, 1.2fr);
+    gap: 18px;
+    align-items: stretch;
+    padding: 15px;
+    border: 1px solid #e3eae6;
+    border-radius: 14px;
+    background: #f8faf9;
+}
+
+.venue-cover-preview {
+    position: relative;
+    min-height: 175px;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    border: 1px dashed #cfdcd5;
+    border-radius: 12px;
+    background:
+        radial-gradient(circle at 75% 20%, rgba(25, 135, 84, .12), transparent 38%),
+        linear-gradient(145deg, #eff7f2, #e7f1eb);
+    color: #60746a;
+}
+
+.venue-cover-preview img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.venue-cover-preview:not(.is-empty)::after {
+    content: "CURRENT COVER";
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    z-index: 2;
+    padding: 5px 8px;
+    border-radius: 999px;
+    background: rgba(10, 28, 21, .76);
+    color: #fff;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: .08em;
+}
+
+.venue-cover-placeholder {
+    font-size: 34px;
+}
+
+.venue-cover-preview > span {
+    position: absolute;
+    bottom: 23px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.venue-media-controls {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.venue-media-controls input[type="file"] {
+    padding: 8px;
+    background: #fff;
+}
+
+.venue-media-controls input[type="file"]::file-selector-button {
+    margin-right: 10px;
+    padding: 8px 11px;
+    border: 0;
+    border-radius: 8px;
+    background: #e8f5ed;
+    color: #166c43;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.venue-media-controls > p {
+    margin: 10px 0 0;
+    color: #718078;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.venue-media-status {
+    min-height: 18px;
+    margin-top: 9px;
+    color: #65736c;
+    font-size: 11px;
+}
+
+.venue-media-status.error {
+    color: #a52b35;
+}
+
+.venue-media-status.success {
+    color: #147a49;
+}
+
 .venue-form-actions {
     display: flex;
     justify-content: flex-end;
@@ -3658,6 +3764,10 @@ textarea:focus-visible {
 
     .venue-form-grid,
     .venue-check-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .venue-media-editor {
         grid-template-columns: 1fr;
     }
 

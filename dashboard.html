@@ -829,6 +829,29 @@
                     <label><input type="checkbox" id="venueDecoration"> Decoration</label>
                 </div>
 
+                <div class="venue-form-section-title">VENUE MEDIA</div>
+
+                <div class="venue-media-editor">
+                    <div id="venueCoverPreview" class="venue-cover-preview is-empty">
+                        <div class="venue-cover-placeholder" aria-hidden="true">🏨</div>
+                        <img id="venueCoverPreviewImage" alt="Venue cover preview" hidden>
+                        <span id="venueCoverPreviewLabel">No cover image added</span>
+                    </div>
+
+                    <div class="venue-media-controls">
+                        <div class="venue-field">
+                            <label for="venueCoverImage">COVER IMAGE</label>
+                            <input
+                                id="venueCoverImage"
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp"
+                            >
+                        </div>
+                        <p>Upload one clear landscape image. JPG, PNG or WebP up to 6 MB. It will appear on the homepage, venue directory and public venue profile.</p>
+                        <div id="venueCoverUploadStatus" class="venue-media-status" role="status" aria-live="polite"></div>
+                    </div>
+                </div>
+
                 <div class="venue-form-section-title">ONLINE PRESENCE</div>
 
                 <div class="venue-form-grid">
