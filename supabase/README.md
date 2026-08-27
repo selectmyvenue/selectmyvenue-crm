@@ -16,12 +16,12 @@ The assignment-protection trigger permits trusted SQL Editor/service-role
 maintenance where `auth.uid()` is null, while continuing to enforce venue
 ownership and protected-field checks for every authenticated partner user.
 
-## Stage 8
+## Growth & Insights
 
 After the security migration above, run
 `20260827_stage8_notifications_analytics_plans.sql`.
 
-The Stage 8 migration is also idempotent. It adds:
+The Growth & Insights migration is also idempotent. It adds:
 
 1. a separate `public_listing_enabled` control, so approved test/private venues
    can remain hidden from the website;
