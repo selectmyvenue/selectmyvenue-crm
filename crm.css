@@ -3703,6 +3703,54 @@ textarea:focus-visible {
     cursor: pointer;
 }
 
+.venue-media-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+
+.venue-media-action {
+    min-height: 40px;
+    padding: 0 14px;
+    border: 1px solid #cfdcd5;
+    border-radius: 9px;
+    background: #fff;
+    color: #344a40;
+    font-size: 11px;
+    font-weight: 850;
+    cursor: pointer;
+    transition: .18s ease;
+}
+
+.venue-media-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 18px rgba(22, 76, 50, .09);
+}
+
+.venue-media-action.primary {
+    border-color: #b9deca;
+    background: #e8f5ed;
+    color: #166c43;
+}
+
+.venue-media-action.danger {
+    border-color: #ebc7cb;
+    background: #fff5f5;
+    color: #a52b35;
+}
+
+.venue-media-action.is-undo {
+    border-color: #d5dcd8;
+    background: #f2f5f3;
+    color: #53645b;
+}
+
+.venue-media-action:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+    transform: none;
+}
+
 .venue-media-controls > p {
     margin: 10px 0 0;
     color: #718078;
