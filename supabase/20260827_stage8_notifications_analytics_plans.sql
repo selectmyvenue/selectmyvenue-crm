@@ -64,7 +64,7 @@ values
     'Premium',
     'Featured placement and the complete partner experience.',
     40,
-    '["Featured listing","Premium placement","Advanced CRM","Advanced analytics","Priority matching"]'::jsonb,
+    '["Featured listing","Premium placement","Advanced CRM","Advanced analytics","Enhanced promotion","Priority matching"]'::jsonb,
     true
   )
 on conflict (plan_code) do update
