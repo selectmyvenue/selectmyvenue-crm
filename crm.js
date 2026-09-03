@@ -222,20 +222,26 @@
       if (state) state.textContent = score >= 90 ? "Excellent — this profile is customer-ready." : score >= 75 ? "Strong — add the remaining details for a premium profile." : score >= 55 ? "Good start — important discovery information is still missing." : "Needs attention — complete key venue information before promotion.";
       if (missingNode) {
         const topMissing = missing.slice(0, 8);
-        missingNode.innerHTML = topMissing.length ? topMissing.map(label => `<span>+ ${label}</span>`).join("") : '<span class="done">✓ Core profile complete</span>';
+        const html = topMissing.length ? topMissing.map(label => `<span>+ ${label}</span>`).join("") : '<span class="done">✓ Core profile complete</span>';
+        if (missingNode.innerHTML !== html) missingNode.innerHTML = html;
       }
     }
 
     form.addEventListener("input", updateStrength);
     form.addEventListener("change", updateStrength);
 
-    const observer = new MutationObserver(updateStrength);
-    observer.observe(form, { childList:true, subtree:true, attributes:true, attributeFilter:["src","hidden","class"] });
-
     const modalObserver = new MutationObserver(function(){
       if (!modal.hidden) setTimeout(updateStrength, 120);
     });
     modalObserver.observe(modal, { attributes:true, attributeFilter:["hidden"] });
+
+    const gallery = document.getElementById("venueGalleryPreview");
+    if (gallery) {
+      const galleryObserver = new MutationObserver(function(){
+        setTimeout(updateStrength, 0);
+      });
+      galleryObserver.observe(gallery, { childList:true, subtree:true });
+    }
 
     updateStrength();
   }
