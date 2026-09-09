@@ -71,7 +71,7 @@
       .leads-table th:nth-child(9),.leads-table td:nth-child(9){width:6.9%!important}
       .leads-table th:nth-child(10),.leads-table td:nth-child(10){width:7.3%!important;text-align:center!important}
 
-      /* COMMENT — keep all original controls visible: indicator + pencil + view */
+      /* COMMENT — internal office notes only */
       .leads-table th:nth-child(11),.leads-table td:nth-child(11){width:8.4%!important;display:table-cell!important;visibility:visible!important;overflow:visible!important;text-align:center!important;white-space:nowrap!important}
       .leads-table td:nth-child(11)>div,.leads-table .crm-comment-cell,.leads-table .comment-actions,.leads-table .comment-controls{display:flex!important;align-items:center!important;justify-content:center!important;gap:3px!important;flex-wrap:nowrap!important;white-space:nowrap!important;overflow:visible!important}
       .leads-table td:nth-child(11) button,.leads-table td:nth-child(11) a,.leads-table .comment-icon-btn,.leads-table .comment-btn{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:27px!important;min-width:27px!important;max-width:27px!important;height:27px!important;min-height:27px!important;max-height:27px!important;padding:0!important;margin:0!important;flex:0 0 27px!important;border-radius:8px!important}
@@ -93,6 +93,13 @@
       .smv-full-source-note{display:block;margin-top:7px;padding:7px 9px;border:1px solid #cfe8e1;border-radius:9px;background:#f4fbf8;color:#335f56;font-size:10px;line-height:1.35;font-weight:650;word-break:break-word}
       .smv-full-source-note b{display:block;margin-bottom:2px;color:#08745d;font-size:8px;letter-spacing:.09em;text-transform:uppercase}
       .smv-full-source-note.is-highlighted{border-color:#73cdbc;box-shadow:0 0 0 3px rgba(8,127,113,.08)}
+
+      /* Customer comment is read-only and only visible inside Details */
+      .smv-customer-comment-block{margin-top:12px!important;border:1px solid #d9ebe6!important;border-radius:13px!important;background:#fbfefd!important;padding:12px 14px!important}
+      .smv-customer-comment-block[hidden]{display:none!important}
+      .smv-customer-comment-block label{display:block!important;margin:0 0 6px!important;color:#08745d!important;font-size:9px!important;font-weight:900!important;letter-spacing:.09em!important;text-transform:uppercase!important}
+      .smv-customer-comment-value{min-height:38px;padding:10px 11px;border:1px solid #e1efeb;border-radius:10px;background:#f4faf8;color:#244f47;font-size:12px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+      .smv-customer-comment-help{display:block;margin-top:5px;color:#7a938d;font-size:9.5px;line-height:1.3}
 
       @media(max-width:1350px){
         .leads-table th,.leads-table td{font-size:10.3px!important;padding-left:2px!important;padding-right:2px!important}
@@ -161,70 +168,102 @@
     return /^(quick enquiry source|interested venue|venue id|submitted page|search page|guests|budget\/person|event|location|food|ai plan|venue type|style)\s*:/im.test(text || "");
   }
 
-  function normalizeLeadCommentRecord(lead) {
-    if (!lead || typeof lead !== "object") return;
+  function getCustomerCommentMeta(lead) {
+    if (!lead || typeof lead !== "object") return { text: "", origin: "" };
 
     const source = cleanText(lead.source);
-    const rawRequirements = cleanText(lead.requirements);
-    const savedComment = cleanText(lead.internal_notes || lead.contact_remark);
+    const requirements = cleanText(lead.requirements);
+    const internalNote = cleanText(lead.internal_notes);
+    const contactRemark = cleanText(lead.contact_remark);
 
-    if (!rawRequirements) return;
-
-    const lines = rawRequirements.split(/\r?\n/);
-    const kept = [];
-    let extractedComment = "";
-
-    lines.forEach(line => {
-      const value = line.trim();
-      const match = value.match(/^customer\s+comment\s*:\s*(.*)$/i);
-      if (match) {
-        if (!extractedComment) extractedComment = cleanText(match[1]);
-        return;
+    if (requirements) {
+      const lines = requirements.split(/\r?\n/);
+      for (const line of lines) {
+        const match = line.trim().match(/^customer\s+comment\s*:\s*(.*)$/i);
+        if (match && cleanText(match[1])) {
+          return { text: cleanText(match[1]), origin: "requirements" };
+        }
       }
-      kept.push(line);
-    });
-
-    let comment = savedComment || extractedComment;
-    let message = kept.join("\n").trim();
-
-    if (comment && message) {
-      const commentLower = comment.toLowerCase();
-      message = message
-        .split(/\r?\n/)
-        .filter(line => line.trim().toLowerCase() !== commentLower)
-        .join("\n")
-        .trim();
     }
 
-    const isWebsite = /^website\b/i.test(source);
-    const isAiSearch = /ai search/i.test(source);
+    if (/^website\b/i.test(source) && contactRemark && contactRemark !== internalNote) {
+      return { text: contactRemark, origin: "contact_remark" };
+    }
 
     if (
-      !comment &&
-      isWebsite &&
-      !isAiSearch &&
-      message &&
-      !looksLikeStructuredRequirement(message)
+      /^website\b/i.test(source) &&
+      !/ai search/i.test(source) &&
+      requirements &&
+      !looksLikeStructuredRequirement(requirements)
     ) {
-      comment = message;
-      message = "";
+      return { text: requirements, origin: "plain_requirements" };
     }
 
-    if (comment && !lead.internal_notes && !lead.contact_remark) {
-      lead.contact_remark = comment;
+    return { text: "", origin: "" };
+  }
+
+  function cleanRequirementsForDetails(lead, meta) {
+    const raw = cleanText(lead?.requirements);
+    if (!raw) return "";
+
+    const comment = cleanText(meta?.text);
+    let lines = raw
+      .split(/\r?\n/)
+      .filter(line => !/^customer\s+comment\s*:/i.test(line.trim()));
+
+    if (comment) {
+      const lower = comment.toLowerCase();
+      lines = lines.filter(line => line.trim().toLowerCase() !== lower);
     }
 
-    if (message !== rawRequirements) {
-      lead.requirements = message;
+    let cleaned = lines.join("\n").trim();
+
+    if (meta?.origin === "plain_requirements" && cleaned.toLowerCase() === comment.toLowerCase()) {
+      cleaned = "";
+    }
+
+    return cleaned;
+  }
+
+  function prepareLeadCustomerMeta(lead) {
+    if (!lead || typeof lead !== "object") return;
+    const meta = getCustomerCommentMeta(lead);
+    lead._smvCustomerComment = meta.text;
+    lead._smvCustomerCommentOrigin = meta.origin;
+  }
+
+  function prepareLoadedLeadCustomerMeta() {
+    try {
+      if (typeof allLeads === "undefined" || !Array.isArray(allLeads)) return;
+      allLeads.forEach(prepareLeadCustomerMeta);
+    } catch (error) {
+      console.warn("SMV CRM customer comment metadata warning:", error);
     }
   }
 
-  function normalizeLoadedLeadComments() {
+  function installInternalCommentOnlyBehavior() {
     try {
-      if (typeof allLeads === "undefined" || !Array.isArray(allLeads)) return;
-      allLeads.forEach(normalizeLeadCommentRecord);
+      if (typeof createCommentCell === "function" && !createCommentCell.__smvInternalOnly) {
+        const originalCreateCommentCell = createCommentCell;
+        createCommentCell = function (lead) {
+          const internalOnly = cleanText(lead?.internal_notes);
+          return originalCreateCommentCell.call(this, lead, internalOnly);
+        };
+        createCommentCell.__smvInternalOnly = true;
+      }
+
+      if (typeof editLeadComment === "function" && !editLeadComment.__smvInternalOnly) {
+        editLeadComment = function (leadId) {
+          const lead = Array.isArray(allLeads)
+            ? allLeads.find(item => String(item.id) === String(leadId))
+            : null;
+          if (!lead) return;
+          openCommentEditor(leadId, cleanText(lead.internal_notes), lead.customer_name);
+        };
+        editLeadComment.__smvInternalOnly = true;
+      }
     } catch (error) {
-      console.warn("SMV CRM comment normalization warning:", error);
+      console.warn("SMV CRM internal comment separation warning:", error);
     }
   }
 
@@ -233,7 +272,7 @@
       if (typeof renderLeads !== "function" || renderLeads.__smvNormalized) return;
       const originalRenderLeads = renderLeads;
       renderLeads = function () {
-        normalizeLoadedLeadComments();
+        prepareLoadedLeadCustomerMeta();
         const result = originalRenderLeads.apply(this, arguments);
         window.setTimeout(decorateLeadSources, 0);
         window.setTimeout(decorateLeadSources, 80);
@@ -323,56 +362,100 @@
     return note;
   }
 
+  function ensureCustomerCommentBlock(lead) {
+    const messageControl = document.getElementById("detailMessage");
+    if (!messageControl) return null;
+
+    const messageBlock = messageControl.closest(".detail-block") || messageControl.parentElement;
+    if (!messageBlock) return null;
+
+    let block = document.getElementById("smvCustomerCommentBlock");
+    if (!block) {
+      block = document.createElement("div");
+      block.id = "smvCustomerCommentBlock";
+      block.className = "detail-block smv-customer-comment-block";
+      block.innerHTML = `
+        <label>CUSTOMER COMMENT</label>
+        <div class="smv-customer-comment-value"></div>
+        <small class="smv-customer-comment-help">Submitted by the customer from the website. Read-only; use COMMENT for internal office notes.</small>
+      `;
+      messageBlock.insertAdjacentElement("afterend", block);
+    }
+
+    const meta = getCustomerCommentMeta(lead);
+    const value = block.querySelector(".smv-customer-comment-value");
+    if (value) value.textContent = meta.text || "";
+    block.hidden = !meta.text;
+    return block;
+  }
+
   function normalizeOpenLeadFields() {
-    const sourceControl = document.getElementById("detailSource");
+    let lead = null;
+    try {
+      if (typeof currentLead !== "undefined") lead = currentLead;
+    } catch (_) {}
+    if (!lead) return;
+
+    prepareLeadCustomerMeta(lead);
+    const meta = getCustomerCommentMeta(lead);
+
     const messageControl = document.getElementById("detailMessage");
     const remarksControl = document.getElementById("detailRemarks");
-    if (!messageControl || !remarksControl) return;
 
-    const source = getControlValue(sourceControl);
-    const rawMessage = getControlValue(messageControl);
-    const rawRemark = getControlValue(remarksControl);
-    if (!rawMessage) return;
-
-    const lines = rawMessage.split(/\r?\n/);
-    const kept = [];
-    let extracted = "";
-
-    lines.forEach(line => {
-      const value = line.trim();
-      const match = value.match(/^customer\s+comment\s*:\s*(.*)$/i);
-      if (match) {
-        if (!extracted) extracted = cleanText(match[1]);
-        return;
-      }
-      kept.push(line);
-    });
-
-    let comment = rawRemark || extracted;
-    let message = kept.join("\n").trim();
-
-    if (comment && message) {
-      const lower = comment.toLowerCase();
-      message = message
-        .split(/\r?\n/)
-        .filter(line => line.trim().toLowerCase() !== lower)
-        .join("\n")
-        .trim();
+    if (messageControl) {
+      setControlValue(messageControl, cleanRequirementsForDetails(lead, meta));
     }
 
-    if (
-      !comment &&
-      /^website\b/i.test(source) &&
-      !/ai search/i.test(source) &&
-      message &&
-      !looksLikeStructuredRequirement(message)
-    ) {
-      comment = message;
-      message = "";
+    if (remarksControl) {
+      setControlValue(remarksControl, cleanText(lead.internal_notes));
+      const label = remarksControl.closest(".detail-block")?.querySelector("label");
+      if (label) label.textContent = "COMMENT — INTERNAL OFFICE NOTE";
     }
 
-    if (message !== rawMessage) setControlValue(messageControl, message);
-    if (comment && comment !== rawRemark) setControlValue(remarksControl, comment);
+    ensureCustomerCommentBlock(lead);
+  }
+
+  function installSaveCustomerCommentPreserver() {
+    try {
+      if (typeof saveModalChanges !== "function" || saveModalChanges.__smvCustomerPreserver) return;
+      const originalSaveModalChanges = saveModalChanges;
+
+      saveModalChanges = async function () {
+        let lead = null;
+        try {
+          if (typeof currentLead !== "undefined") lead = currentLead;
+        } catch (_) {}
+
+        if (lead) {
+          const meta = getCustomerCommentMeta(lead);
+          const messageControl = document.getElementById("detailMessage");
+
+          if (
+            messageControl &&
+            meta.text &&
+            (meta.origin === "requirements" || meta.origin === "plain_requirements")
+          ) {
+            const visibleMessage = cleanText(messageControl.value);
+            const commentLine = `Customer comment: ${meta.text}`;
+            const hasTaggedComment = visibleMessage
+              .split(/\r?\n/)
+              .some(line => line.trim().toLowerCase() === commentLine.toLowerCase());
+
+            if (!hasTaggedComment) {
+              messageControl.value = visibleMessage
+                ? `${visibleMessage}\n${commentLine}`
+                : commentLine;
+            }
+          }
+        }
+
+        return originalSaveModalChanges.apply(this, arguments);
+      };
+
+      saveModalChanges.__smvCustomerPreserver = true;
+    } catch (error) {
+      console.warn("SMV CRM customer comment save safeguard warning:", error);
+    }
   }
 
   function syncLeadDetailsUX(highlightSource) {
@@ -430,19 +513,24 @@
   }
 
   loadScript("crm-core.js?v=20260909-customer-comment-1", function () {
+    installInternalCommentOnlyBehavior();
     installLeadRenderNormalizer();
+    installSaveCustomerCommentPreserver();
+
     loadScript("venue-media-manager.js?v=20260904-hd30-1", function () {
       loadScript("crm-hotfix-20260909.js?v=crm-final-layout-3", function () {
         installVenueTablePolish();
         installLeadDetailsWatcher();
-        normalizeLoadedLeadComments();
+        prepareLoadedLeadCustomerMeta();
         watchLeadTable();
+
         setTimeout(() => {
-          normalizeLoadedLeadComments();
+          prepareLoadedLeadCustomerMeta();
           watchLeadTable();
         }, 250);
+
         setTimeout(() => {
-          normalizeLoadedLeadComments();
+          prepareLoadedLeadCustomerMeta();
           watchLeadTable();
         }, 900);
       });
