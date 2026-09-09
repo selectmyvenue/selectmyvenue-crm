@@ -479,6 +479,7 @@ function applyFilters() {
                     lead.location,
                     lead.occasion,
                     lead.requirements,
+                    lead.contact_remark,
                     lead.internal_notes,
                     lead.status
                 ]
@@ -1057,9 +1058,7 @@ const email =
         "new";
 
     const comment =
-        safeValue(
-            lead.internal_notes
-        ).trim();
+        safeValue(lead.internal_notes || lead.contact_remark).trim();
 
     const ai =
         getAILeadAnalysis(lead);
@@ -1759,9 +1758,7 @@ function editLeadComment(
     }
 
     const comment =
-        safeValue(
-            lead.internal_notes
-        );
+        safeValue(lead.internal_notes || lead.contact_remark);
 
     openCommentEditor(
         leadId,
@@ -2023,9 +2020,7 @@ function viewLeadComment(
     }
 
     const comment =
-        safeValue(
-            lead.internal_notes
-        ).trim();
+        safeValue(lead.internal_notes || lead.contact_remark).trim();
 
     if (!comment) {
         showToast(
@@ -2325,9 +2320,7 @@ function getAILeadAnalysis(
         ).trim();
 
     const hasComment =
-        !!safeValue(
-            lead.internal_notes
-        ).trim();
+        !!safeValue(lead.internal_notes || lead.contact_remark).trim();
 
     if (hasPhone) score += 10;
     if (hasEmail) score += 5;
@@ -2753,6 +2746,7 @@ function populateLeadModal(
     setControl(
         "#detailRemarks",
         lead.internal_notes ||
+        lead.contact_remark ||
         ""
     );
 

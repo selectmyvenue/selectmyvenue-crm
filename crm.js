@@ -155,7 +155,7 @@
     observer.observe(tbody, { childList: true, subtree: false });
   }
 
-  loadScript("crm-core.js?v=20260901-media-1", function () {
+  loadScript("crm-core.js?v=20260909-customer-comment-1", function () {
     loadScript("venue-media-manager.js?v=20260904-hd30-1", function () {
       loadScript("crm-hotfix-20260909.js?v=crm-final-layout-3", function () {
         installVenueTablePolish();
