@@ -24,6 +24,7 @@ jobs:
           from pathlib import Path
           import re
 
+          VERSION = '20260909-customer-comment-1'
           changed = []
           def save(path, text, original):
               if text != original:
@@ -54,23 +55,31 @@ jobs:
               '''        lead.internal_notes ||\n        \"\"''',
               '''        lead.internal_notes ||\n        lead.contact_remark ||\n        \"\"'''
           )
-
           save(path, text, original)
 
           # Force browser to load the updated CRM core immediately.
           path = 'crm.js'
           original = Path(path).read_text(encoding='utf-8')
-          text = re.sub(r'crm-core\.js\?v=[^\"\']+', 'crm-core.js?v=20260909-customer-comment-1', original)
+          text = re.sub(r'crm-core\.js\?v=[^\"\']+', 'crm-core.js?v=' + VERSION, original)
+          save(path, text, original)
+
+          # Force dashboard to load the updated crm.js immediately too.
+          path = 'dashboard.html'
+          original = Path(path).read_text(encoding='utf-8')
+          text = re.sub(r'src=\"crm\.js(?:\?v=[^\"]+)?\"', 'src=\"crm.js?v=' + VERSION + '\"', original)
           save(path, text, original)
 
           core = Path('crm-core.js').read_text(encoding='utf-8')
           loader = Path('crm.js').read_text(encoding='utf-8')
+          dashboard = Path('dashboard.html').read_text(encoding='utf-8')
           if 'lead.internal_notes || lead.contact_remark' not in core:
               raise SystemExit('CRM comment fallback guardrail failed')
           if 'lead.contact_remark,' not in core:
               raise SystemExit('CRM comment search guardrail failed')
-          if 'crm-core.js?v=20260909-customer-comment-1' not in loader:
-              raise SystemExit('CRM cache-bust guardrail failed')
+          if 'crm-core.js?v=' + VERSION not in loader:
+              raise SystemExit('CRM core cache-bust guardrail failed')
+          if 'crm.js?v=' + VERSION not in dashboard:
+              raise SystemExit('CRM dashboard cache-bust guardrail failed')
 
           print('Changed files:')
           for item in sorted(set(changed)):
@@ -87,5 +96,5 @@ jobs:
           git config user.name "Select My Venue Automation"
           git config user.email "actions@users.noreply.github.com"
           git add .
-          git commit -m "Show website customer comments in CRM"
+          git commit -m "Refresh CRM customer comment loader"
           git push origin HEAD:main
