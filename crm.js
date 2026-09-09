@@ -32,30 +32,34 @@
       .venue-table th:nth-child(9),.venue-table td:nth-child(9){width:7%!important}
       .venue-table th:nth-child(10),.venue-table td:nth-child(10){width:7%!important}
       .venue-table th:nth-child(11),.venue-table td:nth-child(11){width:14%!important;overflow:visible!important;white-space:nowrap!important}
-      .venue-table td:nth-child(11),
-      .venue-table td:nth-child(11)>div,
-      .venue-table .smv-venue-actions-cell,
-      .venue-table .venue-actions,
-      .venue-table .action-buttons{
-        display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;
-        flex-wrap:nowrap!important;gap:4px!important;white-space:nowrap!important;width:auto!important;max-width:none!important;
-      }
-      .venue-table td:nth-child(11) button,
-      .venue-table td:nth-child(11) a,
-      .venue-table .smv-venue-actions-cell button,
-      .venue-table .smv-venue-actions-cell a{
-        display:inline-flex!important;flex:0 0 auto!important;width:auto!important;min-width:0!important;max-width:none!important;
-        height:25px!important;min-height:25px!important;margin:0!important;padding:0 6px!important;border-radius:8px!important;
-        font-size:9.2px!important;line-height:1!important;align-items:center!important;justify-content:center!important;white-space:nowrap!important;
-      }
+      .venue-table td:nth-child(11),.venue-table td:nth-child(11)>div,.venue-table .smv-venue-actions-cell,.venue-table .venue-actions,.venue-table .action-buttons{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;flex-wrap:nowrap!important;gap:4px!important;white-space:nowrap!important;width:auto!important;max-width:none!important}
+      .venue-table td:nth-child(11) button,.venue-table td:nth-child(11) a,.venue-table .smv-venue-actions-cell button,.venue-table .smv-venue-actions-cell a{display:inline-flex!important;flex:0 0 auto!important;width:auto!important;min-width:0!important;max-width:none!important;height:25px!important;min-height:25px!important;margin:0!important;padding:0 6px!important;border-radius:8px!important;font-size:9.7px!important;line-height:1!important;align-items:center!important;justify-content:center!important;white-space:nowrap!important}
       .venue-table td:nth-child(1) small,.venue-table td small{margin-top:1px!important;line-height:1.05!important}
+
+      /* Very slight typography increase — dimensions/column positions unchanged */
+      :root{--smv-crm-font:12px!important;--smv-crm-cell:11.5px!important;--smv-crm-head:10.2px!important}
+      html,body,.crm-app{font-size:12px!important}
+      .leads-table td,.venue-table td{font-size:11.5px!important;font-weight:540!important}
+      .leads-table th,.venue-table th{font-size:10.2px!important}
+      .page-heading p,.venue-page-heading p{font-size:12.2px!important}
+      .command-health,.filter-workspace-note{font-size:10.2px!important}
+      .search-box input,.venue-search-input,.venue-filter-select,#statusFilter{font-size:12px!important}
+      .status-badge,.lead-status-badge{font-size:10px!important}
+      .smv-compact-source{font-size:9.7px!important}
+      .action-btn,.comment-btn,.leads-table button{font-size:10.5px!important}
+      .venue-table td:nth-child(1) small,.venue-table td small{font-size:9.6px!important}
+      .venue-table .status-pill,.venue-table .plan-pill,.venue-table .verification-pill,.venue-table td:nth-child(7) span,.venue-table td:nth-child(8) span,.venue-table td:nth-child(9) span,.venue-table td:nth-child(10) span{font-size:9.2px!important}
+
+      /* Tighten only vertical air below CRM header */
+      .page-heading,.venue-page-heading{padding-top:5px!important;padding-bottom:6px!important}
+      .stats-grid,.venue-stats-grid,.stage8-venue-stats,.network-kpi-grid{margin-top:3px!important}
     `;
     document.head.appendChild(style);
   }
 
   loadScript("crm-core.js?v=20260901-media-1", function () {
     loadScript("venue-media-manager.js?v=20260904-hd30-1", function () {
-      loadScript("crm-hotfix-20260909.js?v=crm-final-layout-2", function () {
+      loadScript("crm-hotfix-20260909.js?v=crm-final-layout-3", function () {
         installVenueTablePolish();
       });
     });
