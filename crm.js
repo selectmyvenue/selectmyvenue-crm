@@ -54,46 +54,113 @@
       .page-heading,.venue-page-heading{padding-top:5px!important;padding-bottom:6px!important}
       .stats-grid,.venue-stats-grid,.stage8-venue-stats,.network-kpi-grid{margin-top:3px!important}
 
-      /* Customer enquiries — preserve ALL 12 original columns and fit them on one desktop screen */
+      /* Customer enquiries — ALL fields preserved and arranged on one desktop screen */
       .table-wrapper{overflow-x:hidden!important}
       .leads-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
-      .leads-table th,.leads-table td{padding-left:4px!important;padding-right:4px!important}
+      .leads-table th,.leads-table td{padding-left:3px!important;padding-right:3px!important}
 
-      /* CUSTOMER / PHONE / CREATED / EMAIL / SOURCE / EVENT / EVENT DATE / GUESTS / LOCATION / STATUS / COMMENT / ACTION */
-      .leads-table th:nth-child(1),.leads-table td:nth-child(1){width:8%!important}
-      .leads-table th:nth-child(2),.leads-table td:nth-child(2){width:8%!important}
-      .leads-table th:nth-child(3),.leads-table td:nth-child(3){width:10.5%!important}
-      .leads-table th:nth-child(4),.leads-table td:nth-child(4){width:11.5%!important}
-      .leads-table th:nth-child(5),.leads-table td:nth-child(5){width:8%!important}
-      .leads-table th:nth-child(6),.leads-table td:nth-child(6){width:8%!important}
-      .leads-table th:nth-child(7),.leads-table td:nth-child(7){width:8.5%!important}
-      .leads-table th:nth-child(8),.leads-table td:nth-child(8){width:4.5%!important}
-      .leads-table th:nth-child(9),.leads-table td:nth-child(9){width:8%!important}
-      .leads-table th:nth-child(10),.leads-table td:nth-child(10){width:7.5%!important}
+      /* CUSTOMER / PHONE / CREATED / EMAIL / SOURCE / EVENT / EVENT DATE / GUESTS / LOCATION / STATUS / COMMENT / DETAILS / ASSIGN */
+      .leads-table th:nth-child(1),.leads-table td:nth-child(1){width:7.2%!important}
+      .leads-table th:nth-child(2),.leads-table td:nth-child(2){width:7.2%!important}
+      .leads-table th:nth-child(3),.leads-table td:nth-child(3){width:10.2%!important}
+      .leads-table th:nth-child(4),.leads-table td:nth-child(4){width:10.8%!important}
+      .leads-table th:nth-child(5),.leads-table td:nth-child(5){width:7.4%!important}
+      .leads-table th:nth-child(6),.leads-table td:nth-child(6){width:7.4%!important}
+      .leads-table th:nth-child(7),.leads-table td:nth-child(7){width:8.1%!important}
+      .leads-table th:nth-child(8),.leads-table td:nth-child(8){width:4.2%!important;text-align:center!important}
+      .leads-table th:nth-child(9),.leads-table td:nth-child(9){width:7.2%!important}
+      .leads-table th:nth-child(10),.leads-table td:nth-child(10){width:7.8%!important;text-align:center!important}
 
-      /* COMMENT — explicitly preserved and visible */
-      .leads-table th:nth-child(11),.leads-table td:nth-child(11){width:6%!important;display:table-cell!important;visibility:visible!important;opacity:1!important;overflow:visible!important;text-align:center!important;white-space:nowrap!important}
-      .leads-table td:nth-child(11) button,.leads-table td:nth-child(11) .comment-btn{display:inline-flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;min-width:34px!important;max-width:42px!important;height:29px!important;padding:0 6px!important;margin:0!important}
+      /* COMMENT stays as its own field with indicator + pencil + view icon */
+      .leads-table th:nth-child(11),.leads-table td:nth-child(11){width:5.6%!important;display:table-cell!important;visibility:visible!important;overflow:visible!important;text-align:center!important;white-space:nowrap!important}
+      .leads-table .crm-comment-cell{display:flex!important;align-items:center!important;justify-content:center!important;gap:3px!important;white-space:nowrap!important}
+      .leads-table .comment-icon-btn{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:28px!important;min-width:28px!important;max-width:28px!important;height:28px!important;min-height:28px!important;padding:0!important;margin:0!important;flex:0 0 28px!important}
+      .leads-table .crm-comment-indicator{flex:0 0 auto!important}
 
-      /* ACTION — Details + Assign remain together in the final column */
-      .leads-table th:nth-child(12),.leads-table td:nth-child(12){width:11.5%!important;overflow:visible!important;white-space:nowrap!important}
-      .leads-table td:nth-child(12),.leads-table td:nth-child(12)>div{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:5px!important;flex-wrap:nowrap!important;white-space:nowrap!important}
-      .leads-table td:nth-child(12) button,.leads-table td:nth-child(12) a{flex:0 0 auto!important;min-width:0!important;max-width:none!important;width:auto!important;height:29px!important;padding:0 7px!important;font-size:10.1px!important;white-space:nowrap!important}
+      /* DETAILS is a separate field */
+      .leads-table th:nth-child(12),.leads-table td:nth-child(12){width:7.1%!important;text-align:center!important;overflow:visible!important;white-space:nowrap!important}
+      .leads-table td:nth-child(12){display:table-cell!important}
+      .leads-table td:nth-child(12) .view-lead-btn{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:auto!important;min-width:58px!important;max-width:none!important;height:29px!important;padding:0 7px!important;margin:0!important;font-size:10px!important;white-space:nowrap!important}
+
+      /* ASSIGN is a separate final field */
+      .leads-table th:nth-child(13),.leads-table td:nth-child(13){width:9.8%!important;text-align:center!important;overflow:visible!important;white-space:nowrap!important}
+      .leads-table td:nth-child(13){display:table-cell!important}
+      .leads-table td:nth-child(13) .venue-assign-btn{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:3px!important;width:auto!important;min-width:72px!important;max-width:none!important;height:29px!important;padding:0 7px!important;margin:0!important;font-size:10px!important;white-space:nowrap!important}
 
       @media(max-width:1350px){
-        .leads-table th,.leads-table td{font-size:10.6px!important;padding-left:3px!important;padding-right:3px!important}
-        .leads-table th{font-size:9.4px!important}
-        .leads-table td:nth-child(11) button,.leads-table td:nth-child(11) .comment-btn{min-width:31px!important;height:27px!important;padding:0 5px!important}
-        .leads-table td:nth-child(12) button,.leads-table td:nth-child(12) a{padding:0 5px!important;font-size:9.5px!important;height:27px!important}
+        .leads-table th,.leads-table td{font-size:10.4px!important;padding-left:2px!important;padding-right:2px!important}
+        .leads-table th{font-size:9.2px!important;letter-spacing:.04em!important}
+        .leads-table .comment-icon-btn{width:25px!important;min-width:25px!important;max-width:25px!important;height:26px!important;min-height:26px!important;flex-basis:25px!important}
+        .leads-table td:nth-child(12) .view-lead-btn{min-width:52px!important;height:27px!important;padding:0 5px!important;font-size:9.4px!important}
+        .leads-table td:nth-child(13) .venue-assign-btn{min-width:66px!important;height:27px!important;padding:0 5px!important;font-size:9.4px!important}
       }
     `;
     document.head.appendChild(style);
+  }
+
+  function splitLeadActionColumns() {
+    const table = document.querySelector(".leads-table");
+    if (!table) return;
+
+    const headerRow = table.querySelector("thead tr");
+    if (headerRow) {
+      const headers = Array.from(headerRow.children);
+      if (headers.length === 12) {
+        const actionHeader = headers[11];
+        actionHeader.textContent = "DETAILS";
+        actionHeader.classList.add("details-column");
+        const assignHeader = document.createElement("th");
+        assignHeader.textContent = "ASSIGN";
+        assignHeader.className = "assign-column";
+        actionHeader.after(assignHeader);
+      } else if (headers.length >= 13) {
+        headers[10].textContent = "COMMENT";
+        headers[11].textContent = "DETAILS";
+        headers[12].textContent = "ASSIGN";
+      }
+    }
+
+    table.querySelectorAll("tbody tr").forEach(row => {
+      const cells = Array.from(row.children);
+
+      if (cells.length === 1 && cells[0].hasAttribute("colspan")) {
+        cells[0].setAttribute("colspan", "13");
+        return;
+      }
+
+      if (cells.length === 12) {
+        const actionCell = cells[11];
+        const assignBtn = actionCell.querySelector(".venue-assign-btn");
+        const detailsBtn = actionCell.querySelector(".view-lead-btn");
+
+        if (assignBtn && detailsBtn) {
+          const assignCell = document.createElement("td");
+          assignCell.className = "assign-column-cell";
+          assignCell.appendChild(assignBtn);
+          actionCell.classList.remove("action-column");
+          actionCell.classList.add("details-column-cell");
+          actionCell.after(assignCell);
+        }
+      }
+    });
+  }
+
+  function watchLeadTable() {
+    splitLeadActionColumns();
+    const tbody = document.getElementById("leadsTableBody");
+    if (!tbody || tbody.dataset.smvSplitWatch === "1") return;
+    tbody.dataset.smvSplitWatch = "1";
+    const observer = new MutationObserver(() => splitLeadActionColumns());
+    observer.observe(tbody, { childList: true, subtree: false });
   }
 
   loadScript("crm-core.js?v=20260901-media-1", function () {
     loadScript("venue-media-manager.js?v=20260904-hd30-1", function () {
       loadScript("crm-hotfix-20260909.js?v=crm-final-layout-3", function () {
         installVenueTablePolish();
+        watchLeadTable();
+        setTimeout(watchLeadTable, 250);
+        setTimeout(watchLeadTable, 900);
       });
     });
   });
