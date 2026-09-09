@@ -87,6 +87,13 @@
       .leads-table td:nth-child(13){display:table-cell!important}
       .leads-table td:nth-child(13) .venue-assign-btn{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:3px!important;width:auto!important;min-width:70px!important;max-width:none!important;height:29px!important;padding:0 7px!important;margin:0!important;font-size:9.8px!important;white-space:nowrap!important}
 
+      /* Lead source drilldown */
+      .smv-source-open{cursor:pointer!important;user-select:none!important;box-shadow:0 0 0 1px rgba(8,127,113,.08)!important}
+      .smv-source-open:hover{background:#dcf8f1!important;border-color:#9fdfd2!important;color:#056451!important}
+      .smv-full-source-note{display:block;margin-top:7px;padding:7px 9px;border:1px solid #cfe8e1;border-radius:9px;background:#f4fbf8;color:#335f56;font-size:10px;line-height:1.35;font-weight:650;word-break:break-word}
+      .smv-full-source-note b{display:block;margin-bottom:2px;color:#08745d;font-size:8px;letter-spacing:.09em;text-transform:uppercase}
+      .smv-full-source-note.is-highlighted{border-color:#73cdbc;box-shadow:0 0 0 3px rgba(8,127,113,.08)}
+
       @media(max-width:1350px){
         .leads-table th,.leads-table td{font-size:10.3px!important;padding-left:2px!important;padding-right:2px!important}
         .leads-table th{font-size:9.1px!important;letter-spacing:.035em!important}
@@ -146,22 +153,298 @@
     });
   }
 
+  function cleanText(value) {
+    return String(value == null ? "" : value).trim();
+  }
+
+  function looksLikeStructuredRequirement(text) {
+    return /^(quick enquiry source|interested venue|venue id|submitted page|search page|guests|budget\/person|event|location|food|ai plan|venue type|style)\s*:/im.test(text || "");
+  }
+
+  function normalizeLeadCommentRecord(lead) {
+    if (!lead || typeof lead !== "object") return;
+
+    const source = cleanText(lead.source);
+    const rawRequirements = cleanText(lead.requirements);
+    const savedComment = cleanText(lead.internal_notes || lead.contact_remark);
+
+    if (!rawRequirements) return;
+
+    const lines = rawRequirements.split(/\r?\n/);
+    const kept = [];
+    let extractedComment = "";
+
+    lines.forEach(line => {
+      const value = line.trim();
+      const match = value.match(/^customer\s+comment\s*:\s*(.*)$/i);
+      if (match) {
+        if (!extractedComment) extractedComment = cleanText(match[1]);
+        return;
+      }
+      kept.push(line);
+    });
+
+    let comment = savedComment || extractedComment;
+    let message = kept.join("\n").trim();
+
+    if (comment && message) {
+      const commentLower = comment.toLowerCase();
+      message = message
+        .split(/\r?\n/)
+        .filter(line => line.trim().toLowerCase() !== commentLower)
+        .join("\n")
+        .trim();
+    }
+
+    const isWebsite = /^website\b/i.test(source);
+    const isAiSearch = /ai search/i.test(source);
+
+    if (
+      !comment &&
+      isWebsite &&
+      !isAiSearch &&
+      message &&
+      !looksLikeStructuredRequirement(message)
+    ) {
+      comment = message;
+      message = "";
+    }
+
+    if (comment && !lead.internal_notes && !lead.contact_remark) {
+      lead.contact_remark = comment;
+    }
+
+    if (message !== rawRequirements) {
+      lead.requirements = message;
+    }
+  }
+
+  function normalizeLoadedLeadComments() {
+    try {
+      if (typeof allLeads === "undefined" || !Array.isArray(allLeads)) return;
+      allLeads.forEach(normalizeLeadCommentRecord);
+    } catch (error) {
+      console.warn("SMV CRM comment normalization warning:", error);
+    }
+  }
+
+  function installLeadRenderNormalizer() {
+    try {
+      if (typeof renderLeads !== "function" || renderLeads.__smvNormalized) return;
+      const originalRenderLeads = renderLeads;
+      renderLeads = function () {
+        normalizeLoadedLeadComments();
+        const result = originalRenderLeads.apply(this, arguments);
+        window.setTimeout(decorateLeadSources, 0);
+        window.setTimeout(decorateLeadSources, 80);
+        return result;
+      };
+      renderLeads.__smvNormalized = true;
+    } catch (error) {
+      console.warn("SMV CRM render normalization warning:", error);
+    }
+  }
+
+  function decorateLeadSources() {
+    document.querySelectorAll("#leadsTableBody tr").forEach(row => {
+      const cell = row.children && row.children[4];
+      if (!cell) return;
+
+      const raw = cleanText(
+        cell.dataset.smvSourceRaw ||
+        cell.getAttribute("title") ||
+        cell.textContent
+      );
+      if (!raw || raw === "—") return;
+
+      const span = cell.querySelector(".smv-compact-source");
+      if (!span) return;
+
+      cell.dataset.smvSourceRaw = raw;
+      cell.title = raw;
+
+      if (/^website\b/i.test(raw)) {
+        if (span.textContent !== "Website") span.textContent = "Website";
+        span.classList.add("smv-source-open");
+        span.setAttribute("role", "button");
+        span.setAttribute("tabindex", "0");
+        span.setAttribute("aria-label", "Website lead. Open details to view the full source.");
+        span.title = "Click to view full lead source";
+
+        if (span.dataset.smvSourceBound !== "1") {
+          span.dataset.smvSourceBound = "1";
+          const openDetails = event => {
+            if (event.type === "keydown" && !["Enter", " "].includes(event.key)) return;
+            event.preventDefault();
+            event.stopPropagation();
+            const detailsBtn = row.querySelector(".view-lead-btn");
+            if (detailsBtn) {
+              detailsBtn.click();
+              window.setTimeout(() => syncLeadDetailsUX(true), 40);
+              window.setTimeout(() => syncLeadDetailsUX(true), 140);
+            }
+          };
+          span.addEventListener("click", openDetails);
+          span.addEventListener("keydown", openDetails);
+        }
+      }
+    });
+  }
+
+  function getControlValue(control) {
+    if (!control) return "";
+    return cleanText("value" in control ? control.value : control.textContent);
+  }
+
+  function setControlValue(control, value) {
+    if (!control) return;
+    if ("value" in control) control.value = value;
+    else control.textContent = value;
+  }
+
+  function ensureFullSourceNote() {
+    const sourceControl = document.getElementById("detailSource");
+    if (!sourceControl) return null;
+
+    const sourceCard = sourceControl.closest(".info-card") || sourceControl.parentElement;
+    if (!sourceCard) return null;
+
+    let note = sourceCard.querySelector(".smv-full-source-note");
+    if (!note) {
+      note = document.createElement("div");
+      note.className = "smv-full-source-note";
+      note.innerHTML = "<b>Full Lead Source</b><span></span>";
+      sourceControl.insertAdjacentElement("afterend", note);
+    }
+
+    const raw = getControlValue(sourceControl) || "Not available";
+    const text = note.querySelector("span");
+    if (text) text.textContent = raw;
+    return note;
+  }
+
+  function normalizeOpenLeadFields() {
+    const sourceControl = document.getElementById("detailSource");
+    const messageControl = document.getElementById("detailMessage");
+    const remarksControl = document.getElementById("detailRemarks");
+    if (!messageControl || !remarksControl) return;
+
+    const source = getControlValue(sourceControl);
+    const rawMessage = getControlValue(messageControl);
+    const rawRemark = getControlValue(remarksControl);
+    if (!rawMessage) return;
+
+    const lines = rawMessage.split(/\r?\n/);
+    const kept = [];
+    let extracted = "";
+
+    lines.forEach(line => {
+      const value = line.trim();
+      const match = value.match(/^customer\s+comment\s*:\s*(.*)$/i);
+      if (match) {
+        if (!extracted) extracted = cleanText(match[1]);
+        return;
+      }
+      kept.push(line);
+    });
+
+    let comment = rawRemark || extracted;
+    let message = kept.join("\n").trim();
+
+    if (comment && message) {
+      const lower = comment.toLowerCase();
+      message = message
+        .split(/\r?\n/)
+        .filter(line => line.trim().toLowerCase() !== lower)
+        .join("\n")
+        .trim();
+    }
+
+    if (
+      !comment &&
+      /^website\b/i.test(source) &&
+      !/ai search/i.test(source) &&
+      message &&
+      !looksLikeStructuredRequirement(message)
+    ) {
+      comment = message;
+      message = "";
+    }
+
+    if (message !== rawMessage) setControlValue(messageControl, message);
+    if (comment && comment !== rawRemark) setControlValue(remarksControl, comment);
+  }
+
+  function syncLeadDetailsUX(highlightSource) {
+    const modal = document.getElementById("leadModal");
+    if (!modal || modal.hidden) return;
+
+    normalizeOpenLeadFields();
+    const note = ensureFullSourceNote();
+
+    if (note && highlightSource) {
+      note.classList.add("is-highlighted");
+      note.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      window.setTimeout(() => note.classList.remove("is-highlighted"), 1600);
+    }
+  }
+
+  function installLeadDetailsWatcher() {
+    const modal = document.getElementById("leadModal");
+    if (!modal || modal.dataset.smvDetailsWatch === "1") return;
+    modal.dataset.smvDetailsWatch = "1";
+
+    const observer = new MutationObserver(() => {
+      if (!modal.hidden) {
+        window.setTimeout(() => syncLeadDetailsUX(false), 0);
+        window.setTimeout(() => syncLeadDetailsUX(false), 80);
+      }
+    });
+    observer.observe(modal, { attributes: true, attributeFilter: ["hidden", "class", "style"] });
+
+    document.addEventListener("click", event => {
+      if (event.target.closest(".view-lead-btn")) {
+        window.setTimeout(() => syncLeadDetailsUX(false), 30);
+        window.setTimeout(() => syncLeadDetailsUX(false), 120);
+      }
+    });
+  }
+
   function watchLeadTable() {
     splitLeadActionColumns();
+    decorateLeadSources();
     const tbody = document.getElementById("leadsTableBody");
     if (!tbody || tbody.dataset.smvSplitWatch === "1") return;
     tbody.dataset.smvSplitWatch = "1";
-    const observer = new MutationObserver(() => splitLeadActionColumns());
-    observer.observe(tbody, { childList: true, subtree: false });
+    let queued = false;
+    const observer = new MutationObserver(() => {
+      if (queued) return;
+      queued = true;
+      window.setTimeout(() => {
+        queued = false;
+        splitLeadActionColumns();
+        decorateLeadSources();
+      }, 0);
+    });
+    observer.observe(tbody, { childList: true, subtree: true });
   }
 
   loadScript("crm-core.js?v=20260909-customer-comment-1", function () {
+    installLeadRenderNormalizer();
     loadScript("venue-media-manager.js?v=20260904-hd30-1", function () {
       loadScript("crm-hotfix-20260909.js?v=crm-final-layout-3", function () {
         installVenueTablePolish();
+        installLeadDetailsWatcher();
+        normalizeLoadedLeadComments();
         watchLeadTable();
-        setTimeout(watchLeadTable, 250);
-        setTimeout(watchLeadTable, 900);
+        setTimeout(() => {
+          normalizeLoadedLeadComments();
+          watchLeadTable();
+        }, 250);
+        setTimeout(() => {
+          normalizeLoadedLeadComments();
+          watchLeadTable();
+        }, 900);
       });
     });
   });
