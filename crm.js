@@ -54,28 +54,37 @@
       .page-heading,.venue-page-heading{padding-top:5px!important;padding-bottom:6px!important}
       .stats-grid,.venue-stats-grid,.stage8-venue-stats,.network-kpi-grid{margin-top:3px!important}
 
-      /* Customer enquiries — fit every field on one desktop screen, no left/right scroll */
+      /* Customer enquiries — preserve ALL 12 original columns and fit them on one desktop screen */
       .table-wrapper{overflow-x:hidden!important}
       .leads-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
-      .leads-table th,.leads-table td{padding-left:5px!important;padding-right:5px!important}
+      .leads-table th,.leads-table td{padding-left:4px!important;padding-right:4px!important}
+
+      /* CUSTOMER / PHONE / CREATED / EMAIL / SOURCE / EVENT / EVENT DATE / GUESTS / LOCATION / STATUS / COMMENT / ACTION */
       .leads-table th:nth-child(1),.leads-table td:nth-child(1){width:8%!important}
       .leads-table th:nth-child(2),.leads-table td:nth-child(2){width:8%!important}
       .leads-table th:nth-child(3),.leads-table td:nth-child(3){width:10.5%!important}
-      .leads-table th:nth-child(4),.leads-table td:nth-child(4){width:14%!important}
-      .leads-table th:nth-child(5),.leads-table td:nth-child(5){width:8.5%!important}
-      .leads-table th:nth-child(6),.leads-table td:nth-child(6){width:8.5%!important}
+      .leads-table th:nth-child(4),.leads-table td:nth-child(4){width:11.5%!important}
+      .leads-table th:nth-child(5),.leads-table td:nth-child(5){width:8%!important}
+      .leads-table th:nth-child(6),.leads-table td:nth-child(6){width:8%!important}
       .leads-table th:nth-child(7),.leads-table td:nth-child(7){width:8.5%!important}
       .leads-table th:nth-child(8),.leads-table td:nth-child(8){width:4.5%!important}
-      .leads-table th:nth-child(9),.leads-table td:nth-child(9){width:9.5%!important}
-      .leads-table th:nth-child(10),.leads-table td:nth-child(10){width:8%!important}
-      .leads-table th:nth-child(11),.leads-table td:nth-child(11){width:4.5%!important}
-      .leads-table th:nth-child(12),.leads-table td:nth-child(12){width:7.5%!important;overflow:visible!important;white-space:nowrap!important}
-      .leads-table td:nth-child(12),.leads-table td:nth-child(12)>div{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:4px!important;flex-wrap:nowrap!important;white-space:nowrap!important}
-      .leads-table td:nth-child(12) button,.leads-table td:nth-child(12) a{flex:0 0 auto!important;min-width:0!important;max-width:none!important;width:auto!important;height:29px!important;padding:0 8px!important;font-size:10.2px!important;white-space:nowrap!important}
+      .leads-table th:nth-child(9),.leads-table td:nth-child(9){width:8%!important}
+      .leads-table th:nth-child(10),.leads-table td:nth-child(10){width:7.5%!important}
+
+      /* COMMENT — explicitly preserved and visible */
+      .leads-table th:nth-child(11),.leads-table td:nth-child(11){width:6%!important;display:table-cell!important;visibility:visible!important;opacity:1!important;overflow:visible!important;text-align:center!important;white-space:nowrap!important}
+      .leads-table td:nth-child(11) button,.leads-table td:nth-child(11) .comment-btn{display:inline-flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;min-width:34px!important;max-width:42px!important;height:29px!important;padding:0 6px!important;margin:0!important}
+
+      /* ACTION — Details + Assign remain together in the final column */
+      .leads-table th:nth-child(12),.leads-table td:nth-child(12){width:11.5%!important;overflow:visible!important;white-space:nowrap!important}
+      .leads-table td:nth-child(12),.leads-table td:nth-child(12)>div{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:5px!important;flex-wrap:nowrap!important;white-space:nowrap!important}
+      .leads-table td:nth-child(12) button,.leads-table td:nth-child(12) a{flex:0 0 auto!important;min-width:0!important;max-width:none!important;width:auto!important;height:29px!important;padding:0 7px!important;font-size:10.1px!important;white-space:nowrap!important}
+
       @media(max-width:1350px){
-        .leads-table th,.leads-table td{font-size:10.7px!important;padding-left:4px!important;padding-right:4px!important}
-        .leads-table th{font-size:9.5px!important}
-        .leads-table td:nth-child(12) button,.leads-table td:nth-child(12) a{padding:0 6px!important;font-size:9.7px!important}
+        .leads-table th,.leads-table td{font-size:10.6px!important;padding-left:3px!important;padding-right:3px!important}
+        .leads-table th{font-size:9.4px!important}
+        .leads-table td:nth-child(11) button,.leads-table td:nth-child(11) .comment-btn{min-width:31px!important;height:27px!important;padding:0 5px!important}
+        .leads-table td:nth-child(12) button,.leads-table td:nth-child(12) a{padding:0 5px!important;font-size:9.5px!important;height:27px!important}
       }
     `;
     document.head.appendChild(style);
