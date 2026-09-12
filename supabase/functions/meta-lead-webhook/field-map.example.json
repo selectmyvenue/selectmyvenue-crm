@@ -1,0 +1,9 @@
+{
+  "full_name": "customer_name",
+  "phone_number": "mobile",
+  "city_location": "location",
+  "event_type": "occasion",
+  "event_timing": "event_date",
+  "guest_count": "guests",
+  "source": "Meta Ads - Instant Form"
+}
