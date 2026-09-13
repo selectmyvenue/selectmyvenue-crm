@@ -6,6 +6,8 @@
   const MAX_VIDEOS = 2;
   const MAX_IMAGE_BYTES = 20 * 1024 * 1024;
   const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
+  const UPLOAD_CONCURRENCY = 2;
+  const UPLOAD_TIMEOUT_MS = 120000;
 
   let currentVenueId = "";
   let currentImages = [];
@@ -34,7 +36,7 @@
       .venue-gallery-manager{margin-top:20px;padding:20px;border:1px solid #d8ebe6;border-radius:18px;background:linear-gradient(145deg,#f8fffd,#f2faf8)}
       .venue-gallery-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:15px}.venue-gallery-head h3{margin:3px 0 5px;color:#123f3a;font-size:18px}.venue-gallery-head p{margin:0;color:#667f7b;font-size:12px;line-height:1.5}.venue-gallery-counts{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.venue-gallery-counts span{padding:7px 10px;border-radius:999px;background:#e9f8f4;color:#087f6c;font-size:10px;font-weight:900;white-space:nowrap}
       .venue-gallery-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}.venue-gallery-drop{display:flex;align-items:center;justify-content:center;min-height:86px;padding:14px;border:1px dashed #91cfc1;border-radius:15px;background:#fff;color:#12695d;font-size:12px;font-weight:850;cursor:pointer;text-align:center;transition:.18s ease}.venue-gallery-drop:hover{border-color:#087f6c;background:#f3fffc;transform:translateY(-1px)}.venue-gallery-drop strong{display:block;font-size:16px;margin-bottom:4px;color:#075f51}.venue-gallery-drop small{display:block;color:#79918d;font-weight:600}
-      .venue-gallery-preview{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:15px}.venue-gallery-item{position:relative;min-height:112px;border:1px solid #dbeae7;border-radius:14px;overflow:hidden;background:#eaf4f1}.venue-gallery-item img,.venue-gallery-item video{display:block;width:100%;height:112px;object-fit:cover;background:#102724;image-rendering:auto}.venue-gallery-item.pending{outline:2px solid rgba(8,127,108,.18)}.venue-gallery-item .media-tag{position:absolute;left:7px;bottom:7px;padding:4px 7px;border-radius:999px;background:rgba(3,24,23,.78);color:#fff;font-size:8px;font-weight:900}.venue-gallery-remove{position:absolute;right:6px;top:6px;width:27px;height:27px;border:0;border-radius:50%;background:rgba(120,24,24,.9);color:#fff;cursor:pointer;font-size:15px;line-height:1}.venue-gallery-empty{grid-column:1/-1;padding:17px;border:1px dashed #cedfdb;border-radius:13px;color:#7a928e;font-size:11px;text-align:center;background:#fff}
+      .venue-gallery-preview{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:15px}.venue-gallery-item{position:relative;min-height:112px;border:1px solid #dbeae7;border-radius:14px;overflow:hidden;background:#eaf4f1;contain:layout paint}.venue-gallery-item img,.venue-gallery-item video{display:block;width:100%;height:112px;object-fit:cover;background:#102724;image-rendering:auto}.venue-gallery-item.pending{outline:2px solid rgba(8,127,108,.18)}.venue-gallery-item .media-tag{position:absolute;left:7px;bottom:7px;padding:4px 7px;border-radius:999px;background:rgba(3,24,23,.78);color:#fff;font-size:8px;font-weight:900}.venue-gallery-remove{position:absolute;right:6px;top:6px;width:27px;height:27px;border:0;border-radius:50%;background:rgba(120,24,24,.9);color:#fff;cursor:pointer;font-size:15px;line-height:1}.venue-gallery-empty{grid-column:1/-1;padding:17px;border:1px dashed #cedfdb;border-radius:13px;color:#7a928e;font-size:11px;text-align:center;background:#fff}
       .venue-gallery-status{margin-top:12px;min-height:18px;color:#667f7b;font-size:11px;font-weight:700}.venue-gallery-status.success{color:#087f6c}.venue-gallery-status.error{color:#b42318}.venue-gallery-status.warning{color:#9a6700}.venue-gallery-note{margin-top:8px;color:#5f7873;font-size:10px;line-height:1.5}.venue-gallery-quality{display:inline-flex;margin-top:8px;padding:6px 9px;border-radius:999px;background:#eaf8f4;color:#087f6c;font-size:9px;font-weight:900}
       @media(max-width:1000px){.venue-gallery-preview{grid-template-columns:repeat(4,minmax(0,1fr))}}
       @media(max-width:760px){.venue-gallery-head{display:block}.venue-gallery-counts{justify-content:flex-start;margin-top:10px}.venue-gallery-actions{grid-template-columns:1fr}.venue-gallery-preview{grid-template-columns:1fr 1fr}.venue-gallery-item img,.venue-gallery-item video{height:125px}}
@@ -172,22 +174,12 @@
   }
 
   function syncForOpenVenue() {
-    resetPending();
+    if (!uploadInProgress) resetPending();
     currentVenueId = safe(byId("venueId")?.value).trim();
     loadExistingMedia();
   }
 
-  function getImageDimensions(file) {
-    return new Promise(resolve => {
-      const url = URL.createObjectURL(file);
-      const image = new Image();
-      image.onload = () => { const result = { width: image.naturalWidth || 0, height: image.naturalHeight || 0 }; URL.revokeObjectURL(url); resolve(result); };
-      image.onerror = () => { URL.revokeObjectURL(url); resolve({ width: 0, height: 0 }); };
-      image.src = url;
-    });
-  }
-
-  async function handleImageSelection(event) {
+  function handleImageSelection(event) {
     const files = Array.from(event.currentTarget?.files || []);
     const available = Math.max(0, MAX_IMAGES - currentImages.length - pendingImages.length);
     if (!available) {
@@ -197,7 +189,6 @@
     }
 
     const accepted = [];
-    let lowResolutionCount = 0;
     for (const file of files) {
       if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) continue;
       if (file.size > MAX_IMAGE_BYTES) {
@@ -205,17 +196,14 @@
         continue;
       }
       if (accepted.length >= available) break;
-      const dimensions = await getImageDimensions(file);
-      if (dimensions.width && dimensions.height && Math.max(dimensions.width, dimensions.height) < 1280) lowResolutionCount += 1;
-      accepted.push({ kind: "image", file, name: file.name, previewUrl: URL.createObjectURL(file), pending: true, width: dimensions.width, height: dimensions.height });
+      accepted.push({ kind: "image", file, name: file.name, previewUrl: URL.createObjectURL(file), pending: true });
     }
 
     pendingImages.push(...accepted);
     event.currentTarget.value = "";
     renderGallery();
     if (accepted.length) {
-      const qualityNote = lowResolutionCount ? ` ${lowResolutionCount} selected photo${lowResolutionCount === 1 ? " is" : "s are"} below 1280px and may look softer on large screens.` : " Original files will be uploaded without compression.";
-      setStatus(`${accepted.length} photo${accepted.length === 1 ? "" : "s"} ready to upload.${qualityNote}`, lowResolutionCount ? "warning" : "success");
+      setStatus(`${accepted.length} photo${accepted.length === 1 ? "" : "s"} ready to upload. Original files will be uploaded without compression.`, "success");
     }
   }
 
@@ -248,7 +236,9 @@
 
   function mediaTile(item, index, source) {
     const src = item.pending ? item.previewUrl : item.url;
-    const media = item.kind === "video" ? `<video src="${escapeHtml(src)}" muted playsinline preload="metadata"></video>` : `<img src="${escapeHtml(src)}" alt="Venue gallery photo" decoding="async">`;
+    const media = item.kind === "video"
+      ? `<video src="${escapeHtml(src)}" muted playsinline preload="none"></video>`
+      : `<img src="${escapeHtml(src)}" alt="Venue gallery photo" loading="lazy" decoding="async">`;
     const tag = item.pending ? `NEW ${item.kind.toUpperCase()}` : item.kind.toUpperCase();
     return `<div class="venue-gallery-item ${item.pending ? "pending" : ""}">${media}<span class="media-tag">${tag}</span><button type="button" class="venue-gallery-remove" data-media-source="${source}" data-media-index="${index}" aria-label="Remove media">×</button></div>`;
   }
@@ -316,6 +306,16 @@
     return "";
   }
 
+  function withTimeout(promise, timeoutMs, message) {
+    let timer;
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(message || "Upload timed out. Please try again.")), timeoutMs);
+      })
+    ]).finally(() => clearTimeout(timer));
+  }
+
   async function uploadOne(venueId, item) {
     const client = getClient();
     if (!client) throw new Error("Media upload is not ready.");
@@ -325,12 +325,12 @@
     const prefix = item.kind === "image" ? "image" : "video";
     const path = `${venueId}/${folder}/${prefix}-${Date.now()}-${random}.${extension}`;
 
-    /* Upload the browser File object directly. No canvas, resize, conversion or JPEG recompression. */
-    const { error } = await client.storage.from(BUCKET).upload(path, item.file, {
+    const uploadPromise = client.storage.from(BUCKET).upload(path, item.file, {
       cacheControl: "31536000",
       contentType: item.file.type,
       upsert: false
     });
+    const { error } = await withTimeout(uploadPromise, UPLOAD_TIMEOUT_MS, `${item.name || "Media"} upload timed out. Please retry that file.`);
     if (error) throw error;
     return path;
   }
@@ -340,33 +340,51 @@
     const venueId = await waitForVenueId(9000);
     if (!venueId) { setStatus("Venue was not saved, so media was not uploaded.", "error"); return; }
 
-    const saveButton = byId("saveVenueBtn");
     uploadInProgress = true;
     const items = [...pendingImages, ...pendingVideos];
+    let nextIndex = 0;
     let uploaded = 0;
+    const failures = [];
+
+    setStatus(`Venue saved. Uploading ${items.length} media file${items.length === 1 ? "" : "s"} in the background…`);
+
+    async function worker() {
+      while (true) {
+        const index = nextIndex++;
+        if (index >= items.length) return;
+        const item = items[index];
+        try {
+          await uploadOne(venueId, item);
+          uploaded += 1;
+          setStatus(`Venue saved. Media upload ${uploaded}/${items.length} complete…`);
+        } catch (error) {
+          failures.push({ item, error });
+          console.error("Venue gallery upload error:", error);
+        }
+        await new Promise(resolve => setTimeout(resolve, 0));
+      }
+    }
 
     try {
-      if (saveButton) { saveButton.disabled = true; saveButton.textContent = `Uploading media 0/${items.length}…`; }
-      for (let i = 0; i < items.length; i += 1) {
-        setStatus(`Uploading original-quality media ${i + 1} of ${items.length}…`);
-        await uploadOne(venueId, items[i]);
-        uploaded += 1;
-        if (saveButton) saveButton.textContent = `Uploading media ${uploaded}/${items.length}…`;
+      const workerCount = Math.min(UPLOAD_CONCURRENCY, items.length);
+      await Promise.all(Array.from({ length: workerCount }, () => worker()));
+
+      if (uploaded) {
+        resetPending();
+        currentVenueId = venueId;
+        await loadExistingMedia();
       }
-      resetPending();
-      currentVenueId = venueId;
-      await loadExistingMedia();
-      setStatus(`${uploaded} media file${uploaded === 1 ? "" : "s"} uploaded in original quality.`, "success");
-      toast(`${uploaded} venue media file${uploaded === 1 ? "" : "s"} uploaded.`, "success");
-    } catch (error) {
-      console.error("Venue gallery upload error:", error);
-      const message = safe(error?.message || error);
-      const videoHint = /mime|type|bucket|size|payload|exceeded/i.test(message) && pendingVideos.length ? " Check the venue-media bucket limits/MIME settings for video uploads." : "";
-      setStatus((message || "Unable to upload venue media.") + videoHint, "error");
-      toast("Venue details saved, but some media could not be uploaded.", "error");
+
+      if (!failures.length) {
+        setStatus(`${uploaded} media file${uploaded === 1 ? "" : "s"} uploaded in original quality.`, "success");
+        toast(`${uploaded} venue media file${uploaded === 1 ? "" : "s"} uploaded.`, "success");
+      } else {
+        const firstMessage = safe(failures[0]?.error?.message || failures[0]?.error);
+        setStatus(`${uploaded}/${items.length} media files uploaded. ${failures.length} file${failures.length === 1 ? "" : "s"} need retry.${firstMessage ? ` ${firstMessage}` : ""}`, "warning");
+        toast("Venue details saved. Some media files need retry.", "warning");
+      }
     } finally {
       uploadInProgress = false;
-      if (saveButton) { saveButton.disabled = false; saveButton.textContent = "Save Venue"; }
     }
   }
 
