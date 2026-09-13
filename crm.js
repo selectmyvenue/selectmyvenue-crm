@@ -1,6 +1,8 @@
 (function () {
   "use strict";
 
+  let lastViewedLeadId = "";
+
   function loadScript(src, done) {
     const script = document.createElement("script");
     script.src = src;
@@ -10,6 +12,164 @@
       console.error("Select My Venue CRM: failed to load", src);
     };
     document.head.appendChild(script);
+  }
+
+  function crmToast(message, type) {
+    try {
+      if (typeof showToast === "function") {
+        showToast(message, type || "success");
+        return;
+      }
+    } catch (_) {}
+    console[type === "error" ? "error" : "log"](message);
+  }
+
+  function installSafeLeadDelete() {
+    if (document.body?.dataset.smvLeadDeleteInstalled === "1") return;
+    if (document.body) document.body.dataset.smvLeadDeleteInstalled = "1";
+
+    const style = document.createElement("style");
+    style.id = "smvLeadDeleteStyles";
+    style.textContent = `
+      #deleteLeadBtn{
+        margin-right:auto!important;
+        border:1px solid #d92d20!important;
+        background:#fff5f4!important;
+        color:#b42318!important;
+        min-height:38px!important;
+        padding:9px 14px!important;
+        border-radius:10px!important;
+        font-weight:850!important;
+        cursor:pointer!important;
+        box-shadow:none!important;
+      }
+      #deleteLeadBtn:hover{background:#fee4e2!important;border-color:#b42318!important}
+      #deleteLeadBtn:disabled{opacity:.55!important;cursor:not-allowed!important}
+      #leadModal .modal-actions{display:flex!important;align-items:center!important;gap:10px!important}
+    `;
+    document.head.appendChild(style);
+
+    document.addEventListener("click", event => {
+      const details = event.target.closest?.("[data-action='view'], .view-lead-btn");
+      if (details?.dataset?.id) lastViewedLeadId = String(details.dataset.id);
+    }, true);
+
+    const modal = document.getElementById("leadModal");
+    const actions = modal?.querySelector(".modal-actions");
+    if (!modal || !actions) return;
+
+    let button = document.getElementById("deleteLeadBtn");
+    if (!button) {
+      button = document.createElement("button");
+      button.type = "button";
+      button.id = "deleteLeadBtn";
+      button.textContent = "Delete Lead";
+      button.title = "Permanently delete this enquiry after double confirmation";
+      actions.insertBefore(button, actions.firstChild);
+    }
+
+    button.addEventListener("click", async event => {
+      event.preventDefault();
+
+      let leadId = lastViewedLeadId;
+      let lead = null;
+      try {
+        if (typeof currentLead !== "undefined" && currentLead) {
+          lead = currentLead;
+          leadId = String(currentLead.id || leadId || "");
+        }
+      } catch (_) {}
+
+      if (!leadId) {
+        crmToast("Unable to identify this enquiry. Close Details and open it again.", "error");
+        return;
+      }
+
+      const customerName = cleanText(
+        lead?.customer_name || document.getElementById("detailCustomerName")?.textContent || "this customer"
+      ) || "this customer";
+
+      let client = null;
+      try {
+        if (typeof getSupabaseClient === "function") client = getSupabaseClient();
+      } catch (_) {}
+
+      if (!client) {
+        crmToast("CRM connection is not ready. Please refresh and try again.", "error");
+        return;
+      }
+
+      button.disabled = true;
+      const originalText = button.textContent;
+      button.textContent = "Checking...";
+
+      try {
+        const { data: assignments, error: assignmentError } = await client
+          .from("venue_enquiry_assignments")
+          .select("id,assignment_status")
+          .eq("enquiry_id", leadId)
+          .limit(1);
+
+        if (assignmentError) {
+          throw new Error("Unable to verify venue assignment safety: " + assignmentError.message);
+        }
+
+        if (Array.isArray(assignments) && assignments.length) {
+          crmToast(
+            "This lead has venue/partner assignment history, so deletion is blocked to protect Partner CRM records.",
+            "warning"
+          );
+          return;
+        }
+
+        const firstConfirm = window.confirm(
+          `Delete lead for “${customerName}”?\n\nThis will permanently remove the customer enquiry from Master CRM. This action cannot be undone.`
+        );
+
+        if (!firstConfirm) return;
+
+        const secondConfirm = window.confirm(
+          `FINAL CONFIRMATION\n\nPermanently delete “${customerName}”?\n\nClick OK only if you are sure this is a test/unwanted lead.`
+        );
+
+        if (!secondConfirm) return;
+
+        button.textContent = "Deleting...";
+
+        const { error: deleteError } = await client
+          .from("customer_enquiries")
+          .delete()
+          .eq("id", leadId);
+
+        if (deleteError) throw deleteError;
+
+        lastViewedLeadId = "";
+
+        try {
+          if (typeof closeLeadModal === "function") closeLeadModal();
+        } catch (_) {
+          modal.hidden = true;
+          document.body.style.overflow = "";
+        }
+
+        crmToast(`Lead for ${customerName} deleted permanently.`, "success");
+
+        try {
+          if (typeof loadEnquiries === "function") await loadEnquiries();
+        } catch (refreshError) {
+          console.warn("Lead deleted but enquiry table refresh failed:", refreshError);
+        }
+      } catch (error) {
+        console.error("Lead delete error:", error);
+        crmToast(
+          error?.message || "Unable to delete this lead. No data was removed.",
+          "error"
+        );
+      } finally {
+        button.disabled = false;
+        button.textContent = originalText;
+      }
+    });
   }
 
   function installVenueTablePolish() {
@@ -516,6 +676,7 @@
     installInternalCommentOnlyBehavior();
     installLeadRenderNormalizer();
     installSaveCustomerCommentPreserver();
+    installSafeLeadDelete();
 
     loadScript("venue-media-manager.js?v=20260904-hd30-1", function () {
       loadScript("crm-hotfix-20260909.js?v=crm-final-layout-3", function () {
