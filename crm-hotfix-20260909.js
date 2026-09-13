@@ -66,31 +66,61 @@
       const raw = cell.dataset.smvSourceRaw || (cell.textContent || "").trim();
       if (!raw || raw === "—") return;
       const short = compactSource(raw);
+      const existing = cell.querySelector(".smv-compact-source");
+      if (cell.dataset.smvSourceRaw === raw && existing && existing.textContent === short) return;
       cell.dataset.smvSourceRaw = raw;
       cell.title = raw;
-      cell.innerHTML = "<span class='smv-compact-source'></span>";
+      if (!existing) {
+        cell.innerHTML = "<span class='smv-compact-source'></span>";
+      }
       const span = cell.querySelector(".smv-compact-source");
-      if (span) span.textContent = short;
+      if (span && span.textContent !== short) span.textContent = short;
     });
   }
 
   function addCellTitles() {
-    document.querySelectorAll(".leads-table td,.venue-table td").forEach(cell => {
+    document.querySelectorAll("#leadsTableBody td,#venueTableBody td").forEach(cell => {
       if (!cell.title && cell.textContent) cell.title = cell.textContent.replace(/\s+/g, " ").trim();
     });
   }
 
+  function installVenueAnalyticsBackgroundMode() {
+    if (window.__smvVenueAnalyticsBackgroundMode) return;
+    if (typeof window.loadStage8Analytics !== "function") return;
+
+    const original = window.loadStage8Analytics;
+    window.loadStage8Analytics = function () {
+      window.setTimeout(() => {
+        Promise.resolve(original()).catch(error => console.warn("Background venue analytics refresh failed:", error));
+      }, 60);
+      return Promise.resolve();
+    };
+    window.__smvVenueAnalyticsBackgroundMode = true;
+  }
+
   function start() {
     installStyles();
+    installVenueAnalyticsBackgroundMode();
     compactTableSources();
     addCellTitles();
-    const observer = new MutationObserver(() => {
+
+    let scheduled = false;
+    const refreshTables = () => {
+      if (scheduled) return;
+      scheduled = true;
       window.requestAnimationFrame(() => {
+        scheduled = false;
         compactTableSources();
         addCellTitles();
       });
-    });
-    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    };
+
+    [document.getElementById("leadsTableBody"), document.getElementById("venueTableBody")]
+      .filter(Boolean)
+      .forEach(node => {
+        const observer = new MutationObserver(refreshTables);
+        observer.observe(node, { childList: true, subtree: true });
+      });
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
