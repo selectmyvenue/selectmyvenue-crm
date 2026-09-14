@@ -9,7 +9,7 @@
 
   const ACTIVE_LEAD_STATUSES = new Set([
     "new", "contacted", "follow-up", "interested", "qualified",
-    "detail-shared", "site-visit", "negotiation"
+    "detail-shared", "site-visit", "negotiation", "not-pick"
   ]);
   const TERMINAL_LEAD_STATUSES = new Set([
     "booked", "converted", "closed", "lost", "not-interested"
