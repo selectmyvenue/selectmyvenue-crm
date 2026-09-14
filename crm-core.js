@@ -783,7 +783,7 @@ function getStatusOptions() {
     { value: "interested",    label: "Interested" },
     { value: "qualified",     label: "Qualified" },
     { value: "site-visit",    label: "Site Visit" },
-    { value: "negotiation",   label: "Negotiation" },
+    { value: "not-pick",      label: "Not Pick" },
     { value: "booked",        label: "Booked" },
     { value: "converted",     label: "Converted" },
     { value: "closed",        label: "Closed" },
@@ -806,6 +806,15 @@ function createSelectEditor(
 
     select.className =
         "crm-inline-editor";
+
+    if (selectedValue && !options.some(option => String(option.value) === String(selectedValue))) {
+        const legacy = document.createElement("option");
+        legacy.value = selectedValue;
+        legacy.textContent = formatStatus(selectedValue) + " (existing)";
+        legacy.selected = true;
+        legacy.disabled = true;
+        select.appendChild(legacy);
+    }
 
     options.forEach(
         option => {
@@ -2815,6 +2824,14 @@ function ensureSourceSelect(
                 `
             )
             .join("");
+
+    if (!getStatusOptions().some(option => option.value === current)) {
+        const legacy = document.createElement("option");
+        legacy.value = current;
+        legacy.textContent = formatStatus(current) + " (existing)";
+        legacy.disabled = true;
+        element.appendChild(legacy);
+    }
 
     element.value =
         current;
