@@ -43,6 +43,11 @@
 
     if (!input) return false;
 
+    const helper = field.querySelector("small");
+    const READY_HELPER = "Total rooms at the property. Leave blank if the exact number is not confirmed.";
+    const PENDING_HELPER = "Number of rooms is waiting for the database update. Existing venue saves remain available.";
+    let roomCountSchemaReady = false;
+
     function normalizedCount() {
       const raw = String(input.value || "").trim();
       if (!raw) return null;
@@ -53,11 +58,43 @@
 
     function syncRoomCountState() {
       const count = normalizedCount();
-      if (count !== null && count > 0) {
+      if (roomCountSchemaReady && count !== null && count > 0) {
         roomsCheckbox.checked = true;
       }
-      input.disabled = !roomsCheckbox.checked;
+      input.disabled = !roomCountSchemaReady || !roomsCheckbox.checked;
       field.classList.toggle("is-disabled", input.disabled);
+      field.classList.toggle("schema-pending", !roomCountSchemaReady);
+    }
+
+    async function detectRoomCountSchema() {
+      let client = null;
+      try {
+        if (typeof getSupabaseClient === "function") client = getSupabaseClient();
+      } catch (_) {}
+
+      if (!client) {
+        roomCountSchemaReady = false;
+        if (helper) helper.textContent = PENDING_HELPER;
+        syncRoomCountState();
+        return;
+      }
+
+      try {
+        const { error } = await client
+          .from("venues")
+          .select("room_count")
+          .limit(1);
+
+        roomCountSchemaReady = !error;
+        if (helper) helper.textContent = roomCountSchemaReady ? READY_HELPER : PENDING_HELPER;
+        if (error) console.info("SMV room-count schema is not active yet:", error.message);
+      } catch (error) {
+        roomCountSchemaReady = false;
+        if (helper) helper.textContent = PENDING_HELPER;
+        console.info("SMV room-count schema check warning:", error);
+      }
+
+      syncRoomCountState();
     }
 
     roomsCheckbox.addEventListener("change", syncRoomCountState);
@@ -69,14 +106,18 @@
 
         getVenueFormData = function () {
           const payload = originalGetVenueFormData.apply(this, arguments) || {};
-          const count = normalizedCount();
 
-          payload.room_count = roomsCheckbox.checked && count !== null && count > 0
-            ? count
-            : null;
+          // Do not send an unknown column before the migration is live. This
+          // preserves the existing Add/Edit Venue flow even during rollout.
+          if (roomCountSchemaReady) {
+            const count = normalizedCount();
+            payload.room_count = roomsCheckbox.checked && count !== null && count > 0
+              ? count
+              : null;
 
-          if (payload.room_count > 0) {
-            payload.rooms_available = true;
+            if (payload.room_count > 0) {
+              payload.rooms_available = true;
+            }
           }
 
           return payload;
@@ -161,13 +202,13 @@
         font-size:10px!important;
         line-height:1.4!important;
       }
-      #venueForm .smv-room-count-field.is-disabled{
-        opacity:.62!important;
-      }
+      #venueForm .smv-room-count-field.is-disabled{opacity:.62!important}
+      #venueForm .smv-room-count-field.schema-pending{border-style:dashed!important}
     `;
     document.head.appendChild(style);
 
     syncRoomCountState();
+    detectRoomCountSchema();
     return true;
   }
 
