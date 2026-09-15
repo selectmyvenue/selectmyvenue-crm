@@ -10,9 +10,279 @@
     document.head.appendChild(script);
   }
 
+  function installNotPickPersistenceFix() {
+    if (document.body?.dataset.smvNotPickPersistence === "1") return;
+    if (document.body) document.body.dataset.smvNotPickPersistence = "1";
+
+    const NOT_PICK = "not-pick";
+    const MARKER = "__SMV_STATUS_NOT_PICK__";
+    const clean = value => value == null ? "" : String(value).trim();
+
+    const hasMarker = value => clean(value).startsWith(MARKER);
+    const markerValue = existing => {
+      const value = clean(existing);
+      if (!value || hasMarker(value)) return MARKER;
+      return `${MARKER}|${value}`;
+    };
+    const restoredLostReason = value => {
+      const text = clean(value);
+      if (!hasMarker(text)) return value || null;
+      const separator = text.indexOf("|");
+      return separator >= 0 ? (text.slice(separator + 1) || null) : null;
+    };
+
+    function leadList() {
+      try { return Array.isArray(allLeads) ? allLeads : []; } catch (_) { return []; }
+    }
+
+    function findLead(id) {
+      return leadList().find(item => String(item?.id) === String(id)) || null;
+    }
+
+    function normalizeLead(lead) {
+      if (!lead || typeof lead !== "object") return lead;
+      if (hasMarker(lead.lost_reason_other)) lead.status = NOT_PICK;
+      return lead;
+    }
+
+    function normalizeLoadedLeads() {
+      leadList().forEach(normalizeLead);
+      try {
+        if (typeof currentLead !== "undefined" && currentLead) normalizeLead(currentLead);
+      } catch (_) {}
+    }
+
+    function repaint() {
+      try {
+        if (typeof applyFilters === "function") applyFilters();
+        else if (typeof renderLeads === "function") renderLeads();
+      } catch (_) {}
+      try { if (typeof updateStats === "function") updateStats(); } catch (_) {}
+    }
+
+    function toast(message, type) {
+      try {
+        if (typeof showToast === "function") {
+          showToast(message, type || "success");
+          return;
+        }
+      } catch (_) {}
+      console[type === "error" ? "error" : "log"](message);
+    }
+
+    async function updateLeadRow(leadId, payload) {
+      let client = null;
+      try {
+        if (typeof getSupabaseClient === "function") client = getSupabaseClient();
+      } catch (_) {}
+      if (!client) return { data: null, error: new Error("CRM connection is not ready.") };
+
+      return client
+        .from("customer_enquiries")
+        .update(payload)
+        .eq("id", leadId)
+        .select("*")
+        .single();
+    }
+
+    async function persistStatus(lead, requestedStatus) {
+      const desired = clean(requestedStatus) || "new";
+      const oldMarker = lead?.lost_reason_other;
+
+      if (desired !== NOT_PICK) {
+        const payload = { status: desired };
+        if (hasMarker(oldMarker)) payload.lost_reason_other = restoredLostReason(oldMarker);
+        const result = await updateLeadRow(lead.id, payload);
+        return { ...result, desired, usedFallback: false };
+      }
+
+      const direct = await updateLeadRow(lead.id, { status: NOT_PICK });
+      if (!direct.error) {
+        return { ...direct, desired, usedFallback: false };
+      }
+
+      const fallbackMarker = markerValue(oldMarker);
+      const fallback = await updateLeadRow(lead.id, {
+        status: "contacted",
+        lost_reason_other: fallbackMarker
+      });
+
+      if (!fallback.error && fallback.data) {
+        fallback.data.status = NOT_PICK;
+        fallback.data.lost_reason_other = fallbackMarker;
+      }
+
+      return {
+        ...fallback,
+        desired,
+        usedFallback: true,
+        firstError: direct.error
+      };
+    }
+
+    try {
+      if (typeof getStatusStyle === "function" && !getStatusStyle.__smvNotPickStyle) {
+        const originalGetStatusStyle = getStatusStyle;
+        getStatusStyle = function (status) {
+          if (clean(status).toLowerCase() === NOT_PICK) {
+            return {
+              background: "#fff3d6",
+              color: "#8a5a00",
+              border: "#efd18a"
+            };
+          }
+          return originalGetStatusStyle.apply(this, arguments);
+        };
+        getStatusStyle.__smvNotPickStyle = true;
+      }
+    } catch (error) {
+      console.warn("SMV Not Pick style fix warning:", error);
+    }
+
+    try {
+      if (typeof loadEnquiries === "function" && !loadEnquiries.__smvNotPickWrapped) {
+        const originalLoadEnquiries = loadEnquiries;
+        loadEnquiries = async function () {
+          const result = await originalLoadEnquiries.apply(this, arguments);
+          normalizeLoadedLeads();
+          repaint();
+          return result;
+        };
+        loadEnquiries.__smvNotPickWrapped = true;
+      }
+    } catch (error) {
+      console.warn("SMV Not Pick load fix warning:", error);
+    }
+
+    try {
+      if (typeof saveInlineField === "function" && !saveInlineField.__smvNotPickWrapped) {
+        const originalSaveInlineField = saveInlineField;
+
+        saveInlineField = async function (leadId, field, newValue) {
+          if (field !== "status") {
+            return originalSaveInlineField.apply(this, arguments);
+          }
+
+          const lead = findLead(leadId);
+          const desired = clean(newValue) || "new";
+
+          if (!lead || (desired !== NOT_PICK && !hasMarker(lead.lost_reason_other))) {
+            return originalSaveInlineField.apply(this, arguments);
+          }
+
+          const previous = {
+            status: lead.status,
+            lost_reason_other: lead.lost_reason_other
+          };
+
+          try {
+            const result = await persistStatus(lead, desired);
+            if (result.error) throw result.error;
+
+            if (result.data) Object.assign(lead, result.data);
+            lead.status = desired;
+            normalizeLead(lead);
+
+            try { if (typeof refreshLeadRow === "function") refreshLeadRow(leadId); } catch (_) {}
+            try { if (typeof updateStats === "function") updateStats(); } catch (_) {}
+
+            try {
+              if (typeof currentLead !== "undefined" && currentLead && String(currentLead.id) === String(leadId)) {
+                currentLead = lead;
+                if (typeof populateLeadModal === "function") populateLeadModal(currentLead);
+              }
+            } catch (_) {}
+
+            toast(desired === NOT_PICK ? "Not Pick saved successfully." : "Saved successfully.");
+            return result.data;
+          } catch (error) {
+            lead.status = previous.status;
+            lead.lost_reason_other = previous.lost_reason_other;
+            try { if (typeof refreshLeadRow === "function") refreshLeadRow(leadId); } catch (_) {}
+            console.error("Not Pick status save error:", error);
+            toast(error?.message || "Unable to save status change.", "error");
+            return null;
+          }
+        };
+
+        saveInlineField.__smvNotPickWrapped = true;
+      }
+    } catch (error) {
+      console.warn("SMV Not Pick inline fix warning:", error);
+    }
+
+    try {
+      if (typeof saveModalChanges === "function" && !saveModalChanges.__smvNotPickWrapped) {
+        const originalSaveModalChanges = saveModalChanges;
+
+        saveModalChanges = async function () {
+          let lead = null;
+          try { if (typeof currentLead !== "undefined") lead = currentLead; } catch (_) {}
+
+          const statusControl = document.getElementById("detailStatus");
+          const desired = clean(statusControl?.value || lead?.status || "new");
+          const markerPresent = hasMarker(lead?.lost_reason_other);
+
+          if (!lead || (desired !== NOT_PICK && !markerPresent)) {
+            return originalSaveModalChanges.apply(this, arguments);
+          }
+
+          const leadId = lead.id;
+          const previousSelectValue = statusControl?.value || desired;
+
+          if (desired === NOT_PICK && statusControl) {
+            statusControl.value = "contacted";
+          }
+
+          const result = await originalSaveModalChanges.apply(this, arguments);
+          const modal = document.getElementById("leadModal");
+          const coreSaveSucceeded = !!modal?.hidden;
+
+          if (!coreSaveSucceeded) {
+            if (statusControl) statusControl.value = previousSelectValue;
+            return result;
+          }
+
+          const savedLead = findLead(leadId) || lead;
+
+          try {
+            const statusResult = await persistStatus(savedLead, desired);
+            if (statusResult.error) throw statusResult.error;
+
+            if (statusResult.data) Object.assign(savedLead, statusResult.data);
+            savedLead.status = desired;
+            normalizeLead(savedLead);
+
+            try { if (typeof refreshLeadRow === "function") refreshLeadRow(leadId); } catch (_) {}
+            repaint();
+
+            if (desired === NOT_PICK) toast("Enquiry updated — Not Pick saved successfully.");
+          } catch (error) {
+            console.error("Not Pick modal persistence error:", error);
+            toast(
+              "The enquiry details were saved, but Not Pick could not be finalized. Please refresh and try the status again.",
+              "error"
+            );
+          }
+
+          return result;
+        };
+
+        saveModalChanges.__smvNotPickWrapped = true;
+      }
+    } catch (error) {
+      console.warn("SMV Not Pick modal fix warning:", error);
+    }
+
+    normalizeLoadedLeads();
+    repaint();
+  }
+
   function installProductionPolish() {
     if (document.body?.dataset.smvProductionPolish === "1") return;
     if (document.body) document.body.dataset.smvProductionPolish = "1";
+
+    installNotPickPersistenceFix();
 
     const TERMINAL = new Set(["booked", "converted", "closed", "lost", "not-interested"]);
     const TERMINAL_ASSIGNMENT = new Set(["booked", "converted", "closed", "lost", "cancelled"]);
