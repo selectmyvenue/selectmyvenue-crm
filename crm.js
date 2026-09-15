@@ -539,7 +539,9 @@
         window.clearInterval(waitForCore);
         window.setTimeout(function () {
           addScript("crm-enhancements.js?v=20260914-ops-1", function () {
-            window.setTimeout(installProductionPolish, 80);
+            addScript("crm-room-count.js?v=20260915-room-count-1", function () {
+              window.setTimeout(installProductionPolish, 80);
+            });
           });
         }, ready ? 450 : 0);
       }
