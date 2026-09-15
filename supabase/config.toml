@@ -1,3 +1,7 @@
 [functions.hyper-service]
 verify_jwt = true
 entrypoint = "./functions/invite-venue-partner/index.js"
+
+[functions.meta-lead-webhook]
+verify_jwt = false
+entrypoint = "./functions/meta-lead-webhook/index.ts"
