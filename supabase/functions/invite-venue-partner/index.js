@@ -166,7 +166,7 @@ Deno.serve(async request => {
       throw staffError;
     }
 
-    if (!staffProfile) {
+    if (!staffProfile || staffProfile.role !== "admin") {
       return json(origin, 403, { error: "Active Master CRM staff access is required." });
     }
 

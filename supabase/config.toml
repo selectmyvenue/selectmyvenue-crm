@@ -1,3 +1,7 @@
 [functions.hyper-service]
 verify_jwt = true
 entrypoint = "./functions/invite-venue-partner/index.js"
+
+[functions.manage-employees]
+verify_jwt = true
+entrypoint = "./functions/manage-employees/index.ts"

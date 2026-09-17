@@ -349,19 +349,15 @@ async function loadEnquiries() {
 
     try {
 
-        const {
-            data,
-            error
-        } =
-            await client
-                .from("customer_enquiries")
-                .select("*")
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
+        let data = [], error = null;
+        for (let offset = 0; ; offset += 1000) {
+            const result = await client.from("customer_enquiries").select("*")
+                .order("created_at", { ascending: false }).order("id", { ascending: false })
+                .range(offset, offset + 999);
+            if (result.error) { error = result.error; break; }
+            data.push(...(result.data || []));
+            if ((result.data || []).length < 1000) break;
+        }
 
         if (error) {
 
@@ -1536,6 +1532,7 @@ async function saveInlineField(
                 .update({
                     [field]: value
                 })
+                .eq("updated_at", lead.updated_at)
                 .eq(
                     "id",
                     leadId
@@ -3181,6 +3178,7 @@ async function saveModalChanges() {
                     "customer_enquiries"
                 )
                 .update(data)
+                .eq("updated_at", currentLead.updated_at)
                 .eq(
                     "id",
                     leadId
@@ -7184,6 +7182,8 @@ async function initializeCRM() {
     await loadStage8Capabilities();
 
     await loadEnquiries();
+
+    await window.startEmployeeIntegration?.(getSupabaseClient());
 
     console.log(
         "Select My Venue CRM ready."
