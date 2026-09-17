@@ -24,6 +24,17 @@ const CRM_SUPABASE_ANON_KEY =
 
 let supabaseClient = null;
 
+async function crmFetch(input, options = {}) {
+    const controller = new AbortController();
+    const originalSignal = options.signal;
+    const abort = () => controller.abort();
+    if (originalSignal?.aborted) abort();
+    else originalSignal?.addEventListener('abort', abort, {once:true});
+    const timer = setTimeout(abort, 25000);
+    try { return await fetch(input, {...options, signal:controller.signal}); }
+    finally { clearTimeout(timer); originalSignal?.removeEventListener('abort', abort); }
+}
+
 function getSupabaseClient() {
 
     if (supabaseClient) {
@@ -44,6 +55,7 @@ function getSupabaseClient() {
             CRM_SUPABASE_URL,
             CRM_SUPABASE_ANON_KEY,
             {
+                global: { fetch: crmFetch },
                 auth: {
                     storageKey: "smv-master-crm-auth",
                     persistSession: true,
@@ -336,75 +348,56 @@ async function logoutCRM() {
    LOAD ENQUIRIES
    ========================================================= */
 
-async function loadEnquiries() {
+let enquiryLoadPromise = null;
+let enquiriesLoaded = false;
+let assignmentRefreshAt = 0;
+let assignmentRefreshPromise = null;
 
-    const client =
-        getSupabaseClient();
-
-    if (!client) {
-        return;
-    }
-
-    setTableLoading();
-
+// Keep the last successful workspace visible and coalesce simultaneous refreshes.
+function loadEnquiries() {
+    if (enquiryLoadPromise) return enquiryLoadPromise;
+    enquiryLoadPromise = performEnquiryLoad().finally(() => { enquiryLoadPromise = null; });
+    return enquiryLoadPromise;
+}
+async function performEnquiryLoad() {
+    const client = getSupabaseClient();
+    if (!client) return false;
+    if (!enquiriesLoaded) setTableLoading();
+    window.dispatchEvent(new CustomEvent('crm:sync', {detail:{state:'loading'}}));
     try {
-
-        let data = [], error = null;
+        const data = [];
         for (let offset = 0; ; offset += 1000) {
             const result = await client.from("customer_enquiries").select("*")
                 .order("created_at", { ascending: false }).order("id", { ascending: false })
                 .range(offset, offset + 999);
-            if (result.error) { error = result.error; break; }
+            if (result.error) throw result.error;
             data.push(...(result.data || []));
             if ((result.data || []).length < 1000) break;
         }
-
-        if (error) {
-
-            console.error(
-                "Supabase load error:",
-                error
-            );
-
-            renderTableError(
-                "Unable to load enquiries."
-            );
-
-            showToast(
-                error.message ||
-                "Unable to load enquiries.",
-                "error"
-            );
-
-            return;
+        // An editor may have opened while the request was in flight.
+        if (enquiriesLoaded && document.querySelector('#leadModal:not([hidden]),#addEnquiryModal:not([hidden]),.editing,.crm-floating-overlay')) {
+            window.dispatchEvent(new CustomEvent('crm:sync', {detail:{state:'deferred'}}));
+            return false;
         }
-
-        allLeads =
-            Array.isArray(data)
-                ? data
-                : [];
-
-        await loadVenueAssignments();
-
+        allLeads = data;
+        enquiriesLoaded = true;
         applyFilters();
         updateStats();
-
-    }
-    catch (error) {
-
-        console.error(
-            "Load exception:",
-            error
-        );
-
-        renderTableError(
-            "Something went wrong while loading enquiries."
-        );
-
-        showToast(
-            "Unable to load enquiries.",
-            "error"
-        );
+        // Venue history must never delay displaying customer enquiries.
+        if (!assignmentRefreshPromise && Date.now() - assignmentRefreshAt > 60000) {
+            assignmentRefreshPromise = loadVenueAssignments().finally(() => {
+                assignmentRefreshAt = Date.now();
+                assignmentRefreshPromise = null;
+            });
+        }
+        window.dispatchEvent(new CustomEvent('crm:sync', {detail:{state:'ready',at:Date.now()}}));
+        return true;
+    } catch (error) {
+        console.error('Enquiry refresh failed:', error);
+        if (!enquiriesLoaded) renderTableError('Unable to load enquiries. Check your connection and use Refresh.');
+        window.dispatchEvent(new CustomEvent('crm:sync', {detail:{state:'error'}}));
+        showToast('Refresh failed. Your last loaded leads are still available. Use Refresh to retry.', 'error');
+        return false;
     }
 }
 
@@ -503,6 +496,12 @@ function applyFilters() {
             }
         );
 
+    filteredLeads = filteredLeads.filter(lead => matchesWorkView(lead, currentWorkView));
+    if (['overdue','today','unscheduled'].includes(currentWorkView)) {
+        filteredLeads.sort((a,b) => (Date.parse(a.follow_up_at) || Infinity) - (Date.parse(b.follow_up_at) || Infinity));
+    }
+    const filterKey = [currentSearch, currentStatusFilter, currentWorkView].join('|');
+    if (filterKey !== leadPageFilterKey) { leadPage = 1; leadPageFilterKey = filterKey; }
     renderLeads();
 }
 
@@ -1197,7 +1196,56 @@ const email =
    RENDER TABLE
    ========================================================= */
 
+let currentWorkView = 'all';
+let leadPage = 1;
+let leadPageFilterKey = '';
+const leadPageSize = 50;
+const terminalLeadStatuses = new Set(['booked','converted','closed','lost','not-interested']);
+const indiaDayFormatter = new Intl.DateTimeFormat('en-CA', {timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'});
+function indiaDay(value) {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? '' : indiaDayFormatter.format(date);
+}
+function matchesWorkView(lead, view, now = new Date()) {
+    if (view === 'all') return true;
+    if (terminalLeadStatuses.has(String(lead.status).toLowerCase())) return false;
+    const due = Date.parse(lead.follow_up_at);
+    if (view === 'today') return !!lead.follow_up_at && indiaDay(lead.follow_up_at) === indiaDay(now);
+    if (view === 'overdue') return Number.isFinite(due) && due < now.getTime();
+    if (view === 'unscheduled') return !lead.follow_up_at;
+    if (view === 'unassigned') return !lead.assigned_to;
+    if (view === 'new') return lead.status === 'new';
+    return true;
+}
+function setupWorkViews() {
+    const toolbar = document.getElementById('leadWorkViews');
+    if (!toolbar || toolbar.dataset.ready) return;
+    toolbar.dataset.ready = 'true';
+    toolbar.addEventListener('click', event => {
+        const button = event.target.closest('[data-work-view]');
+        if (!button) return;
+        currentWorkView = button.dataset.workView;
+        applyFilters();
+    });
+    document.getElementById('leadPreviousPage')?.addEventListener('click', () => { leadPage--; renderLeads(); });
+    document.getElementById('leadNextPage')?.addEventListener('click', () => { leadPage++; renderLeads(); });
+}
 function renderLeads() {
+    setupWorkViews();
+    const pages = Math.max(1, Math.ceil(filteredLeads.length / leadPageSize));
+    leadPage = Math.max(1, Math.min(leadPage, pages));
+    document.querySelectorAll('[data-work-view]').forEach(button => {
+        button.setAttribute('aria-pressed', String(button.dataset.workView === currentWorkView));
+        const count = allLeads.filter(lead => matchesWorkView(lead, button.dataset.workView)).length;
+        button.querySelector('span').textContent = count;
+    });
+    const pageLabel = document.getElementById('leadPageLabel');
+    if (pageLabel) pageLabel.textContent = filteredLeads.length ? `${(leadPage-1)*leadPageSize+1}–${Math.min(leadPage*leadPageSize, filteredLeads.length)} of ${filteredLeads.length} matching leads` : 'No matching leads';
+    const previous = document.getElementById('leadPreviousPage');
+    const next = document.getElementById('leadNextPage');
+    if (previous) previous.disabled = leadPage === 1;
+    if (next) next.disabled = leadPage === pages;
+
 
     const resultCount = document.getElementById("leadResultCount");
     if (resultCount) {
@@ -1242,6 +1290,7 @@ function renderLeads() {
 
     tbody.innerHTML =
         filteredLeads
+            .slice((leadPage - 1) * leadPageSize, leadPage * leadPageSize)
             .map(createLeadRow)
             .join("");
 }
@@ -2228,6 +2277,7 @@ async function saveComment(
                     "id",
                     leadId
                 )
+                .eq("updated_at", lead.updated_at)
                 .select("*")
                 .single();
 
@@ -2271,7 +2321,7 @@ async function saveComment(
         );
 
         showToast(
-            "Unable to save comment.",
+            "Comment not saved. Refresh and reopen the lead; another team member may have updated it.",
             "error"
         );
 
@@ -2967,6 +3017,9 @@ function setControl(
         return;
     }
 
+    if (element.tagName === 'SELECT' && selector === '#detailAssignedTo' && value && !Array.from(element.options).some(option => option.value === String(value))) {
+        element.add(new Option('Previously assigned employee', String(value)));
+    }
     element.value =
         safeValue(value);
 }
@@ -3135,7 +3188,7 @@ async function saveModalChanges() {
                 : null;
     }
 
-    if (assigned) {
+    if (assigned && !assigned.disabled) {
 
         const assignedValue =
             assigned.value.trim();
@@ -3382,7 +3435,17 @@ function closeAddEnquiryModal() {
    ADD ENQUIRY
    ========================================================= */
 
-async function submitAddEnquiry(
+async function submitAddEnquiry(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (form.dataset.saving === 'true') return;
+    form.dataset.saving = 'true';
+    const button = form.querySelector('[type="submit"]');
+    if (button) button.disabled = true;
+    try { return await performAddEnquiry(event); }
+    finally { delete form.dataset.saving; if (button) button.disabled = false; }
+}
+async function performAddEnquiry(
     event
 ) {
 
@@ -3998,7 +4061,7 @@ function setupModalSave() {
 
     button.addEventListener(
         "click",
-        event => {
+        async event => {
 
             if (
                 button.type !==
@@ -4007,7 +4070,12 @@ function setupModalSave() {
                 event.preventDefault();
             }
 
-            saveModalChanges();
+            if (button.disabled) return;
+            button.disabled = true;
+            const label = button.textContent;
+            button.textContent = 'Saving…';
+            try { await saveModalChanges(); }
+            finally { button.disabled = false; button.textContent = label; }
         }
     );
 }
@@ -7138,6 +7206,25 @@ function closeVenueAssignmentModal() {
    INITIALIZE
    ========================================================= */
 
+async function loadStaffOptions() {
+    const controls = ['detailAssignedTo','newAssignedTo'].map(id => document.getElementById(id)).filter(Boolean);
+    try {
+        const {data,error} = await getSupabaseClient().from('staff_profiles').select('user_id,full_name,role,is_active').eq('is_active',true).order('full_name');
+        if (error) throw error;
+        controls.forEach(control => {
+            const previous = control.value;
+            control.replaceChildren(new Option('Unassigned', ''));
+            (data || []).forEach(staff => control.add(new Option((staff.full_name || 'Unnamed employee') + (staff.role === 'admin' ? ' (admin)' : ''), staff.user_id)));
+            if (previous && !Array.from(control.options).some(option => option.value === previous)) control.add(new Option('Previously assigned employee', previous));
+            control.value = previous;
+            control.disabled = false;
+        });
+    } catch (error) {
+        controls.forEach(control => {control.disabled=true;control.title='Employee list unavailable. Reload the page to retry. Existing assignment is preserved.';});
+        console.warn('Unable to load employee names:',error);
+    }
+}
+
 async function initializeCRM() {
 
     console.log(
@@ -7179,8 +7266,9 @@ async function initializeCRM() {
 
     setupAuthListener();
 
-    await loadStage8Capabilities();
-
+    // Load lead workspace independently of optional venue capabilities.
+    loadStage8Capabilities().catch(error => console.warn('Venue capabilities unavailable:', error));
+    loadStaffOptions();
     await loadEnquiries();
 
     await window.startEmployeeIntegration?.(getSupabaseClient());

@@ -82,10 +82,7 @@
   }
 
   function isSameLocalDay(a, b) {
-    return a && b &&
-      a.getFullYear() === b.getFullYear() &&
-      a.getMonth() === b.getMonth() &&
-      a.getDate() === b.getDate();
+    return a && b && indiaDay(a) === indiaDay(b);
   }
 
   function minutesSince(value) {
@@ -205,7 +202,7 @@
 
     const overdue = active.filter(lead => {
       const due = dateValue(lead.follow_up_at);
-      return due && due.getTime() < now.getTime() && !isSameLocalDay(due, now);
+      return due && due.getTime() < now.getTime();
     });
 
     const siteVisitsToday = active.filter(lead => {

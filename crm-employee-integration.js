@@ -4,11 +4,39 @@ window.startEmployeeIntegration=async function(client){
  const controls=document.querySelector('.crm-header-actions');
  const link=document.createElement('a');link.href='employees.html';link.className='account-password-btn';link.textContent='Employees';controls?.prepend(link);
  const state=document.createElement('span');state.style.cssText='font-size:11px;color:#087f74';state.textContent='Connecting live updates…';controls?.prepend(state);
- await client.realtime.setAuth((await client.auth.getSession()).data.session?.access_token);
- let pending=false,timer;
- function reload(){if(document.querySelector('#leadModal:not([hidden]),#addEnquiryModal:not([hidden])')){pending=true;state.textContent='New updates · refresh after editing';return;}pending=false;window.loadEnquiries?.();}
- client.channel('master-employee-leads').on('postgres_changes',{event:'*',schema:'public',table:'customer_enquiries'},()=>{clearTimeout(timer);timer=setTimeout(reload,400);}).subscribe(status=>{state.textContent=status==='SUBSCRIBED'?'● Live lead updates':'Reconnecting · periodic refresh';if(status==='SUBSCRIBED')reload();});
- setInterval(()=>{if(!document.hidden)reload();},30000);
+ let pending=false, timer, loading=false, connected=false, lastSync=0;
+ function editing(){return !!document.querySelector('#leadModal:not([hidden]),#addEnquiryModal:not([hidden]),.editing,.crm-floating-overlay,#venueModal:not([hidden]),#venueAssignmentModal:not([hidden])');}
+ function showState(){
+  state.textContent = !navigator.onLine ? 'Offline · showing saved workspace' : pending && editing() ? 'Updates waiting · finish editing' : loading ? 'Syncing leads…' : connected ? '● Live lead updates' : 'Reconnecting · automatic refresh';
+  state.title = lastSync ? 'Last successful refresh: '+new Date(lastSync).toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata'})+' IST' : 'Waiting for a successful refresh';
+ }
+ async function reload(){
+  pending=true;
+  if(loading || document.hidden || !navigator.onLine || editing()){showState();return;}
+  pending=false;loading=true;showState();
+  try { await window.loadEnquiries?.(); }
+  finally { loading=false;showState();if(pending&&!editing())schedule(); }
+ }
+ function schedule(){clearTimeout(timer);timer=setTimeout(reload,600);}
+ window.addEventListener('crm:sync',event=>{
+  if(event.detail.state==='deferred')pending=true;
+  if(event.detail.state==='ready'){lastSync=event.detail.at;state.dataset.failed='false';}
+  if(event.detail.state==='error'){state.dataset.failed='true';state.textContent='Refresh failed · click Refresh to retry';}
+ });
+ const renderState=showState;
+ showState=function(){renderState();if(state.dataset.failed==='true'&&!loading&&navigator.onLine)state.textContent='Refresh failed · click Refresh to retry';};
+ window.addEventListener('online',schedule);
+ window.addEventListener('offline',showState);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&(pending||Date.now()-lastSync>90000))schedule();});
+ document.addEventListener('focusout',()=>{if(pending)setTimeout(()=>{if(!editing())schedule();},100);});
+ // Fallback reconciliation; live events trigger immediate refreshes in between.
+ setInterval(()=>{if(!document.hidden&&(pending||Date.now()-lastSync>90000))reload();},15000);
+ try {
+  await client.realtime.setAuth((await client.auth.getSession()).data.session?.access_token);
+  client.channel('master-employee-leads').on('postgres_changes',{event:'*',schema:'public',table:'customer_enquiries'},()=>{pending=true;schedule();}).subscribe(status=>{
+   connected=status==='SUBSCRIBED';showState();if(connected)schedule();
+  });
+ } catch(error){console.warn('Live connection unavailable; automatic refresh remains enabled.',error);showState();}
  const modal=document.getElementById('leadModal');
  function showCallSummary(){
   if(!modal || modal.hidden || typeof currentLead==='undefined' || !currentLead)return;

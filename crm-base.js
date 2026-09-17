@@ -672,14 +672,14 @@
     observer.observe(tbody, { childList: true, subtree: true });
   }
 
-  loadScript("crm-core.js?v=20260917-employee-1", function () {
+  loadScript("crm-core.js?v=20260917-ops-2", function () {
     installInternalCommentOnlyBehavior();
     installLeadRenderNormalizer();
     installSaveCustomerCommentPreserver();
     installSafeLeadDelete();
 
     loadScript("venue-media-manager.js?v=20260904-hd30-1", function () {
-      loadScript("crm-hotfix-20260909.js?v=crm-final-layout-3", function () {
+      loadScript("crm-hotfix-20260909.js?v=20260917-ops-2", function () {
         installVenueTablePolish();
         installLeadDetailsWatcher();
         prepareLoadedLeadCustomerMeta();

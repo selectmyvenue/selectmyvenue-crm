@@ -44,12 +44,12 @@
     ====================================================== -->
 
     <script
-        src="crm.js?v=20260917-employee-1"
+        src="crm.js?v=20260917-ops-2"
         defer
     ></script>
 
-    <script defer src="crm-employee-integration.js?v=20260917-1"></script>
-<link rel="stylesheet" href="crm-branding.css?v=20260917-proportional-logo-2"></head>
+    <script defer src="crm-employee-integration.js?v=20260917-ops-2"></script>
+<link rel="stylesheet" href="crm-branding.css?v=20260917-proportional-logo-2"><link rel="stylesheet" href="crm-workspace.css?v=20260917-ops-2"></head>
 
 
 <!-- Stage 7B.3: Final Action + Comment Polish -->
@@ -549,6 +549,18 @@
                  TABLE
             ================================================== -->
 
+            <div id="leadWorkViews" class="lead-work-views" aria-label="Lead work queues">
+                <button type="button" data-work-view="all" aria-pressed="false">All leads <span>0</span></button>
+                <button type="button" data-work-view="new" aria-pressed="false">New enquiries <span>0</span></button>
+                <button type="button" data-work-view="today" aria-pressed="false">Follow-ups today <span>0</span></button>
+                <button type="button" data-work-view="overdue" aria-pressed="false">Overdue <span>0</span></button>
+                <button type="button" data-work-view="unscheduled" aria-pressed="false">No follow-up <span>0</span></button>
+                <button type="button" data-work-view="unassigned" aria-pressed="false">No employee assigned <span>0</span></button>
+            </div>
+            <div class="lead-pagination">
+                <span id="leadPageLabel" aria-live="polite"></span>
+                <div><button id="leadPreviousPage" type="button">Previous</button><button id="leadNextPage" type="button">Next</button></div>
+            </div>
             <div class="table-wrapper">
 
                 <table class="leads-table">
@@ -1278,11 +1290,7 @@
                         ASSIGNED TO
                     </label>
 
-                    <input
-                        type="text"
-                        id="detailAssignedTo"
-                        placeholder="Employee UUID"
-                    >
+                    <select id="detailAssignedTo" disabled><option value="">Loading employees…</option></select>
 
                 </div>
 
@@ -1774,12 +1782,7 @@
                             ASSIGNED TO
                         </label>
 
-                        <input
-                            type="text"
-                            id="newAssignedTo"
-                            name="assigned_to"
-                            placeholder="Employee UUID"
-                        >
+                        <select id="newAssignedTo" name="assigned_to" disabled><option value="">Loading employees…</option></select>
 
                     </div>
 

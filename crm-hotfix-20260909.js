@@ -65,7 +65,8 @@
       if (!cell) return;
       const raw = cell.dataset.smvSourceRaw || (cell.textContent || "").trim();
       if (!raw || raw === "—") return;
-      const short = compactSource(raw);
+      // Keep the same label as crm-base.js: conflicting labels create an observer loop.
+      const short = /^website\b/i.test(raw) ? "Website" : compactSource(raw);
       const existing = cell.querySelector(".smv-compact-source");
       if (cell.dataset.smvSourceRaw === raw && existing && existing.textContent === short) return;
       cell.dataset.smvSourceRaw = raw;
