@@ -2805,6 +2805,17 @@ function populateLeadModal(
         lead.contact_remark ||
         ""
     );
+    setControl("#detailPreferredCity", lead.preferred_city || "");
+    setControl("#detailPreferredArea", lead.preferred_area || "");
+    setControl("#detailVenueTypePref", lead.venue_type_preference || "");
+    setControl("#detailBudget", lead.budget_per_person ?? "");
+    setControl("#detailRoomsRequired", lead.rooms_required ?? "");
+    setControl("#detailFoodPref", lead.food_preference || "");
+    const setReqCheck=(id,value)=>{const el=document.getElementById(id);if(el)el.checked=value===true;};
+    setReqCheck("detailParkingRequired",lead.parking_required);
+    setReqCheck("detailOutdoorPreferred",lead.outdoor_preferred);
+    setReqCheck("detailIndoorPreferred",lead.indoor_preferred);
+
 
     ensureSourceSelect(
         "#detailSource",
@@ -3219,6 +3230,19 @@ async function saveModalChanges() {
             remarks.value.trim() ||
             null;
     }
+
+    const reqVal=id=>safeValue(document.getElementById(id)?.value).trim();
+    const reqChecked=id=>Boolean(document.getElementById(id)?.checked);
+    data.preferred_city=reqVal("detailPreferredCity")||null;
+    data.preferred_area=reqVal("detailPreferredArea")||null;
+    data.venue_type_preference=reqVal("detailVenueTypePref")||null;
+    data.budget_per_person=reqVal("detailBudget")?Number(reqVal("detailBudget")):null;
+    data.rooms_required=reqVal("detailRoomsRequired")?Number(reqVal("detailRoomsRequired")):null;
+    data.food_preference=reqVal("detailFoodPref")||null;
+    data.parking_required=reqChecked("detailParkingRequired");
+    data.outdoor_preferred=reqChecked("detailOutdoorPreferred");
+    data.indoor_preferred=reqChecked("detailIndoorPreferred");
+    data.requirements_structured={city:data.preferred_city,area:data.preferred_area,venue_type:data.venue_type_preference,budget_per_person:data.budget_per_person,rooms:data.rooms_required,food:data.food_preference,parking:data.parking_required,outdoor:data.outdoor_preferred,indoor:data.indoor_preferred};
 
     try {
 
