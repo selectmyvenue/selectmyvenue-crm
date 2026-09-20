@@ -170,3 +170,5 @@ body:has(#leadModal:not([hidden])){overflow:auto!important}
 /* EXPANDED CUSTOMER DETAILS WORKSPACE 20260921 */
 @media(min-width:1180px){#leadModal .lead-modal-card{width:min(1040px,70vw)!important}#leadModal .lead-detail-grid,#leadModal .details-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important}}
 @media(max-width:760px){#leadModal .lead-modal-card{width:calc(100vw - 18px)!important;min-width:0!important;min-height:0!important;max-height:calc(100vh - 20px)!important;resize:none!important}}
+
+.smv-assistant-foot{font-size:9px;color:#718781;padding:2px 3px 0;text-align:right;font-weight:700}
