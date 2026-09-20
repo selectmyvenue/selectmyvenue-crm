@@ -48,3 +48,23 @@ window.startEmployeeIntegration=async function(client){
 })();
 
 (function(){const KEY='smvVenueDraftV1';let timer,restoring=false;const modal=()=>document.getElementById('venueModal'),form=()=>document.getElementById('venueForm')||modal()?.querySelector('form');function save(){if(restoring||!modal()||modal().hidden)return;const d={};form()?.querySelectorAll('input:not([type=file]),select,textarea').forEach(e=>{if(!e.id&&!e.name)return;d[e.id||e.name]=(e.type==='checkbox'||e.type==='radio')?e.checked:e.value;});try{localStorage.setItem(KEY,JSON.stringify(d));}catch(_){}}function restore(){let d;try{d=JSON.parse(localStorage.getItem(KEY)||'null');}catch(_){}if(!d||document.getElementById('venueId')?.value)return;restoring=true;Object.entries(d).forEach(([k,v])=>{const e=document.getElementById(k);if(!e)return;if(e.type==='checkbox'||e.type==='radio')e.checked=!!v;else if(!e.value)e.value=v;});restoring=false;}document.addEventListener('input',e=>{if(e.target.closest?.('#venueModal')){clearTimeout(timer);timer=setTimeout(save,350);}},true);document.addEventListener('change',e=>{if(e.target.closest?.('#venueModal'))save();},true);document.addEventListener('click',e=>{const m=modal();if(!m||m.hidden)return;if(e.target===m){e.preventDefault();e.stopImmediatePropagation();}},true);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal()&&!modal().hidden){e.preventDefault();e.stopImmediatePropagation();}},true);const watch=()=>{const m=modal();if(m)new MutationObserver(()=>{if(!m.hidden)setTimeout(restore,50);}).observe(m,{attributes:true,attributeFilter:['hidden']});};document.readyState==='loading'?document.addEventListener('DOMContentLoaded',watch):watch();window.addEventListener('beforeunload',save);})();
+/* Categorized quick tools: UI-only; existing CRM handlers remain authoritative. */
+(function(){
+ function click(sel){const e=document.querySelector(sel);if(e)e.click();}
+ function init(){
+  if(document.getElementById('smvToolStrip'))return;
+  const heading=document.querySelector('.page-heading');if(!heading)return;
+  const bar=document.createElement('div');bar.id='smvToolStrip';bar.setAttribute('aria-label','CRM activity tools');
+  bar.innerHTML='<button type="button" data-tool="enquiries">☷<br>Customer Enquiries</button><button type="button" data-tool="assignment">⇄<br>Assignment Hub</button><button type="button" data-tool="venues">⌂<br>Venue Management</button><button type="button" data-tool="followups">◷<br>Follow-ups</button><button type="button" data-tool="team">♙<br>Team / Employee</button><button type="button" data-tool="reports">▥<br>Reports / Analytics</button>';
+  heading.insertAdjacentElement('afterend',bar);
+  bar.addEventListener('click',function(e){const b=e.target.closest('button');if(!b)return;const t=b.dataset.tool;
+   if(t==='enquiries'){click('#backToLeadsBtn');document.querySelector('.leads-section')?.scrollIntoView({behavior:'smooth',block:'start'});}
+   else if(t==='venues')click('#venueManagementBtn');
+   else if(t==='assignment'){const first=document.querySelector('#leadsTableBody .venue-assign-btn,#leadsTableBody [data-action="assign-venue"]');if(first)first.click();else document.querySelector('.leads-section')?.scrollIntoView({behavior:'smooth'});}
+   else if(t==='followups'){const f=document.querySelector('#leadWorkViews [data-simple-status="follow-up"]');if(f)f.click();}
+   else if(t==='team'){const el=document.querySelector('#employeeFilter,#assignedToFilter');if(el){el.focus();el.scrollIntoView({behavior:'smooth',block:'center'});}}
+   else if(t==='reports'){const el=document.querySelector('.network-insights');if(el){click('#venueManagementBtn');setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),100);}}
+  });
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,900));else setTimeout(init,900);
+})();
