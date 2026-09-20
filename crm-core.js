@@ -1980,6 +1980,30 @@ function openCommentEditor(
         overlay
     );
 
+    /* Non-blocking draggable comment editor: keep all enquiry rows visible and usable. */
+    overlay.classList.add("smv-comment-nonblocking");
+    const card=overlay.querySelector(".crm-floating-card");
+    const dragHandle=card?.querySelector("div");
+    if(card&&dragHandle){
+        dragHandle.classList.add("smv-comment-drag-handle");
+        dragHandle.title="Drag comment box";
+        let dragging=false,dx=0,dy=0;
+        dragHandle.addEventListener("mousedown",event=>{
+            if(event.target.closest("button,input,textarea,select,a"))return;
+            const rect=card.getBoundingClientRect();
+            dragging=true;dx=event.clientX-rect.left;dy=event.clientY-rect.top;
+            card.style.position="fixed";card.style.left=rect.left+"px";card.style.top=rect.top+"px";card.style.margin="0";
+            card.classList.add("smv-dragging");event.preventDefault();
+        });
+        document.addEventListener("mousemove",event=>{
+            if(!dragging)return;
+            const left=Math.max(0,Math.min(window.innerWidth-card.offsetWidth,event.clientX-dx));
+            const top=Math.max(55,Math.min(window.innerHeight-100,event.clientY-dy));
+            card.style.left=left+"px";card.style.top=top+"px";
+        });
+        document.addEventListener("mouseup",()=>{if(dragging){dragging=false;card.classList.remove("smv-dragging");}});
+    }
+
     const close =
         () => overlay.remove();
 
