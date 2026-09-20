@@ -5225,6 +5225,16 @@ function openVenueModal(venue = null) {
         "venueDecoration",
         venue?.decoration_available === true
     );
+    setVenueField("venueRoomCount", venue?.room_count);
+    setVenueField("venueParkingCapacity", venue?.parking_capacity);
+    setVenueField("venueEventTypes", Array.isArray(venue?.event_types) ? venue.event_types.join(", ") : venue?.event_types);
+    setVenueField("venueFacilities", Array.isArray(venue?.facilities) ? venue.facilities.join(", ") : venue?.facilities);
+    setVenueField("venueMatchingNotes", venue?.matching_notes);
+    setVenueChecked("venueIndoor", venue?.indoor_available === true);
+    setVenueChecked("venueOutdoor", venue?.outdoor_available === true);
+    setVenueChecked("venueAlcohol", venue?.alcohol_allowed === true);
+    setVenueChecked("venueOutsideCatering", venue?.outside_catering_allowed === true);
+
 
     setVenueChecked(
         "venueFeatured",
@@ -5842,6 +5852,16 @@ function getVenueFormData() {
 
         decoration_available:
             checked("venueDecoration"),
+
+        room_count: numberOrNull("venueRoomCount"),
+        parking_capacity: numberOrNull("venueParkingCapacity"),
+        event_types: safeValue(document.getElementById("venueEventTypes")?.value).split(",").map(v=>v.trim()).filter(Boolean),
+        facilities: safeValue(document.getElementById("venueFacilities")?.value).split(",").map(v=>v.trim()).filter(Boolean),
+        matching_notes: safeValue(document.getElementById("venueMatchingNotes")?.value).trim() || null,
+        indoor_available: checked("venueIndoor"),
+        outdoor_available: checked("venueOutdoor"),
+        alcohol_allowed: checked("venueAlcohol"),
+        outside_catering_allowed: checked("venueOutsideCatering"),
 
         website_url:
             safeValue(
