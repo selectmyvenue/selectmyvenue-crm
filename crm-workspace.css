@@ -71,3 +71,14 @@ body .crm-app .leads-table td{overflow-wrap:anywhere;white-space:normal}
 .crm-nav a,.crm-nav button,.crm-top-nav a,.crm-top-nav button,#venueManagementBtn{border-radius:12px!important;border:1px solid #b9d9d2!important;background:linear-gradient(180deg,#fff,#f5faf9)!important;color:#174f48!important;font-weight:850!important;box-shadow:0 4px 12px rgba(6,78,69,.05)!important}
 .crm-nav .active,.crm-top-nav .active,.crm-nav a[aria-current="page"],.crm-top-nav a[aria-current="page"]{background:linear-gradient(135deg,#dff4ee,#edf9f6)!important;border-color:#9dcfc3!important;color:#075f54!important}
 #venueManagementBtn{padding-left:14px!important;padding-right:14px!important}
+
+/* FIX ALL LEADS ACTIVE CONTRAST 20260920 */
+/* Keep All Leads label/count readable in both active and inactive states. */
+#leadWorkViews button[data-simple-status="all"]{background:linear-gradient(135deg,#075f58,#0a8d7e)!important;border-color:#075f58!important;color:#fff!important}
+#leadWorkViews button[data-simple-status="all"] .smv-filter-label,
+#leadWorkViews button[data-simple-status="all"] span,
+#leadWorkViews button[data-simple-status="all"] strong{color:#fff!important;opacity:1!important;visibility:visible!important}
+#leadWorkViews button[data-simple-status="all"][aria-pressed="true"]{background:linear-gradient(135deg,#043f3b,#087f74)!important;border-color:#043f3b!important;color:#fff!important}
+#leadWorkViews button[data-simple-status="all"][aria-pressed="true"] .smv-filter-label,
+#leadWorkViews button[data-simple-status="all"][aria-pressed="true"] span,
+#leadWorkViews button[data-simple-status="all"][aria-pressed="true"] strong{color:#fff!important;opacity:1!important;visibility:visible!important}
