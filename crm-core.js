@@ -7148,7 +7148,7 @@ function showAssignmentMessage(message, type = "") {
     element.className = `form-message ${type ? `assignment-${type}` : ""}`.trim();
 }
 
-async function saveVenueAssignments() {
+async function saveVenueAssignments(options = {}) {
     const client = getSupabaseClient();
     const saveButton = document.getElementById("saveVenueAssignment");
 
@@ -7249,6 +7249,7 @@ async function saveVenueAssignments() {
                 "info"
             );
         }
+        return { ok: true, selected, created: rows.map(row => row.venue_id), lead: assignmentCurrentLead };
     }
     catch (error) {
         console.error("Venue assignment save error:", error);
@@ -7256,6 +7257,7 @@ async function saveVenueAssignments() {
             error.message || "Unable to assign venues.",
             "error"
         );
+        return { ok: false, error };
     }
     finally {
         if (saveButton) {
