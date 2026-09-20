@@ -4260,6 +4260,10 @@ function formatStatus(
         return "New";
     }
 
+    if (String(status).toLowerCase() === "converted") {
+        return "Call Back";
+    }
+
     return String(status)
         .replace(
             /[-_]/g,
