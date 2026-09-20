@@ -47,3 +47,27 @@ body .crm-app .leads-table td{overflow-wrap:anywhere;white-space:normal}
 .venue-assign-btn:hover,[data-action="assign-venue"]:hover,button[title*="Assign"]:hover,.assign-btn:hover{transform:translateY(-1px)!important;box-shadow:0 8px 17px rgba(8,127,116,.24)!important}
 @media(max-width:1200px){#leadWorkViews.lead-work-views{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
 @media(max-width:760px){#leadWorkViews.lead-work-views{grid-template-columns:repeat(2,minmax(0,1fr))!important}.page-heading{padding-top:12px!important}}
+
+/* SMV PREMIUM HEADER + DARK FILTER CARDS 20260920 */
+/* Visual-only polish requested after premium lead command update. */
+#leadWorkViews button:nth-child(1){background:linear-gradient(135deg,#075f58,#0a8d7e)!important;border-color:#075f58!important;color:#fff!important;box-shadow:0 7px 18px rgba(7,95,88,.20)!important}
+#leadWorkViews button:nth-child(1) span,#leadWorkViews button:nth-child(1) strong{color:#fff!important}
+#leadWorkViews button:nth-child(2){background:linear-gradient(135deg,#d9effa,#edf9ff)!important;border-color:#87bfd9!important;color:#07566f!important}
+#leadWorkViews button:nth-child(3){background:linear-gradient(135deg,#dff6e8,#f2fff6)!important;border-color:#87cfa3!important;color:#12683c!important}
+#leadWorkViews button:nth-child(4){background:linear-gradient(135deg,#ffe2e2,#fff3f3)!important;border-color:#e8a4a4!important;color:#8b3535!important}
+#leadWorkViews button:nth-child(5){background:linear-gradient(135deg,#ffedbf,#fff8e5)!important;border-color:#dfbd62!important;color:#72570c!important}
+#leadWorkViews button:nth-child(6){background:linear-gradient(135deg,#e8ddfb,#f7f1ff)!important;border-color:#bca5df!important;color:#58417f!important}
+#leadWorkViews button:nth-child(7){background:linear-gradient(135deg,#ccefe8,#ebfbf7)!important;border-color:#65beaD!important;color:#075b50!important}
+#leadWorkViews button[aria-pressed=true]{background:linear-gradient(135deg,#043f3b,#087f74)!important;border-color:#043f3b!important;color:#fff!important;box-shadow:0 9px 22px rgba(4,63,59,.26)!important}
+#leadWorkViews button[aria-pressed=true] span,#leadWorkViews button[aria-pressed=true] strong{color:#fff!important}
+.crm-header{background:linear-gradient(100deg,#ffffff 0%,#fbfffe 54%,#f2faf7 100%)!important;border-bottom:1px solid #cfe5df!important;box-shadow:0 5px 18px rgba(5,82,73,.075)!important}
+.crm-header .crm-header-title{color:#064d45!important;font-weight:850!important;letter-spacing:-.02em!important}
+.crm-header-actions{gap:8px!important}
+.crm-header-actions>a,.crm-header-actions>button,.crm-header-actions .account-password-btn,.crm-header-actions .logout-btn{min-height:38px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;padding:0 13px!important;border:1px solid #bcdcd4!important;border-radius:12px!important;background:linear-gradient(180deg,#fff,#f4faf8)!important;color:#164f48!important;font-weight:800!important;box-shadow:0 4px 12px rgba(6,78,69,.055)!important;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease!important}
+.crm-header-actions>a:hover,.crm-header-actions>button:hover,.crm-header-actions .account-password-btn:hover,.crm-header-actions .logout-btn:hover{transform:translateY(-1px)!important;border-color:#6ebbad!important;background:#eaf8f4!important;box-shadow:0 7px 16px rgba(6,91,80,.11)!important}
+.crm-header-actions span{font-weight:700!important}
+.crm-header-actions span:first-child{color:#078878!important}
+.crm-nav,.crm-top-nav{gap:8px!important}
+.crm-nav a,.crm-nav button,.crm-top-nav a,.crm-top-nav button,#venueManagementBtn{border-radius:12px!important;border:1px solid #b9d9d2!important;background:linear-gradient(180deg,#fff,#f5faf9)!important;color:#174f48!important;font-weight:850!important;box-shadow:0 4px 12px rgba(6,78,69,.05)!important}
+.crm-nav .active,.crm-top-nav .active,.crm-nav a[aria-current="page"],.crm-top-nav a[aria-current="page"]{background:linear-gradient(135deg,#dff4ee,#edf9f6)!important;border-color:#9dcfc3!important;color:#075f54!important}
+#venueManagementBtn{padding-left:14px!important;padding-right:14px!important}
