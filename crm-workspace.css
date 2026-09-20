@@ -82,3 +82,20 @@ body .crm-app .leads-table td{overflow-wrap:anywhere;white-space:normal}
 #leadWorkViews button[data-simple-status="all"][aria-pressed="true"] .smv-filter-label,
 #leadWorkViews button[data-simple-status="all"][aria-pressed="true"] span,
 #leadWorkViews button[data-simple-status="all"][aria-pressed="true"] strong{color:#fff!important;opacity:1!important;visibility:visible!important}
+
+/* FIX ALL ACTIVE FILTER CARD CONTRAST 20260920 */
+/* Every selected lead filter uses the same readable premium state as All Leads. */
+#leadWorkViews button[data-simple-status][aria-pressed="true"]{
+ background:linear-gradient(135deg,#043f3b,#087f74)!important;
+ border-color:#043f3b!important;
+ color:#fff!important;
+ box-shadow:0 9px 22px rgba(4,63,59,.26)!important;
+}
+#leadWorkViews button[data-simple-status][aria-pressed="true"] .smv-filter-label,
+#leadWorkViews button[data-simple-status][aria-pressed="true"] span,
+#leadWorkViews button[data-simple-status][aria-pressed="true"] strong{
+ color:#fff!important;
+ opacity:1!important;
+ visibility:visible!important;
+ -webkit-text-fill-color:#fff!important;
+}
