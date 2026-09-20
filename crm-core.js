@@ -2574,8 +2574,9 @@ function openLeadModal(
     modal.hidden =
         false;
 
+    /* Keep the enquiry table scrollable/visible behind the non-blocking details panel. */
     document.body.style.overflow =
-        "hidden";
+        "auto";
 
     applyPremiumModalEnhancement(
         modal,
