@@ -10,3 +10,40 @@ body .crm-app .table-wrapper{overflow-x:auto!important}
 body .crm-app .leads-table td{overflow-wrap:anywhere;white-space:normal}
 @media(max-width:1000px){body .crm-app .leads-table{min-width:1050px!important}.lead-work-views{padding:10px}.lead-pagination{padding:10px}}
 @media(max-width:760px){body .crm-app .filter-bar{grid-template-columns:minmax(0,1fr)!important}body .crm-app .filter-workspace-note{justify-content:flex-start!important}body .crm-app .venue-toolbar{grid-template-columns:minmax(0,1fr)!important}}
+
+/* SMV PREMIUM LEAD COMMAND 20260920 */
+/* Visual polish only: no workflow/data behavior changed. */
+.crm-header{border-bottom:1px solid rgba(8,127,116,.12)!important;box-shadow:0 3px 18px rgba(5,79,72,.06)!important}
+.crm-main{background:linear-gradient(180deg,#f3fbf8 0,#f8fcfb 230px,#fff 520px)!important}
+.page-heading{padding-top:22px!important}
+.page-kicker{color:#52746f!important;letter-spacing:.16em!important}
+.page-heading h1{letter-spacing:-.035em!important;color:#073f39!important}
+.page-heading h1 span,.page-heading h1 strong{color:#079783!important}
+.heading-actions button,.heading-actions a{border-radius:12px!important;box-shadow:0 3px 10px rgba(4,92,81,.05)!important}
+.heading-actions .primary-btn,.heading-actions button.primary-btn{background:linear-gradient(135deg,#0aa88f,#078775)!important;border-color:#078775!important;box-shadow:0 8px 18px rgba(7,135,117,.18)!important}
+.filter-bar{background:rgba(255,255,255,.88)!important;border:1px solid #d7eae5!important;border-radius:16px 16px 0 0!important;box-shadow:0 10px 30px rgba(6,83,74,.055)!important;padding:10px 12px!important}
+.search-box{border-color:#cfe4df!important;border-radius:12px!important;background:#fff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.8)!important}
+#statusFilter{border-color:#cfe4df!important;border-radius:12px!important;background:#fff!important}
+.filter-workspace-note{font-weight:700!important;color:#496a65!important}
+#leadWorkViews.lead-work-views{display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:8px!important;padding:9px 12px 10px!important;background:#fff!important;border-left:1px solid #d7eae5!important;border-right:1px solid #d7eae5!important}
+#leadWorkViews button{min-height:58px!important;border-radius:13px!important;padding:8px 12px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;font-size:11px!important;font-weight:800!important;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease!important;box-shadow:0 4px 13px rgba(11,83,74,.055)!important}
+#leadWorkViews button span{margin:0!important;line-height:1.15!important}
+#leadWorkViews button strong{font-size:20px!important;line-height:1!important}
+#leadWorkViews button:nth-child(1){background:linear-gradient(135deg,#e9f8f4,#f7fffd)!important;border-color:#9bd8ca!important;color:#075f54!important}
+#leadWorkViews button:nth-child(2){background:linear-gradient(135deg,#e8f5ff,#f7fbff)!important;border-color:#b9dcef!important;color:#165f7a!important}
+#leadWorkViews button:nth-child(3){background:linear-gradient(135deg,#eafaf0,#f8fff9)!important;border-color:#b9e4c8!important;color:#176d42!important}
+#leadWorkViews button:nth-child(4){background:linear-gradient(135deg,#fff0f0,#fffafa)!important;border-color:#efc7c7!important;color:#984747!important}
+#leadWorkViews button:nth-child(5){background:linear-gradient(135deg,#fff6df,#fffdf6)!important;border-color:#ead6a1!important;color:#81651d!important}
+#leadWorkViews button:nth-child(6){background:linear-gradient(135deg,#f3efff,#fcfaff)!important;border-color:#d8ccef!important;color:#66518c!important}
+#leadWorkViews button:nth-child(7){background:linear-gradient(135deg,#dff7f2,#f5fffc)!important;border-color:#8ed4c5!important;color:#075f54!important}
+#leadWorkViews button:hover{transform:translateY(-2px)!important;box-shadow:0 8px 20px rgba(8,105,92,.11)!important}
+#leadWorkViews button[aria-pressed=true]{background:linear-gradient(135deg,#087f74,#0aa58f)!important;color:#fff!important;border-color:#087f74!important;box-shadow:0 8px 20px rgba(8,127,116,.22)!important}
+#leadWorkViews button[aria-pressed=true] strong{color:#fff!important}
+.lead-pagination{background:#fff!important;border:1px solid #d7eae5!important;border-top:0!important;border-radius:0 0 16px 16px!important;padding:9px 12px!important}
+.lead-pagination button{border-radius:10px!important;background:#fff!important}.lead-pagination button:not(:disabled):hover{background:#eaf8f4!important;border-color:#9fd7ca!important;color:#087f74!important}
+.leads-table thead th{background:#edf7f4!important;color:#42665f!important;border-bottom-color:#cfe3de!important}
+.leads-table tbody tr:hover td{background:#f5fbf9!important}
+.venue-assign-btn,[data-action="assign-venue"],button[title*="Assign"],.assign-btn{border:1px solid #087f74!important;border-radius:10px!important;background:linear-gradient(135deg,#087f74,#0aa58f)!important;color:#fff!important;font-weight:800!important;box-shadow:0 5px 13px rgba(8,127,116,.18)!important;transition:transform .16s ease,box-shadow .16s ease!important}
+.venue-assign-btn:hover,[data-action="assign-venue"]:hover,button[title*="Assign"]:hover,.assign-btn:hover{transform:translateY(-1px)!important;box-shadow:0 8px 17px rgba(8,127,116,.24)!important}
+@media(max-width:1200px){#leadWorkViews.lead-work-views{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media(max-width:760px){#leadWorkViews.lead-work-views{grid-template-columns:repeat(2,minmax(0,1fr))!important}.page-heading{padding-top:12px!important}}
