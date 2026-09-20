@@ -122,3 +122,11 @@ body:has(#leadModal:not([hidden])){overflow:auto!important}
 #leadModal.smv-panel-left .lead-modal-card{margin-left:0!important;margin-right:auto!important}
 .smv-move-panel{margin-left:auto}
 @media(max-width:760px){#leadModal .lead-modal-card{resize:none!important;min-width:0!important}.smv-move-panel{display:none!important}}
+
+/* SMART MATCHING COLLAPSIBLE PANELS 20260921 */
+.smv-match-details{margin:12px 0;border:1px solid #cfe5df;border-radius:12px;background:#fbfefd;padding:0}
+.smv-match-details>summary{cursor:pointer;list-style:none;padding:11px 14px;font-size:11px;font-weight:900;color:#086b5b;display:flex;gap:9px;align-items:center}
+.smv-match-details>summary span{font-weight:650;color:#67817b;margin-left:auto}
+.smv-match-details[open]{padding:0 14px 14px;box-shadow:0 8px 24px rgba(0,80,65,.05)}
+.smv-match-details[open]>summary{margin:0 -14px 12px;padding:11px 14px;border-bottom:1px solid #e2efeb}
+@media(max-width:760px){.smv-match-details>summary span{display:none}}
