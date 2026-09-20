@@ -2790,6 +2790,15 @@ function populateLeadModal(
         ""
     );
 
+    const detailVenueControl = document.querySelector("#detailVenue");
+    if (detailVenueControl?.tagName === "SELECT") {
+        const currentLocation = safeValue(lead.location).trim();
+        if (currentLocation && !Array.from(detailVenueControl.options).some(option => option.value === currentLocation)) {
+            const legacyLocation = new Option(currentLocation + " (existing)", currentLocation);
+            legacyLocation.dataset.legacy = "true";
+            detailVenueControl.add(legacyLocation);
+        }
+    }
     setControl(
         "#detailVenue",
         lead.location ||
@@ -3327,6 +3336,7 @@ async function saveModalChanges() {
         showToast(
             "Enquiry updated successfully."
         );
+        return { ok: true, lead: currentLead, leadId };
 
     }
     catch (error) {
@@ -3341,6 +3351,7 @@ async function saveModalChanges() {
             "Unable to save enquiry.",
             "error"
         );
+        return { ok: false, error, leadId };
     }
 }
 
