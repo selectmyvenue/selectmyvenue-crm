@@ -144,3 +144,11 @@ body:has(#leadModal:not([hidden])){overflow:auto!important}
 #commentEditorOverlay .smv-comment-drag-handle{cursor:grab!important;user-select:none!important}
 #commentEditorOverlay .crm-floating-card.smv-dragging{cursor:grabbing!important;box-shadow:0 25px 70px rgba(4,52,47,.32)!important}
 @media(max-width:760px){#commentEditorOverlay.smv-comment-nonblocking{background:rgba(3,32,29,.12)!important;pointer-events:auto!important}#commentEditorOverlay.smv-comment-nonblocking>.crm-floating-card{left:10px!important;right:10px!important;top:75px!important;width:auto!important}}
+
+/* CUSTOMER WORKSPACE NON-BLOCKING PANELS 20260921 */
+@media(min-width:761px){
+ #leadModal.modal-overlay{position:fixed!important;inset:0!important;background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;pointer-events:none!important;overflow:visible!important}
+ #leadModal .lead-modal-card{pointer-events:auto!important;position:fixed!important;right:18px;top:76px;width:min(720px,48vw)!important;max-height:calc(100vh - 94px)!important;overflow:auto!important;resize:both!important}
+ #leadModal .smv-lead-drag-handle{cursor:grab!important;user-select:none!important;position:sticky;top:0;z-index:5;background:inherit}
+ #leadModal .lead-modal-card.smv-dragging{cursor:grabbing!important;box-shadow:0 26px 70px rgba(4,52,47,.32)!important}
+}
