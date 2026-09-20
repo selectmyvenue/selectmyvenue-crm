@@ -189,3 +189,6 @@ body:has(#leadModal:not([hidden])){overflow:auto!important}
 
 /* REQUIREMENT CONFLICT VISIBILITY 20260921 */
 .smv-conflict-note{display:flex;align-items:flex-start;gap:7px;margin:-2px 0 7px;padding:6px 8px;border:1px solid #f0c7bd;border-left:3px solid #b94d37;background:#fff7f4;border-radius:7px}.smv-conflict-note b{font-size:9px;color:#963c2a;white-space:nowrap}.smv-conflict-note span{font-size:9px;color:#79574f;line-height:1.35}
+
+/* MATCH TIERS 20260921 */
+.smv-match-tier-controls{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 9px}.smv-match-tier-controls button{border:1px solid #d6e7e2;background:#fff;color:#4d6962;border-radius:16px;padding:5px 10px;font-size:9px;font-weight:800;cursor:pointer}.smv-match-tier-controls button.active{background:#0b725d;color:#fff;border-color:#0b725d}.smv-match-score{font-size:8px;font-weight:800;background:#f4f6f5;color:#66766f;border-radius:10px;padding:3px 6px}.smv-match-low{font-size:8px;font-weight:800;background:#fff0ec;color:#a44834;border-radius:10px;padding:3px 6px}
