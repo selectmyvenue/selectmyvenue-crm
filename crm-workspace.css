@@ -176,3 +176,5 @@ body:has(#leadModal:not([hidden])){overflow:auto!important}
 /* MATCHING DATA QUALITY 20260921 */
 .smv-match-quality{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-1px 0 7px;padding:6px 8px;border-radius:8px;background:#eef8f5;border:1px solid #d6ebe5}
 .smv-match-quality b{font-size:10px;color:#075f51;white-space:nowrap}.smv-match-quality span{font-size:9px;color:#667e78;text-align:right}
+
+.smv-inferred-note{margin:-2px 0 7px;padding:5px 8px;border-left:3px solid #d5b15f;background:#fffaf0;border-radius:6px;font-size:9px;color:#765d24;font-weight:700}
