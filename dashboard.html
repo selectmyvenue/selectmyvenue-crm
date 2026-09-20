@@ -1165,8 +1165,19 @@
                     <input
                         type="text"
                         id="detailVenue"
-                        placeholder="Venue or location"
+                        list="smvLocationOptions"
+                        placeholder="Select or type location"
+                        autocomplete="off"
                     >
+                    <datalist id="smvLocationOptions">
+                        <option value="Delhi"></option>
+                        <option value="Delhi NCR"></option>
+                        <option value="Gurgaon"></option>
+                        <option value="Noida"></option>
+                        <option value="Greater Noida"></option>
+                        <option value="Faridabad"></option>
+                        <option value="Ghaziabad"></option>
+                    </datalist>
 
                 </div>
 
