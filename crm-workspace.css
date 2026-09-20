@@ -148,7 +148,7 @@ body:has(#leadModal:not([hidden])){overflow:auto!important}
 /* CUSTOMER WORKSPACE NON-BLOCKING PANELS 20260921 */
 @media(min-width:761px){
  #leadModal.modal-overlay{position:fixed!important;inset:0!important;background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;pointer-events:none!important;overflow:visible!important}
- #leadModal .lead-modal-card{pointer-events:auto!important;position:fixed!important;right:18px;top:76px;width:min(720px,48vw)!important;max-height:calc(100vh - 94px)!important;overflow:auto!important;resize:both!important}
+ #leadModal .lead-modal-card{pointer-events:auto!important;position:fixed!important;right:18px;top:66px;width:min(940px,66vw)!important;min-width:min(760px,60vw)!important;max-width:calc(100vw - 36px)!important;height:auto!important;min-height:70vh!important;max-height:calc(100vh - 82px)!important;overflow:auto!important;resize:both!important}
  #leadModal .smv-lead-drag-handle{cursor:grab!important;user-select:none!important;position:sticky;top:0;z-index:5;background:inherit}
  #leadModal .lead-modal-card.smv-dragging{cursor:grabbing!important;box-shadow:0 26px 70px rgba(4,52,47,.32)!important}
 }
@@ -166,3 +166,7 @@ body:has(#leadModal:not([hidden])){overflow:auto!important}
 #smvAssistantViewAll{border:0;background:transparent;color:#08705d;font-size:10px;font-weight:900;cursor:pointer}
 #smvAssistantBody{display:grid;gap:5px}.smv-assistant-row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid #e2efeb;border-radius:9px;padding:7px 9px}
 .smv-assistant-row>div{display:flex;min-width:0;flex-direction:column}.smv-assistant-row strong{font-size:11px;color:#163f38;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.smv-assistant-row span{font-size:9px;color:#758b86}.smv-assistant-row>b{font-size:10px;color:#08705d;white-space:nowrap}
+
+/* EXPANDED CUSTOMER DETAILS WORKSPACE 20260921 */
+@media(min-width:1180px){#leadModal .lead-modal-card{width:min(1040px,70vw)!important}#leadModal .lead-detail-grid,#leadModal .details-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important}}
+@media(max-width:760px){#leadModal .lead-modal-card{width:calc(100vw - 18px)!important;min-width:0!important;min-height:0!important;max-height:calc(100vh - 20px)!important;resize:none!important}}
