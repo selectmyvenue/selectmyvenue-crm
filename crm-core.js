@@ -1142,7 +1142,16 @@ const email =
                     lead,
                     "location",
                     location,
-                    "text"
+                    "select",
+                    [
+                        {value:"Delhi",label:"Delhi"},
+                        {value:"Delhi NCR",label:"Delhi NCR"},
+                        {value:"Gurgaon",label:"Gurgaon"},
+                        {value:"Noida",label:"Noida"},
+                        {value:"Greater Noida",label:"Greater Noida"},
+                        {value:"Faridabad",label:"Faridabad"},
+                        {value:"Ghaziabad",label:"Ghaziabad"}
+                    ]
                 )}
             </td>
 
