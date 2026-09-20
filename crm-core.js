@@ -780,7 +780,7 @@ function getStatusOptions() {
     { value: "site-visit",    label: "Site Visit" },
     { value: "not-pick",      label: "Not Pick" },
     { value: "booked",        label: "Booked" },
-    { value: "converted",     label: "Converted" },
+    { value: "converted",     label: "Call Back" },
     { value: "closed",        label: "Closed" },
     { value: "lost",          label: "Lost" },
     { value: "not-interested",label: "Not Interested" }
