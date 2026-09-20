@@ -152,3 +152,9 @@ body:has(#leadModal:not([hidden])){overflow:auto!important}
  #leadModal .smv-lead-drag-handle{cursor:grab!important;user-select:none!important;position:sticky;top:0;z-index:5;background:inherit}
  #leadModal .lead-modal-card.smv-dragging{cursor:grabbing!important;box-shadow:0 26px 70px rgba(4,52,47,.32)!important}
 }
+
+/* SMART MATCH EXPLANATION CHIPS 20260921 */
+.smv-match-reasons{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.smv-match-chip{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:800;line-height:1.2}
+.smv-match-ok{background:#e8f7f1;color:#08705d;border:1px solid #bfe6d9}
+.smv-match-warn{background:#fff7e7;color:#8a6200;border:1px solid #f0d99a}
