@@ -130,3 +130,10 @@ body:has(#leadModal:not([hidden])){overflow:auto!important}
 .smv-match-details[open]{padding:0 14px 14px;box-shadow:0 8px 24px rgba(0,80,65,.05)}
 .smv-match-details[open]>summary{margin:0 -14px 12px;padding:11px 14px;border-bottom:1px solid #e2efeb}
 @media(max-width:760px){.smv-match-details>summary span{display:none}}
+
+/* FREE-DRAG ENQUIRY PANEL 20260921 */
+#leadModal .lead-modal-card{z-index:10001!important}
+#leadModal .lead-modal-card.smv-dragging{user-select:none!important;cursor:grabbing!important;box-shadow:0 24px 65px rgba(4,52,47,.30)!important}
+#smvMoveLeadPanel{cursor:grab!important}
+#smvMoveLeadPanel:active{cursor:grabbing!important}
+@media(min-width:761px){#leadModal:not([hidden]){width:0!important;height:0!important;right:0!important;left:auto!important;bottom:auto!important;overflow:visible!important}#leadModal .lead-modal-card{position:fixed!important;right:18px;top:82px;margin:0!important}}
