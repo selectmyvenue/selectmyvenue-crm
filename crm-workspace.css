@@ -158,3 +158,11 @@ body:has(#leadModal:not([hidden])){overflow:auto!important}
 .smv-match-chip{display:inline-flex;align-items:center;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:800;line-height:1.2}
 .smv-match-ok{background:#e8f7f1;color:#08705d;border:1px solid #bfe6d9}
 .smv-match-warn{background:#fff7e7;color:#8a6200;border:1px solid #f0d99a}
+
+/* COMPACT VENUE ASSISTANT 20260921 */
+.smv-venue-assistant{margin:8px 0 12px;border:1px solid #c9e5dd;background:#f8fcfb;border-radius:12px;padding:10px 12px}
+.smv-assistant-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}
+.smv-assistant-head>div{display:flex;flex-direction:column}.smv-assistant-head b{color:#075f51;font-size:12px}.smv-assistant-head small{font-size:10px;color:#708983}
+#smvAssistantViewAll{border:0;background:transparent;color:#08705d;font-size:10px;font-weight:900;cursor:pointer}
+#smvAssistantBody{display:grid;gap:5px}.smv-assistant-row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid #e2efeb;border-radius:9px;padding:7px 9px}
+.smv-assistant-row>div{display:flex;min-width:0;flex-direction:column}.smv-assistant-row strong{font-size:11px;color:#163f38;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.smv-assistant-row span{font-size:9px;color:#758b86}.smv-assistant-row>b{font-size:10px;color:#08705d;white-space:nowrap}
