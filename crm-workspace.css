@@ -201,3 +201,19 @@ body:has(#leadModal:not([hidden])){overflow:auto!important}
 #venueAssignmentModal .venue-assignment-item-meta{display:flex!important;flex-wrap:wrap!important;gap:5px 14px!important}
 #venueAssignmentModal .venue-assignment-item-meta span{white-space:nowrap!important}
 @media(max-width:760px){#venueAssignmentModal.modal-overlay{padding:0!important}#venueAssignmentModal .venue-assignment-card{height:100vh!important;border-radius:0!important}}
+
+
+/* PREMIUM MANUAL MATCH REVIEW 20260921 */
+#venueAssignmentModal .smv-match-tier-controls{display:block!important;margin:8px 0 12px!important;padding:12px 14px!important;border:1px solid #d5e6e1!important;border-radius:14px!important;background:linear-gradient(135deg,#f7fcfa 0%,#fff 65%)!important;box-shadow:0 8px 24px rgba(20,70,58,.07)!important}
+#venueAssignmentModal .smv-match-panel-title{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:9px}
+#venueAssignmentModal .smv-match-panel-title>div{display:grid;gap:2px}
+#venueAssignmentModal .smv-match-panel-title b{font-size:13px;color:#123f35}
+#venueAssignmentModal .smv-match-panel-title span{font-size:10px;color:#6b807a;font-weight:600}
+#venueAssignmentModal .smv-match-panel-title>strong{font-size:10px;color:#08705d;background:#e8f6f1;border:1px solid #cce9df;border-radius:16px;padding:5px 9px;white-space:nowrap}
+#venueAssignmentModal .smv-match-panel-tabs{display:flex;gap:7px;flex-wrap:wrap}
+#venueAssignmentModal .smv-match-panel-tabs button{border:1px solid #d6e7e2;background:#fff;color:#4d6962;border-radius:18px;padding:6px 11px;font-size:10px;font-weight:800;cursor:pointer}
+#venueAssignmentModal .smv-match-panel-tabs button.active{background:#0b725d;color:#fff;border-color:#0b725d;box-shadow:0 5px 14px rgba(11,114,93,.18)}
+#venueAssignmentModal .venue-assignment-item.smv-premium-match-row{border:1px solid #b9ded3!important;background:linear-gradient(100deg,#f3fbf8 0%,#fff 70%)!important;box-shadow:0 7px 20px rgba(16,101,82,.08)!important}
+#venueAssignmentModal .venue-assignment-item.smv-premium-match-row:hover{border-color:#6eb9a5!important;box-shadow:0 10px 25px rgba(16,101,82,.13)!important;transform:translateY(-1px)}
+#venueAssignmentModal .venue-assignment-item.smv-premium-match-row:has(.venue-assignment-checkbox:checked){outline:2px solid #0b725d!important;outline-offset:-2px!important;background:#eef9f5!important}
+@media(max-width:760px){#venueAssignmentModal .smv-match-panel-title{align-items:flex-start}#venueAssignmentModal .smv-match-panel-title span{display:none}}
