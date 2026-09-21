@@ -217,3 +217,18 @@ body:has(#leadModal:not([hidden])){overflow:auto!important}
 #venueAssignmentModal .venue-assignment-item.smv-premium-match-row:hover{border-color:#6eb9a5!important;box-shadow:0 10px 25px rgba(16,101,82,.13)!important;transform:translateY(-1px)}
 #venueAssignmentModal .venue-assignment-item.smv-premium-match-row:has(.venue-assignment-checkbox:checked){outline:2px solid #0b725d!important;outline-offset:-2px!important;background:#eef9f5!important}
 @media(max-width:760px){#venueAssignmentModal .smv-match-panel-title{align-items:flex-start}#venueAssignmentModal .smv-match-panel-title span{display:none}}
+
+
+/* MAXIMUM VENUE REVIEW AREA 20260922 */
+@media(min-width:761px){
+#venueAssignmentModal .venue-assignment-header{padding-top:14px!important;padding-bottom:10px!important}
+#venueAssignmentModal #smvAssignmentSummary{margin:6px 0!important}
+#venueAssignmentModal .venue-assignment-requirement{margin:6px 0!important;padding:8px 12px!important}
+#venueAssignmentModal .venue-assignment-search-row{margin:6px 0!important}
+#venueAssignmentModal .smv-match-tier-controls{margin:6px 0 8px!important;padding:8px 12px!important}
+#venueAssignmentModal .smv-match-panel-title{margin-bottom:6px!important}
+#venueAssignmentModal .venue-assignment-list{min-height:42vh!important}
+#venueAssignmentModal .venue-assignment-item{padding:9px 12px!important;margin-bottom:6px!important}
+#venueAssignmentModal .venue-assignment-item-title{margin-bottom:3px!important}
+#venueAssignmentModal .venue-assignment-actions{padding-top:8px!important;padding-bottom:8px!important}
+}
