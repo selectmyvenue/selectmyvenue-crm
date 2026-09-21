@@ -31,3 +31,5 @@
 @media(max-width:600px){.employee-page>header{padding:0 12px 10px;gap:8px}.employee-page .brand img{height:70px;width:92px}.employee-page #workspace .filters{grid-template-columns:repeat(2,minmax(0,1fr))}.employee-page .actions{margin-left:auto}.employee-page main{padding:12px}}
 
 .employee-page #workspace .edit-hint{color:#087f74;font-size:10px;margin-top:3px;max-width:900px;line-height:1.35}
+
+.employee-page #workspace .quick-edit{width:100%;min-width:0;padding:6px 5px;font-size:10px;border:1px solid #cdd9df;border-radius:6px;background:#fff;color:#183747;line-height:1.25}.employee-page #workspace .quick-edit:focus{outline:2px solid #77baae;outline-offset:1px}.employee-page #workspace .quick-edit:disabled{opacity:.55;background:#f2f5f6}
