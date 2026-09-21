@@ -6947,6 +6947,15 @@ function setupVenueAssignment() {
 
     search?.addEventListener("input", event => {
         assignmentSearch = safeValue(event.target.value).trim().toLowerCase();
+        if (assignmentSearch) {
+            const controls = document.getElementById("smvMatchTierControls");
+            if (controls) {
+                controls.dataset.tier = "all";
+                controls.querySelectorAll("[data-tier]").forEach(button => {
+                    button.classList.toggle("active", button.dataset.tier === "all");
+                });
+            }
+        }
         renderAssignmentVenues();
     });
 
