@@ -29,7 +29,8 @@
    if(seq!==sequence)return;if(error)throw error;rows=data||[];total=count||0;
    if(page>0 && page*20>=total){page=Math.max(0,Math.ceil(total/20)-1);return load();}
    el('resultCount').textContent=`${total.toLocaleString('en-IN')} matching leads`;
-   el('leadsBody').innerHTML=rows.length?rows.map(r=>`<tr><td><button class="lead-name" data-lead="${r.id}">${esc(r.customer_name)}</button></td><td><a href="tel:${esc(String(r.mobile||'').replace(/[^+0-9]/g,''))}">${esc(r.mobile||'—')}</a></td><td>${esc(r.location||'—')}</td><td>${esc(r.occasion||'—')}</td><td>${date(r.event_date)}</td><td>${esc(r.guests??'—')}</td><td><span class="pill">${esc(String(r.lost_reason_other||'').startsWith('__SMV_STATUS_NOT_PICK__')?'Not Picked':r.call_outcome)}</span></td><td><span class="pill ${['booked','converted'].includes(r.status)?'good':['lost','not-interested'].includes(r.status)?'bad':r.status==='follow-up'?'warm':''}">${esc(label(r.status))}</span></td><td><button class="text-button" data-lead="${r.id}">${r.contact_remark?'View / add':'+ Add'}</button></td><td>${esc(r.source)}</td><td>${date(r.site_visit_at)}</td><td>${date(r.follow_up_at,true)}</td><td>${date(r.created_at,true)}</td><td><button class="text-button" data-lead="${r.id}">View / edit</button></td></tr>`).join(''):'<tr><td colspan="14" class="empty">No leads match these filters.</td></tr>';
+   const options=(list,value,labels=true)=>{const vals=[...list];if(value&&!vals.includes(value))vals.unshift(value);return vals.map(v=>`<option value="${esc(v)}" ${String(v)===String(value)?'selected':''}>${esc(labels?label(v):v)}</option>`).join('');};
+   el('leadsBody').innerHTML=rows.length?rows.map(r=>`<tr><td><button class="lead-name" data-lead="${r.id}">${esc(r.customer_name)}</button></td><td><a href="tel:${esc(String(r.mobile||'').replace(/[^+0-9]/g,''))}">${esc(r.mobile||'—')}</a></td><td><select class="quick-edit" data-id="${r.id}" data-field="location">${options(locations,r.location,false)}</select></td><td><select class="quick-edit" data-id="${r.id}" data-field="occasion">${options(events,r.occasion,false)}</select></td><td>${date(r.event_date)}</td><td>${esc(r.guests??'—')}</td><td><select class="quick-edit" data-id="${r.id}" data-field="call_outcome">${options(outcomes,String(r.lost_reason_other||'').startsWith('__SMV_STATUS_NOT_PICK__')?'Not Picked':r.call_outcome,false)}</select></td><td><select class="quick-edit status-quick" data-id="${r.id}" data-field="status">${options(statuses,r.status)}</select></td><td><button class="text-button" data-lead="${r.id}">${r.contact_remark?'View / add':'+ Add'}</button></td><td>${esc(r.source)}</td><td>${date(r.site_visit_at)}</td><td>${date(r.follow_up_at,true)}</td><td>${date(r.created_at,true)}</td><td><button class="text-button" data-lead="${r.id}">View / edit</button></td></tr>`).join(''):'<tr><td colspan="14" class="empty">No leads match these filters.</td></tr>';
    el('pageInfo').textContent=total?`Showing ${page*20+1}–${Math.min(page*20+20,total)} of ${total}`:'No results';el('previous').disabled=page===0;el('next').disabled=(page+1)*20>=total;
   }catch(e){toast(e.message||'Unable to load leads');el('leadsBody').innerHTML='<tr><td colspan="14" class="empty">Unable to load leads. Please refresh.</td></tr>';}
   finally{if(seq===sequence)el('refresh').disabled=false;}
@@ -56,6 +57,18 @@
   el('history').innerHTML=historyError?'Unable to load activity.':history?.length?history.map(h=>`<div class="history-item"><small>${date(h.created_at,true)}</small>${esc(h.description)}${h.new_value?`<details><summary>Changed fields</summary><pre>${esc(h.new_value)}</pre></details>`:''}</div>`).join(''):'No activity recorded by you yet.';
  }
  el('leadsBody').onclick=e=>{const b=e.target.closest('[data-lead]');if(b)openLead(b.dataset.lead);};
+ el('leadsBody').onchange=async e=>{
+  const control=e.target.closest('.quick-edit');if(!control)return;
+  const row=rows.find(r=>String(r.id)===String(control.dataset.id));if(!row){toast('Lead changed. Refresh and try again.');return;}
+  const field=control.dataset.field,value=control.value,previous=row[field]??'';
+  if(String(previous)===String(value))return;
+  control.disabled=true;
+  const patch={[field]:value};
+  if(field==='status'&&String(row.lost_reason_other||'').startsWith('__SMV_STATUS_NOT_PICK__'))patch.lost_reason_other=null;
+  const {error}=await client.rpc('smv_employee_save_lead',{p_id:row.id,p_expected_updated_at:row.updated_at,p_patch:patch,p_comment:'',p_log_call:false});
+  if(error){control.value=previous;control.disabled=false;toast(error.message||'Unable to save change');return;}
+  toast(label(field.replace('_',' '))+' updated');await Promise.all([load(),stats()]);
+ };
  el('leadForm').onsubmit=async e=>{
   e.preventDefault();if(!selected)return;el('saveLead').disabled=true;el('saveMessage').textContent='Saving…';
   const patch={};
