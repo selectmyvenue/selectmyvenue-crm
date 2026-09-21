@@ -7219,8 +7219,18 @@ async function saveVenueAssignments(options = {}) {
             document.getElementById("venueAssignmentNote")?.value
         ).trim() || null;
 
-        const rows = selected
-            .filter(venueId => !isVenueAlreadyAssigned(venueId))
+        const selectedUnique = [...new Set(selected.map(String))];
+        const { data: latestAssignments, error: latestAssignmentError } = await client
+            .from("venue_enquiry_assignments")
+            .select("venue_id,assignment_status")
+            .eq("enquiry_id", assignmentCurrentLead.id)
+            .in("venue_id", selectedUnique);
+        if (latestAssignmentError) throw latestAssignmentError;
+        const activeVenueIds = new Set((latestAssignments || [])
+            .filter(item => safeValue(item.assignment_status) !== "cancelled")
+            .map(item => String(item.venue_id)));
+        const rows = selectedUnique
+            .filter(venueId => !activeVenueIds.has(String(venueId)))
             .map(venueId => ({
                 enquiry_id: assignmentCurrentLead.id,
                 venue_id: venueId,
@@ -7246,8 +7256,8 @@ async function saveVenueAssignments(options = {}) {
                 .insert({
                     lead_id: assignmentCurrentLead.id,
                     activity_type: "venue_assigned",
-                    description: `Venue assignment: ${selected.length} venue(s) assigned.`,
-                    new_value: selected.join(","),
+                    description: `Venue assignment: ${rows.length} new venue(s) assigned.`,
+                    new_value: rows.map(row => row.venue_id).join(","),
                     created_by: assignedBy
                 });
         }
@@ -7266,7 +7276,7 @@ async function saveVenueAssignments(options = {}) {
             const assignedText =
                 `${rows.length} new venue${rows.length === 1 ? "" : "s"} assigned successfully.`;
 
-            const skippedCount = selected.length - rows.length;
+            const skippedCount = selectedUnique.length - rows.length;
 
             if (skippedCount > 0) {
                 showToast(
@@ -7280,7 +7290,7 @@ async function saveVenueAssignments(options = {}) {
                 );
             }
         } else {
-            const alreadyCount = selected.length;
+            const alreadyCount = selectedUnique.length;
 
             showToast(
                 `${alreadyCount} venue${alreadyCount === 1 ? " is" : "s are"} already assigned to this enquiry. No new assignment was created.`,
