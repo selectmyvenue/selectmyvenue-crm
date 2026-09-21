@@ -7195,7 +7195,7 @@ async function saveVenueAssignments(options = {}) {
 
     const selected = Array.from(
         document.querySelectorAll(
-            ".venue-assignment-checkbox:checked"
+            ".venue-assignment-checkbox:checked:not(:disabled)"
         )
     ).map(input => input.value);
 
@@ -7258,6 +7258,7 @@ async function saveVenueAssignments(options = {}) {
             );
         }
 
+        const savedLead = assignmentCurrentLead;
         await loadVenueAssignments();
         applyFilters();
         closeVenueAssignmentModal();
@@ -7286,7 +7287,7 @@ async function saveVenueAssignments(options = {}) {
                 "info"
             );
         }
-        return { ok: true, selected, created: rows.map(row => row.venue_id), lead: assignmentCurrentLead };
+        return { ok: true, selected, created: rows.map(row => row.venue_id), lead: savedLead };
     }
     catch (error) {
         console.error("Venue assignment save error:", error);
