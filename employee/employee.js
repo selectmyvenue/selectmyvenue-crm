@@ -4,7 +4,9 @@
  const statuses=['new','contacted','follow-up','detail-shared','interested','qualified','site-visit','negotiation','booked','converted','closed','lost','not-interested'];
  const outcomes=['Not Connected','Connected','Not Picked','Busy','Switched Off','Wrong Number','Call Back'];
  const label=s=>s.split('-').map(w=>w[0]?.toUpperCase()+w.slice(1)).join(' ');
- const fields=[['customer_name','Customer name','text'],['mobile','Mobile','tel'],['email','Email','email'],['location','Location','text'],['occasion','Event type','text'],['event_date','Event date','date'],['guests','Guests','number'],['budget_per_person','Budget per person (₹)','number'],['food_preference','Food preference','text'],['call_outcome','Call status',outcomes],['status','Lead status',statuses],['priority','Priority',['low','normal','high','urgent']],['follow_up_at','Follow-up (India time)','datetime-local'],['site_visit_at','Visit date (India time)','datetime-local'],['lost_reason','Lost reason','text'],['lost_reason_other','Other lost reason','text'],['requirements','Customer requirements','textarea']];
+ const locations=['Delhi NCR','Delhi','Gurugram','Gurgaon','Noida','Greater Noida','Faridabad','Ghaziabad','Dwarka','Chhatarpur','GT Karnal Road','Kapashera','Peeragarhi','Alipur','Other'];
+ const events=['Wedding','Engagement','Reception','Birthday','Corporate Event','Party','Anniversary','Other'];
+ const fields=[['customer_name','Customer name','text'],['mobile','Mobile','tel'],['email','Email','email'],['location','Location',locations],['occasion','Event type',events],['event_date','Event date','date'],['guests','Guests','number'],['budget_per_person','Budget per person (₹)','number'],['food_preference','Food preference','text'],['call_outcome','Call status',outcomes],['status','Lead status',statuses],['priority','Priority',['low','normal','high','urgent']],['follow_up_at','Follow-up (India time)','datetime-local'],['site_visit_at','Visit date (India time)','datetime-local'],['lost_reason','Lost reason','text'],['lost_reason_other','Other lost reason','text'],['requirements','Customer requirements','textarea']];
  let rows=[],page=0,total=0,selected=null,profile=null,channel=null,sequence=0,timer;
  const indiaLocal=s=>{if(!s)return '';const d=new Date(new Date(s).getTime()+330*60000);return d.toISOString().slice(0,16);};
  statuses.forEach(s=>el('filterStatus').add(new Option(label(s),s)));
@@ -42,7 +44,12 @@
  async function openLead(id){
   const {data,error}=await client.from('customer_enquiries').select('*').eq('id',id).single();if(error){toast(error.message);return;}
   selected=data;el('latestComment').textContent=data.contact_remark?'Latest call comment: '+data.contact_remark:'';el('leadTitle').textContent=data.customer_name;el('saveMessage').textContent='';el('conflictNotice').hidden=true;el('saveLead').disabled=false;el('newComment').value='';el('logCall').checked=false;
-  for(const [key,,type] of fields)el('field_'+key).value=type==='datetime-local'?indiaLocal(data[key]):data[key]??'';
+  for(const [key,,type] of fields){
+   const control=el('field_'+key);const value=type==='datetime-local'?indiaLocal(data[key]):data[key]??'';
+   // Preserve existing free-text location/event values while offering a clean dropdown for future updates.
+   if(Array.isArray(type)&&value&&!Array.from(control.options).some(o=>o.value===String(value)))control.add(new Option(String(value),String(value),true,true));
+   control.value=value;
+  }
   el('history').textContent='Loading…';el('leadDialog').showModal();
   const {data:history,error:historyError}=await client.from('crm_activity_log').select('description,created_at,old_value,new_value').eq('lead_id',id).order('created_at',{ascending:false}).limit(30);
   if(String(selected?.id)!==String(id))return;
