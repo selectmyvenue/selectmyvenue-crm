@@ -1193,6 +1193,7 @@ const email =
                     class="view-lead-btn"
                     data-action="view"
                     data-id="${escapeHTML(id)}"
+                    onclick="event.stopPropagation(); if(window.openLeadModal){ window.openLeadModal(this.dataset.id); }"
                     title="${escapeHTML(
                         ai.recommendation
                     )}"
@@ -2628,21 +2629,29 @@ function openLeadModal(
         return;
     }
 
-    populateLeadModal(
-        lead
-    );
+    // Open the drawer first so an optional enhancement/history failure can never
+    // make the Details button appear unresponsive.
+    modal.hidden = false;
+    document.body.style.overflow = "auto";
 
-    modal.hidden =
-        false;
+    try {
+        populateLeadModal(lead);
+    }
+    catch (error) {
+        console.error("Lead details populate error:", error);
+        setText("#detailCustomerName", lead.customer_name || "—");
+        setText("#detailPhone", lead.mobile || "—");
+        showToast("Lead opened. Some optional details could not be prepared.", "warning");
+    }
 
-    /* Keep the enquiry table scrollable/visible behind the non-blocking details panel. */
-    document.body.style.overflow =
-        "auto";
+    try {
+        applyPremiumModalEnhancement(modal, lead);
+    }
+    catch (error) {
+        console.warn("Lead premium insight could not load:", error);
+    }
 
-    applyPremiumModalEnhancement(
-        modal,
-        lead
-    );
+    return lead;
 }
 
 /* =========================================================
