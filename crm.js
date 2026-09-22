@@ -525,7 +525,7 @@
     window.setTimeout(updateActionBadge, 1200);
   }
 
-  addScript("crm-base.js?v=20260922-event-checkboxes-1", function () {
+  addScript("crm-base.js?v=20260923-ai-match-1", function () {
     let checks = 0;
     const waitForCore = window.setInterval(function () {
       checks += 1;
