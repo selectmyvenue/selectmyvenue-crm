@@ -3359,12 +3359,28 @@ async function saveModalChanges() {
         applyFilters();
         updateStats();
 
+        const savedLead = currentLead;
+
         closeLeadModal();
 
         showToast(
             "Enquiry updated successfully."
         );
-        return { ok: true, lead: currentLead, leadId };
+
+        // Smart assignment workflow: immediately open the full-screen match board
+        // after saved enquiry details/comments are committed. Matching is prepared
+        // automatically, but the final venue assignment still requires a staff click.
+        if (window.SMV_AUTO_MATCH_AFTER_SAVE !== false && savedLead?.id) {
+            window.setTimeout(() => {
+                try {
+                    openVenueAssignmentModal(savedLead.id);
+                } catch (matchError) {
+                    console.warn("Automatic venue match board could not open:", matchError);
+                }
+            }, 120);
+        }
+
+        return { ok: true, lead: savedLead, leadId };
 
     }
     catch (error) {
@@ -3703,6 +3719,18 @@ async function performAddEnquiry(
             "Customer enquiry added successfully."
         );
 
+        if (window.SMV_AUTO_MATCH_AFTER_SAVE !== false && created?.id) {
+            window.setTimeout(() => {
+                try {
+                    openVenueAssignmentModal(created.id);
+                } catch (matchError) {
+                    console.warn("Automatic venue match board could not open for new enquiry:", matchError);
+                }
+            }, 120);
+        }
+
+        return { ok: true, lead: created, leadId: created?.id };
+
     }
     catch (error) {
 
@@ -3716,6 +3744,7 @@ async function performAddEnquiry(
             "Unable to add enquiry.",
             "error"
         );
+        return { ok: false, error };
     }
 }
 
