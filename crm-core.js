@@ -1193,7 +1193,6 @@ const email =
                     class="view-lead-btn"
                     data-action="view"
                     data-id="${escapeHTML(id)}"
-                    onclick="event.stopPropagation(); if(window.openLeadModal){ window.openLeadModal(this.dataset.id); }"
                     title="${escapeHTML(
                         ai.recommendation
                     )}"
