@@ -1192,10 +1192,7 @@ body{font-size:14px!important}
 .leads-table th:nth-child(13),.leads-table td:nth-child(13){width:88px!important}
 
 /* No information hiding/clamping */
-.leads-table .customer-cell,
 .leads-table .customer-cell strong,
-.leads-table .phone-cell,
-.leads-table .created-date-cell,
 .leads-table .crm-inline-field,
 .leads-table .inline-display{
   display:block!important;
@@ -1204,6 +1201,11 @@ body{font-size:14px!important}
   text-overflow:clip!important;
   -webkit-line-clamp:unset!important;
   -webkit-box-orient:initial!important;
+}
+.leads-table td.customer-cell,
+.leads-table td.phone-cell,
+.leads-table td.created-date-cell{
+  display:table-cell!important;
 }
 .leads-table .customer-cell,
 .leads-table .phone-cell{
