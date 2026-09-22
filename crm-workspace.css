@@ -239,3 +239,7 @@ body:has(#leadModal:not([hidden])){overflow:auto!important}
 #venueAssignmentModal .venue-assignment-list{flex:0 0 auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
 #venueAssignmentModal .smv-assignment-summary-top{position:static!important}
 #venueAssignmentModal #smvPreparationStatus{grid-column:1/-1}
+
+.smv-preparation-queue{margin:8px 0;padding:10px 12px;border:1px solid #cde4dc;border-radius:10px;background:#f8fcfa;color:#244f43}.smv-preparation-queue summary{cursor:pointer;font-weight:700}.smv-preparation-body{max-height:340px;overflow:auto}.smv-preparation-row{display:grid;grid-template-columns:140px minmax(200px,1fr) 150px auto auto;gap:10px;align-items:center;border-top:1px solid #dcebe5;padding:10px 0;font-size:12px}.smv-preparation-row button{padding:7px;border:1px solid #cde4dc;border-radius:6px;background:#fff;color:#075f4d;cursor:pointer}.smv-readiness{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px;font-size:11px;color:#865a13}.smv-readiness span{background:#fff7e7;border-radius:5px;padding:3px 6px}.smv-questions{font-size:12px;padding:7px;background:#fff8e9;border-radius:6px}.smv-questions summary{cursor:pointer;font-weight:700}@media(max-width:760px){.smv-preparation-row{grid-template-columns:1fr}.smv-preparation-body{max-height:55vh}}
+
+.smv-preparation-filters{display:flex;gap:8px;flex-wrap:wrap}.smv-preparation-filters button{border:1px solid #cde4dc;border-radius:12px;background:white;padding:6px 10px;color:#075f4d;cursor:pointer}
