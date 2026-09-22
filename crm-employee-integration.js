@@ -86,7 +86,7 @@ window.startEmployeeIntegration=async function(client){
        ['najafgarh',/\bnajafgarh\b/],
        ['vasant kunj',/\bvasant\s*kunj\b/],
        ['aerocity',/\baero\s*city\b|\baerocity\b/],
-       ['mah́ipalpur',/\bmahi?palpur\b/],
+       ['mahipalpur',/\bmahi?palpur\b/],
        ['dlf phase 1',/\bdlf\s*(?:phase)?\s*1\b/],
        ['dlf phase 2',/\bdlf\s*(?:phase)?\s*2\b/],
        ['dlf phase 3',/\bdlf\s*(?:phase)?\s*3\b/],
@@ -114,7 +114,12 @@ window.startEmployeeIntegration=async function(client){
    const food=smvText(l?.food_preference),structured={parking:l?.parking_required===true,lawn:l?.outdoor_preferred===true,indoor:l?.indoor_preferred===true,rooms:Number(l?.rooms_required)||0,venueType:smvText(l?.venue_type_preference),food};
    const hasFood=inferred.veg!==undefined||inferred.nonveg!==undefined;
    const savedLocation=smvText([l?.preferred_city,l?.preferred_area,l?.location].filter(Boolean).join(' '));
-   const location=inferred.location&&(/\/|\bsector\b/.test(inferred.location)||smvRegion(inferred.location)!==smvRegion(savedLocation))?inferred.location:(savedLocation||inferred.location||'');
+   const inferredLocation=smvText(inferred.location);
+   const broadLocation=/^(delhi(?: ncr)?|gurgaon|gurugram|manesar|noida|greater noida|faridabad|ghaziabad)$/.test(inferredLocation);
+   const inferredSpecific=!!inferredLocation&&!broadLocation;
+   const location=inferredLocation&&(inferredSpecific||/\/|\bsector\b/.test(inferredLocation)||smvRegion(inferredLocation)!==smvRegion(savedLocation))
+     ?inferredLocation
+     :(savedLocation||inferredLocation||'');
    return {location,occasion:inferred.occasion||clean(l?.occasion),guests:inferred.guests??(Number(l?.guests)||0),budget:inferred.budget??(Number(l?.budget_per_person)||0),totalBudget:inferred.totalBudget||0,rooms:inferred.rooms??structured.rooms,parking:inferred.parking??structured.parking,lawn:inferred.lawn??structured.lawn,indoor:inferred.indoor??structured.indoor,venueType:inferred.venueType||structured.venueType,veg:hasFood?!!inferred.veg:/\bveg(?:etarian)?\b/.test(food.replace(/non[ -]?veg(?:etarian)?/g,'')),nonveg:hasFood?!!inferred.nonveg:/non[ -]?veg(?:etarian)?/.test(food),notes:notes(l),inferred,structured};
  }
  function smvRequirementConflicts(l){const s=smvLeadSpec(l),n=s.notes||'',out=[];const structuredRooms=Number(l?.rooms_required)||0;if(structuredRooms&&s.inferred.rooms!==undefined&&structuredRooms!==s.inferred.rooms)out.push('Rooms: saved '+structuredRooms+', notes mention '+s.inferred.rooms+' (using notes)');const structuredType=smvText(l?.venue_type_preference);if(structuredType&&s.inferred.venueType&&structuredType!==s.inferred.venueType&&!structuredType.includes(s.inferred.venueType)&&!s.inferred.venueType.includes(structuredType))out.push('Venue type: saved '+l.venue_type_preference+', notes suggest '+s.inferred.venueType);const food=smvText(l?.food_preference);if(food&&s.inferred.nonveg===true&&food==='veg')out.push('Food: saved Veg, notes mention Non-Veg (using notes)');if(s.inferred.guests&&Number(l?.guests)&&s.inferred.guests!==Number(l.guests))out.push('Guests: using '+s.inferred.guests+' from notes');if(s.inferred.location&&smvRegion(l?.location)&&smvRegion(s.inferred.location)!==smvRegion(l?.location))out.push('Location: using '+s.inferred.location+' from notes');if(l?.outdoor_preferred===true&&/\b(indoor only|only indoor)\b/.test(n))out.push('Outdoor preference conflicts with notes');if(l?.indoor_preferred===true&&/\b(outdoor only|only outdoor|lawn only|only lawn)\b/.test(n))out.push('Indoor preference conflicts with notes');return out;}
