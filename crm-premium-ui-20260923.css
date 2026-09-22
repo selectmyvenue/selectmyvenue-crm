@@ -442,3 +442,411 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
   }
   #venueAssignmentModal .venue-assignment-item-title strong{font-size:14px!important}
 }
+
+
+/* =========================================================
+   PREMIUM COMMAND CENTER V2 — STRONG VISUAL UPGRADE
+   Logo asset is untouched. Presentation only.
+   ========================================================= */
+
+/* Top shell */
+.crm-header{
+  min-height:82px!important;
+  padding:10px 18px!important;
+  background:linear-gradient(112deg,#062f29 0%,#074b3f 56%,#086552 100%)!important;
+  border-bottom:1px solid rgba(255,255,255,.12)!important;
+  box-shadow:0 12px 32px rgba(5,47,39,.18)!important;
+}
+.crm-brand-text strong,
+.crm-header-title,
+.crm-header .staff-name,
+.crm-header .account-password-btn,
+.crm-header .logout-btn{
+  color:#f7fffc!important;
+}
+.crm-header-title{
+  padding:12px 18px!important;
+  border:1px solid rgba(255,255,255,.16)!important;
+  border-radius:14px!important;
+  background:rgba(255,255,255,.08)!important;
+  backdrop-filter:blur(8px)!important;
+}
+.crm-header-title::after{display:none!important}
+.crm-header .staff-name,
+.crm-header .account-password-btn,
+.crm-header .logout-btn{
+  border:1px solid rgba(255,255,255,.18)!important;
+  background:rgba(255,255,255,.08)!important;
+}
+.crm-header .staff-name:hover,
+.crm-header .account-password-btn:hover,
+.crm-header .logout-btn:hover{
+  background:rgba(255,255,255,.16)!important;
+  border-color:rgba(255,255,255,.30)!important;
+}
+.crm-header-logo{
+  filter:none!important;
+}
+
+/* High-contrast command banner */
+.page-heading{
+  position:relative!important;
+  overflow:hidden!important;
+  margin:16px 0 14px!important;
+  padding:22px 24px!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  border-radius:20px!important;
+  background:
+    radial-gradient(circle at 86% 20%,rgba(36,191,145,.26),transparent 25%),
+    linear-gradient(125deg,#073b33 0%,#075d4d 58%,#0a7a61 100%)!important;
+  box-shadow:0 16px 38px rgba(9,75,62,.16)!important;
+}
+.page-heading::after{
+  content:"";
+  position:absolute;
+  right:-80px;
+  bottom:-120px;
+  width:280px;
+  height:280px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 0 0 34px rgba(255,255,255,.025),0 0 0 68px rgba(255,255,255,.02);
+  pointer-events:none;
+}
+.page-heading-content,.heading-actions{position:relative;z-index:1}
+.page-heading .page-kicker{
+  color:#bde8da!important;
+  letter-spacing:.12em!important;
+}
+.page-heading-content h1,
+.page-heading-content h1 span{
+  color:#fff!important;
+  font-size:32px!important;
+}
+.page-heading-content p{
+  color:#d7ece5!important;
+  max-width:760px!important;
+}
+.page-heading .command-health{
+  background:rgba(255,255,255,.10)!important;
+  border-color:rgba(255,255,255,.17)!important;
+  color:#dff3ed!important;
+}
+.page-heading .command-health strong{color:#fff!important}
+.page-heading .command-health-dot{box-shadow:0 0 0 5px rgba(70,230,181,.12)!important}
+.page-heading .heading-actions{
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  flex-wrap:wrap!important;
+}
+.page-heading .primary-btn,
+.page-heading #addEnquiryBtn{
+  background:#fff!important;
+  border-color:#fff!important;
+  color:#075d4d!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.12)!important;
+}
+.page-heading .secondary-btn,
+.page-heading .smv-export-btn,
+.page-heading #refreshBtn,
+.page-heading #smvActionCenterBtn{
+  background:rgba(255,255,255,.09)!important;
+  border:1px solid rgba(255,255,255,.22)!important;
+  color:#fff!important;
+  box-shadow:none!important;
+}
+.page-heading .secondary-btn:hover,
+.page-heading .smv-export-btn:hover,
+.page-heading #refreshBtn:hover,
+.page-heading #smvActionCenterBtn:hover{
+  background:rgba(255,255,255,.18)!important;
+}
+
+/* Main lead workspace */
+.leads-section{
+  border-radius:20px!important;
+  border:1px solid #d4e4de!important;
+  box-shadow:0 18px 44px rgba(20,71,60,.09)!important;
+  overflow:hidden!important;
+}
+.filter-bar{
+  padding:13px 14px!important;
+  background:linear-gradient(180deg,#ffffff,#f8fbfa)!important;
+  border-bottom:1px solid #dde9e5!important;
+}
+.search-box input{
+  height:46px!important;
+  border-radius:13px!important;
+  background:#fff!important;
+  font-size:12.5px!important;
+}
+.filter-bar select{
+  height:46px!important;
+  border-radius:13px!important;
+  background:#fff!important;
+}
+.filter-workspace-note{
+  min-height:46px!important;
+  padding:0 12px!important;
+  border-radius:13px!important;
+  border:1px solid #dce9e4!important;
+  background:#f4faf7!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  color:#3f6259!important;
+  font-size:10.5px!important;
+  font-weight:800!important;
+}
+
+/* Queue cards = dashboard cards */
+#leadWorkViews.lead-work-views{
+  padding:12px 14px!important;
+  gap:9px!important;
+  background:#fff!important;
+}
+#leadWorkViews.lead-work-views button{
+  min-height:62px!important;
+  padding:10px 14px!important;
+  border-radius:15px!important;
+  border:1px solid #d7e5e0!important;
+  box-shadow:0 6px 16px rgba(20,75,63,.045)!important;
+  font-size:11px!important;
+}
+#leadWorkViews.lead-work-views button strong{
+  font-size:22px!important;
+  letter-spacing:-.04em!important;
+}
+#leadWorkViews.lead-work-views button[aria-pressed=true]{
+  color:#fff!important;
+  background:linear-gradient(135deg,#075448,#087764)!important;
+  border-color:#075448!important;
+  box-shadow:0 9px 24px rgba(6,89,73,.18)!important;
+}
+#leadWorkViews.lead-work-views button[aria-pressed=true] strong{color:#fff!important}
+
+/* Preparation assistant */
+#smvPreparationQueue{
+  margin:10px 14px 12px!important;
+  border:1px solid #d6e6e0!important;
+  border-radius:14px!important;
+  background:linear-gradient(135deg,#f2faf7,#fff)!important;
+  box-shadow:0 6px 18px rgba(18,80,66,.045)!important;
+}
+#smvPreparationQueue>summary{
+  min-height:42px!important;
+  padding:10px 13px!important;
+  color:#174c40!important;
+  font-size:11.5px!important;
+  font-weight:850!important;
+  cursor:pointer!important;
+}
+
+/* Pagination strip */
+.lead-pagination{
+  margin:0!important;
+  padding:10px 14px!important;
+  min-height:50px!important;
+  border-top:1px solid #edf3f0!important;
+  border-bottom:1px solid #dfeae6!important;
+  background:#fbfdfc!important;
+}
+.lead-pagination button{
+  min-height:34px!important;
+  border-radius:9px!important;
+  border:1px solid #d6e5e0!important;
+  background:#fff!important;
+}
+
+/* Data table */
+.table-wrapper{
+  max-height:calc(100vh - 390px)!important;
+  min-height:330px!important;
+  overflow:auto!important;
+}
+.leads-table{
+  min-width:1450px!important;
+}
+.leads-table thead th{
+  top:0!important;
+  z-index:8!important;
+  height:48px!important;
+  padding:0 12px!important;
+  background:#eaf4f0!important;
+  color:#3e675d!important;
+  box-shadow:inset 0 -1px 0 #ccded7!important;
+}
+.leads-table tbody tr{
+  background:#fff!important;
+}
+.leads-table tbody tr:nth-child(even){
+  background:#fbfdfc!important;
+}
+.leads-table tbody tr:hover{
+  background:#eff8f4!important;
+  box-shadow:inset 4px 0 0 #0b8b70!important;
+}
+.leads-table td{
+  padding:14px 12px!important;
+  line-height:1.35!important;
+  font-size:11.5px!important;
+}
+.leads-table td:first-child{
+  color:#123f35!important;
+  font-size:12px!important;
+  font-weight:850!important;
+}
+.leads-table .status-badge{
+  min-height:28px!important;
+  padding:5px 10px!important;
+  font-size:10px!important;
+}
+.leads-table .view-lead-btn{
+  min-width:82px!important;
+  height:34px!important;
+  background:#073f35!important;
+  border-color:#073f35!important;
+  color:#fff!important;
+  border-radius:10px!important;
+  box-shadow:0 5px 14px rgba(5,65,53,.16)!important;
+}
+.leads-table .view-lead-btn:hover{
+  background:#052f28!important;
+  transform:translateY(-1px)!important;
+}
+.leads-table .venue-assign-btn{
+  min-width:90px!important;
+  height:34px!important;
+  border-radius:10px!important;
+  background:linear-gradient(135deg,#0b9476,#08745d)!important;
+  border-color:#08745d!important;
+  color:#fff!important;
+  box-shadow:0 5px 14px rgba(8,116,93,.14)!important;
+}
+
+/* Lead details = premium operational drawer */
+#leadModal.modal-overlay{
+  background:rgba(3,34,28,.34)!important;
+  backdrop-filter:blur(8px)!important;
+}
+#leadModal .lead-modal-card{
+  width:min(1240px,96vw)!important;
+  max-width:1240px!important;
+  background:#f4f8f6!important;
+  border-left:1px solid rgba(255,255,255,.3)!important;
+  border-radius:22px 0 0 22px!important;
+}
+#leadModal .modal-header{
+  padding:18px 22px!important;
+  background:
+    radial-gradient(circle at 85% 10%,rgba(42,190,145,.2),transparent 30%),
+    linear-gradient(125deg,#073c33,#08614f)!important;
+  border-bottom:0!important;
+}
+#leadModal .modal-kicker{color:#b8e7d9!important}
+#leadModal .modal-header h2{color:#fff!important;font-size:23px!important}
+#leadModal .close-modal{
+  border-color:rgba(255,255,255,.22)!important;
+  background:rgba(255,255,255,.10)!important;
+  color:#fff!important;
+}
+#leadModal .lead-info-grid{
+  padding:16px 18px 8px!important;
+}
+#leadModal .info-card{
+  background:#fff!important;
+  border:1px solid #d8e7e2!important;
+  border-radius:14px!important;
+  box-shadow:0 6px 16px rgba(18,77,64,.04)!important;
+}
+#leadModal .detail-section-title{
+  margin-top:16px!important;
+  padding:9px 12px!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:#e9f3ef!important;
+  color:#1e5146!important;
+}
+#leadModal .smv-match-details,
+#leadModal #crmAIInsight,
+#leadModal #smvVenueAssistant,
+#leadModal #smvLeadOpsPanel{
+  box-shadow:0 8px 22px rgba(17,75,62,.055)!important;
+}
+#leadModal .detail-block{
+  padding:13px!important;
+  border:1px solid #dce9e4!important;
+  border-radius:13px!important;
+  background:#fff!important;
+  box-shadow:0 5px 14px rgba(20,76,63,.035)!important;
+}
+
+/* Assignment board */
+#venueAssignmentModal .venue-assignment-header{
+  padding:16px 20px!important;
+  background:
+    radial-gradient(circle at 90% 0%,rgba(38,183,140,.22),transparent 28%),
+    linear-gradient(120deg,#073d34,#08604f)!important;
+}
+#venueAssignmentModal .venue-assignment-header h2,
+#venueAssignmentModal .venue-assignment-header p,
+#venueAssignmentModal .venue-kicker{
+  color:#fff!important;
+}
+#venueAssignmentModal .close-modal{
+  background:rgba(255,255,255,.1)!important;
+  color:#fff!important;
+  border-color:rgba(255,255,255,.2)!important;
+}
+#venueAssignmentModal .smv-match-tier-controls{
+  border-radius:15px!important;
+  box-shadow:0 7px 20px rgba(18,80,66,.055)!important;
+}
+#venueAssignmentModal .venue-assignment-item{
+  padding:14px 16px!important;
+  margin-bottom:9px!important;
+  border:1px solid #d8e6e1!important;
+  box-shadow:0 5px 16px rgba(19,73,61,.035)!important;
+}
+
+/* Venue Management gets matching premium shell */
+#venueManagementSection{
+  margin-top:16px!important;
+  border-radius:20px!important;
+  box-shadow:0 16px 40px rgba(17,70,59,.08)!important;
+}
+#venueManagementSection .venue-page-heading{
+  margin:-18px -18px 18px!important;
+  padding:20px 22px!important;
+  border-radius:20px 20px 0 0!important;
+  background:linear-gradient(125deg,#073d34,#08705b)!important;
+}
+#venueManagementSection .venue-page-heading h1,
+#venueManagementSection .venue-page-heading h1 span,
+#venueManagementSection .venue-page-heading p,
+#venueManagementSection .venue-kicker{
+  color:#fff!important;
+}
+#venueManagementSection .venue-heading-actions button{
+  background:rgba(255,255,255,.10)!important;
+  border-color:rgba(255,255,255,.22)!important;
+  color:#fff!important;
+}
+
+/* Desktop density */
+@media(min-width:1400px){
+  .crm-main{width:min(1940px,calc(100% - 24px))!important}
+  #leadWorkViews.lead-work-views{grid-template-columns:repeat(7,minmax(0,1fr))!important}
+}
+@media(max-width:1180px){
+  .page-heading{padding:18px!important}
+  .page-heading-content h1{font-size:28px!important}
+}
+@media(max-width:760px){
+  .crm-header{background:#073f35!important}
+  .page-heading{border-radius:15px!important}
+  .page-heading-content h1{font-size:25px!important}
+  #leadModal .lead-modal-card{border-radius:0!important}
+}
