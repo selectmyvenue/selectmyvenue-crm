@@ -1,5 +1,5 @@
 (function(){
-  const HREF='crm-premium-ui-20260923.css?v=20260923-readable-1';
+  const HREF='crm-premium-ui-20260923.css?v=20260923-readable-2';
   let link=null;
   function putLast(){
     if(!document.head)return;
