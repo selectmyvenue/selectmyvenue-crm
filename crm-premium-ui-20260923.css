@@ -1277,3 +1277,136 @@ body{font-size:14px!important}
 #leadModal .lead-modal-card.smv-dragging{box-shadow:-22px 18px 65px rgba(10,58,49,.24)!important}
 #leadModal .lead-modal-card.smv-dragging .modal-header.smv-core-drag-handle{cursor:grabbing!important}
 @media(max-width:760px){#leadModal .modal-header.smv-core-drag-handle{cursor:default!important}}
+
+
+/* =========================================================
+   FULL-SCREEN FIT + READABILITY
+   Keep every CRM field visible at 100% zoom.
+   ========================================================= */
+
+/* Slightly larger typography without making the workspace tall */
+body{font-size:14.5px!important}
+.leads-table thead th{
+  font-size:10.2px!important;
+  letter-spacing:.035em!important;
+}
+.leads-table td{
+  font-size:12.4px!important;
+  line-height:1.34!important;
+  padding:9px 7px!important;
+}
+.leads-table td:first-child{
+  font-size:12.8px!important;
+}
+.leads-table .created-date-cell{
+  font-size:11.7px!important;
+}
+.leads-table .status-badge{
+  font-size:10.2px!important;
+}
+.leads-table .view-lead-btn,
+.leads-table .venue-assign-btn{
+  font-size:10.5px!important;
+  font-weight:850!important;
+  height:32px!important;
+  min-height:32px!important;
+}
+
+/* Rebalance widths so Action + Assign remain inside a 100% desktop viewport */
+.leads-table{
+  width:100%!important;
+  min-width:1380px!important;
+  table-layout:fixed!important;
+}
+.leads-table th:nth-child(1),.leads-table td:nth-child(1){width:120px!important}
+.leads-table th:nth-child(2),.leads-table td:nth-child(2){width:105px!important}
+.leads-table th:nth-child(3),.leads-table td:nth-child(3){width:140px!important}
+.leads-table th:nth-child(4),.leads-table td:nth-child(4){width:135px!important}
+.leads-table th:nth-child(5),.leads-table td:nth-child(5){width:120px!important}
+.leads-table th:nth-child(6),.leads-table td:nth-child(6){width:120px!important}
+.leads-table th:nth-child(7),.leads-table td:nth-child(7){width:116px!important}
+.leads-table th:nth-child(8),.leads-table td:nth-child(8){width:70px!important}
+.leads-table th:nth-child(9),.leads-table td:nth-child(9){width:122px!important}
+.leads-table th:nth-child(10),.leads-table td:nth-child(10){width:102px!important}
+.leads-table th:nth-child(11),.leads-table td:nth-child(11){width:82px!important}
+.leads-table th:nth-child(12),.leads-table td:nth-child(12){width:92px!important}
+.leads-table th:nth-child(13),.leads-table td:nth-child(13){width:96px!important}
+
+/* Keep last two work columns always visible while the table scrolls horizontally */
+.leads-table th:nth-child(13),
+.leads-table td:nth-child(13){
+  position:sticky!important;
+  right:0!important;
+  z-index:12!important;
+  background:#fff!important;
+  box-shadow:-8px 0 14px rgba(20,71,60,.055)!important;
+}
+.leads-table th:nth-child(12),
+.leads-table td:nth-child(12){
+  position:sticky!important;
+  right:96px!important;
+  z-index:11!important;
+  background:#fff!important;
+}
+.leads-table thead th:nth-child(12),
+.leads-table thead th:nth-child(13){
+  background:#eaf4f0!important;
+  z-index:18!important;
+}
+.leads-table tbody tr:nth-child(even) td:nth-child(12),
+.leads-table tbody tr:nth-child(even) td:nth-child(13){
+  background:#fbfdfc!important;
+}
+.leads-table tbody tr:hover td:nth-child(12),
+.leads-table tbody tr:hover td:nth-child(13){
+  background:#eff8f4!important;
+}
+
+/* Make sure the full Assign button fits inside its sticky column */
+.leads-table .view-lead-btn{
+  min-width:70px!important;
+  width:auto!important;
+  padding:0 9px!important;
+}
+.leads-table .venue-assign-btn{
+  min-width:80px!important;
+  width:auto!important;
+  padding:0 9px!important;
+}
+
+/* Allow useful wrapping instead of shrinking text */
+.leads-table .customer-cell,
+.leads-table .phone-cell,
+.leads-table .created-date-cell,
+.leads-table .inline-display{
+  overflow-wrap:anywhere!important;
+}
+.leads-table td:nth-child(4),
+.leads-table td:nth-child(5),
+.leads-table td:nth-child(6),
+.leads-table td:nth-child(7),
+.leads-table td:nth-child(9){
+  white-space:normal!important;
+}
+
+/* Slightly larger surrounding controls */
+.search-box input,
+.filter-bar select{font-size:12.8px!important}
+#leadWorkViews.lead-work-views button{font-size:11.2px!important}
+#leadWorkViews.lead-work-views button strong{font-size:20px!important}
+#smvPreparationQueue>summary{font-size:11px!important}
+.lead-pagination{font-size:11px!important}
+
+/* Preserve maximum vertical lead space */
+.table-wrapper{
+  max-height:calc(100vh - 282px)!important;
+  min-height:410px!important;
+  overflow:auto!important;
+  scrollbar-gutter:stable!important;
+}
+
+@media(max-width:1500px){
+  .leads-table{min-width:1320px!important}
+  .leads-table td{font-size:12px!important}
+  .leads-table td:first-child{font-size:12.4px!important}
+}
