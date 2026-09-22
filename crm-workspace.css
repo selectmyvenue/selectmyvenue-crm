@@ -232,3 +232,10 @@ body:has(#leadModal:not([hidden])){overflow:auto!important}
 #venueAssignmentModal .venue-assignment-item-title{margin-bottom:3px!important}
 #venueAssignmentModal .venue-assignment-actions{padding-top:8px!important;padding-bottom:8px!important}
 }
+
+/* Keep every assignment row reachable, including on short screens. */
+#venueAssignmentModal .venue-assignment-card{overflow-y:auto!important;overflow-x:hidden!important;scrollbar-gutter:stable;overscroll-behavior:contain}
+#venueAssignmentModal .venue-assignment-card>div{flex-shrink:0!important}
+#venueAssignmentModal .venue-assignment-list{flex:0 0 auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
+#venueAssignmentModal .smv-assignment-summary-top{position:static!important}
+#venueAssignmentModal #smvPreparationStatus{grid-column:1/-1}
