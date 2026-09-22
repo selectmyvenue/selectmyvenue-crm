@@ -1,5 +1,5 @@
 (function(){
-  const HREF='crm-premium-ui-20260923.css?v=20260923-dense-1';
+  const HREF='crm-premium-ui-20260923.css?v=20260923-readable-1';
   let link=null;
   function putLast(){
     if(!document.head)return;
@@ -14,8 +14,31 @@
       document.head.appendChild(link);
     }
   }
+
+  function installDetailsFailsafe(){
+    if(document.documentElement.dataset.smvDetailsFailsafe==='1')return;
+    document.documentElement.dataset.smvDetailsFailsafe='1';
+    document.addEventListener('click',function(event){
+      const button=event.target.closest?.('.view-lead-btn[data-id]');
+      if(!button)return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const id=button.dataset.id;
+      const modal=document.getElementById('leadModal');
+      if(modal)modal.hidden=false;
+      try{
+        const fn=window.crm?.openLeadModal||window.openLeadModal;
+        if(typeof fn==='function')fn(id);
+      }catch(error){
+        console.error('Lead Details failsafe error:',error);
+      }
+      if(modal)modal.hidden=false;
+    },true);
+  }
+
   function boot(){
     putLast();
+    installDetailsFailsafe();
     setTimeout(putLast,300);
     setTimeout(putLast,900);
     setTimeout(putLast,1800);
