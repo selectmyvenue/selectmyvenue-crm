@@ -44,7 +44,7 @@
     ====================================================== -->
 
     <script
-        src="crm.js?v=20260922-audit-preparation-1"
+        src="crm.js?v=20260922-event-checkboxes-1"
         defer
     ></script>
 
@@ -712,11 +712,11 @@
                         </select>
                     </div>
 
-                    <div class="venue-field">
-                        <label for="venueEventTypes">SUPPORTED EVENT TYPES</label>
-                        <input id="venueEventTypes" aria-describedby="venueEventTypesHelp" placeholder="Wedding, Engagement, Birthday, Anniversary, Corporate Event, Reception">
-                        <small id="venueEventTypesHelp">Enter confirmed events separated by commas. Example: Wedding, Engagement, Birthday. Leave blank if not confirmed; automatic event matching will wait for this detail.</small>
-                    </div>
+                    <fieldset class="venue-field venue-field-wide" style="border:0;padding:0;margin:0;min-width:0">
+                        <legend>SUPPORTED EVENT TYPES</legend>
+                        <div id="venueEventTypes" class="venue-check-grid" aria-describedby="venueEventTypesHelp"></div>
+                        <small id="venueEventTypesHelp">Select every event this venue can host. Multiple selections are allowed. Leave unselected if not confirmed.</small>
+                    </fieldset>
 
                     <div class="venue-field venue-field-wide">
                         <label for="venueDescription">DESCRIPTION</label>

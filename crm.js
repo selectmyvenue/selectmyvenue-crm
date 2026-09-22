@@ -525,7 +525,7 @@
     window.setTimeout(updateActionBadge, 1200);
   }
 
-  addScript("crm-base.js?v=20260922-audit-preparation-1", function () {
+  addScript("crm-base.js?v=20260922-event-checkboxes-1", function () {
     let checks = 0;
     const waitForCore = window.setInterval(function () {
       checks += 1;
@@ -537,7 +537,7 @@
       if (ready || checks >= 100) {
         window.clearInterval(waitForCore);
         window.setTimeout(function () {
-          addScript("crm-enhancements.js?v=20260922-audit-preparation-1", function () {
+          addScript("crm-enhancements.js?v=20260922-event-checkboxes-1", function () {
             addScript("crm-room-count.js?v=20260915-room-count-1", function () {
               window.setTimeout(installProductionPolish, 80);
             });

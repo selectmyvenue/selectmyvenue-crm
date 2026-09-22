@@ -5220,6 +5220,29 @@ function toDateInputValue(value) {
         : date.toISOString().slice(0, 10);
 }
 
+function renderVenueEventTypes(values) {
+    const host = document.getElementById('venueEventTypes');
+    if (!host) return;
+    const saved = (Array.isArray(values) ? values : String(values || '').split(',')).map(v => String(v).trim()).filter(Boolean);
+    const options = ['Wedding', 'Engagement', 'Birthday', 'Anniversary', 'Reception', 'Corporate Event', 'Party', 'Other'];
+    const key = v => v.toLowerCase().replace(/\s+/g, ' ').trim();
+    for (const value of saved) if (!options.some(x => key(x) === key(value))) options.push(value);
+    host.replaceChildren();
+    for (const value of options) {
+        const label = document.createElement('label');
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.name = 'venueEventTypes';
+        input.value = value;
+        input.checked = saved.some(x => key(x) === key(value));
+        label.append(input, document.createTextNode(' ' + value));
+        host.append(label);
+    }
+}
+function selectedVenueEventTypes() {
+    return Array.from(document.querySelectorAll('#venueEventTypes input:checked')).map(input => input.value);
+}
+
 function openVenueModal(venue = null) {
 
     const modal = document.getElementById("venueModal");
@@ -5323,7 +5346,7 @@ function openVenueModal(venue = null) {
     );
     setVenueField("venueRoomCount", venue?.room_count);
     setVenueField("venueParkingCapacity", venue?.parking_capacity);
-    setVenueField("venueEventTypes", Array.isArray(venue?.event_types) ? venue.event_types.join(", ") : venue?.event_types);
+    renderVenueEventTypes(venue?.event_types);
     setVenueField("venueFacilities", Array.isArray(venue?.facilities) ? venue.facilities.join(", ") : venue?.facilities);
     setVenueField("venueMatchingNotes", venue?.matching_notes);
     setVenueChecked("venueIndoor", venue?.indoor_available === true);
@@ -5951,7 +5974,7 @@ function getVenueFormData() {
 
         room_count: numberOrNull("venueRoomCount"),
         parking_capacity: numberOrNull("venueParkingCapacity"),
-        event_types: safeValue(document.getElementById("venueEventTypes")?.value).split(",").map(v=>v.trim()).filter(Boolean),
+        event_types: selectedVenueEventTypes(),
         facilities: safeValue(document.getElementById("venueFacilities")?.value).split(",").map(v=>v.trim()).filter(Boolean),
         matching_notes: safeValue(document.getElementById("venueMatchingNotes")?.value).trim() || null,
         indoor_available: checked("venueIndoor"),
