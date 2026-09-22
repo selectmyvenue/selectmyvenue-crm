@@ -23,6 +23,7 @@ const tick=()=>new Promise(r=>setTimeout(r,25));
  const now=new Date('2026-09-17T20:00:00Z');
  assert(api.matchesWorkView({status:'new',follow_up_at:'2026-09-17T19:00:00Z'},'today',now));
  assert(api.matchesWorkView({status:'new',follow_up_at:'2026-09-17T19:00:00Z'},'overdue',now));
+ assert(api.matchesWorkView({status:'converted',follow_up_at:'2026-09-17T19:00:00Z'},'overdue',now));
  assert(!api.matchesWorkView({status:'booked',follow_up_at:'2026-09-17T19:00:00Z'},'overdue',now));
  assert(api.matchesWorkView({status:'new',follow_up_at:null},'unscheduled',now));
  assert(!api.matchesWorkView({status:'new',assigned_to:'employee'},'unassigned',now));

@@ -672,7 +672,7 @@
     observer.observe(tbody, { childList: true, subtree: true });
   }
 
-  loadScript("crm-core.js?v=20260922-automation-40-only", function () {
+  loadScript("crm-core.js?v=20260922-audit-preparation-1", function () {
     installInternalCommentOnlyBehavior();
     installLeadRenderNormalizer();
     installSaveCustomerCommentPreserver();

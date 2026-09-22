@@ -1226,7 +1226,7 @@ let currentWorkView = 'all';
 let leadPage = 1;
 let leadPageFilterKey = '';
 const leadPageSize = 50;
-const terminalLeadStatuses = new Set(['booked','converted','closed','lost','not-interested']);
+const terminalLeadStatuses = new Set(['booked','closed','lost','not-interested']);
 const indiaDayFormatter = new Intl.DateTimeFormat('en-CA', {timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'});
 function indiaDay(value) {
     const date = new Date(value);
@@ -2556,11 +2556,13 @@ function getAILeadAnalysis(
             "High-intent lead — focus on closing requirements and booking.";
     }
     else if (
-        status === "booked" ||
-        status === "converted"
+        status === "booked"
     ) {
         recommendation =
             "Conversion achieved — maintain customer relationship and record final details.";
+    }
+    else if (status === "converted") {
+        recommendation = "Call back the customer and schedule the next follow-up.";
     }
     else if (
         status === "closed"
@@ -3758,7 +3760,6 @@ function updateStats() {
 
                 return (
                     status === "closed" ||
-                    status === "converted" ||
                     status === "booked"
                 );
             }
@@ -7194,20 +7195,24 @@ function showAssignmentMessage(message, type = "") {
     element.className = `form-message ${type ? `assignment-${type}` : ""}`.trim();
 }
 
+let assignmentSaveInFlight = false;
 async function saveVenueAssignments(options = {}) {
+    if (assignmentSaveInFlight) return { ok: false, busy: true };
+    const leadToAssign = assignmentCurrentLead;
     const client = getSupabaseClient();
     const saveButton = document.getElementById("saveVenueAssignment");
 
-    if (!client || !assignmentCurrentLead) {
+    if (!client || !leadToAssign) {
         return;
     }
 
-    const selected = Array.from(
+    const visibleSelected = Array.from(
         document.querySelectorAll(
             ".venue-assignment-checkbox:checked:not(:disabled)"
         )
     ).map(input => input.value);
 
+    const selected = typeof window.smvGetAssignmentSelection === 'function' ? window.smvGetAssignmentSelection() : visibleSelected;
     if (!selected.length) {
         showAssignmentMessage(
             "Select at least one approved and verified venue.",
@@ -7216,6 +7221,7 @@ async function saveVenueAssignments(options = {}) {
         return;
     }
 
+    assignmentSaveInFlight = true;
     if (saveButton) {
         saveButton.disabled = true;
         saveButton.textContent = "Assigning...";
@@ -7232,7 +7238,7 @@ async function saveVenueAssignments(options = {}) {
         const { data: latestAssignments, error: latestAssignmentError } = await client
             .from("venue_enquiry_assignments")
             .select("venue_id,assignment_status")
-            .eq("enquiry_id", assignmentCurrentLead.id)
+            .eq("enquiry_id", leadToAssign.id)
             .in("venue_id", selectedUnique);
         if (latestAssignmentError) throw latestAssignmentError;
         const activeVenueIds = new Set((latestAssignments || [])
@@ -7241,7 +7247,7 @@ async function saveVenueAssignments(options = {}) {
         const rows = selectedUnique
             .filter(venueId => !activeVenueIds.has(String(venueId)))
             .map(venueId => ({
-                enquiry_id: assignmentCurrentLead.id,
+                enquiry_id: leadToAssign.id,
                 venue_id: venueId,
                 assignment_status: "assigned",
                 assignment_note: note,
@@ -7263,7 +7269,7 @@ async function saveVenueAssignments(options = {}) {
             await client
                 .from("crm_activity_log")
                 .insert({
-                    lead_id: assignmentCurrentLead.id,
+                    lead_id: leadToAssign.id,
                     activity_type: "venue_assigned",
                     description: `Venue assignment: ${rows.length} new venue(s) assigned.`,
                     new_value: rows.map(row => row.venue_id).join(","),
@@ -7277,10 +7283,10 @@ async function saveVenueAssignments(options = {}) {
             );
         }
 
-        const savedLead = assignmentCurrentLead;
+        const savedLead = leadToAssign;
         await loadVenueAssignments();
         applyFilters();
-        closeVenueAssignmentModal();
+        if (String(assignmentCurrentLead?.id) === String(leadToAssign.id)) closeVenueAssignmentModal();
         if (rows.length > 0) {
             const assignedText =
                 `${rows.length} new venue${rows.length === 1 ? "" : "s"} assigned successfully.`;
@@ -7317,6 +7323,7 @@ async function saveVenueAssignments(options = {}) {
         return { ok: false, error };
     }
     finally {
+        assignmentSaveInFlight = false;
         if (saveButton) {
             saveButton.disabled = false;
             saveButton.textContent = "Assign Selected Venues";

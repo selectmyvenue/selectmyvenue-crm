@@ -1,0 +1,8 @@
+{
+  "name": "selectmyvenue-crm",
+  "private": true,
+  "scripts": {
+    "test": "node tests/master-workspace.cjs && node tests/employee-ui.cjs && node tests/automation-audit.cjs"
+  },
+  "devDependencies": {"jsdom": "26.1.0"}
+}

@@ -12,7 +12,7 @@
     "detail-shared", "site-visit", "negotiation", "not-pick"
   ]);
   const TERMINAL_LEAD_STATUSES = new Set([
-    "booked", "converted", "closed", "lost", "not-interested"
+    "booked", "closed", "lost", "not-interested"
   ]);
   const TERMINAL_ASSIGNMENT_STATUSES = new Set([
     "booked", "converted", "closed", "lost", "cancelled"
