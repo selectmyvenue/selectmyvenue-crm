@@ -500,6 +500,27 @@
 
     const leadBody = document.getElementById("leadsTableBody");
     if (leadBody) {
+      // Direct action safety: keep Details reliable even if another document-level
+      // delegated listener is unavailable or interrupted by later CRM enhancements.
+      if (leadBody.dataset.smvDetailsSafety !== "1") {
+        leadBody.dataset.smvDetailsSafety = "1";
+        leadBody.addEventListener("click", event => {
+          const details = event.target.closest?.(".view-lead-btn,[data-action='view']");
+          if (!details || !leadBody.contains(details)) return;
+          const id = details.dataset.id;
+          if (!id) return;
+          event.preventDefault();
+          event.stopPropagation();
+          try {
+            if (typeof openLeadModal === "function") openLeadModal(id);
+            else if (typeof window.openLeadModal === "function") window.openLeadModal(id);
+          } catch (error) {
+            console.error("Unable to open lead details:", error);
+          }
+          window.setTimeout(polishDuplicateWarning, 220);
+        });
+      }
+
       let timer = null;
       new MutationObserver(() => {
         window.clearTimeout(timer);
