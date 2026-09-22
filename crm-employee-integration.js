@@ -70,6 +70,40 @@ window.startEmployeeIntegration=async function(client){
      if(type&&!negative(s.slice(Math.max(0,type.index-12),type.index))&&!/^\s+(?:not required|not needed|nahi|nahin|nhi)/.test(s.slice(type.index+type[0].length)))out.venueType=smvVenueTypeFamily(type[1]);
      const city=s.match(/\b(gurgaon|gurugram|manesar|greater noida|noida|faridabad|ghaziabad|delhi(?: ncr)?)\b/);
      if(city&&!negative(s.slice(Math.max(0,city.index-12),city.index))){const sector=s.match(/\bsec(?:tor)?\s*[.-]?\s*(\d+[a-z]?)\b/);const place=(sector?'sector '+sector[1]+' ':'')+city[1];out.location=out.location?[out.location,place].join(' / '):place;}
+
+     // Delhi NCR venue-belt / locality inference from free-form comments.
+     // These terms frequently carry more matching value than a broad city dropdown.
+     const areaMatchers=[
+       ['chattarpur',/\bchh?att?arpur\b/],
+       ['gt karnal road',/\b(?:gt|g\.t\.)\s*karnal\s*road\b/],
+       ['kapashera',/\bkapas[ -]?hera\b/],
+       ['dwarka',/\bdwarka\b/],
+       ['alipur',/\balipur\b/],
+       ['peeragarhi',/\b(?:peer|pir)[ -]?agarhi\b/],
+       ['rohini',/\brohini\b/],
+       ['pitampura',/\bpitam[ -]?pura\b/],
+       ['paschim vihar',/\bpaschim\s*vihar\b/],
+       ['najafgarh',/\bnajafgarh\b/],
+       ['vasant kunj',/\bvasant\s*kunj\b/],
+       ['aerocity',/\baero\s*city\b|\baerocity\b/],
+       ['mah́ipalpur',/\bmahi?palpur\b/],
+       ['dlf phase 1',/\bdlf\s*(?:phase)?\s*1\b/],
+       ['dlf phase 2',/\bdlf\s*(?:phase)?\s*2\b/],
+       ['dlf phase 3',/\bdlf\s*(?:phase)?\s*3\b/],
+       ['dlf phase 4',/\bdlf\s*(?:phase)?\s*4\b/],
+       ['dlf phase 5',/\bdlf\s*(?:phase)?\s*5\b/],
+       ['golf course road',/\bgolf\s*course\s*road\b/],
+       ['sohna road',/\bsohna\s*road\b/],
+       ['udyog vihar',/\budyog\s*vihar\b/]
+     ];
+     const areaHit=areaMatchers.find(([,re])=>re.test(s));
+     if(areaHit){
+       const area=areaHit[0];
+       const citySuffix=city?' '+city[1]:'';
+       const place=(area+citySuffix).trim();
+       if(!out.location)out.location=place;
+       else if(!smvText(out.location).includes(area))out.location=[out.location,place].join(' / ');
+     }
      const amount=s.match(/(?:budget|per\s*(?:person|plate|head)|pp)\s*(?:is|of|around|approx|:|=|-)?\s*(?:rs\.?|inr|₹)?\s*(\d+(?:\.\d+)?)\s*(lacs?|lakhs?|lac|lakh|k|thousand)?\b/)||s.match(/(?:rs\.?|inr|₹)?\s*(\d+(?:\.\d+)?)\s*(lacs?|lakhs?|k|thousand)?\s*(?:\/\s*|per\s*)(?:person|plate|head|pax)\b/);
      if(amount){const factor=/^la/.test(amount[2]||'')?100000:/^(k|thousand)$/.test(amount[2]||'')?1000:1;const n=Number(amount[1])*factor;if(/per\s*(?:person|plate|head|pax)|\/\s*(?:person|plate|head|pax)|\bpp\b/.test(s))out.budget=n;else out.totalBudget=n;}
    }
