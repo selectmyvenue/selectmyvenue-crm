@@ -106,6 +106,7 @@ window.startEmployeeIntegration=async function(client){
  }
  function smvShortlist(lead,venues,assigned) {
    if(!lead||['booked','closed','lost','not-interested'].includes(norm(lead.status)))return [];
+   const spec=smvLeadSpec(lead);if(!spec.location||!spec.guests||!spec.occasion||smvEventFamily(spec.occasion)==='other'||!clean(lead.event_date))return [];
    const remaining=Math.max(0,3-assigned.size);
    return venues.filter(v=>v.venue_status==='approved'&&v.verification_status==='verified'&&!assigned.has(String(v.id)))
      .map(v=>({v,m:smartMatch(v,lead)}))
