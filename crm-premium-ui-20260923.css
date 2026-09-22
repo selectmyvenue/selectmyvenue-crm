@@ -850,3 +850,258 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
   .page-heading-content h1{font-size:25px!important}
   #leadModal .lead-modal-card{border-radius:0!important}
 }
+
+
+/* =========================================================
+   LEAD-FIRST DENSE OPERATIONS MODE
+   Keep premium look, maximize visible lead rows.
+   ========================================================= */
+
+.crm-header{
+  min-height:60px!important;
+  padding:6px 14px!important;
+}
+.crm-header-logo{
+  width:94px!important;
+  height:46px!important;
+}
+.crm-brand{gap:10px!important}
+.crm-brand-text strong{font-size:19px!important}
+.crm-header-title{
+  font-size:14px!important;
+  padding:9px 13px!important;
+}
+.crm-header .staff-name,
+.crm-header .account-password-btn,
+.crm-header .logout-btn{
+  min-height:32px!important;
+  padding:0 10px!important;
+  font-size:10px!important;
+}
+
+/* Compact command banner */
+.page-heading{
+  margin:10px 0 9px!important;
+  padding:11px 16px!important;
+  min-height:76px!important;
+  border-radius:15px!important;
+  align-items:center!important;
+}
+.page-heading-content h1,
+.page-heading-content h1 span{
+  font-size:25px!important;
+  line-height:1.05!important;
+}
+.page-heading .page-kicker{
+  margin-bottom:3px!important;
+  font-size:8px!important;
+}
+.page-heading-content p{
+  display:none!important;
+}
+.page-heading .command-health{
+  margin-top:6px!important;
+  min-height:23px!important;
+  padding:3px 8px!important;
+  font-size:9px!important;
+}
+.page-heading .heading-actions{
+  gap:6px!important;
+}
+.page-heading .heading-actions button{
+  min-height:34px!important;
+  padding:7px 11px!important;
+  font-size:10px!important;
+}
+
+/* Workspace begins quickly */
+.filter-bar{
+  padding:7px 10px!important;
+  gap:7px!important;
+}
+.search-box input,
+.filter-bar select{
+  height:36px!important;
+  min-height:36px!important;
+  border-radius:9px!important;
+  font-size:11px!important;
+}
+.filter-workspace-note{
+  min-height:36px!important;
+  height:36px!important;
+  border-radius:9px!important;
+  font-size:9.5px!important;
+}
+
+/* Queue cards compact */
+#leadWorkViews.lead-work-views{
+  padding:7px 10px!important;
+  gap:6px!important;
+}
+#leadWorkViews.lead-work-views button{
+  min-height:43px!important;
+  height:43px!important;
+  padding:5px 10px!important;
+  border-radius:10px!important;
+  font-size:9.5px!important;
+}
+#leadWorkViews.lead-work-views button strong{
+  font-size:18px!important;
+}
+
+/* Automatic preparation stays available but takes almost no space collapsed */
+#smvPreparationQueue{
+  margin:5px 10px!important;
+  border-radius:9px!important;
+}
+#smvPreparationQueue>summary{
+  min-height:30px!important;
+  height:30px!important;
+  padding:5px 10px!important;
+  font-size:9.5px!important;
+  line-height:20px!important;
+}
+#smvPreparationQueue:not([open]) .smv-preparation-body{
+  display:none!important;
+}
+
+/* Pagination compact */
+.lead-pagination{
+  min-height:34px!important;
+  height:34px!important;
+  padding:4px 10px!important;
+  font-size:9.5px!important;
+}
+.lead-pagination button{
+  min-height:28px!important;
+  height:28px!important;
+  padding:0 9px!important;
+  font-size:9.5px!important;
+}
+
+/* Table starts higher and shows many more rows */
+.table-wrapper{
+  max-height:calc(100vh - 265px)!important;
+  min-height:420px!important;
+}
+.leads-table{
+  min-width:1380px!important;
+}
+.leads-table thead th{
+  height:36px!important;
+  padding:0 9px!important;
+  font-size:8.6px!important;
+}
+.leads-table td{
+  height:48px!important;
+  max-height:48px!important;
+  padding:7px 9px!important;
+  font-size:10.2px!important;
+  line-height:1.22!important;
+  vertical-align:middle!important;
+}
+.leads-table td:first-child{
+  font-size:10.7px!important;
+  line-height:1.2!important;
+}
+
+/* Prevent one long value from making an entire row tall */
+.leads-table td{
+  overflow:hidden!important;
+}
+.leads-table .crm-inline-field:not(.editing) .inline-display,
+.leads-table td:first-child,
+.leads-table td:nth-child(2),
+.leads-table td:nth-child(4),
+.leads-table td:nth-child(6),
+.leads-table td:nth-child(9){
+  display:-webkit-box!important;
+  -webkit-box-orient:vertical!important;
+  -webkit-line-clamp:2!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  max-height:2.45em!important;
+  word-break:break-word!important;
+}
+.leads-table td:nth-child(3),
+.leads-table td:nth-child(5),
+.leads-table td:nth-child(7),
+.leads-table td:nth-child(8),
+.leads-table td:nth-child(10),
+.leads-table td:nth-child(11),
+.leads-table td:nth-child(12),
+.leads-table td:nth-child(13){
+  white-space:nowrap!important;
+}
+.leads-table .status-badge{
+  min-height:23px!important;
+  padding:3px 8px!important;
+  font-size:9px!important;
+}
+.leads-table .view-lead-btn,
+.leads-table .venue-assign-btn{
+  height:29px!important;
+  min-height:29px!important;
+  padding:0 8px!important;
+  border-radius:8px!important;
+  font-size:9px!important;
+}
+.leads-table .view-lead-btn{min-width:64px!important}
+.leads-table .venue-assign-btn{min-width:72px!important}
+
+/* Drawer also gets denser, while still comfortable */
+#leadModal .lead-modal-card{
+  width:min(1160px,94vw)!important;
+  max-width:1160px!important;
+}
+#leadModal .modal-header{
+  padding:12px 16px!important;
+}
+#leadModal .modal-header h2{
+  font-size:19px!important;
+}
+#leadModal .lead-info-grid{
+  padding:10px 14px 4px!important;
+  gap:7px!important;
+}
+#leadModal .info-card{
+  min-height:62px!important;
+  padding:8px 10px!important;
+}
+#leadModal .detail-section-title{
+  margin:8px 14px 6px!important;
+  padding:6px 9px!important;
+}
+#leadModal .crm-controls{
+  padding:0 14px!important;
+  gap:7px!important;
+}
+#leadModal input,
+#leadModal select{
+  min-height:34px!important;
+  height:34px!important;
+}
+#leadModal .smv-match-details{
+  margin:9px 14px!important;
+}
+#leadModal .detail-block{
+  margin:8px 14px!important;
+  padding:9px!important;
+}
+#leadModal .detail-block textarea{
+  min-height:74px!important;
+}
+#leadModal #detailRemarks{min-height:84px!important}
+#leadModal .modal-actions{
+  padding:8px 14px!important;
+}
+
+/* On full-HD desktop, prioritize rows over decorative whitespace */
+@media(min-width:1400px) and (min-height:800px){
+  .crm-main{
+    padding-top:8px!important;
+  }
+  .table-wrapper{
+    max-height:calc(100vh - 250px)!important;
+  }
+}
