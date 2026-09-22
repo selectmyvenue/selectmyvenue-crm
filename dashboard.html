@@ -712,6 +712,12 @@
                         </select>
                     </div>
 
+                    <div class="venue-field">
+                        <label for="venueEventTypes">SUPPORTED EVENT TYPES</label>
+                        <input id="venueEventTypes" aria-describedby="venueEventTypesHelp" placeholder="Wedding, Engagement, Birthday, Anniversary, Corporate Event, Reception">
+                        <small id="venueEventTypesHelp">Enter confirmed events separated by commas. Example: Wedding, Engagement, Birthday. Leave blank if not confirmed; automatic event matching will wait for this detail.</small>
+                    </div>
+
                     <div class="venue-field venue-field-wide">
                         <label for="venueDescription">DESCRIPTION</label>
                         <textarea id="venueDescription" rows="3" maxlength="2000" placeholder="Short venue description"></textarea>
@@ -844,7 +850,7 @@
 <div class="venue-form-grid">
 <div class="venue-field"><label for="venueRoomCount">NUMBER OF ROOMS</label><input id="venueRoomCount" type="number" min="0" placeholder="0"></div>
 <div class="venue-field"><label for="venueParkingCapacity">PARKING CAPACITY</label><input id="venueParkingCapacity" type="number" min="0" placeholder="Cars"></div>
-<div class="venue-field"><label for="venueEventTypes">EVENT TYPES</label><input id="venueEventTypes" placeholder="Wedding, Engagement, Birthday, Corporate"></div>
+
 <div class="venue-field"><label for="venueFacilities">FACILITIES</label><input id="venueFacilities" placeholder="Valet, Pool, Stage, Bridal room"></div>
 </div>
 <div class="venue-check-grid">
