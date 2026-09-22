@@ -4285,6 +4285,165 @@ function setupLogout() {
 }
 
 /* =========================================================
+   LEAD DETAILS DRAG
+   ========================================================= */
+
+function setupLeadDetailsDrag() {
+
+    const modal =
+        document.getElementById(
+            "leadModal"
+        );
+
+    const card =
+        modal?.querySelector(
+            ".lead-modal-card"
+        );
+
+    const handle =
+        card?.querySelector(
+            ".modal-header"
+        );
+
+    if (
+        !modal ||
+        !card ||
+        !handle ||
+        card.dataset.smvCoreDragReady === "1"
+    ) {
+        return;
+    }
+
+    card.dataset.smvCoreDragReady =
+        "1";
+
+    handle.classList.add(
+        "smv-core-drag-handle"
+    );
+
+    let dragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    handle.addEventListener(
+        "mousedown",
+        event => {
+
+            if (
+                event.button !== 0 ||
+                event.target.closest(
+                    "button,input,select,textarea,a"
+                )
+            ) {
+                return;
+            }
+
+            const rect =
+                card.getBoundingClientRect();
+
+            dragging = true;
+            offsetX =
+                event.clientX - rect.left;
+            offsetY =
+                event.clientY - rect.top;
+
+            card.classList.add(
+                "smv-dragging"
+            );
+
+            event.preventDefault();
+        }
+    );
+
+    document.addEventListener(
+        "mousemove",
+        event => {
+
+            if (!dragging) {
+                return;
+            }
+
+            const maxLeft =
+                Math.max(
+                    0,
+                    window.innerWidth -
+                    card.offsetWidth
+                );
+
+            const maxTop =
+                Math.max(
+                    56,
+                    window.innerHeight -
+                    Math.min(
+                        card.offsetHeight,
+                        140
+                    )
+                );
+
+            const left =
+                Math.max(
+                    0,
+                    Math.min(
+                        maxLeft,
+                        event.clientX -
+                        offsetX
+                    )
+                );
+
+            const top =
+                Math.max(
+                    56,
+                    Math.min(
+                        maxTop,
+                        event.clientY -
+                        offsetY
+                    )
+                );
+
+            card.style.setProperty(
+                "left",
+                left + "px",
+                "important"
+            );
+
+            card.style.setProperty(
+                "top",
+                top + "px",
+                "important"
+            );
+
+            card.style.setProperty(
+                "right",
+                "auto",
+                "important"
+            );
+
+            card.style.setProperty(
+                "bottom",
+                "auto",
+                "important"
+            );
+        }
+    );
+
+    document.addEventListener(
+        "mouseup",
+        () => {
+
+            if (!dragging) {
+                return;
+            }
+
+            dragging = false;
+
+            card.classList.remove(
+                "smv-dragging"
+            );
+        }
+    );
+}
+
+/* =========================================================
    KEYBOARD
    ========================================================= */
 
@@ -4301,11 +4460,6 @@ function setupKeyboard() {
                 return;
             }
 
-            const leadModal =
-                document.getElementById(
-                    "leadModal"
-                );
-
             const addModal =
                 document.getElementById(
                     "addEnquiryModal"
@@ -4316,29 +4470,93 @@ function setupKeyboard() {
                     "venueModal"
                 );
 
+            /* Protect important data-entry forms from accidental ESC. */
             if (
+                (addModal && !addModal.hidden) ||
+                (venueModal && !venueModal.hidden)
+            ) {
+                return;
+            }
+
+            const leadModal =
+                document.getElementById(
+                    "leadModal"
+                );
+
+            const assignmentModal =
+                document.getElementById(
+                    "venueAssignmentModal"
+                );
+
+            const historyModal =
+                document.getElementById(
+                    "smvVenueHistoryModal"
+                );
+
+            const whatsappQueue =
+                document.getElementById(
+                    "smvWhatsAppQueue"
+                );
+
+            const actionDrawer =
+                document.getElementById(
+                    "smvOpsDrawer"
+                );
+
+            let handled = false;
+
+            if (
+                document.getElementById("commentEditorOverlay") ||
+                document.getElementById("commentViewOverlay")
+            ) {
+                closeFloatingOverlay();
+                handled = true;
+            }
+            else if (
+                assignmentModal &&
+                !assignmentModal.hidden
+            ) {
+                closeVenueAssignmentModal();
+                handled = true;
+            }
+            else if (
+                historyModal &&
+                !historyModal.hidden
+            ) {
+                historyModal.hidden = true;
+                document.body.style.overflow = "";
+                handled = true;
+            }
+            else if (
+                whatsappQueue &&
+                !whatsappQueue.hidden
+            ) {
+                whatsappQueue.hidden = true;
+                handled = true;
+            }
+            else if (
+                actionDrawer &&
+                actionDrawer.getAttribute("aria-hidden") === "false"
+            ) {
+                document.getElementById("smvOpsBackdrop")?.classList.remove("show");
+                actionDrawer.classList.remove("show");
+                actionDrawer.setAttribute("aria-hidden", "true");
+                handled = true;
+            }
+            else if (
                 leadModal &&
                 !leadModal.hidden
             ) {
                 closeLeadModal();
+                handled = true;
             }
 
-            if (
-                addModal &&
-                !addModal.hidden
-            ) {
-                closeAddEnquiryModal();
+            if (handled) {
+                event.preventDefault();
+                event.stopPropagation();
             }
-
-            if (
-                venueModal &&
-                !venueModal.hidden
-            ) {
-                closeVenueModal();
-            }
-
-            closeFloatingOverlay();
-        }
+        },
+        true
     );
 }
 
@@ -7468,6 +7686,8 @@ async function initializeCRM() {
     setupLogout();
 
     setupKeyboard();
+
+    setupLeadDetailsDrag();
 
     setupVenueManagement();
 
