@@ -4346,6 +4346,42 @@ function setupLeadDetailsDrag() {
             offsetY =
                 event.clientY - rect.top;
 
+            card.style.setProperty(
+                "position",
+                "fixed",
+                "important"
+            );
+
+            card.style.setProperty(
+                "left",
+                rect.left + "px",
+                "important"
+            );
+
+            card.style.setProperty(
+                "top",
+                rect.top + "px",
+                "important"
+            );
+
+            card.style.setProperty(
+                "right",
+                "auto",
+                "important"
+            );
+
+            card.style.setProperty(
+                "bottom",
+                "auto",
+                "important"
+            );
+
+            card.style.setProperty(
+                "margin",
+                "0",
+                "important"
+            );
+
             card.classList.add(
                 "smv-dragging"
             );
