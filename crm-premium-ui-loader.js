@@ -1,5 +1,5 @@
 (function(){
-  const HREF='crm-premium-ui-20260923.css?v=20260923-readable-2';
+  const HREF='crm-premium-ui-20260923.css?v=20260923-details-force-1';
   let link=null;
   function putLast(){
     if(!document.head)return;
@@ -15,6 +15,43 @@
     }
   }
 
+  function forceLeadDrawer(modal){
+    if(!modal)return;
+    const card=modal.querySelector('.lead-modal-card');
+    modal.hidden=false;
+    modal.style.setProperty('position','fixed','important');
+    modal.style.setProperty('inset','0','important');
+    modal.style.setProperty('left','0','important');
+    modal.style.setProperty('right','0','important');
+    modal.style.setProperty('top','0','important');
+    modal.style.setProperty('bottom','0','important');
+    modal.style.setProperty('width','100vw','important');
+    modal.style.setProperty('height','100vh','important');
+    modal.style.setProperty('overflow','visible','important');
+    modal.style.setProperty('z-index','20000','important');
+    modal.style.setProperty('pointer-events','none','important');
+    modal.style.setProperty('background','rgba(3,32,29,.12)','important');
+    if(card){
+      card.dataset.smvFreeDrag='1';
+      card.style.setProperty('position','fixed','important');
+      card.style.setProperty('top','68px','important');
+      card.style.setProperty('right','12px','important');
+      card.style.setProperty('left','auto','important');
+      card.style.setProperty('bottom','auto','important');
+      card.style.setProperty('width','min(1120px, calc(100vw - 24px))','important');
+      card.style.setProperty('min-width','0','important');
+      card.style.setProperty('max-width','1120px','important');
+      card.style.setProperty('height','calc(100vh - 80px)','important');
+      card.style.setProperty('min-height','0','important');
+      card.style.setProperty('max-height','calc(100vh - 80px)','important');
+      card.style.setProperty('overflow','auto','important');
+      card.style.setProperty('resize','none','important');
+      card.style.setProperty('pointer-events','auto','important');
+      card.style.setProperty('margin','0','important');
+      card.style.setProperty('z-index','20001','important');
+    }
+  }
+
   function installDetailsFailsafe(){
     if(document.documentElement.dataset.smvDetailsFailsafe==='1')return;
     document.documentElement.dataset.smvDetailsFailsafe='1';
@@ -25,15 +62,24 @@
       event.stopImmediatePropagation();
       const id=button.dataset.id;
       const modal=document.getElementById('leadModal');
-      if(modal)modal.hidden=false;
+      forceLeadDrawer(modal);
       try{
         const fn=window.crm?.openLeadModal||window.openLeadModal;
         if(typeof fn==='function')fn(id);
       }catch(error){
         console.error('Lead Details failsafe error:',error);
       }
-      if(modal)modal.hidden=false;
+      forceLeadDrawer(modal);
+      setTimeout(()=>forceLeadDrawer(modal),0);
+      setTimeout(()=>forceLeadDrawer(modal),120);
     },true);
+
+    const modal=document.getElementById('leadModal');
+    if(modal){
+      new MutationObserver(()=>{
+        if(!modal.hidden)forceLeadDrawer(modal);
+      }).observe(modal,{attributes:true,attributeFilter:['hidden']});
+    }
   }
 
   function boot(){
