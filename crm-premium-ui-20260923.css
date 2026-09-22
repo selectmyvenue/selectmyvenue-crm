@@ -1105,3 +1105,167 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
     max-height:calc(100vh - 250px)!important;
   }
 }
+
+
+/* =========================================================
+   READABILITY + TABLE STRUCTURE CORRECTION
+   100% zoom desktop: readable, compact, no hidden information.
+   ========================================================= */
+
+/* Keep compact shell, restore readable typography */
+body{font-size:14px!important}
+.crm-brand-text strong{font-size:21px!important}
+.crm-header-title{font-size:15px!important}
+.crm-header .staff-name,
+.crm-header .account-password-btn,
+.crm-header .logout-btn{font-size:11px!important}
+
+.page-heading-content h1,
+.page-heading-content h1 span{font-size:27px!important}
+.page-heading-content p{
+  display:block!important;
+  margin:4px 0 0!important;
+  font-size:10.8px!important;
+  line-height:1.25!important;
+  color:#d7ece5!important;
+}
+.page-heading .page-kicker{font-size:8.5px!important}
+.page-heading .command-health{font-size:9.5px!important}
+.page-heading .heading-actions button{font-size:10.5px!important}
+
+.search-box input,
+.filter-bar select{font-size:12px!important}
+.filter-workspace-note{font-size:10px!important}
+
+#leadWorkViews.lead-work-views button{font-size:10.5px!important}
+#leadWorkViews.lead-work-views button strong{font-size:19px!important}
+#smvPreparationQueue>summary{font-size:10.5px!important}
+.lead-pagination{font-size:10.5px!important}
+.lead-pagination button{font-size:10px!important}
+
+/* Restore real table semantics: never turn TDs into boxes */
+.leads-table{
+  width:100%!important;
+  min-width:1540px!important;
+  table-layout:fixed!important;
+}
+.leads-table th,
+.leads-table td{
+  display:table-cell!important;
+  box-sizing:border-box!important;
+}
+.leads-table thead th{
+  height:40px!important;
+  padding:0 8px!important;
+  font-size:9.5px!important;
+  letter-spacing:.045em!important;
+}
+.leads-table td{
+  min-height:54px!important;
+  height:auto!important;
+  max-height:none!important;
+  padding:9px 8px!important;
+  font-size:11.5px!important;
+  line-height:1.32!important;
+  overflow:visible!important;
+  vertical-align:middle!important;
+  word-break:normal!important;
+}
+.leads-table td:first-child{
+  font-size:11.8px!important;
+  line-height:1.3!important;
+}
+
+/* Explicit column widths keep CUSTOMER and PHONE separate */
+.leads-table th:nth-child(1),.leads-table td:nth-child(1){width:125px!important}
+.leads-table th:nth-child(2),.leads-table td:nth-child(2){width:112px!important}
+.leads-table th:nth-child(3),.leads-table td:nth-child(3){width:145px!important}
+.leads-table th:nth-child(4),.leads-table td:nth-child(4){width:175px!important}
+.leads-table th:nth-child(5),.leads-table td:nth-child(5){width:110px!important}
+.leads-table th:nth-child(6),.leads-table td:nth-child(6){width:115px!important}
+.leads-table th:nth-child(7),.leads-table td:nth-child(7){width:118px!important}
+.leads-table th:nth-child(8),.leads-table td:nth-child(8){width:72px!important}
+.leads-table th:nth-child(9),.leads-table td:nth-child(9){width:125px!important}
+.leads-table th:nth-child(10),.leads-table td:nth-child(10){width:102px!important}
+.leads-table th:nth-child(11),.leads-table td:nth-child(11){width:86px!important}
+.leads-table th:nth-child(12),.leads-table td:nth-child(12){width:86px!important}
+.leads-table th:nth-child(13),.leads-table td:nth-child(13){width:88px!important}
+
+/* No information hiding/clamping */
+.leads-table .customer-cell,
+.leads-table .customer-cell strong,
+.leads-table .phone-cell,
+.leads-table .created-date-cell,
+.leads-table .crm-inline-field,
+.leads-table .inline-display{
+  display:block!important;
+  max-height:none!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  -webkit-line-clamp:unset!important;
+  -webkit-box-orient:initial!important;
+}
+.leads-table .customer-cell,
+.leads-table .phone-cell{
+  white-space:normal!important;
+}
+.leads-table .phone-cell{
+  font-variant-numeric:tabular-nums!important;
+  color:#173f36!important;
+  font-weight:650!important;
+}
+.leads-table .created-date-cell{
+  white-space:normal!important;
+  font-size:10.8px!important;
+}
+.leads-table .inline-display{
+  white-space:normal!important;
+  word-break:break-word!important;
+}
+.leads-table td:nth-child(8),
+.leads-table td:nth-child(10),
+.leads-table td:nth-child(11),
+.leads-table td:nth-child(12),
+.leads-table td:nth-child(13){
+  white-space:nowrap!important;
+}
+
+/* Controls/readability */
+.leads-table .status-badge{
+  min-height:25px!important;
+  padding:4px 8px!important;
+  font-size:9.5px!important;
+}
+.leads-table .view-lead-btn,
+.leads-table .venue-assign-btn{
+  height:31px!important;
+  min-height:31px!important;
+  font-size:9.8px!important;
+  pointer-events:auto!important;
+  position:relative!important;
+  z-index:3!important;
+}
+.leads-table .view-lead-btn{min-width:68px!important}
+.leads-table .venue-assign-btn{min-width:76px!important}
+
+/* Slightly more room for leads while keeping text readable */
+.table-wrapper{
+  max-height:calc(100vh - 280px)!important;
+  min-height:400px!important;
+}
+
+/* Lead drawer readable text */
+#leadModal .info-card>span,
+#leadModal .control-group label,
+#leadModal .detail-block label{font-size:9.5px!important}
+#leadModal .info-card strong,
+#leadModal .info-card input,
+#leadModal .info-card select,
+#leadModal input,
+#leadModal select,
+#leadModal textarea{font-size:12px!important}
+#leadModal .detail-block textarea{line-height:1.45!important}
+
+@media(max-width:1600px){
+  .leads-table{min-width:1500px!important}
+}
