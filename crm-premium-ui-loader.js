@@ -1,5 +1,5 @@
 (function(){
-  const PREMIUM_HREF='crm-premium-ui-20260923.css?v=20260923-venue-list-first-3';
+  const PREMIUM_HREF='crm-premium-ui-20260923.css?v=20260923-logo-mobile-unified-1';
   const MOBILE_QUERY='(max-width:760px)';
   let premiumLink=null;
 
