@@ -813,3 +813,391 @@
   .smv-mobile-more-menu>button b{font-size:11.5px!important}
   .smv-mobile-more-menu>button.danger{color:#b42318!important}
 }
+
+/* =========================================================
+   MOBILE VENUE MANAGEMENT — CARD WORKSPACE V2
+   Mirrors the enquiry mobile UX while preserving all venue data.
+   ========================================================= */
+@media(max-width:760px){
+  /* Keep venue screen in a clear, predictable order */
+  html.smv-phone-crm body #venueManagementSection .venue-page-heading{order:1!important}
+  html.smv-phone-crm body #venueManagementSection .venue-toolbar{order:2!important}
+  html.smv-phone-crm body #venueManagementSection .venue-stats-grid{order:3!important}
+  html.smv-phone-crm body #venueManagementSection #smvVenueHealthPanel{order:4!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table-wrapper{order:5!important}
+  html.smv-phone-crm body #venueManagementSection .network-insights{order:6!important}
+  html.smv-phone-crm body #venueManagementSection #venueEmptyState{order:7!important}
+
+  /* The previous blank white block was the mobile venue heading with desktop white text.
+     Make it a real visible phone header. */
+  html.smv-phone-crm body #venueManagementSection .venue-page-heading{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:9px!important;
+    margin:0 0 8px!important;
+    padding:12px!important;
+    border:1px solid #dce7e2!important;
+    border-radius:14px!important;
+    background:linear-gradient(135deg,#ffffff,#f5fbf8)!important;
+    box-shadow:0 5px 16px rgba(17,76,63,.05)!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-kicker{
+    color:#6f817b!important;
+    font-size:8.5px!important;
+    letter-spacing:.09em!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-page-heading h1,
+  html.smv-phone-crm body #venueManagementSection .venue-page-heading h1 span{
+    margin:2px 0 0!important;
+    color:#0b594a!important;
+    font-size:23px!important;
+    line-height:1.05!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-page-heading p{
+    margin:4px 0 0!important;
+    color:#6b7f79!important;
+    font-size:10.5px!important;
+    line-height:1.35!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-heading-actions{
+    display:grid!important;
+    grid-template-columns:1.25fr .75fr!important;
+    gap:7px!important;
+    margin:2px 0 0!important;
+  }
+  html.smv-phone-crm body #venueManagementSection #backToLeadsBtn{display:none!important}
+  html.smv-phone-crm body #venueManagementSection #addVenueBtn{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:5px!important;
+    min-height:42px!important;
+    height:42px!important;
+    padding:0 12px!important;
+    border:1px solid #08705b!important;
+    border-radius:10px!important;
+    background:linear-gradient(135deg,#0b9275,#08705b)!important;
+    color:#fff!important;
+    font-size:11.5px!important;
+    font-weight:900!important;
+    box-shadow:0 6px 16px rgba(8,112,91,.15)!important;
+  }
+  html.smv-phone-crm body #venueManagementSection #refreshVenuesBtn{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:4px!important;
+    min-height:42px!important;
+    height:42px!important;
+    padding:0 10px!important;
+    border:1px solid #cfe1db!important;
+    border-radius:10px!important;
+    background:#fff!important;
+    color:#23584c!important;
+    font-size:11px!important;
+    font-weight:850!important;
+    box-shadow:none!important;
+  }
+
+  /* Search and filters first, like Enquiries */
+  html.smv-phone-crm body #venueManagementSection .venue-toolbar{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:7px!important;
+    margin:0 0 8px!important;
+    padding:9px!important;
+    border:1px solid #dce7e2!important;
+    border-radius:13px!important;
+    background:#fff!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-toolbar input{
+    grid-column:1/-1!important;
+    height:42px!important;
+    min-height:42px!important;
+    padding:0 12px!important;
+    border-radius:10px!important;
+    font-size:12.5px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-toolbar select{
+    width:100%!important;
+    min-width:0!important;
+    height:40px!important;
+    min-height:40px!important;
+    padding:0 9px!important;
+    border-radius:10px!important;
+    font-size:11.5px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection #venuePlanFilter{
+    grid-column:1/-1!important;
+  }
+
+  /* Stats: compact horizontal cards */
+  html.smv-phone-crm body #venueManagementSection .venue-stats-grid{
+    display:flex!important;
+    gap:7px!important;
+    margin:0!important;
+    padding:0 0 8px!important;
+    overflow-x:auto!important;
+    scroll-snap-type:x proximity!important;
+    scrollbar-width:none!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-stats-grid::-webkit-scrollbar{display:none!important}
+  html.smv-phone-crm body #venueManagementSection .venue-stat-card{
+    flex:0 0 112px!important;
+    min-height:64px!important;
+    padding:9px 10px!important;
+    border:1px solid #dce7e2!important;
+    border-radius:12px!important;
+    background:#fff!important;
+    box-shadow:0 4px 12px rgba(17,76,63,.04)!important;
+    scroll-snap-align:start!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-stat-card span{
+    color:#788983!important;
+    font-size:8px!important;
+    letter-spacing:.08em!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-stat-card strong{
+    margin-top:3px!important;
+    color:#075b4b!important;
+    font-size:22px!important;
+    line-height:1!important;
+  }
+
+  /* Venue Profile Health: keep it, but stop it taking over the phone screen */
+  html.smv-phone-crm body #venueManagementSection #smvVenueHealthPanel{
+    margin:0 0 8px!important;
+    padding:10px!important;
+    border:1px solid #dce7e2!important;
+    border-radius:13px!important;
+    background:#fff!important;
+    box-shadow:0 4px 12px rgba(17,76,63,.04)!important;
+  }
+  html.smv-phone-crm body #smvVenueHealthPanel .smv-venue-health-head{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    gap:8px!important;
+    align-items:center!important;
+  }
+  html.smv-phone-crm body #smvVenueHealthPanel .smv-venue-health-head h3{
+    margin:0!important;
+    color:#0b594a!important;
+    font-size:13px!important;
+  }
+  html.smv-phone-crm body #smvVenueHealthPanel .smv-venue-health-head p{
+    display:none!important;
+  }
+  html.smv-phone-crm body #smvVenueHealthPanel .smv-profile-health-btn{
+    min-height:34px!important;
+    height:34px!important;
+    padding:0 10px!important;
+    border:1px solid #c8ded7!important;
+    border-radius:9px!important;
+    background:#f7fbf9!important;
+    color:#176352!important;
+    font-size:9.5px!important;
+    font-weight:850!important;
+  }
+  html.smv-phone-crm body #smvVenueHealthPanel .smv-health-kpis{
+    display:flex!important;
+    gap:6px!important;
+    margin-top:8px!important;
+    overflow-x:auto!important;
+    scrollbar-width:none!important;
+  }
+  html.smv-phone-crm body #smvVenueHealthPanel .smv-health-kpis::-webkit-scrollbar{display:none!important}
+  html.smv-phone-crm body #smvVenueHealthPanel .smv-health-kpi{
+    flex:0 0 108px!important;
+    min-height:52px!important;
+    padding:7px 8px!important;
+    border:1px solid #e1ebe7!important;
+    border-radius:10px!important;
+    background:#fbfdfc!important;
+  }
+  html.smv-phone-crm body #smvVenueHealthPanel .smv-health-kpi span{
+    font-size:7.5px!important;
+    line-height:1.15!important;
+  }
+  html.smv-phone-crm body #smvVenueHealthPanel .smv-health-kpi strong{
+    margin-top:3px!important;
+    font-size:17px!important;
+  }
+
+  /* Venue list becomes enquiry-style cards */
+  html.smv-phone-crm body #venueManagementSection .venue-table-wrapper{
+    width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:visible!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table,
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table thead{display:none!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:0 12px!important;
+    width:100%!important;
+    margin:0 0 9px!important;
+    padding:12px!important;
+    border:1px solid #d8e7e2!important;
+    border-radius:14px!important;
+    background:#fff!important;
+    box-shadow:0 5px 15px rgba(17,76,63,.045)!important;
+    overflow:hidden!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td{
+    position:static!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    justify-content:center!important;
+    width:auto!important;
+    min-width:0!important;
+    min-height:46px!important;
+    padding:7px 0!important;
+    border:0!important;
+    border-bottom:1px solid #edf3f0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    color:#173f36!important;
+    font-size:12.5px!important;
+    line-height:1.28!important;
+    word-break:break-word!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td::before{
+    display:block!important;
+    margin-bottom:3px!important;
+    color:#7a8b85!important;
+    font-size:8px!important;
+    line-height:1!important;
+    font-weight:850!important;
+    letter-spacing:.075em!important;
+    text-transform:uppercase!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(1){
+    grid-column:1/-1!important;
+    min-height:54px!important;
+    padding-top:2px!important;
+    color:#103f35!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(1)::before{content:"Venue"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(2)::before{content:"Contact"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(3)::before{content:"Location"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(4)::before{content:"Type"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(5)::before{content:"Capacity"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(6)::before{content:"Price / person"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(7)::before{content:"Status"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(8)::before{content:"Plan"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(9)::before{content:"Public"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(10)::before{content:"Verification"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(11)::before{display:none!important}
+  html.smv-phone-crm body #venueManagementSection .venue-name-cell strong{
+    color:#0a4338!important;
+    font-size:16px!important;
+    line-height:1.15!important;
+    text-decoration:none!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-name-cell small{
+    margin-top:3px!important;
+    color:#6f817b!important;
+    font-size:10.5px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-muted{
+    margin-top:2px!important;
+    color:#788983!important;
+    font-size:10px!important;
+    line-height:1.25!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-pill,
+  html.smv-phone-crm body #venueManagementSection .venue-plan-pill,
+  html.smv-phone-crm body #venueManagementSection .venue-public-pill{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    min-height:27px!important;
+    width:100%!important;
+    padding:4px 8px!important;
+    border-radius:999px!important;
+    font-size:9.5px!important;
+    font-weight:850!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(11){
+    grid-column:1/-1!important;
+    min-height:0!important;
+    padding:10px 0 0!important;
+    border-bottom:0!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-row-actions{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
+    width:100%!important;
+    min-width:0!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-row-actions .venue-row-btn{
+    width:100%!important;
+    min-width:0!important;
+    min-height:40px!important;
+    height:40px!important;
+    margin:0!important;
+    padding:0 8px!important;
+    border-radius:9px!important;
+    font-size:10.5px!important;
+    font-weight:850!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+
+  /* Analytics remains available, but no giant blank card */
+  html.smv-phone-crm body #venueManagementSection .network-insights{
+    margin:2px 0 8px!important;
+    padding:10px!important;
+    min-height:0!important;
+    border:1px solid #dce7e2!important;
+    border-radius:13px!important;
+    background:#fff!important;
+    box-shadow:0 4px 12px rgba(17,76,63,.04)!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .network-insights-head{
+    margin-bottom:8px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .network-insights-head h2{
+    font-size:14px!important;
+    color:#0b594a!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .network-insights-head p{
+    font-size:9.5px!important;
+    line-height:1.3!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .network-kpi-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:6px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .network-kpi{
+    min-height:62px!important;
+    padding:8px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .network-kpi span{font-size:7.5px!important}
+  html.smv-phone-crm body #venueManagementSection .network-kpi strong{font-size:17px!important}
+  html.smv-phone-crm body #venueManagementSection .network-kpi small{font-size:8px!important}
+
+  /* Bottom Add Venue remains unmissable */
+  html.smv-phone-crm body #smvMobileNav [data-smv-mobile="add"]{
+    background:linear-gradient(135deg,#0b9275,#08705b)!important;
+    color:#fff!important;
+    box-shadow:0 5px 14px rgba(8,112,91,.16)!important;
+  }
+  html.smv-phone-crm body #smvMobileNav [data-smv-mobile="add"] b{
+    color:#fff!important;
+    font-size:9.5px!important;
+  }
+}
