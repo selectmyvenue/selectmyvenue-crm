@@ -525,7 +525,7 @@
     window.setTimeout(updateActionBadge, 1200);
   }
 
-  addScript("crm-base.js?v=20260923-repeat-safe-7", function () {
+  addScript("crm-base.js?v=20260923-venue-details-9", function () {
     let checks = 0;
     const waitForCore = window.setInterval(function () {
       checks += 1;
