@@ -1408,3 +1408,27 @@
     margin-top:0!important;
   }
 }
+
+@media(max-width:760px){
+  html.smv-phone-crm body .crm-header{
+    min-height:34px!important;
+    padding-top:0!important;
+    padding-bottom:4px!important;
+  }
+  html.smv-phone-crm body .crm-header .crm-brand{
+    min-height:30px!important;
+    align-self:auto!important;
+  }
+  html.smv-phone-crm body .crm-header .crm-brand .crm-header-logo{
+    display:block!important;
+    width:175px!important;
+    max-width:175px!important;
+    height:auto!important;
+    max-height:none!important;
+    flex:0 0 175px!important;
+    aspect-ratio:488/83!important;
+    object-fit:contain!important;
+    margin:0!important;
+    padding:0!important;
+  }
+}
