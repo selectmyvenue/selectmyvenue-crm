@@ -27,8 +27,8 @@
   body .crm-app .leads-table td{
     display:table-cell!important;
     box-sizing:border-box!important;
-    padding-left:5px!important;
-    padding-right:5px!important;
+    padding-left:6px!important;
+    padding-right:6px!important;
     position:static!important;
     inset:auto!important;
     left:auto!important;
@@ -39,19 +39,19 @@
   }
 
   /* All 13 customer-enquiry fields fit inside the desktop viewport. */
-  body .crm-app .leads-table th:nth-child(1), body .crm-app .leads-table td:nth-child(1){width:8.5%!important}
+  body .crm-app .leads-table th:nth-child(1), body .crm-app .leads-table td:nth-child(1){width:9%!important}
   body .crm-app .leads-table th:nth-child(2), body .crm-app .leads-table td:nth-child(2){width:7%!important}
   body .crm-app .leads-table th:nth-child(3), body .crm-app .leads-table td:nth-child(3){width:10%!important}
-  body .crm-app .leads-table th:nth-child(4), body .crm-app .leads-table td:nth-child(4){width:8%!important}
+  body .crm-app .leads-table th:nth-child(4), body .crm-app .leads-table td:nth-child(4){width:10%!important}
   body .crm-app .leads-table th:nth-child(5), body .crm-app .leads-table td:nth-child(5){width:6%!important}
-  body .crm-app .leads-table th:nth-child(6), body .crm-app .leads-table td:nth-child(6){width:7.5%!important}
+  body .crm-app .leads-table th:nth-child(6), body .crm-app .leads-table td:nth-child(6){width:8%!important}
   body .crm-app .leads-table th:nth-child(7), body .crm-app .leads-table td:nth-child(7){width:8.5%!important}
   body .crm-app .leads-table th:nth-child(8), body .crm-app .leads-table td:nth-child(8){width:5.5%!important;text-align:center!important}
-  body .crm-app .leads-table th:nth-child(9), body .crm-app .leads-table td:nth-child(9){width:10.5%!important}
-  body .crm-app .leads-table th:nth-child(10),body .crm-app .leads-table td:nth-child(10){width:8.5%!important;text-align:center!important}
+  body .crm-app .leads-table th:nth-child(9), body .crm-app .leads-table td:nth-child(9){width:9%!important}
+  body .crm-app .leads-table th:nth-child(10),body .crm-app .leads-table td:nth-child(10){width:9%!important;text-align:center!important}
   body .crm-app .leads-table th:nth-child(11),body .crm-app .leads-table td:nth-child(11){width:5%!important;text-align:center!important}
   body .crm-app .leads-table th:nth-child(12),body .crm-app .leads-table td:nth-child(12){width:6%!important;text-align:center!important}
-  body .crm-app .leads-table th:nth-child(13),body .crm-app .leads-table td:nth-child(13){width:9%!important;text-align:center!important}
+  body .crm-app .leads-table th:nth-child(13),body .crm-app .leads-table td:nth-child(13){width:7%!important;text-align:center!important}
 
   body .crm-app .leads-table th{
     font-size:9.6px!important;
@@ -61,18 +61,38 @@
     text-overflow:clip!important;
   }
   body .crm-app .leads-table td{
-    font-size:11.5px!important;
-    line-height:1.25!important;
+    font-size:11.4px!important;
+    line-height:1.24!important;
   }
 
-  /* Compact fields where there is spare width. */
-  body .crm-app .leads-table td:nth-child(3),
+  /* Content-aware behaviour: readable like an Excel sheet, without hiding useful values. */
+  body .crm-app .leads-table td:nth-child(3){white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
   body .crm-app .leads-table td:nth-child(4),
-  body .crm-app .leads-table td:nth-child(5),
   body .crm-app .leads-table td:nth-child(6),
+  body .crm-app .leads-table td:nth-child(9){
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    overflow-wrap:anywhere!important;
+    word-break:normal!important;
+    line-height:1.25!important;
+  }
+  body .crm-app .leads-table td:nth-child(5),
   body .crm-app .leads-table td:nth-child(7){
+    white-space:nowrap!important;
     overflow:hidden!important;
     text-overflow:ellipsis!important;
+  }
+  body .crm-app .leads-table td:nth-child(4) .crm-inline-field,
+  body .crm-app .leads-table td:nth-child(4) .inline-display,
+  body .crm-app .leads-table td:nth-child(4) .crm-inline-editor,
+  body .crm-app .leads-table td:nth-child(9) .crm-inline-field,
+  body .crm-app .leads-table td:nth-child(9) .inline-display,
+  body .crm-app .leads-table td:nth-child(9) .crm-inline-editor{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    white-space:normal!important;
   }
 
   /* Location gets protected space and may wrap to a second line. */
@@ -149,7 +169,7 @@
     display:inline-flex!important;
     width:calc(100% - 6px)!important;
     min-width:0!important;
-    max-width:112px!important;
+    max-width:104px!important;
     height:31px!important;
     padding:0 5px!important;
     align-items:center!important;
