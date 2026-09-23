@@ -219,7 +219,13 @@ window.startEmployeeIntegration=async function(client){
      :'No strong shortlist is ready. Possible alternatives need your review; check missing details or All Venues. Nothing has been assigned.';
  }
  function smvPhone(v){
-   let number=clean(v?.whatsapp_number||v?.contact_mobile).replace(/\D/g,'');
+   let number=clean(
+     v?.whatsapp_number ||
+     v?.whatsapp ||
+     v?.contact_mobile ||
+     v?.mobile ||
+     v?.phone
+   ).replace(/\D/g,'');
    if(number.startsWith('00'))number=number.slice(2);
    if(number.length===11&&number.startsWith('0'))number=number.slice(1);
    if(number.length===10)number='91'+number;
@@ -327,7 +333,7 @@ window.startEmployeeIntegration=async function(client){
    if(!panel){panel=document.createElement('div');panel.id='smvWhatsAppQueue';panel.className='smv-whatsapp-queue';document.body.appendChild(panel);}
    const rows=targets.map((v,i)=>{
      const url=smvWhatsAppUrl(v,messageText);
-     return '<a class="smv-wa-link" data-wa-index="'+i+'" href="'+escapeHTML(url)+'" target="_blank" rel="noopener noreferrer"><strong>'+escapeHTML(clean(v.venue_name)||'Venue')+'</strong><span>Open WhatsApp ↗</span></a>';
+     return '<a class="smv-wa-link" data-wa-index="'+i+'" href="'+escapeHTML(url)+'"><strong>'+escapeHTML(clean(v.venue_name)||'Venue')+'</strong><span>Open WhatsApp ↗</span></a>';
    }).join('');
    panel.innerHTML='<div class="smv-wa-head"><div><b>Assignments saved ✓</b><span>Tap a venue to open WhatsApp with the lead message ready.</span></div><button type="button" aria-label="Close">×</button></div><div class="smv-wa-list">'+rows+'</div>';
    panel.hidden=false;
@@ -337,7 +343,109 @@ window.startEmployeeIntegration=async function(client){
      const label=link.querySelector('span');if(label)label.textContent='Opened ✓';
    }));
  }
- function installWhatsAppAssignment(){const actions=document.querySelector('#venueAssignmentModal .venue-assignment-actions');if(!actions||document.getElementById('smvAssignWhatsApp'))return;const b=document.createElement('button');b.id='smvAssignWhatsApp';b.type='button';b.className='save-btn smv-whatsapp-assign';b.textContent='Assign + WhatsApp';actions.appendChild(b);b.onclick=async()=>{const l=currentAssignmentLead();const checked=[...document.querySelectorAll('#venueAssignmentList .venue-assignment-checkbox:checked:not(:disabled)')].map(x=>String(x.value));const ids=[...new Set([...selectedNow].map(String).concat(checked))];if(!l||!ids.length){alert('Select at least one venue first.');return;}const targets=ids.map(id=>venueRowById(id)).filter(Boolean);if(targets.length!==ids.length){alert('One or more selected venues could not be loaded. Please refresh the assignment window and try again.');return;}const missing=targets.filter(v=>!smvPhone(v));if(missing.length){alert('WhatsApp/contact number is missing for: '+missing.map(v=>clean(v.venue_name)||'Venue').join(', '));return;}const messageText=document.getElementById('venueAssignmentNote')?.value||message(l);b.disabled=true;b.textContent='Assigning…';try{const result=await saveVenueAssignments({source:'whatsapp'});if(!result?.ok)return;const created=new Set((result.created||[]).map(String)),shareTargets=targets.filter(v=>created.has(String(v.id)));if(!shareTargets.length){alert('No new venue assignment was created, so WhatsApp was not opened.');return;}showWhatsAppQueue(shareTargets,messageText);}catch(e){console.error('Assign + WhatsApp failed',e);alert(e?.message||'Assignment was not completed, so WhatsApp was not opened.');}finally{b.disabled=false;b.textContent='Assign + WhatsApp';}};}
+ function installWhatsAppAssignment(){
+   const actions=document.querySelector('#venueAssignmentModal .venue-assignment-actions');
+   if(!actions||document.getElementById('smvAssignWhatsApp'))return;
+
+   const b=document.createElement('button');
+   b.id='smvAssignWhatsApp';
+   b.type='button';
+   b.className='save-btn smv-whatsapp-assign';
+   b.textContent='Assign + WhatsApp';
+   actions.appendChild(b);
+
+   b.onclick=async()=>{
+     const l=currentAssignmentLead();
+     const checked=[...document.querySelectorAll('#venueAssignmentList .venue-assignment-checkbox:checked:not(:disabled)')]
+       .map(x=>String(x.value));
+     const ids=[...new Set([...selectedNow].map(String).concat(checked))];
+
+     if(!l||!ids.length){
+       alert('Select at least one venue first.');
+       return;
+     }
+
+     const targets=ids.map(id=>venueRowById(id)).filter(Boolean);
+     if(targets.length!==ids.length){
+       alert('One or more selected venues could not be loaded. Please refresh the assignment window and try again.');
+       return;
+     }
+
+     const missing=targets.filter(v=>!smvPhone(v));
+     if(missing.length){
+       alert('WhatsApp/contact number is missing for: '+missing.map(v=>clean(v.venue_name)||'Venue').join(', '));
+       return;
+     }
+
+     const messageText=document.getElementById('venueAssignmentNote')?.value||message(l);
+
+     /* Reserve one browser tab synchronously while this click still has user-gesture
+        permission. Browsers otherwise block window.open() after the async DB save. */
+     let waWindow=null;
+     try{
+       waWindow=window.open('about:blank','_blank');
+       if(waWindow){
+         try{
+           waWindow.document.title='Opening WhatsApp…';
+           waWindow.document.body.innerHTML='<div style="font-family:system-ui;padding:24px;color:#17463d">Saving assignment… WhatsApp will open here.</div>';
+         }catch(_){}
+       }
+     }catch(_){waWindow=null;}
+
+     b.disabled=true;
+     b.textContent='Assigning…';
+
+     try{
+       const result=await saveVenueAssignments({source:'whatsapp',keepOpen:true});
+       if(!result?.ok){
+         if(waWindow&&!waWindow.closed)waWindow.close();
+         return;
+       }
+
+       const created=new Set((result.created||[]).map(String));
+       const shareTargets=targets.filter(v=>created.has(String(v.id)));
+
+       if(!shareTargets.length){
+         if(waWindow&&!waWindow.closed)waWindow.close();
+         alert('No new venue assignment was created, so WhatsApp was not opened.');
+         return;
+       }
+
+       const first=shareTargets[0];
+       const firstUrl=smvWhatsAppUrl(first,messageText);
+
+       if(firstUrl){
+         if(waWindow&&!waWindow.closed){
+           try{waWindow.location.replace(firstUrl);}
+           catch(_){waWindow.location.href=firstUrl;}
+         }else{
+           /* Popup blocking fallback: same-tab navigation is not popup-blocked. */
+           window.location.href=firstUrl;
+           return;
+         }
+       }
+
+       if(shareTargets.length>1){
+         showWhatsAppQueue(shareTargets.slice(1),messageText);
+       }else{
+         const oldPanel=document.getElementById('smvWhatsAppQueue');
+         if(oldPanel)oldPanel.hidden=true;
+       }
+
+       try{renderAssignmentVenues();}catch(_){}
+       try{renderAssignmentSummary();}catch(_){}
+     }
+     catch(e){
+       if(waWindow&&!waWindow.closed)waWindow.close();
+       console.error('Assign + WhatsApp failed',e);
+       alert(e?.message||'Assignment was not completed, so WhatsApp was not opened.');
+     }
+     finally{
+       b.disabled=false;
+       b.textContent='Assign + WhatsApp';
+     }
+   };
+ }
  function installAssignmentCloseReset(){const modal=document.getElementById('venueAssignmentModal');if(!modal||modal.dataset.smvResetInstalled==='1')return;modal.dataset.smvResetInstalled='1';const close=()=>setTimeout(()=>{if(modal.hidden)resetAssignmentUiState();},0);document.getElementById('closeVenueAssignmentModal')?.addEventListener('click',close);document.getElementById('cancelVenueAssignment')?.addEventListener('click',close);modal.addEventListener('click',e=>{if(e.target===modal)close();});}
  function smvFreshAssignmentLead(){const l=currentAssignmentLead();if(!l)return l;try{const latest=leads().find(x=>String(x.id)===String(l.id));if(latest&&latest!==l)Object.assign(l,latest);else if(latest)Object.assign(l,latest);}catch(_){}return l;}
  function installAssignmentRenderer(){try{renderAssignmentVenues=function(){smvFreshAssignmentLead();const list=document.getElementById('venueAssignmentList'),c=document.getElementById('assignmentVenueCount');if(!list||!assignmentCurrentLead)return;resetSelectionForLead();const already=assignedVenueSet();smvPrepareAssignment();fillMessage();let controls=document.getElementById('smvMatchTierControls');if(!controls){controls=document.createElement('div');controls.id='smvMatchTierControls';controls.className='smv-match-tier-controls';controls.innerHTML='<div class="smv-match-panel-title"><div><b>Smart Venue Matches</b><span>Scores cover recorded requirements only. Confirm date availability and final quote before booking.</span></div><strong id="smvReliableMatchCount">0 reliable</strong></div><div class="smv-match-panel-tabs"><button type="button" data-tier="strong" class="active">★ Best Matches</button><button type="button" data-tier="possible">Possible 55%+</button><button type="button" data-tier="all">All Venues</button><button type="button" data-tier="excluded">Excluded</button></div>';list.parentElement?.insertBefore(controls,list);controls.onclick=e=>{const b=e.target.closest('[data-tier]');if(!b)return;controls.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));controls.dataset.tier=b.dataset.tier;renderAssignmentVenues();};}const hasStrong=(assignmentVenueRows||[]).some(v=>smvMatchTier(smartMatch(v,assignmentCurrentLead))==='strong');
