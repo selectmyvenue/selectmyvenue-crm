@@ -44,16 +44,16 @@
     ====================================================== -->
 
     <script
-        src="crm.js?v=20260923-venue-details-10"
+        src="crm.js?v=20260924-area-comments-1"
         defer
     ></script>
 
-    <script defer src="crm-employee-integration.js?v=20260924-assistant-polish-1"></script><script defer src="crm-premium-ui-loader.js?v=20260923-logo-mobile-unified-1"></script><script defer src="crm-mobile-20260923.js?v=20260923-venue-details-9"></script>
-<link rel="stylesheet" href="crm-branding.css?v=20260923-logo-tight-1"><link rel="stylesheet" href="crm-workspace.css?v=20260924-assistant-polish-1"><link rel="stylesheet" href="crm-premium-ui-20260923.css?v=20260923-venue-details-9"><style>
+    <script defer src="crm-employee-integration.js?v=20260924-area-comments-1"></script><script defer src="crm-premium-ui-loader.js?v=20260923-logo-mobile-unified-1"></script><script defer src="crm-mobile-20260923.js?v=20260923-venue-details-9"></script>
+<link rel="stylesheet" href="crm-branding.css?v=20260923-logo-tight-1"><link rel="stylesheet" href="crm-workspace.css?v=20260924-area-comments-1"><link rel="stylesheet" href="crm-premium-ui-20260923.css?v=20260923-area-comments-1"><style>
 #venueForm #venueEventTypes{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
 #venueForm #venueEventTypes label{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;padding:8px 10px!important;border:1px solid #d5e8df;border-radius:8px;font-size:12px!important;letter-spacing:0!important;text-transform:none!important;cursor:pointer}
 #venueForm #venueEventTypes input{width:18px!important;height:18px!important;min-height:18px!important;flex:0 0 18px!important;margin:0!important;accent-color:#078568}
-</style><link rel="stylesheet" href="crm-mobile-20260923.css?v=20260923-venue-details-9"></head>
+</style><link rel="stylesheet" href="crm-mobile-20260923.css?v=20260923-area-comments-1"></head>
 
 
 <!-- Stage 7B.3: Final Action + Comment Polish -->
@@ -487,7 +487,7 @@
                     <input
                         type="search"
                         id="searchInput"
-                        placeholder="Search customer, phone, email, source, venue or event..."
+                        placeholder="Search customer, phone, preferred area, source, venue or event..."
                         autocomplete="off"
                     >
 
@@ -596,7 +596,7 @@
                             </th>
 
                             <th>
-                                EMAIL
+                                PREFERRED AREA
                             </th>
 
                             <th>
@@ -1091,19 +1091,20 @@
                 </div>
 
 
-                <!-- EMAIL -->
+                <!-- PREFERRED AREA -->
 
                 <div class="info-card">
 
                     <span>
-                        EMAIL
+                        PREFERRED AREA
                     </span>
 
                     <input
-                        type="email"
-                        id="detailEmail"
+                        type="text"
+                        id="detailPreferredArea"
                         class="detail-edit-input"
-                        placeholder="Email address"
+                        placeholder="e.g. Golf Course Road / Chhatarpur / Sector 62"
+                        autocomplete="off"
                     >
 
                 </div>
@@ -1340,7 +1341,6 @@
                 <summary>⚡ MATCHING REQUIREMENTS <span>Open after customer call</span></summary>
                 <div class="crm-controls">
                     <div class="control-group"><label for="detailPreferredCity">CITY / REGION</label><select id="detailPreferredCity"><option value="">Auto from location</option><option>Delhi</option><option>Delhi NCR</option><option>Gurgaon</option><option>Noida</option><option>Greater Noida</option><option>Faridabad</option><option>Ghaziabad</option></select></div>
-                    <div class="control-group"><label for="detailPreferredArea">AREA</label><input id="detailPreferredArea" placeholder="Rohini / Chhatarpur / Sector 62"></div>
                     <div class="control-group"><label for="detailVenueTypePref">VENUE TYPE</label><select id="detailVenueTypePref"><option value="">Any</option><option>Banquet Hall</option><option>Farmhouse</option><option>Hotel</option><option>Resort</option><option>Lawn</option><option>Party Hall</option><option>Restaurant</option></select></div>
                     <div class="control-group"><label for="detailBudget">MAX BUDGET / PERSON</label><input id="detailBudget" type="number" min="0" placeholder="1500"></div>
                     <div class="control-group"><label for="detailRoomsRequired">ROOMS REQUIRED</label><input id="detailRoomsRequired" type="number" min="0" placeholder="0"></div>
@@ -1553,19 +1553,20 @@
                     </div>
 
 
-                    <!-- EMAIL -->
+                    <!-- PREFERRED AREA -->
 
                     <div class="control-group">
 
-                        <label for="customerEmail">
-                            EMAIL
+                        <label for="customerPreferredArea">
+                            PREFERRED AREA / LOCALITY
                         </label>
 
                         <input
-                            type="email"
-                            id="customerEmail"
-                            name="email"
-                            placeholder="Email address"
+                            type="text"
+                            id="customerPreferredArea"
+                            name="preferred_area"
+                            placeholder="e.g. Golf Course Road, Sector 29, Chhatarpur"
+                            autocomplete="off"
                         >
 
                     </div>

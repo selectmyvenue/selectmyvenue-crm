@@ -464,6 +464,8 @@ function applyFilters() {
                     lead.customer_name,
                     lead.mobile,
                     lead.email,
+                    lead.preferred_area,
+                    lead.preferred_city,
                     lead.source,
                     lead.location,
                     lead.occasion,
@@ -978,52 +980,40 @@ function createCommentCell(
     const hasComment =
         comment.length > 0;
 
+    if (!hasComment) {
+        return `
+            <div class="crm-comment-cell crm-comment-empty" data-lead-id="${escapeHTML(id)}">
+                <button
+                    type="button"
+                    class="comment-add-btn"
+                    data-comment-action="edit"
+                    data-id="${escapeHTML(id)}"
+                    title="Add comment"
+                    aria-label="Add comment"
+                >＋</button>
+            </div>
+        `;
+    }
+
     return `
-        <div
-            class="crm-comment-cell"
-            data-lead-id="${escapeHTML(id)}"
-        >
-
-            ${
-                hasComment
-                    ? `
-                        <span
-                            class="crm-comment-indicator"
-                            title="Comment exists"
-                            aria-label="Comment exists"
-                        ></span>
-                    `
-                    : ""
-            }
-
+        <div class="crm-comment-cell crm-comment-has-value" data-lead-id="${escapeHTML(id)}">
+            <span class="crm-comment-yes" title="Comment saved" aria-label="Comment saved">Y</span>
             <button
                 type="button"
-                class="comment-icon-btn"
+                class="comment-icon-btn comment-view-icon"
+                data-comment-action="view"
+                data-id="${escapeHTML(id)}"
+                title="View comment"
+                aria-label="View comment"
+            ><span aria-hidden="true">◉</span></button>
+            <button
+                type="button"
+                class="comment-icon-btn comment-edit-icon"
                 data-comment-action="edit"
                 data-id="${escapeHTML(id)}"
                 title="Edit comment"
                 aria-label="Edit comment"
-            >
-                <span aria-hidden="true">✎</span>
-            </button>
-
-            ${
-                hasComment
-                    ? `
-                        <button
-                            type="button"
-                            class="comment-icon-btn"
-                            data-comment-action="view"
-                            data-id="${escapeHTML(id)}"
-                            title="View comment"
-                            aria-label="View comment"
-                        >
-                            <span aria-hidden="true">◉</span>
-                        </button>
-                    `
-                    : ""
-            }
-
+            ><span aria-hidden="true">✎</span></button>
         </div>
     `;
 }
@@ -1050,8 +1040,8 @@ const createdDate =
         ? formatDateTime(lead.created_at)
         : "—";
 
-const email =
-    lead.email ||
+const preferredArea =
+    lead.preferred_area ||
     "—";
    
     const source =
@@ -1104,11 +1094,11 @@ const email =
     ${escapeHTML(createdDate)}
 </td>
 
-<td>
+<td class="preferred-area-cell">
     ${createInlineField(
         lead,
-        "email",
-        email,
+        "preferred_area",
+        preferredArea,
         "text"
     )}
 </td>
@@ -2424,9 +2414,9 @@ function getAILeadAnalysis(
             lead.mobile
         ).trim();
 
-    const hasEmail =
+    const hasPreferredArea =
         !!safeValue(
-            lead.email
+            lead.preferred_area
         ).trim();
 
     const hasDate =
@@ -2438,7 +2428,7 @@ function getAILeadAnalysis(
         !!safeValue(lead.internal_notes || lead.contact_remark).trim();
 
     if (hasPhone) score += 10;
-    if (hasEmail) score += 5;
+    if (hasPreferredArea) score += 7;
     if (hasDate) score += 10;
     if (location) score += 8;
     if (guests >= 100) score += 8;
@@ -2806,12 +2796,6 @@ function populateLeadModal(
         "#detailPhone",
         lead.mobile ||
         "—"
-    );
-
-    setControl(
-        "#detailEmail",
-        lead.email ||
-        ""
     );
 
     setControl(
@@ -3188,9 +3172,6 @@ async function saveModalChanges() {
 
     const data = {};
 
-    const email =
-        $("#detailEmail");
-
     const source =
         $("#detailSource");
 
@@ -3220,12 +3201,6 @@ async function saveModalChanges() {
 
     const remarks =
         $("#detailRemarks");
-
-    if (email) {
-        data.email =
-            email.value.trim() ||
-            null;
-    }
 
     if (source) {
         data.source =
@@ -3610,8 +3585,9 @@ async function performAddEnquiry(
             get("phone") ||
             null,
 
-        email:
-            get("email") ||
+        preferred_area:
+            get("preferred_area") ||
+            get("customerPreferredArea") ||
             null,
 
         source:
