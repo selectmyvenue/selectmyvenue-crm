@@ -1,8 +1,42 @@
 /* Preserve the complete 488:83 logo artwork: no stretching or cropping. */
-body>header:has(.brand){min-height:70px;padding-top:10px;padding-bottom:10px;align-items:center;flex-wrap:wrap}
+body>header:has(.brand){min-height:44px;padding-top:0;padding-bottom:0;align-items:center;flex-wrap:wrap}
 body>header>.brand{align-self:center;align-items:center;min-width:0}
 body>header>.brand img,.employee-page>header .brand img{display:block!important;flex:0 0 250px!important;width:250px!important;max-width:250px!important;height:auto!important;min-height:0!important;max-height:none!important;object-fit:contain!important;aspect-ratio:488/83;border-radius:0;margin:0;padding:0}
 body>header>.actions,body>header>.admin-nav{align-self:center}
 .auth-logo,.login-logo{display:block!important;width:min(300px,100%)!important;height:auto!important;min-height:0!important;max-height:none!important;object-fit:contain!important;aspect-ratio:488/83;border-radius:0!important;margin:0 auto 22px!important}
 .crm-header .crm-brand .crm-header-logo{width:250px!important;min-width:0!important;max-width:250px!important;height:auto!important;min-height:0!important;max-height:none!important;object-fit:contain!important;aspect-ratio:488/83;flex:0 0 250px!important}
-@media(max-width:600px){body>header:has(.brand){gap:10px;padding-top:10px;padding-bottom:10px}body>header>.brand img,.employee-page>header .brand img{width:180px!important;max-width:180px!important;flex-basis:180px!important}.brand strong{font-size:16px}.brand small{font-size:10px}.auth-logo,.login-logo{width:min(260px,100%)!important}.crm-header .crm-brand .crm-header-logo{width:175px!important;max-width:175px!important;flex-basis:175px!important}}
+@media(max-width:600px){body>header:has(.brand){gap:6px;padding-top:0;padding-bottom:0}body>header>.brand img,.employee-page>header .brand img{width:180px!important;max-width:180px!important;flex-basis:180px!important}.brand strong{font-size:16px}.brand small{font-size:10px}.auth-logo,.login-logo{width:min(260px,100%)!important}.crm-header .crm-brand .crm-header-logo{width:175px!important;max-width:175px!important;flex-basis:175px!important}}
+
+/* Tight complete-logo header fit: keep original horizontal width, remove top/bottom air. */
+.crm-header .crm-brand{align-self:stretch!important;align-items:center!important}
+.crm-header .crm-brand .crm-header-logo{
+  display:block!important;
+  width:250px!important;
+  max-width:250px!important;
+  flex:0 0 250px!important;
+  height:auto!important;
+  max-height:none!important;
+  aspect-ratio:488/83!important;
+  object-fit:contain!important;
+  margin:0!important;
+  padding:0!important;
+}
+.employee-page>header .brand{align-self:stretch!important;align-items:center!important}
+.employee-page>header .brand img{
+  width:250px!important;
+  max-width:250px!important;
+  flex:0 0 250px!important;
+  height:auto!important;
+  aspect-ratio:488/83!important;
+  object-fit:contain!important;
+  margin:0!important;
+  padding:0!important;
+}
+@media(max-width:600px){
+  .crm-header .crm-brand .crm-header-logo,
+  .employee-page>header .brand img{
+    width:175px!important;
+    max-width:175px!important;
+    flex-basis:175px!important;
+  }
+}
