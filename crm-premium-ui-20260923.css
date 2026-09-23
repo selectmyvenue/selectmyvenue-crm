@@ -1410,3 +1410,169 @@ body{font-size:14.5px!important}
   .leads-table td{font-size:12px!important}
   .leads-table td:first-child{font-size:12.4px!important}
 }
+
+
+/* =========================================================
+   VENUE MANAGEMENT — LIST-FIRST DENSITY 2026-09-23
+   Keep only essential KPIs above the venue table.
+   ========================================================= */
+#venueManagementSection{
+  padding:12px!important;
+}
+#venueManagementSection .venue-page-heading{
+  margin:-12px -12px 8px!important;
+  padding:11px 14px!important;
+  min-height:64px!important;
+  border-radius:18px 18px 0 0!important;
+}
+#venueManagementSection .venue-page-heading h1{
+  margin:2px 0 0!important;
+  font-size:22px!important;
+  line-height:1.05!important;
+}
+#venueManagementSection .venue-page-heading p{
+  display:none!important;
+}
+#venueManagementSection .venue-page-heading .venue-kicker{
+  font-size:8px!important;
+  line-height:1!important;
+}
+#venueManagementSection .venue-heading-actions{
+  gap:6px!important;
+}
+#venueManagementSection .venue-heading-actions button{
+  min-height:34px!important;
+  height:34px!important;
+  padding:0 10px!important;
+  border-radius:9px!important;
+  font-size:9.5px!important;
+}
+
+#venueManagementSection .venue-primary-stats{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:6px!important;
+  margin:0 0 7px!important;
+}
+#venueManagementSection .venue-primary-stats .venue-stat-card{
+  min-height:54px!important;
+  padding:7px 10px!important;
+  border-radius:10px!important;
+}
+#venueManagementSection .venue-primary-stats .venue-stat-card span{
+  font-size:8px!important;
+}
+#venueManagementSection .venue-primary-stats .venue-stat-card strong{
+  font-size:20px!important;
+  line-height:1!important;
+}
+
+#venueManagementSection .venue-toolbar{
+  display:grid!important;
+  grid-template-columns:minmax(280px,1fr) 150px 150px 150px!important;
+  gap:6px!important;
+  margin:0 0 7px!important;
+  padding:0!important;
+}
+#venueManagementSection .venue-toolbar input,
+#venueManagementSection .venue-toolbar select{
+  height:34px!important;
+  min-height:34px!important;
+  border-radius:8px!important;
+  font-size:10px!important;
+}
+#venueManagementSection .venue-table-wrapper{
+  margin:0!important;
+  border:1px solid #e1ebe7!important;
+  border-radius:12px!important;
+  overflow:auto!important;
+  max-height:calc(100vh - 245px)!important;
+}
+#venueManagementSection .venue-table thead th{
+  height:34px!important;
+  font-size:8.5px!important;
+}
+#venueManagementSection .venue-table td{
+  padding:8px 10px!important;
+  font-size:10.5px!important;
+}
+
+/* Secondary analytics stays available but never pushes the venue list down. */
+#venueManagementSection .venue-secondary-insights{
+  margin:9px 0 0!important;
+  padding:0!important;
+  border:1px solid #dce8e4!important;
+  border-radius:11px!important;
+  background:#fbfdfc!important;
+  box-shadow:none!important;
+}
+#venueManagementSection .venue-secondary-insights>summary{
+  min-height:38px!important;
+  padding:7px 10px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  cursor:pointer!important;
+  list-style:none!important;
+}
+#venueManagementSection .venue-secondary-insights>summary::-webkit-details-marker{
+  display:none!important;
+}
+#venueManagementSection .venue-secondary-insights>summary>div{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  min-width:0!important;
+}
+#venueManagementSection .venue-secondary-insights>summary strong{
+  color:#204d43!important;
+  font-size:10.5px!important;
+}
+#venueManagementSection .venue-secondary-insights>summary>div>span{
+  color:#81918d!important;
+  font-size:9px!important;
+}
+#venueManagementSection .venue-insights-toggle{
+  flex:0 0 auto!important;
+  color:#08745d!important;
+  font-size:9px!important;
+  font-weight:850!important;
+}
+#venueManagementSection .venue-secondary-insights[open] .venue-insights-toggle{
+  font-size:0!important;
+}
+#venueManagementSection .venue-secondary-insights[open] .venue-insights-toggle::after{
+  content:"Hide analytics";
+  font-size:9px!important;
+}
+#venueManagementSection .venue-secondary-stats{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,180px))!important;
+  gap:7px!important;
+  padding:8px 10px 0!important;
+}
+#venueManagementSection .venue-secondary-stats .venue-stat-card{
+  min-height:58px!important;
+}
+#venueManagementSection .venue-secondary-insights .network-insights-head,
+#venueManagementSection .venue-secondary-insights .network-kpi-grid,
+#venueManagementSection .venue-secondary-insights .plan-distribution{
+  margin-left:10px!important;
+  margin-right:10px!important;
+}
+#venueManagementSection .venue-secondary-insights .network-insights-head{
+  margin-top:9px!important;
+}
+
+@media(max-width:1000px){
+  #venueManagementSection .venue-primary-stats{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  #venueManagementSection .venue-toolbar{
+    grid-template-columns:1fr 1fr!important;
+  }
+  #venueManagementSection .venue-toolbar input{
+    grid-column:1/-1!important;
+  }
+}
