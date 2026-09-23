@@ -263,6 +263,14 @@
     if(root.dataset.smvPhoneV3Bound==='1')return;
     root.dataset.smvPhoneV3Bound='1';
 
+    document.addEventListener('keydown',event=>{
+      const venueName=event.target.closest?.('#venueTableBody .venue-name-cell strong.smv-venue-name-toggle');
+      if(venueName && isPhone() && (event.key==='Enter' || event.key===' ')){
+        event.preventDefault();
+        toggleMobileVenueRow(venueName);
+      }
+    });
+
     document.addEventListener('click',event=>{
       const phoneAction=event.target.closest('[data-smv-phone-action]');
       if(phoneAction){
@@ -285,9 +293,9 @@
         return;
       }
 
-      const venueToggle=event.target.closest('.smv-venue-mobile-toggle');
-      if(venueToggle){
-        toggleMobileVenueRow(venueToggle);
+      const venueName=event.target.closest('#venueTableBody .venue-name-cell strong');
+      if(venueName && isPhone()){
+        toggleMobileVenueRow(venueName);
         return;
       }
 
@@ -381,26 +389,41 @@
   function decorateMobileVenueRows(){
     const body=document.getElementById('venueTableBody');
     if(!body)return;
+
     [...body.querySelectorAll(':scope > tr')].forEach(row=>{
       if(row.children.length<2)return;
-      const first=row.children[0];
-      if(!first || first.querySelector('.smv-venue-mobile-toggle'))return;
-      const toggle=document.createElement('button');
-      toggle.type='button';
-      toggle.className='smv-venue-mobile-toggle';
-      toggle.textContent='Details';
-      toggle.setAttribute('aria-expanded','false');
-      first.appendChild(toggle);
+
+      /* Remove legacy mobile Details buttons from every viewport. */
+      row.querySelectorAll('.smv-venue-mobile-toggle').forEach(button=>button.remove());
+
+      const name=row.querySelector('.venue-name-cell strong');
+      if(!name)return;
+
+      if(isPhone()){
+        name.classList.add('smv-venue-name-toggle');
+        name.setAttribute('role','button');
+        name.setAttribute('tabindex','0');
+        name.setAttribute('aria-expanded',String(row.classList.contains('smv-mobile-venue-open')));
+        name.setAttribute('title','Tap to view venue details');
+      }else{
+        row.classList.remove('smv-mobile-venue-open');
+        name.classList.remove('smv-venue-name-toggle');
+        name.removeAttribute('role');
+        name.removeAttribute('tabindex');
+        name.removeAttribute('aria-expanded');
+        name.removeAttribute('title');
+      }
     });
   }
 
-  function toggleMobileVenueRow(button){
-    const row=button.closest('#venueTableBody > tr');
+  function toggleMobileVenueRow(target){
+    if(!isPhone())return;
+    const row=target.closest('#venueTableBody > tr');
     if(!row)return;
     const open=!row.classList.contains('smv-mobile-venue-open');
     row.classList.toggle('smv-mobile-venue-open',open);
-    button.setAttribute('aria-expanded',String(open));
-    button.textContent=open?'Close':'Details';
+    const name=row.querySelector('.venue-name-cell strong');
+    if(name)name.setAttribute('aria-expanded',String(open));
   }
 
   function install(){
@@ -428,6 +451,7 @@
     if(!mq.matches){
       root.classList.remove('smv-phone-filters-open');
       closeMore();
+      decorateMobileVenueRows();
     }else{
       renderMobileLeads();
       decorateMobileVenueRows();
