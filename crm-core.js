@@ -7682,7 +7682,20 @@ async function saveVenueAssignments(options = {}) {
         await loadVenueAssignments();
         applyFilters();
 
-        if (String(assignmentCurrentLead?.id) === String(leadToAssign.id)) {
+        if (
+            options.keepOpen === true &&
+            String(assignmentCurrentLead?.id) === String(leadToAssign.id)
+        ) {
+            try {
+                renderAssignmentVenues();
+            }
+            catch (renderError) {
+                console.warn("Assignment view refresh skipped:", renderError);
+            }
+        }
+        else if (
+            String(assignmentCurrentLead?.id) === String(leadToAssign.id)
+        ) {
             closeVenueAssignmentModal();
         }
 
