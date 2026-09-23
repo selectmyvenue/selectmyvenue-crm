@@ -1724,3 +1724,68 @@ body{font-size:14.5px!important}
     background:#eff8f4!important;
   }
 }
+
+
+/* =========================================================
+   2026-09-24 — RESTORE PREMIUM STATUS COLUMN
+   Keep the original inline status editor unchanged and always visible.
+   ========================================================= */
+@media(min-width:761px){
+  .leads-table th:nth-child(10),
+  .leads-table td:nth-child(10){
+    display:table-cell!important;
+    visibility:visible!important;
+    opacity:1!important;
+    width:102px!important;
+    min-width:102px!important;
+    max-width:102px!important;
+    position:sticky!important;
+    right:270px!important;
+    z-index:12!important;
+    overflow:visible!important;
+    text-align:center!important;
+    white-space:nowrap!important;
+    background:#fff!important;
+  }
+  .leads-table thead th:nth-child(10){
+    z-index:19!important;
+    background:#eaf4f0!important;
+  }
+  .leads-table tbody tr:nth-child(even) td:nth-child(10){
+    background:#fbfdfc!important;
+  }
+  .leads-table tbody tr:hover td:nth-child(10){
+    background:#eff8f4!important;
+  }
+  .leads-table td:nth-child(10) .crm-status-inline-field{
+    display:block!important;
+    visibility:visible!important;
+    min-width:0!important;
+    width:100%!important;
+    cursor:pointer!important;
+    pointer-events:auto!important;
+    position:relative!important;
+    z-index:2!important;
+  }
+  .leads-table td:nth-child(10) .crm-status-badge,
+  .leads-table td:nth-child(10) .status-badge,
+  .leads-table td:nth-child(10) .inline-display{
+    display:inline-flex!important;
+    visibility:visible!important;
+    align-items:center!important;
+    justify-content:center!important;
+    max-width:100%!important;
+    white-space:nowrap!important;
+    overflow:visible!important;
+    pointer-events:auto!important;
+  }
+  .leads-table td:nth-child(10) .crm-inline-editor{
+    display:block!important;
+    width:100%!important;
+    min-width:96px!important;
+    height:30px!important;
+    font-size:10px!important;
+    pointer-events:auto!important;
+    z-index:25!important;
+  }
+}
