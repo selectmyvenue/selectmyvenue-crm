@@ -7526,7 +7526,22 @@ async function saveVenueAssignments(options = {}) {
         )
     ).map(input => input.value);
 
-    const selected = typeof window.smvGetAssignmentSelection === 'function' ? window.smvGetAssignmentSelection() : visibleSelected;
+    const smartSelected =
+        typeof window.smvGetAssignmentSelection === "function"
+            ? window.smvGetAssignmentSelection()
+            : [];
+
+    /* UI checkboxes are the final source of truth for staff intent.
+       Merge them with the smart shortlist so either path remains reliable. */
+    const selected = [
+        ...new Set(
+            [
+                ...visibleSelected,
+                ...(Array.isArray(smartSelected) ? smartSelected : [])
+            ].map(String)
+        )
+    ];
+
     if (!selected.length) {
         showAssignmentMessage(
             "Select at least one approved and verified venue.",
