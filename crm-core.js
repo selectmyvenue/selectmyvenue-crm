@@ -5331,6 +5331,16 @@ function renderVenues() {
                         <strong>${escapeHTML(
                             safeValue(venue.venue_name) || "Unnamed Venue"
                         )}</strong>
+                        <small>${escapeHTML(
+                            safeValue(venue.contact_person) || "No contact person"
+                        )}</small>
+                        <button
+                            type="button"
+                            class="venue-name-details-btn"
+                            data-venue-id="${escapeHTML(venue.id)}"
+                        >
+                            Details
+                        </button>
                     </div>
                 </td>
 
@@ -5540,6 +5550,7 @@ function openVenueModal(venue = null) {
         return;
     }
 
+    setVenueDetailsMode(false);
     form.reset();
 
     document.getElementById("venueId").value =
@@ -5664,6 +5675,56 @@ function openVenueModal(venue = null) {
     setStage8FormAvailability();
 
     modal.hidden = false;
+}
+
+function setVenueDetailsMode(enabled) {
+    const modal = document.getElementById("venueModal");
+    const form = document.getElementById("venueForm");
+    const cancelButton = document.getElementById("cancelVenueBtn");
+    const saveButton = document.getElementById("saveVenueBtn");
+
+    if (!modal || !form) {
+        return;
+    }
+
+    modal.classList.toggle("venue-readonly-mode", Boolean(enabled));
+
+    form.querySelectorAll("input,select,textarea,button").forEach(control => {
+        if (control.id === "cancelVenueBtn") {
+            return;
+        }
+
+        if (enabled) {
+            control.dataset.smvPreviousDisabled = control.disabled ? "1" : "0";
+            control.disabled = true;
+        }
+        else if (control.dataset.smvPreviousDisabled !== undefined) {
+            control.disabled = control.dataset.smvPreviousDisabled === "1";
+            delete control.dataset.smvPreviousDisabled;
+        }
+    });
+
+    if (saveButton) {
+        saveButton.hidden = Boolean(enabled);
+    }
+
+    if (cancelButton) {
+        cancelButton.textContent = enabled ? "Close" : "Cancel";
+    }
+}
+
+function openVenueDetails(venue) {
+    if (!venue) {
+        return;
+    }
+
+    openVenueModal(venue);
+    setVenueDetailsMode(true);
+
+    const title = document.getElementById("venueModalTitle");
+    if (title) {
+        title.textContent = "Venue Details";
+    }
 }
 
 function setVenueField(id, value) {
@@ -6633,6 +6694,27 @@ async function saveVenue(event) {
 }
 
 async function handleVenueTableClick(event) {
+
+    const detailsButton = event.target.closest(".venue-name-details-btn");
+
+    if (detailsButton) {
+        const id = safeValue(detailsButton.dataset.venueId);
+        const venue = allVenues.find(
+            item => String(item.id) === String(id)
+        );
+
+        if (!venue) {
+            return;
+        }
+
+        /* Phone keeps its compact inline expansion. */
+        if (window.matchMedia("(max-width:760px)").matches) {
+            return;
+        }
+
+        openVenueDetails(venue);
+        return;
+    }
 
     const button =
         event.target.closest(
