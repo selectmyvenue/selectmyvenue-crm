@@ -1201,3 +1201,210 @@
     font-size:9.5px!important;
   }
 }
+
+
+/* =========================================================
+   MOBILE VENUE LIST — COMPACT ACCORDION V3
+   Default: venue name only. Details expand on demand.
+   ========================================================= */
+@media(max-width:760px){
+  html.smv-phone-crm,
+  html.smv-phone-crm body{
+    height:auto!important;
+    min-height:100%!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+  }
+
+  html.smv-phone-crm body #venueManagementSection:not([hidden]){
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+    padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))!important;
+  }
+
+  /* Put venue list before secondary health / analytics */
+  html.smv-phone-crm body #venueManagementSection .venue-page-heading{order:1!important}
+  html.smv-phone-crm body #venueManagementSection .venue-toolbar{order:2!important}
+  html.smv-phone-crm body #venueManagementSection .venue-stats-grid{order:3!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table-wrapper{order:4!important}
+  html.smv-phone-crm body #venueManagementSection #smvVenueHealthPanel{order:5!important}
+  html.smv-phone-crm body #venueManagementSection .network-insights{order:6!important}
+
+  /* Root cause of phone scroll lock: desktop table max-height must not carry over */
+  html.smv-phone-crm body #venueManagementSection .venue-table-wrapper{
+    display:block!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+    border:0!important;
+    border-radius:0!important;
+  }
+
+  html.smv-phone-crm body #venueManagementSection .venue-table,
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody{
+    display:block!important;
+    width:100%!important;
+    height:auto!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+
+  /* Each venue is one compact list row by default */
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr{
+    display:block!important;
+    width:100%!important;
+    margin:0 0 6px!important;
+    padding:0!important;
+    border:1px solid #d9e6e1!important;
+    border-radius:11px!important;
+    background:#fff!important;
+    box-shadow:0 3px 10px rgba(17,76,63,.035)!important;
+    overflow:hidden!important;
+  }
+
+  /* Collapse every detail cell */
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td{
+    display:none!important;
+  }
+
+  /* Venue-name row always visible */
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:first-child{
+    display:flex!important;
+    grid-column:auto!important;
+    width:100%!important;
+    min-height:52px!important;
+    padding:8px 9px 8px 12px!important;
+    border:0!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    flex-direction:row!important;
+    gap:9px!important;
+    background:#fff!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:first-child::before{
+    display:none!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-name-cell{
+    flex:1 1 auto!important;
+    min-width:0!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-name-cell strong{
+    display:block!important;
+    color:#103f35!important;
+    font-size:14px!important;
+    line-height:1.2!important;
+    text-decoration:none!important;
+    white-space:normal!important;
+  }
+  /* Contact person is detail, hide in collapsed state */
+  html.smv-phone-crm body #venueManagementSection .venue-name-cell small{
+    display:none!important;
+  }
+
+  .smv-venue-mobile-toggle{
+    flex:0 0 auto!important;
+    min-width:72px!important;
+    height:34px!important;
+    padding:0 9px!important;
+    border:1px solid #cfe1db!important;
+    border-radius:9px!important;
+    background:#f7fbf9!important;
+    color:#146350!important;
+    font:inherit!important;
+    font-size:10px!important;
+    font-weight:850!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:4px!important;
+    box-shadow:none!important;
+  }
+  .smv-venue-mobile-toggle::after{
+    content:"⌄";
+    font-size:13px;
+    line-height:1;
+    transition:transform .15s ease;
+  }
+
+  /* Expanded venue details */
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open{
+    padding-bottom:8px!important;
+    box-shadow:0 7px 20px rgba(17,76,63,.07)!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:first-child{
+    border-bottom:1px solid #e7efec!important;
+    background:#f8fcfa!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open .venue-name-cell small{
+    display:block!important;
+    margin-top:3px!important;
+    color:#74847f!important;
+    font-size:10px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open .smv-venue-mobile-toggle::after{
+    transform:rotate(180deg);
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:not(:first-child){
+    display:flex!important;
+    width:calc(50% - 18px)!important;
+    min-height:48px!important;
+    margin:0 8px!important;
+    padding:8px 4px!important;
+    vertical-align:top!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    justify-content:center!important;
+    border:0!important;
+    border-bottom:1px solid #edf3f0!important;
+    background:#fff!important;
+    color:#173f36!important;
+    font-size:12px!important;
+    line-height:1.28!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(even):not(:last-child){
+    float:left!important;
+    clear:left!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(odd):not(:first-child):not(:last-child){
+    float:right!important;
+    clear:right!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td::before{
+    display:block!important;
+    margin-bottom:4px!important;
+    color:#7a8b85!important;
+    font-size:7.8px!important;
+    font-weight:850!important;
+    letter-spacing:.075em!important;
+    text-transform:uppercase!important;
+  }
+
+  /* Actions span full width after details */
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:last-child{
+    display:block!important;
+    float:none!important;
+    clear:both!important;
+    width:auto!important;
+    min-height:0!important;
+    margin:0 8px!important;
+    padding:9px 0 0!important;
+    border-bottom:0!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-row-actions{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
+    width:100%!important;
+  }
+
+  /* Keep health/analytics available but secondary and compact */
+  html.smv-phone-crm body #smvVenueHealthPanel{
+    margin-top:6px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .network-insights{
+    margin-top:0!important;
+  }
+}
