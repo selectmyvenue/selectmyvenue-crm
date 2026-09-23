@@ -2,7 +2,7 @@
    SELECT MY VENUE — EMPLOYEE CRM MOBILE WORKSPACE
    Mobile-only. Desktop behaviour remains unchanged.
    ========================================================= */
-.emp-mobile-nav,.emp-mobile-more{display:none}
+.emp-mobile-nav,.emp-mobile-more,.emp-mobile-toggle{display:none}
 
 @media(max-width:760px){
   html.emp-phone-crm,html.emp-phone-crm body{
@@ -267,6 +267,9 @@
   }
 
   .emp-mobile-toggle{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
     flex:0 0 auto!important;
     min-width:66px!important;
     height:32px!important;
