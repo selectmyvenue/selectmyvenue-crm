@@ -1432,3 +1432,42 @@
     padding:0!important;
   }
 }
+
+
+/* =========================================================
+   VENUE MOBILE DETAILS FIX — 2026-09-23
+   Desktop: no mobile Details button. Phone: tap venue name.
+   ========================================================= */
+.smv-venue-mobile-toggle{display:none!important}
+
+@media(max-width:760px){
+  html.smv-phone-crm body #venueManagementSection .venue-name-cell strong.smv-venue-name-toggle{
+    display:inline-flex!important;
+    align-items:center!important;
+    gap:6px!important;
+    cursor:pointer!important;
+    text-decoration:none!important;
+    border-bottom:1px dotted #7ca69a!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-name-cell strong.smv-venue-name-toggle::after{
+    content:"⌄";
+    display:inline-block!important;
+    color:#6f8e86!important;
+    font-size:13px!important;
+    line-height:1!important;
+    transition:transform .15s ease!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open .venue-name-cell strong.smv-venue-name-toggle::after{
+    transform:rotate(180deg)!important;
+  }
+
+  /* Collapsed phone row: only venue name remains visible. */
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr:not(.smv-mobile-venue-open)>td:not(:first-child){
+    display:none!important;
+  }
+
+  /* Open phone row: reveal the actual table details. */
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:not(:first-child){
+    display:flex!important;
+  }
+}
