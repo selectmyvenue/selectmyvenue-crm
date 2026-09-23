@@ -34,6 +34,14 @@
     const table=document.querySelector('#workspace table');
     const body=byId('leadsBody');
     if(!table||!body)return;
+
+    /* Mobile affordances must never leak into desktop CRM. */
+    if(!isPhone()){
+      body.querySelectorAll('.emp-mobile-toggle').forEach(button=>button.remove());
+      body.querySelectorAll('.emp-mobile-open').forEach(row=>row.classList.remove('emp-mobile-open'));
+      return;
+    }
+
     const heads=[...table.querySelectorAll('thead th')].map(x=>(x.textContent||'').trim());
     [...body.querySelectorAll(':scope>tr')].forEach(row=>{
       const cells=[...row.children];
@@ -106,6 +114,13 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
   const mq=matchMedia(MQ);
-  const sync=()=>root.classList.toggle('emp-phone-crm',mq.matches);
+  const sync=()=>{
+    root.classList.toggle('emp-phone-crm',mq.matches);
+    labels();
+    if(!mq.matches){
+      closeMore();
+      document.body.classList.remove('emp-phone-filters-open');
+    }
+  };
   if(mq.addEventListener)mq.addEventListener('change',sync);else mq.addListener(sync);
 })();
