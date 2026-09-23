@@ -285,6 +285,12 @@
         return;
       }
 
+      const venueToggle=event.target.closest('.smv-venue-mobile-toggle');
+      if(venueToggle){
+        toggleMobileVenueRow(venueToggle);
+        return;
+      }
+
       const navButton=event.target.closest('[data-smv-mobile]');
       if(navButton){
         const action=navButton.dataset.smvMobile;
@@ -354,6 +360,13 @@
       new MutationObserver(syncWelcome).observe(staff,{childList:true,subtree:true,characterData:true});
     }
 
+    const venueBody=document.getElementById('venueTableBody');
+    if(venueBody && venueBody.dataset.smvPhoneVenueWatch!=='1'){
+      venueBody.dataset.smvPhoneVenueWatch='1';
+      new MutationObserver(()=>requestAnimationFrame(decorateMobileVenueRows))
+        .observe(venueBody,{childList:true,subtree:true});
+    }
+
     const venue=document.getElementById('venueManagementSection');
     if(venue && venue.dataset.smvPhoneV3Watch!=='1'){
       venue.dataset.smvPhoneV3Watch='1';
@@ -363,6 +376,31 @@
         syncMobileNav();
       }).observe(venue,{attributes:true,attributeFilter:['hidden']});
     }
+  }
+
+  function decorateMobileVenueRows(){
+    const body=document.getElementById('venueTableBody');
+    if(!body)return;
+    [...body.querySelectorAll(':scope > tr')].forEach(row=>{
+      if(row.children.length<2)return;
+      const first=row.children[0];
+      if(!first || first.querySelector('.smv-venue-mobile-toggle'))return;
+      const toggle=document.createElement('button');
+      toggle.type='button';
+      toggle.className='smv-venue-mobile-toggle';
+      toggle.textContent='Details';
+      toggle.setAttribute('aria-expanded','false');
+      first.appendChild(toggle);
+    });
+  }
+
+  function toggleMobileVenueRow(button){
+    const row=button.closest('#venueTableBody > tr');
+    if(!row)return;
+    const open=!row.classList.contains('smv-mobile-venue-open');
+    row.classList.toggle('smv-mobile-venue-open',open);
+    button.setAttribute('aria-expanded',String(open));
+    button.textContent=open?'Close':'Details';
   }
 
   function install(){
@@ -375,6 +413,7 @@
     syncWelcome();
     syncLeadCount();
     renderMobileLeads();
+    decorateMobileVenueRows();
     syncMobileNav();
     bindEvents();
     observe();
@@ -391,6 +430,7 @@
       closeMore();
     }else{
       renderMobileLeads();
+      decorateMobileVenueRows();
       syncMobileNav();
     }
   };
