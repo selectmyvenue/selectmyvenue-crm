@@ -24,7 +24,47 @@ window.startEmployeeIntegration=async function(client){
  function venueType(l){return clean(l?.venue_type)||extract(l,[/venue\s*type\s*[:\-]\s*([^\n|,]+)/i,/looking\s+for\s+(?:a|an)?\s*([^\n|,]*(?:banquet|farm\s*house|farmhouse|hotel|resort|lawn|party\s*hall|marriage\s*garden|rooftop|restaurant))/i]);}
  function message(l){if(!l)return '';const spec=smvLeadSpec(l);const x=['🔔 New Lead from SelectMyVenue.com',''];if(spec.occasion)x.push('Event: '+spec.occasion);if(clean(l.event_date))x.push('Event Date: '+fmtDate(l.event_date));if(spec.guests)x.push('Guests: '+spec.guests);const vt=spec.venueType,f=food(l),r=rooms(l);if(vt)x.push('Venue Type- '+vt);if(f)x.push('Food- '+f);if(r)x.push('Rooms Req- '+r);if(spec.location)x.push('Preferred location: '+spec.location);if(spec.budget)x.push('Budget per person: ₹'+spec.budget);if(spec.totalBudget)x.push('Total event budget: ₹'+spec.totalBudget+' (package quote to confirm)');if(spec.parking)x.push('Parking required');if(spec.lawn)x.push('Outdoor/lawn preferred');if(spec.indoor)x.push('Indoor preferred');if(clean(l.customer_name))x.push('Name- '+clean(l.customer_name));if(clean(l.mobile))x.push('Contact: '+clean(l.mobile));x.push('','Please contact the customer and update us on the status.','','*Select My Venue*','Relevant Enquiries. Better Bookings.');return x.join('\n');}
  function currentAssignmentLead(){try{if(assignmentCurrentLead)return assignmentCurrentLead;}catch(_){}try{if(currentLead)return currentLead;}catch(_){}return null;}
- function fillMessage(){const modal=document.getElementById('venueAssignmentModal'),ta=document.getElementById('venueAssignmentNote');if(!modal||modal.hidden||!ta)return;const l=currentAssignmentLead();if(!l)return;const txt=message(l);if(ta.dataset.smvLead!==String(l.id)||!ta.value.trim()||ta.value===ta.dataset.smvGenerated){ta.value=txt;ta.dataset.smvLead=String(l.id);ta.dataset.smvGenerated=txt;}ta.rows=7;const note=ta.closest('.venue-assignment-note');if(note){const label=note.querySelector('label');if(label)label.textContent='WHATSAPP LEAD MESSAGE / INTERNAL NOTE';}let copy=document.getElementById('smvCopyLead');if(!copy){copy=document.createElement('button');copy.id='smvCopyLead';copy.type='button';copy.className='secondary-btn smv-copy-lead-top';copy.textContent='Copy WhatsApp Lead';copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(ta.value);copy.textContent='Copied ✓';setTimeout(()=>copy.textContent='Copy WhatsApp Lead',1400);}catch(_){ta.focus();ta.select();}});}const summary=document.getElementById('smvAssignmentSummary');const requirement=document.getElementById('assignmentRequirementSummary');const anchor=summary||requirement;if(anchor){if(copy.previousElementSibling!==anchor)anchor.insertAdjacentElement('afterend',copy);if(note&&note.previousElementSibling!==copy)copy.insertAdjacentElement('afterend',note);}else if(note&&!copy.isConnected)note.parentElement?.insertBefore(copy,note);}
+ function fillMessage(){
+   const modal=document.getElementById('venueAssignmentModal'),ta=document.getElementById('venueAssignmentNote');
+   if(!modal||modal.hidden||!ta)return;
+   const l=currentAssignmentLead();if(!l)return;
+   const txt=message(l);
+   if(ta.dataset.smvLead!==String(l.id)||!ta.value.trim()||ta.value===ta.dataset.smvGenerated){
+     ta.value=txt;ta.dataset.smvLead=String(l.id);ta.dataset.smvGenerated=txt;
+   }
+   ta.rows=10;
+   const note=ta.closest('.venue-assignment-note');
+   if(note){
+     note.classList.add('smv-message-floating');
+     const label=note.querySelector('label');
+     if(label)label.textContent='WHATSAPP LEAD MESSAGE / INTERNAL NOTE';
+     if(!document.getElementById('smvMessageClose')){
+       const close=document.createElement('button');
+       close.id='smvMessageClose';close.type='button';close.className='smv-message-close';
+       close.setAttribute('aria-label','Close message preview');close.textContent='×';
+       close.onclick=()=>note.classList.remove('smv-message-open');
+       note.prepend(close);
+     }
+   }
+   let tools=document.getElementById('smvMessageTools');
+   if(!tools){
+     tools=document.createElement('div');
+     tools.id='smvMessageTools';tools.className='smv-message-tools';
+     tools.innerHTML='<button type="button" id="smvCopyLead">Copy WhatsApp Lead</button><button type="button" id="smvPreviewLead">Preview / Edit</button>';
+     const toolbar=document.querySelector('#venueAssignmentModal .venue-assignment-toolbar');
+     if(toolbar)toolbar.appendChild(tools);
+     else document.getElementById('assignmentRequirementSummary')?.insertAdjacentElement('afterend',tools);
+     tools.querySelector('#smvCopyLead').onclick=async()=>{
+       const copy=tools.querySelector('#smvCopyLead');
+       try{await navigator.clipboard.writeText(ta.value);copy.textContent='Copied ✓';setTimeout(()=>copy.textContent='Copy WhatsApp Lead',1400);}
+       catch(_){if(note)note.classList.add('smv-message-open');ta.focus();ta.select();}
+     };
+     tools.querySelector('#smvPreviewLead').onclick=()=>{
+       if(note)note.classList.toggle('smv-message-open');
+       if(note?.classList.contains('smv-message-open'))setTimeout(()=>ta.focus(),0);
+     };
+   }
+ }
  function count(key){if(key==='all')return leads().length;if(key==='assigned')return assignedIds().size;return leads().filter(l=>norm(l.status)===key).length;}
  function standardFilter(key){assignedMode=false;const s=document.getElementById('statusFilter');if(s){s.value=key==='all'?'all':key;s.dispatchEvent(new Event('change',{bubbles:true}));}try{applyFilters();}catch(_){}}
  function assignedFilter(){assignedMode=true;const ids=assignedIds();try{filteredLeads=leads().filter(l=>ids.has(String(l.id)));renderLeads();}catch(_){document.querySelectorAll('#leadsTableBody tr[data-lead-id]').forEach(r=>r.hidden=!ids.has(String(r.dataset.leadId)));}}
@@ -185,9 +225,15 @@ window.startEmployeeIntegration=async function(client){
    if(number.length===10)number='91'+number;
    return /^[1-9]\d{7,14}$/.test(number)?number:'';
  }
+ function smvWhatsAppUrl(v,messageText){
+   const number=smvPhone(v);if(!number)return '';
+   return 'https://wa.me/'+number+'?text='+encodeURIComponent(messageText||'');
+ }
  function smvOpenWhatsApp(v,messageText){
-   const number=smvPhone(v);if(!number)return false;
-   window.open('https://wa.me/'+number+'?text='+encodeURIComponent(messageText),'_blank','noopener');
+   const url=smvWhatsAppUrl(v,messageText);if(!url)return false;
+   const opened=window.open(url,'_blank');
+   if(opened){try{opened.opener=null;}catch(_){}return true;}
+   window.location.href=url;
    return true;
  }
  function smvQuestions(l){
@@ -266,7 +312,7 @@ window.startEmployeeIntegration=async function(client){
  function assignedVenueSet(){const l=currentAssignmentLead();if(!l)return new Set();return new Set(assignments().filter(a=>String(a.enquiry_id)===String(l.id)&&norm(a.assignment_status)!=='cancelled').map(a=>String(a.venue_id)));}
  function venueRowById(id){try{return (assignmentVenueRows||[]).find(v=>String(v.id)===String(id));}catch(_){return null;}}
  function resetSelectionForLead(){const l=currentAssignmentLead(),id=String(l?.id||'');if(id!==selectionLeadId){selectedNow.clear();smvPreparedKey='';selectionLeadId=id;}}
- function resetAssignmentUiState(){selectedNow.clear();smvPreparedKey='';selectionLeadId='';const controls=document.getElementById('smvMatchTierControls');if(controls){controls.dataset.tier='strong';controls.querySelectorAll('[data-tier]').forEach(b=>b.classList.toggle('active',b.dataset.tier==='strong'));}const panel=document.getElementById('smvWhatsAppQueue');if(panel)panel.hidden=true;}
+ function resetAssignmentUiState(){selectedNow.clear();smvPreparedKey='';selectionLeadId='';const controls=document.getElementById('smvMatchTierControls');if(controls){controls.dataset.tier='strong';controls.querySelectorAll('[data-tier]').forEach(b=>b.classList.toggle('active',b.dataset.tier==='strong'));}const panel=document.getElementById('smvWhatsAppQueue');if(panel)panel.hidden=true;document.querySelector('.venue-assignment-note.smv-message-floating')?.classList.remove('smv-message-open');}
  function ensureAssignmentSummary(){const modal=document.getElementById('venueAssignmentModal');if(!modal)return null;const card=modal.querySelector('.venue-assignment-card')||modal.firstElementChild;if(!card)return null;let wrap=document.getElementById('smvAssignmentSummary');if(!wrap){wrap=document.createElement('div');wrap.id='smvAssignmentSummary';wrap.className='smv-assignment-summary smv-assignment-summary-top';wrap.innerHTML='<div id="smvAlreadyAssigned"></div><div id="smvSelectedNow"></div>';const header=card.querySelector('.venue-assignment-header,.modal-header');if(header)header.insertAdjacentElement('afterend',wrap);else card.prepend(wrap);}return wrap;}
  function renderAssignmentSummary(){resetSelectionForLead();const wrap=ensureAssignmentSummary();if(!wrap)return;const already=assignedVenueSet();[...already].forEach(id=>selectedNow.delete(id));const assignedBox=wrap.querySelector('#smvAlreadyAssigned'),selectedBox=wrap.querySelector('#smvSelectedNow');const chips=(ids,removable)=>ids.map(id=>{const v=venueRowById(id),name=clean(v?.venue_name)||'Venue',loc=[v?.area,v?.city].filter(Boolean).join(', ');return `<span class="smv-venue-chip ${removable?'smv-selected-chip':'smv-assigned-chip'}" data-venue-id="${escapeHTML(id)}"><b>${escapeHTML(name)}</b>${loc?` <small>· ${escapeHTML(loc)}</small>`:''}${removable?'<button type="button" class="smv-chip-remove" aria-label="Remove selection">×</button>':'<button type="button" class="smv-unassign-btn" aria-label="Unassign venue">Unassign</button>'}</span>`;}).join('');assignedBox.innerHTML=`<div class="smv-summary-title">Already Assigned <strong>${already.size}</strong></div><div class="smv-chip-row">${already.size?chips([...already],false):'<span class="smv-summary-empty">No venue assigned yet.</span>'}</div>`;selectedBox.innerHTML=`<div class="smv-summary-title">Selected Now <strong>${selectedNow.size}</strong></div><div class="smv-chip-row">${selectedNow.size?chips([...selectedNow],true):'<span class="smv-summary-empty">Select venues below — they will appear here instantly.</span>'}</div>`;}
  function activeAssignment(venueId){const l=currentAssignmentLead();if(!l)return null;return assignments().find(a=>String(a.enquiry_id)===String(l.id)&&String(a.venue_id)===String(venueId)&&norm(a.assignment_status)!=='cancelled')||null;}
@@ -276,7 +322,21 @@ window.startEmployeeIntegration=async function(client){
  async function ensureAssistantVenues(){let vs=[];try{vs=Array.isArray(assignmentVenueRows)?assignmentVenueRows:[];}catch(_){}if(vs.length)return vs;if(smvAssistantVenueCacheAt&&Date.now()-smvAssistantVenueCacheAt<180000)return smvAssistantVenueCache;if(smvAssistantVenueLoading)return smvAssistantVenueLoading;const db=typeof getSupabaseClient==='function'?getSupabaseClient():null;if(!db)return[];smvAssistantVenueLoading=(async()=>{try{const {data,error}=await db.from('venues').select('*').eq('venue_status','approved').eq('verification_status','verified').order('venue_name',{ascending:true});if(error)throw error;smvAssistantVenueCache=Array.isArray(data)?data:[];smvAssistantVenueCacheAt=Date.now();return smvAssistantVenueCache;}catch(e){console.warn('Venue Assistant could not load venue data',e);return smvAssistantVenueCache;}finally{smvAssistantVenueLoading=null;}})();return smvAssistantVenueLoading;}
  function installAutomationControls(){const modal=document.getElementById('leadModal');if(modal&&!document.getElementById('smvAutomationTools')){const host=modal.querySelector('.detail-section-title');if(host){const tools=document.createElement('div');tools.id='smvAutomationTools';tools.className='smv-automation-tools';tools.innerHTML='<button type="button" id="smvFindMatchesBtn">⚡ Save & Find Best Matches</button><button type="button" id="smvQuickRequirementsBtn">＋ Requirements</button>';host.insertAdjacentElement('afterend',tools);tools.querySelector('#smvFindMatchesBtn').onclick=async()=>{const l=(()=>{try{return currentLead}catch(_){return null}})();const leadId=l?.id;if(!leadId)return;const btn=tools.querySelector('#smvFindMatchesBtn'),oldLabel=btn.textContent;btn.disabled=true;btn.textContent='Saving…';try{const result=typeof saveModalChanges==='function'?await saveModalChanges():null;if(!result?.ok)return;btn.textContent='Finding matches…';await openVenueAssignmentModal(leadId);}catch(e){console.error('Save & Find Best Matches failed',e);alert(e?.message||'Unable to save and find matches.');}finally{btn.disabled=false;btn.textContent=oldLabel;}};tools.querySelector('#smvQuickRequirementsBtn').onclick=()=>{const d=document.getElementById('detailRemarks');if(d){d.focus();d.scrollIntoView({behavior:'smooth',block:'center'});}};}}
  }
- function showWhatsAppQueue(targets,messageText){let panel=document.getElementById('smvWhatsAppQueue');if(!panel){panel=document.createElement('div');panel.id='smvWhatsAppQueue';panel.className='smv-whatsapp-queue';document.body.appendChild(panel);}panel.innerHTML='<div class="smv-wa-head"><div><b>Assignments saved ✓</b><span>Open WhatsApp for each selected venue</span></div><button type="button" aria-label="Close">×</button></div><div class="smv-wa-list">'+targets.map((v,i)=>'<button type="button" data-wa-index="'+i+'"><strong>'+escapeHTML(clean(v.venue_name)||'Venue')+'</strong><span>Open WhatsApp ↗</span></button>').join('')+'</div>';panel.hidden=false;panel.querySelector('.smv-wa-head button').onclick=()=>panel.hidden=true;panel.querySelectorAll('[data-wa-index]').forEach(btn=>btn.onclick=()=>{const v=targets[Number(btn.dataset.waIndex)];smvOpenWhatsApp(v,messageText);btn.classList.add('smv-wa-opened');btn.querySelector('span').textContent='Opened ✓';});}
+ function showWhatsAppQueue(targets,messageText){
+   let panel=document.getElementById('smvWhatsAppQueue');
+   if(!panel){panel=document.createElement('div');panel.id='smvWhatsAppQueue';panel.className='smv-whatsapp-queue';document.body.appendChild(panel);}
+   const rows=targets.map((v,i)=>{
+     const url=smvWhatsAppUrl(v,messageText);
+     return '<a class="smv-wa-link" data-wa-index="'+i+'" href="'+escapeHTML(url)+'" target="_blank" rel="noopener noreferrer"><strong>'+escapeHTML(clean(v.venue_name)||'Venue')+'</strong><span>Open WhatsApp ↗</span></a>';
+   }).join('');
+   panel.innerHTML='<div class="smv-wa-head"><div><b>Assignments saved ✓</b><span>Tap a venue to open WhatsApp with the lead message ready.</span></div><button type="button" aria-label="Close">×</button></div><div class="smv-wa-list">'+rows+'</div>';
+   panel.hidden=false;
+   panel.querySelector('.smv-wa-head button').onclick=()=>panel.hidden=true;
+   panel.querySelectorAll('.smv-wa-link').forEach(link=>link.addEventListener('click',()=>{
+     link.classList.add('smv-wa-opened');
+     const label=link.querySelector('span');if(label)label.textContent='Opened ✓';
+   }));
+ }
  function installWhatsAppAssignment(){const actions=document.querySelector('#venueAssignmentModal .venue-assignment-actions');if(!actions||document.getElementById('smvAssignWhatsApp'))return;const b=document.createElement('button');b.id='smvAssignWhatsApp';b.type='button';b.className='save-btn smv-whatsapp-assign';b.textContent='Assign + WhatsApp';actions.appendChild(b);b.onclick=async()=>{const l=currentAssignmentLead();const checked=[...document.querySelectorAll('#venueAssignmentList .venue-assignment-checkbox:checked:not(:disabled)')].map(x=>String(x.value));const ids=[...new Set([...selectedNow].map(String).concat(checked))];if(!l||!ids.length){alert('Select at least one venue first.');return;}const targets=ids.map(id=>venueRowById(id)).filter(Boolean);if(targets.length!==ids.length){alert('One or more selected venues could not be loaded. Please refresh the assignment window and try again.');return;}const missing=targets.filter(v=>!smvPhone(v));if(missing.length){alert('WhatsApp/contact number is missing for: '+missing.map(v=>clean(v.venue_name)||'Venue').join(', '));return;}const messageText=document.getElementById('venueAssignmentNote')?.value||message(l);b.disabled=true;b.textContent='Assigning…';try{const result=await saveVenueAssignments({source:'whatsapp'});if(!result?.ok)return;const created=new Set((result.created||[]).map(String)),shareTargets=targets.filter(v=>created.has(String(v.id)));if(!shareTargets.length){alert('No new venue assignment was created, so WhatsApp was not opened.');return;}showWhatsAppQueue(shareTargets,messageText);}catch(e){console.error('Assign + WhatsApp failed',e);alert(e?.message||'Assignment was not completed, so WhatsApp was not opened.');}finally{b.disabled=false;b.textContent='Assign + WhatsApp';}};}
  function installAssignmentCloseReset(){const modal=document.getElementById('venueAssignmentModal');if(!modal||modal.dataset.smvResetInstalled==='1')return;modal.dataset.smvResetInstalled='1';const close=()=>setTimeout(()=>{if(modal.hidden)resetAssignmentUiState();},0);document.getElementById('closeVenueAssignmentModal')?.addEventListener('click',close);document.getElementById('cancelVenueAssignment')?.addEventListener('click',close);modal.addEventListener('click',e=>{if(e.target===modal)close();});}
  function smvFreshAssignmentLead(){const l=currentAssignmentLead();if(!l)return l;try{const latest=leads().find(x=>String(x.id)===String(l.id));if(latest&&latest!==l)Object.assign(l,latest);else if(latest)Object.assign(l,latest);}catch(_){}return l;}
