@@ -7,7 +7,7 @@
  const locations=['Delhi NCR','Delhi','Gurugram','Gurgaon','Noida','Greater Noida','Faridabad','Ghaziabad','Dwarka','Chhatarpur','GT Karnal Road','Kapashera','Peeragarhi','Alipur','Other'];
  const events=['Wedding','Engagement','Reception','Birthday','Corporate Event','Party','Anniversary','Other'];
  const fields=[['customer_name','Customer name','text'],['mobile','Mobile','tel'],['email','Email','email'],['location','Location',locations],['occasion','Event type',events],['event_date','Event date','date'],['guests','Guests','number'],['budget_per_person','Budget per person (₹)','number'],['food_preference','Food preference','text'],['call_outcome','Call status',outcomes],['status','Lead status',statuses],['priority','Priority',['low','normal','high','urgent']],['follow_up_at','Follow-up (India time)','datetime-local'],['site_visit_at','Visit date (India time)','datetime-local'],['lost_reason','Lost reason','text'],['lost_reason_other','Other lost reason','text'],['requirements','Customer requirements','textarea']];
- let rows=[],page=0,total=0,selected=null,profile=null,channel=null,sequence=0,timer;
+ let rows=[],page=0,total=0,selected=null,profile=null,channel=null,sequence=0,timer,reconnectTimer=null;
  const indiaLocal=s=>{if(!s)return '';const d=new Date(new Date(s).getTime()+330*60000);return d.toISOString().slice(0,16);};
  statuses.forEach(s=>el('filterStatus').add(new Option(label(s),s)));
  el('leadFields').innerHTML=fields.map(([key,title,type])=>`<label class="${type==='textarea'?'wide':''}">${esc(title)}${Array.isArray(type)?`<select id="field_${key}">${type.map(v=>`<option value="${esc(v)}">${esc(label(v))}</option>`).join('')}</select>`:type==='textarea'?`<textarea id="field_${key}" maxlength="10000" rows="3"></textarea>`:`<input id="field_${key}" type="${type}" ${type==='number'?'min="0" step="1"':''} ${key==='customer_name'?'required minlength="2" maxlength="120"':''}>`}</label>`).join('');
@@ -84,7 +84,7 @@
  const close=()=>{el('leadDialog').close();selected=null;};el('closeLead').onclick=close;el('cancelLead').onclick=close;el('leadDialog').addEventListener('close',()=>selected=null);
  el('filters').onsubmit=e=>e.preventDefault();el('filters').oninput=()=>{clearTimeout(timer);timer=setTimeout(()=>{page=0;load();},300);};
  el('clearFilters').onclick=()=>{el('filters').reset();page=0;load();};el('previous').onclick=()=>{page--;load();};el('next').onclick=()=>{page++;load();};el('refresh').onclick=()=>Promise.all([load(),stats()]);
- function resetView(){profile=null;rows=[];selected=null;el('workspace').hidden=true;el('accountActions').hidden=true;el('loginPanel').hidden=false;el('leadsBody').replaceChildren();el('history').replaceChildren();document.querySelectorAll('dialog[open]').forEach(d=>d.close());if(channel){client.removeChannel(channel);channel=null;}}
+ function resetView(){profile=null;rows=[];selected=null;el('workspace').hidden=true;el('accountActions').hidden=true;el('loginPanel').hidden=false;el('leadsBody').replaceChildren();el('history').replaceChildren();document.querySelectorAll('dialog[open]').forEach(d=>d.close());clearTimeout(reconnectTimer);reconnectTimer=null;if(channel){client.removeChannel(channel);channel=null;}}
  async function start(){
   const {data:{user},error}=await client.auth.getUser();if(error||!user){resetView();return;}
   const {data,error:pError}=await client.from('staff_profiles').select('full_name,role,is_active').eq('user_id',user.id).single();
@@ -95,7 +95,21 @@
   channel=client.channel('employee-leads').on('postgres_changes',{event:'*',schema:'public',table:'customer_enquiries'},payload=>{
    if(selected && String(payload.new?.id||payload.old?.id)===String(selected.id)){el('conflictNotice').hidden=false;}
    clearTimeout(timer);timer=setTimeout(()=>Promise.all([load(),stats()]),350);
-  }).subscribe(status=>{el('syncState').textContent=status==='SUBSCRIBED'?'● Live updates':'Reconnecting · periodic refresh';if(status==='SUBSCRIBED'){load();stats();}});
+  }).subscribe(status=>{
+   if(status==='SUBSCRIBED'){
+    clearTimeout(reconnectTimer);reconnectTimer=null;
+    el('syncState').textContent='● Live updates';
+    load();stats();
+    return;
+   }
+   if(['CHANNEL_ERROR','TIMED_OUT','CLOSED'].includes(status)){
+    el('syncState').textContent='Periodic refresh active';
+    clearTimeout(reconnectTimer);
+    reconnectTimer=setTimeout(()=>{if(profile&&!document.hidden)start();},5000);
+    return;
+   }
+   el('syncState').textContent='Connecting…';
+  });
   await Promise.all([load(),stats()]);
  }
  el('loginForm').onsubmit=async e=>{e.preventDefault();const b=e.target.querySelector('button');b.disabled=true;el('loginMessage').textContent='Signing in…';try{const {error}=await client.auth.signInWithPassword({email:el('loginEmail').value.trim(),password:el('loginPassword').value});if(error)throw error;await start();}catch(e){el('loginMessage').textContent=e.message;}finally{b.disabled=false;}};
