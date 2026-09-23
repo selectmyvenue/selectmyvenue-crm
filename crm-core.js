@@ -5331,9 +5331,6 @@ function renderVenues() {
                         <strong>${escapeHTML(
                             safeValue(venue.venue_name) || "Unnamed Venue"
                         )}</strong>
-                        <small>${escapeHTML(
-                            safeValue(venue.contact_person) || "No contact person"
-                        )}</small>
                     </div>
                 </td>
 
