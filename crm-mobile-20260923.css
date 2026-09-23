@@ -1471,3 +1471,66 @@
     display:flex!important;
   }
 }
+
+
+/* =========================================================
+   RESTORE PHONE VENUE NAME + DETAILS BUTTON — 2026-09-23
+   ========================================================= */
+@media(max-width:760px){
+  html.smv-phone-crm body #venueManagementSection .venue-name-cell{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    gap:3px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-name-cell strong{
+    display:block!important;
+    cursor:default!important;
+    border:0!important;
+    text-decoration:none!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-name-cell strong::after{
+    content:none!important;
+    display:none!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-name-cell small{
+    display:none!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-name-details-btn{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    min-width:72px!important;
+    height:34px!important;
+    min-height:34px!important;
+    margin-top:2px!important;
+    padding:0 9px!important;
+    border:1px solid #cfe1db!important;
+    border-radius:9px!important;
+    background:#f7fbf9!important;
+    color:#146350!important;
+    font-size:10px!important;
+    font-weight:850!important;
+    box-shadow:none!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-name-details-btn::after{
+    content:"⌄";
+    margin-left:5px!important;
+    font-size:13px!important;
+    transition:transform .15s ease!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open .venue-name-details-btn::after{
+    transform:rotate(180deg)!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open .venue-name-cell small{
+    display:block!important;
+    color:#74847f!important;
+    font-size:10px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr:not(.smv-mobile-venue-open)>td:not(:first-child){
+    display:none!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:not(:first-child){
+    display:flex!important;
+  }
+}
