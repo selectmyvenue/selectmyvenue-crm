@@ -679,7 +679,7 @@
     installSafeLeadDelete();
 
     loadScript("venue-media-manager.js?v=20260904-hd30-1", function () {
-      loadScript("crm-hotfix-20260909.js?v=20260924-comment-venuearea-2", function () {
+      loadScript("crm-hotfix-20260909.js?v=20260924-location-layout-5", function () {
         installVenueTablePolish();
         installLeadDetailsWatcher();
         prepareLoadedLeadCustomerMeta();
