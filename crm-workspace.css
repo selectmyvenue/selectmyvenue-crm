@@ -240,3 +240,131 @@ body .crm-app .leads-table td{overflow-wrap:anywhere;white-space:normal}
 #venueAssignmentModal .venue-assignment-note{
   margin-top:4px!important;
 }
+
+
+/* =========================================================
+   ASSIGNMENT WHATSAPP UX FIX — 2026-09-23
+   Keep venue list visible; message opens as a floating editor.
+   ========================================================= */
+#venueAssignmentModal .smv-message-tools{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  flex:0 0 auto!important;
+}
+#venueAssignmentModal .smv-message-tools button{
+  min-height:34px!important;
+  height:34px!important;
+  padding:0 10px!important;
+  border:1px solid #bddfd5!important;
+  border-radius:9px!important;
+  background:#fff!important;
+  color:#08705d!important;
+  font-size:10px!important;
+  font-weight:850!important;
+  cursor:pointer!important;
+  white-space:nowrap!important;
+}
+#venueAssignmentModal .smv-message-tools button:hover{
+  background:#edf9f5!important;
+  border-color:#91cdbd!important;
+}
+#venueAssignmentModal .venue-assignment-note.smv-message-floating{
+  display:none!important;
+  position:fixed!important;
+  right:18px!important;
+  top:92px!important;
+  z-index:33050!important;
+  width:min(560px,calc(100vw - 36px))!important;
+  max-height:calc(100vh - 120px)!important;
+  margin:0!important;
+  padding:14px!important;
+  overflow:auto!important;
+  border:1px solid #c9ded7!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  box-shadow:0 22px 60px rgba(11,55,47,.28)!important;
+  pointer-events:auto!important;
+}
+#venueAssignmentModal .venue-assignment-note.smv-message-floating.smv-message-open{
+  display:block!important;
+}
+#venueAssignmentModal .venue-assignment-note.smv-message-floating label{
+  display:block!important;
+  padding-right:38px!important;
+  margin-bottom:8px!important;
+  font-size:10px!important;
+  font-weight:850!important;
+  color:#536f68!important;
+}
+#venueAssignmentModal .venue-assignment-note.smv-message-floating textarea{
+  width:100%!important;
+  min-height:280px!important;
+  max-height:calc(100vh - 205px)!important;
+  resize:vertical!important;
+}
+#venueAssignmentModal .smv-message-close{
+  position:absolute!important;
+  top:8px!important;
+  right:8px!important;
+  width:30px!important;
+  height:30px!important;
+  min-height:30px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:8px!important;
+  background:#eef4f2!important;
+  color:#355f55!important;
+  font-size:20px!important;
+  line-height:1!important;
+  cursor:pointer!important;
+}
+
+/* WhatsApp queue must stay above the full-screen assignment modal. */
+.smv-whatsapp-queue{
+  z-index:33100!important;
+  pointer-events:auto!important;
+}
+.smv-whatsapp-queue *{pointer-events:auto!important}
+.smv-wa-list>a.smv-wa-link{
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:center!important;
+  gap:10px!important;
+  width:100%!important;
+  padding:9px 10px!important;
+  border:1px solid #dce8e4!important;
+  border-radius:9px!important;
+  background:#f8fbfa!important;
+  color:inherit!important;
+  text-align:left!important;
+  text-decoration:none!important;
+  cursor:pointer!important;
+}
+.smv-wa-list>a.smv-wa-link strong{font-size:11px!important;color:#183f36!important}
+.smv-wa-list>a.smv-wa-link span{font-size:10px!important;color:#08775f!important;font-weight:850!important;white-space:nowrap!important}
+.smv-wa-list>a.smv-wa-link.smv-wa-opened{opacity:.68!important}
+
+@media(max-width:900px){
+  #venueAssignmentModal .venue-assignment-toolbar{
+    flex-wrap:wrap!important;
+  }
+  #venueAssignmentModal .smv-message-tools{
+    width:100%!important;
+  }
+  #venueAssignmentModal .smv-message-tools button{
+    flex:1 1 0!important;
+  }
+  #venueAssignmentModal .venue-assignment-note.smv-message-floating{
+    left:10px!important;
+    right:10px!important;
+    top:auto!important;
+    bottom:10px!important;
+    width:auto!important;
+    max-height:72vh!important;
+  }
+  #venueAssignmentModal .venue-assignment-note.smv-message-floating textarea{
+    min-height:220px!important;
+    max-height:55vh!important;
+  }
+}
