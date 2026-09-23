@@ -46,8 +46,8 @@
   body .crm-app .leads-table th:nth-child(5), body .crm-app .leads-table td:nth-child(5){width:6%!important}
   body .crm-app .leads-table th:nth-child(6), body .crm-app .leads-table td:nth-child(6){width:7.5%!important}
   body .crm-app .leads-table th:nth-child(7), body .crm-app .leads-table td:nth-child(7){width:8.5%!important}
-  body .crm-app .leads-table th:nth-child(8), body .crm-app .leads-table td:nth-child(8){width:4%!important;text-align:center!important}
-  body .crm-app .leads-table th:nth-child(9), body .crm-app .leads-table td:nth-child(9){width:12%!important}
+  body .crm-app .leads-table th:nth-child(8), body .crm-app .leads-table td:nth-child(8){width:5.5%!important;text-align:center!important}
+  body .crm-app .leads-table th:nth-child(9), body .crm-app .leads-table td:nth-child(9){width:10.5%!important}
   body .crm-app .leads-table th:nth-child(10),body .crm-app .leads-table td:nth-child(10){width:8.5%!important;text-align:center!important}
   body .crm-app .leads-table th:nth-child(11),body .crm-app .leads-table td:nth-child(11){width:5%!important;text-align:center!important}
   body .crm-app .leads-table th:nth-child(12),body .crm-app .leads-table td:nth-child(12){width:6%!important;text-align:center!important}
