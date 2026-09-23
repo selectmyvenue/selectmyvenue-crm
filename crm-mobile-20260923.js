@@ -263,14 +263,6 @@
     if(root.dataset.smvPhoneV3Bound==='1')return;
     root.dataset.smvPhoneV3Bound='1';
 
-    document.addEventListener('keydown',event=>{
-      const venueName=event.target.closest?.('#venueTableBody .venue-name-cell strong.smv-venue-name-toggle');
-      if(venueName && isPhone() && (event.key==='Enter' || event.key===' ')){
-        event.preventDefault();
-        toggleMobileVenueRow(venueName);
-      }
-    });
-
     document.addEventListener('click',event=>{
       const phoneAction=event.target.closest('[data-smv-phone-action]');
       if(phoneAction){
@@ -293,9 +285,9 @@
         return;
       }
 
-      const venueName=event.target.closest('#venueTableBody .venue-name-cell strong');
-      if(venueName && isPhone()){
-        toggleMobileVenueRow(venueName);
+      const venueToggle=event.target.closest('.venue-name-details-btn');
+      if(venueToggle && isPhone()){
+        toggleMobileVenueRow(venueToggle);
         return;
       }
 
@@ -389,41 +381,38 @@
   function decorateMobileVenueRows(){
     const body=document.getElementById('venueTableBody');
     if(!body)return;
-
     [...body.querySelectorAll(':scope > tr')].forEach(row=>{
       if(row.children.length<2)return;
-
-      /* Remove legacy mobile Details buttons from every viewport. */
       row.querySelectorAll('.smv-venue-mobile-toggle').forEach(button=>button.remove());
-
       const name=row.querySelector('.venue-name-cell strong');
-      if(!name)return;
-
-      if(isPhone()){
-        name.classList.add('smv-venue-name-toggle');
-        name.setAttribute('role','button');
-        name.setAttribute('tabindex','0');
-        name.setAttribute('aria-expanded',String(row.classList.contains('smv-mobile-venue-open')));
-        name.setAttribute('title','Tap to view venue details');
-      }else{
-        row.classList.remove('smv-mobile-venue-open');
+      if(name){
         name.classList.remove('smv-venue-name-toggle');
         name.removeAttribute('role');
         name.removeAttribute('tabindex');
         name.removeAttribute('aria-expanded');
         name.removeAttribute('title');
       }
+      const details=row.querySelector('.venue-name-details-btn');
+      if(!details)return;
+      if(isPhone()){
+        details.setAttribute('aria-expanded',String(row.classList.contains('smv-mobile-venue-open')));
+        details.textContent=row.classList.contains('smv-mobile-venue-open')?'Close':'Details';
+      }else{
+        row.classList.remove('smv-mobile-venue-open');
+        details.setAttribute('aria-expanded','false');
+        details.textContent='Details';
+      }
     });
   }
 
-  function toggleMobileVenueRow(target){
+  function toggleMobileVenueRow(button){
     if(!isPhone())return;
-    const row=target.closest('#venueTableBody > tr');
+    const row=button.closest('#venueTableBody > tr');
     if(!row)return;
     const open=!row.classList.contains('smv-mobile-venue-open');
     row.classList.toggle('smv-mobile-venue-open',open);
-    const name=row.querySelector('.venue-name-cell strong');
-    if(name)name.setAttribute('aria-expanded',String(open));
+    button.setAttribute('aria-expanded',String(open));
+    button.textContent=open?'Close':'Details';
   }
 
   function install(){
