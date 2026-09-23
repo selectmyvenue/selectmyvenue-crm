@@ -1595,3 +1595,60 @@ body{font-size:14.5px!important}
   margin:0!important;
   padding:0!important;
 }
+
+
+/* =========================================================
+   VENUE QUICK DETAILS + OWNER NAME — 2026-09-23
+   ========================================================= */
+#venueManagementSection .venue-name-cell{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  gap:2px!important;
+}
+#venueManagementSection .venue-name-cell small{
+  display:block!important;
+  color:#607a73!important;
+  font-size:9px!important;
+  line-height:1.2!important;
+}
+#venueManagementSection .venue-name-details-btn{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:24px!important;
+  height:24px!important;
+  margin-top:3px!important;
+  padding:0 8px!important;
+  border:1px solid #c8ddd6!important;
+  border-radius:7px!important;
+  background:#fff!important;
+  color:#0a6755!important;
+  font-size:9px!important;
+  font-weight:850!important;
+  cursor:pointer!important;
+  box-shadow:none!important;
+}
+#venueManagementSection .venue-name-details-btn:hover{
+  background:#eef8f5!important;
+  border-color:#9dcbbd!important;
+}
+#venueModal.venue-readonly-mode .venue-form input,
+#venueModal.venue-readonly-mode .venue-form select,
+#venueModal.venue-readonly-mode .venue-form textarea{
+  background:#f7faf9!important;
+  color:#314e47!important;
+  opacity:1!important;
+  cursor:default!important;
+}
+#venueModal.venue-readonly-mode .venue-form input[type="checkbox"]{
+  opacity:1!important;
+}
+#venueModal.venue-readonly-mode #saveVenueBtn,
+#venueModal.venue-readonly-mode #sendPartnerInviteBtn,
+#venueModal.venue-readonly-mode .venue-media-actions{
+  display:none!important;
+}
+#venueModal.venue-readonly-mode .venue-form-section-title{
+  color:#0a6957!important;
+}
