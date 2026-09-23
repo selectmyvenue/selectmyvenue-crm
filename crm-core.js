@@ -7566,15 +7566,75 @@ async function saveVenueAssignments(options = {}) {
         const selectedUnique = [...new Set(selected.map(String))];
         const { data: latestAssignments, error: latestAssignmentError } = await client
             .from("venue_enquiry_assignments")
-            .select("venue_id,assignment_status")
+            .select("id,venue_id,assignment_status")
             .eq("enquiry_id", leadToAssign.id)
             .in("venue_id", selectedUnique);
-        if (latestAssignmentError) throw latestAssignmentError;
-        const activeVenueIds = new Set((latestAssignments || [])
-            .filter(item => safeValue(item.assignment_status) !== "cancelled")
-            .map(item => String(item.venue_id)));
+
+        if (latestAssignmentError) {
+            throw latestAssignmentError;
+        }
+
+        const latest = Array.isArray(latestAssignments)
+            ? latestAssignments
+            : [];
+
+        const activeVenueIds = new Set(
+            latest
+                .filter(item => safeValue(item.assignment_status) !== "cancelled")
+                .map(item => String(item.venue_id))
+        );
+
+        const cancelledByVenue = new Map(
+            latest
+                .filter(item => safeValue(item.assignment_status) === "cancelled")
+                .map(item => [String(item.venue_id), item])
+        );
+
+        const nowIso = new Date().toISOString();
+        const reactivatedVenueIds = [];
+        const cancelledToReactivate = selectedUnique.filter(
+            venueId =>
+                !activeVenueIds.has(String(venueId)) &&
+                cancelledByVenue.has(String(venueId))
+        );
+
+        /* UNIQUE(enquiry_id, venue_id) means a cancelled venue must be reactivated,
+           not inserted again. This is the normal re-assignment path. */
+        for (const venueId of cancelledToReactivate) {
+            const existing = cancelledByVenue.get(String(venueId));
+
+            const { error: reactivateError } = await client
+                .from("venue_enquiry_assignments")
+                .update({
+                    assignment_status: "assigned",
+                    assignment_note: note,
+                    assigned_by: assignedBy,
+                    assigned_at: nowIso,
+                    updated_at: nowIso,
+                    first_viewed_at: null,
+                    first_contacted_at: null,
+                    last_activity_at: null,
+                    partner_note: null,
+                    site_visit_at: null,
+                    follow_up_at: null,
+                    converted_at: null,
+                    lost_reason: null
+                })
+                .eq("id", existing.id);
+
+            if (reactivateError) {
+                throw reactivateError;
+            }
+
+            reactivatedVenueIds.push(String(venueId));
+        }
+
         const rows = selectedUnique
-            .filter(venueId => !activeVenueIds.has(String(venueId)))
+            .filter(
+                venueId =>
+                    !activeVenueIds.has(String(venueId)) &&
+                    !cancelledByVenue.has(String(venueId))
+            )
             .map(venueId => ({
                 enquiry_id: leadToAssign.id,
                 venue_id: venueId,
@@ -7593,6 +7653,11 @@ async function saveVenueAssignments(options = {}) {
             }
         }
 
+        const createdVenueIds = [
+            ...reactivatedVenueIds,
+            ...rows.map(row => String(row.venue_id))
+        ];
+
         /* Keep a lightweight internal activity record where available. */
         try {
             await client
@@ -7600,8 +7665,9 @@ async function saveVenueAssignments(options = {}) {
                 .insert({
                     lead_id: leadToAssign.id,
                     activity_type: "venue_assigned",
-                    description: `Venue assignment: ${rows.length} new venue(s) assigned.`,
-                    new_value: rows.map(row => row.venue_id).join(","),
+                    description:
+                        `Venue assignment: ${rows.length} new, ${reactivatedVenueIds.length} reactivated.`,
+                    new_value: createdVenueIds.join(","),
                     created_by: assignedBy
                 });
         }
@@ -7615,25 +7681,41 @@ async function saveVenueAssignments(options = {}) {
         const savedLead = leadToAssign;
         await loadVenueAssignments();
         applyFilters();
-        if (String(assignmentCurrentLead?.id) === String(leadToAssign.id)) closeVenueAssignmentModal();
-        if (rows.length > 0) {
-            const assignedText =
-                `${rows.length} new venue${rows.length === 1 ? "" : "s"} assigned successfully.`;
 
-            const skippedCount = selectedUnique.length - rows.length;
+        if (String(assignmentCurrentLead?.id) === String(leadToAssign.id)) {
+            closeVenueAssignmentModal();
+        }
 
-            if (skippedCount > 0) {
-                showToast(
-                    `${assignedText} ${skippedCount} venue${skippedCount === 1 ? " was" : "s were"} already assigned.`,
-                    "success"
-                );
-            } else {
-                showToast(
-                    assignedText,
-                    "success"
+        if (createdVenueIds.length > 0) {
+            const parts = [];
+
+            if (rows.length) {
+                parts.push(
+                    `${rows.length} new venue${rows.length === 1 ? "" : "s"} assigned`
                 );
             }
-        } else {
+
+            if (reactivatedVenueIds.length) {
+                parts.push(
+                    `${reactivatedVenueIds.length} venue${reactivatedVenueIds.length === 1 ? "" : "s"} re-assigned`
+                );
+            }
+
+            const alreadyCount =
+                selectedUnique.length -
+                createdVenueIds.length;
+
+            showToast(
+                `${parts.join(" and ")} successfully.` +
+                (
+                    alreadyCount > 0
+                        ? ` ${alreadyCount} already active.`
+                        : ""
+                ),
+                "success"
+            );
+        }
+        else {
             const alreadyCount = selectedUnique.length;
 
             showToast(
@@ -7641,7 +7723,14 @@ async function saveVenueAssignments(options = {}) {
                 "info"
             );
         }
-        return { ok: true, selected, created: rows.map(row => row.venue_id), lead: savedLead };
+
+        return {
+            ok: true,
+            selected,
+            created: createdVenueIds,
+            reactivated: reactivatedVenueIds,
+            lead: savedLead
+        };
     }
     catch (error) {
         console.error("Venue assignment save error:", error);
