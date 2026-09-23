@@ -5332,7 +5332,7 @@ function renderVenues() {
                             safeValue(venue.venue_name) || "Unnamed Venue"
                         )}</strong>
                         <small>${escapeHTML(
-                            safeValue(venue.contact_person) || "No contact person"
+                            safeValue(venue.owner_name || venue.contact_person) || "No owner/contact person"
                         )}</small>
                         <button
                             type="button"
