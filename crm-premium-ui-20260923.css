@@ -1789,3 +1789,121 @@ body{font-size:14.5px!important}
     z-index:25!important;
   }
 }
+
+
+/* =========================================================
+   2026-09-24 — FINAL CUSTOMER ENQUIRY COLUMN GEOMETRY
+   This block is intentionally last because premium CSS is re-appended at runtime.
+   Do not make STATUS/COMMENT/DETAILS/ASSIGN sticky: it covers LOCATION while scrolling.
+   ========================================================= */
+@media(min-width:761px){
+  .leads-table{
+    width:100%!important;
+    min-width:1435px!important;
+    table-layout:fixed!important;
+  }
+
+  .leads-table th,.leads-table td{
+    display:table-cell!important;
+    box-sizing:border-box!important;
+    vertical-align:middle!important;
+  }
+
+  /* CUSTOMER / PHONE / CREATED / VENUE-AREA / SOURCE / EVENT / DATE / GUESTS / LOCATION / STATUS / COMMENT / DETAILS / ASSIGN */
+  .leads-table th:nth-child(1), .leads-table td:nth-child(1){width:125px!important}
+  .leads-table th:nth-child(2), .leads-table td:nth-child(2){width:110px!important}
+  .leads-table th:nth-child(3), .leads-table td:nth-child(3){width:145px!important}
+  .leads-table th:nth-child(4), .leads-table td:nth-child(4){width:120px!important}
+  .leads-table th:nth-child(5), .leads-table td:nth-child(5){width:95px!important}
+  .leads-table th:nth-child(6), .leads-table td:nth-child(6){width:105px!important}
+  .leads-table th:nth-child(7), .leads-table td:nth-child(7){width:115px!important}
+  .leads-table th:nth-child(8), .leads-table td:nth-child(8){width:60px!important;text-align:center!important}
+  .leads-table th:nth-child(9), .leads-table td:nth-child(9){width:190px!important}
+  .leads-table th:nth-child(10),.leads-table td:nth-child(10){width:120px!important;text-align:center!important}
+  .leads-table th:nth-child(11),.leads-table td:nth-child(11){width:70px!important;text-align:center!important}
+  .leads-table th:nth-child(12),.leads-table td:nth-child(12){width:85px!important;text-align:center!important}
+  .leads-table th:nth-child(13),.leads-table td:nth-child(13){width:95px!important;text-align:center!important}
+
+  /* Nothing on the right may overlay LOCATION. */
+  .leads-table th:nth-child(9), .leads-table td:nth-child(9),
+  .leads-table th:nth-child(10),.leads-table td:nth-child(10),
+  .leads-table th:nth-child(11),.leads-table td:nth-child(11),
+  .leads-table th:nth-child(12),.leads-table td:nth-child(12),
+  .leads-table th:nth-child(13),.leads-table td:nth-child(13){
+    position:static!important;
+    inset:auto!important;
+    left:auto!important;
+    right:auto!important;
+    z-index:auto!important;
+    box-shadow:none!important;
+  }
+
+  .leads-table th:nth-child(9){
+    white-space:nowrap!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+  .leads-table td:nth-child(9){
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    overflow-wrap:anywhere!important;
+    word-break:normal!important;
+    line-height:1.25!important;
+    padding-left:10px!important;
+    padding-right:10px!important;
+  }
+
+  /* Keep premium status interaction exactly as-is, only constrain it to its own cell. */
+  .leads-table td:nth-child(10){
+    overflow:visible!important;
+    white-space:nowrap!important;
+  }
+  .leads-table td:nth-child(10) .crm-status-inline-field{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    position:relative!important;
+    inset:auto!important;
+    left:auto!important;
+    right:auto!important;
+    cursor:pointer!important;
+    pointer-events:auto!important;
+  }
+  .leads-table td:nth-child(10) .crm-status-badge,
+  .leads-table td:nth-child(10) .status-badge,
+  .leads-table td:nth-child(10) .inline-display{
+    position:relative!important;
+    inset:auto!important;
+    left:auto!important;
+    right:auto!important;
+    max-width:100%!important;
+    white-space:nowrap!important;
+  }
+
+  /* Blank comment = subtle medium +, not oversized or too dark. */
+  .leads-table .comment-add-btn{
+    width:27px!important;
+    min-width:27px!important;
+    max-width:27px!important;
+    height:27px!important;
+    min-height:27px!important;
+    max-height:27px!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:7px!important;
+    background:transparent!important;
+    color:#93a19d!important;
+    font-size:18px!important;
+    font-weight:500!important;
+    line-height:1!important;
+    box-shadow:none!important;
+  }
+  .leads-table .comment-add-btn:hover{
+    color:#08745d!important;
+    background:#eef8f5!important;
+  }
+
+  .leads-table td:nth-child(12) .view-lead-btn{min-width:68px!important;max-width:none!important}
+  .leads-table td:nth-child(13) .venue-assign-btn{min-width:78px!important;max-width:none!important}
+}
