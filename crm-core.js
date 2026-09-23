@@ -7307,6 +7307,8 @@ function setupVenueAssignment() {
 }
 
 async function openVenueAssignmentModal(enquiryId) {
+    resetVenueAssignmentSaveState();
+
     const lead = allLeads.find(
         item => String(item.id) === String(enquiryId)
     );
@@ -7510,6 +7512,23 @@ function showAssignmentMessage(message, type = "") {
 }
 
 let assignmentSaveInFlight = false;
+function resetVenueAssignmentSaveState() {
+    assignmentSaveInFlight = false;
+
+    const saveButton = document.getElementById("saveVenueAssignment");
+    if (saveButton) {
+        saveButton.disabled = false;
+        saveButton.textContent = "Assign Selected Venues";
+    }
+
+    const whatsappButton = document.getElementById("smvAssignWhatsApp");
+    if (whatsappButton) {
+        whatsappButton.disabled = false;
+        whatsappButton.textContent = "Assign + WhatsApp";
+    }
+}
+window.resetVenueAssignmentSaveState = resetVenueAssignmentSaveState;
+
 async function saveVenueAssignments(options = {}) {
     if (assignmentSaveInFlight) return { ok: false, busy: true };
     const leadToAssign = assignmentCurrentLead;
@@ -7754,15 +7773,13 @@ async function saveVenueAssignments(options = {}) {
         return { ok: false, error };
     }
     finally {
-        assignmentSaveInFlight = false;
-        if (saveButton) {
-            saveButton.disabled = false;
-            saveButton.textContent = "Assign Selected Venues";
-        }
+        resetVenueAssignmentSaveState();
     }
 }
 
 function closeVenueAssignmentModal() {
+    resetVenueAssignmentSaveState();
+
     const modal = document.getElementById("venueAssignmentModal");
 
     if (!modal) {
