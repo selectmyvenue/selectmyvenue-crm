@@ -4755,6 +4755,25 @@ let pendingVenueCoverPreviewUrl = "";
 let pendingVenueCoverRemoval = false;
 let venueSaveInFlight = false;
 
+function resetVenueSaveState() {
+    venueSaveInFlight = false;
+
+    const button = document.getElementById("saveVenueBtn");
+
+    if (button) {
+        button.disabled = false;
+        button.removeAttribute("aria-busy");
+        button.textContent = "Save Venue";
+    }
+
+    const form = document.getElementById("venueForm");
+
+    if (form) {
+        form.removeAttribute("aria-busy");
+        delete form.dataset.smvSavingVenueId;
+    }
+}
+
 /* =========================================================
    STAGE 3 — VENUE ENQUIRY ASSIGNMENTS
    ========================================================= */
@@ -5557,6 +5576,7 @@ function openVenueModal(venue = null) {
     }
 
     setVenueDetailsMode(false);
+    resetVenueSaveState();
     form.reset();
 
     document.getElementById("venueId").value =
@@ -5763,6 +5783,7 @@ function closeVenueModal() {
         modal.hidden = true;
     }
 
+    resetVenueSaveState();
     currentVenuePartnerProfile = null;
     clearPendingVenueCoverPreview();
     pendingVenueCoverImageFile = null;
@@ -6569,6 +6590,7 @@ async function saveVenue(event) {
     event.stopPropagation();
 
     if (venueSaveInFlight) {
+        console.warn("Venue save ignored because another save is still marked in progress.");
         return;
     }
 
@@ -6608,8 +6630,15 @@ async function saveVenue(event) {
 
     venueSaveInFlight = true;
 
+    const form = document.getElementById("venueForm");
+    if (form) {
+        form.setAttribute("aria-busy", "true");
+        form.dataset.smvSavingVenueId = id || "new";
+    }
+
     if (button) {
         button.disabled = true;
+        button.setAttribute("aria-busy", "true");
         button.textContent = "Saving...";
     }
 
@@ -6644,11 +6673,7 @@ async function saveVenue(event) {
             (saveError?.message || "Please try again."),
             "error"
         );
-        venueSaveInFlight = false;
-        if (button) {
-            button.disabled = false;
-            button.textContent = "Save Venue";
-        }
+        resetVenueSaveState();
         return;
     }
 
@@ -6664,11 +6689,7 @@ async function saveVenue(event) {
             "error"
         );
 
-        venueSaveInFlight = false;
-        if (button) {
-            button.disabled = false;
-            button.textContent = "Save Venue";
-        }
+        resetVenueSaveState();
         return;
     }
 
@@ -6763,11 +6784,7 @@ async function saveVenue(event) {
     updateVenueStats();
     renderVenues();
 
-    venueSaveInFlight = false;
-    if (button) {
-        button.disabled = false;
-        button.textContent = "Save Venue";
-    }
+    resetVenueSaveState();
 
     if (!id) {
         prepareSavedVenueForPartnerAccess(savedVenue);
@@ -6858,6 +6875,7 @@ async function handleVenueTableClick(event) {
 
     if (action === "edit") {
 
+        resetVenueSaveState();
         openVenueModal(venue);
         return;
     }
