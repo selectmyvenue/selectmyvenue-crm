@@ -541,10 +541,10 @@
   }
 
   /* Venue assignment modal */
-  html.smv-phone-crm body #venueAssignmentModal.modal-overlay:not([hidden]){
+  html.smv-phone-crm body #venueAssignmentModal.venue-assignment-modal:not([hidden]){
     position:fixed!important;
     inset:0!important;
-    z-index:21000!important;
+    z-index:40000!important;
     padding:0!important;
     background:#f4f6f8!important;
   }
@@ -572,6 +572,8 @@
   html.smv-phone-crm body #venueAssignmentModal .venue-assignment-actions{
     position:sticky!important;
     bottom:0!important;
+    z-index:40020!important;
+    pointer-events:auto!important;
     display:grid!important;
     grid-template-columns:1fr 1fr!important;
     gap:8px!important;
@@ -721,6 +723,18 @@
   }
   html.smv-phone-crm body #venueModal .venue-form-grid,
   html.smv-phone-crm body #venueModal #venueEventTypes{grid-template-columns:1fr!important}
+
+
+  /* Keep fixed phone navigation out of all full-screen CRM modals. */
+  html.smv-phone-crm body:has(#venueAssignmentModal:not([hidden])) .smv-mobile-nav,
+  html.smv-phone-crm body:has(#venueAssignmentModal:not([hidden])) .smv-mobile-more-menu,
+  html.smv-phone-crm body:has(#venueModal:not([hidden])) .smv-mobile-nav,
+  html.smv-phone-crm body:has(#venueModal:not([hidden])) .smv-mobile-more-menu,
+  html.smv-phone-crm body:has(#leadModal:not([hidden])) .smv-mobile-nav,
+  html.smv-phone-crm body:has(#leadModal:not([hidden])) .smv-mobile-more-menu{
+    display:none!important;
+    pointer-events:none!important;
+  }
 
   /* Bottom nav */
   .smv-mobile-nav{
