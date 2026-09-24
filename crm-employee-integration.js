@@ -83,7 +83,15 @@ window.startEmployeeIntegration=async function(client){
  }
  function smvVenueTypeFamily(x){const t=smvText(x);if(/farm\s*house|farmhouse/.test(t))return"farmhouse";if(/banquet|party\s*hall|marriage\s*hall/.test(t))return"banquet";if(/hotel/.test(t))return"hotel";if(/resort/.test(t))return"resort";if(/lawn|garden|marriage\s*garden/.test(t))return"lawn";if(/rooftop/.test(t))return"rooftop";if(/restaurant/.test(t))return"restaurant";return t;}
  function smvRegion(x){const t=smvText(x);if(/gurugram|gurgaon|manesar/.test(t))return"gurgaon";if(/greater noida|greaternoida/.test(t))return"greater noida";if(/\bnoida\b/.test(t))return"noida";if(/faridabad/.test(t))return"faridabad";if(/ghaziabad/.test(t))return"ghaziabad";if(/delhi ncr|ncr/.test(t))return"delhi ncr";if(/delhi/.test(t))return"delhi";return"";}
- function smvGeoNumber(v){const n=Number(v);return Number.isFinite(n)?n:null;}
+ function smvGeoNumber(v){
+   if(v===null||v===undefined)return null;
+   const raw=String(v).trim();
+   if(!raw)return null;
+   const n=Number(raw);
+   if(!Number.isFinite(n))return null;
+   if(Math.abs(n)<0.000001)return null;
+   return n;
+ }
  function smvMapPoint(url){
    const text=clean(url);if(!text)return null;let m;
    m=text.match(/[?&]q=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i);if(m)return{lat:Number(m[1]),lon:Number(m[2]),source:'map-query'};
