@@ -92,6 +92,19 @@ window.startEmployeeIntegration=async function(client){
    if(Math.abs(n)<0.000001)return null;
    return n;
  }
+ function smvMapAddress(url){
+   const text=clean(url);if(!text)return'';
+   try{
+     const parsed=new URL(text);
+     const daddr=clean(parsed.searchParams.get('daddr'));
+     if(daddr)return daddr;
+     const q=clean(parsed.searchParams.get('q'));
+     if(q&&!/^-?\d+(?:\.\d+)?\s*,\s*-?\d+(?:\.\d+)?$/.test(q))return q;
+   }catch(_){}
+   const m=text.match(/[?&]daddr=([^&#]+)/i);
+   if(!m)return'';
+   try{return decodeURIComponent(m[1].replace(/\+/g,' '));}catch(_){return m[1].replace(/\+/g,' ');}
+ }
  function smvMapPoint(url){
    const text=clean(url);if(!text)return null;let m;
    m=text.match(/[?&]q=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i);if(m)return{lat:Number(m[1]),lon:Number(m[2]),source:'map-query'};
@@ -152,10 +165,46 @@ window.startEmployeeIntegration=async function(client){
    if(!v)return null;const storedLat=smvGeoNumber(v.latitude),storedLon=smvGeoNumber(v.longitude);if(storedLat!==null&&storedLon!==null)return{lat:storedLat,lon:storedLon,source:'venue'};
    if(smvGeoVenueAttempted.has(String(v.id)))return smvVenuePoint(v);
    smvGeoVenueAttempted.add(String(v.id));let p=smvMapPoint(v.google_maps_url);
-   if(!p){const q=[v.venue_name,v.area,v.city,v.address].filter(Boolean).join(', ');if(q)p=await smvGeocode(q,clean(v.city));}
+   if(!p){
+     const mapAddress=smvMapAddress(v.google_maps_url);
+     const q=mapAddress||[v.address,v.area,v.city,v.venue_name].filter(Boolean).join(', ');
+     if(q)p=await smvGeocode(q,clean(v.city));
+   }
    if(!p)return null;v.latitude=p.lat;v.longitude=p.lon;const db=typeof getSupabaseClient==='function'?getSupabaseClient():null;if(db&&v.id)await db.from('venues').update({latitude:p.lat,longitude:p.lon}).eq('id',v.id);return p;
  }
  window.smvGeocodeVenueRecord=smvEnsureVenueGeo;
+ let smvVenueGeoBackfillStarted=false;
+ async function smvBackfillVenueCoordinates(){
+   if(smvVenueGeoBackfillStarted)return;
+   const db=typeof getSupabaseClient==='function'?getSupabaseClient():null;
+   if(!db)return;
+   smvVenueGeoBackfillStarted=true;
+   try{
+     const {data,error}=await db.from('venues').select('*')
+       .eq('venue_status','approved')
+       .eq('verification_status','verified')
+       .order('venue_name',{ascending:true});
+     if(error)throw error;
+     const pending=(Array.isArray(data)?data:[]).filter(v=>!smvVenuePoint(v));
+     for(const v of pending){
+       await smvEnsureVenueGeo(v);
+       await new Promise(r=>setTimeout(r,1150));
+     }
+     if(pending.length){
+       smvAssistantVenueCacheAt=0;
+       try{
+         if(Array.isArray(assignmentVenueRows)&&assignmentVenueRows.length){
+           pending.forEach(v=>{
+             const row=assignmentVenueRows.find(x=>String(x.id)===String(v.id));
+             if(row&&smvVenuePoint(v)){row.latitude=v.latitude;row.longitude=v.longitude;}
+           });
+         }
+       }catch(_){}
+     }
+   }catch(error){
+     console.warn('Venue coordinate background completion skipped',error);
+   }
+ }
  async function smvRefreshAssignmentGeo(){
    if(smvGeoQueueBusy)return;const lead=currentAssignmentLead(),venues=Array.isArray(assignmentVenueRows)?assignmentVenueRows:[];if(!lead||!venues.length)return;smvGeoQueueBusy=true;
    try{
@@ -685,7 +734,7 @@ if(!venues.length){list.innerHTML='<div class="venue-assignment-empty">No approv
  function installVenueHistoryClicks(){document.addEventListener('click',e=>{const row=e.target.closest?.('#venueTableBody tr');if(!row)return;const cell=e.target.closest('td:first-child');if(!cell||e.target.closest('button,a,input,select'))return;const edit=row.querySelector('[data-venue-id]');const id=edit?.dataset.venueId;if(!id)return;const v=venueById(id);if(v){e.preventDefault();openVenueHistory(v);}});}
  function styles(){const s=document.createElement('style');s.id='smvOpsPatch';s.textContent=`.crm-main>.stats-grid{display:none!important}#leadWorkViews.lead-work-views{display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:6px!important;padding:6px 9px!important;margin:0!important}#leadWorkViews button{min-height:43px!important;padding:5px 8px!important;border:1px solid #d6e9e3!important;border-radius:10px!important;background:#fff!important;color:#355b53!important;display:flex!important;align-items:center!important;justify-content:space-between!important;font-size:10.5px!important;font-weight:750!important}#leadWorkViews button strong{font-size:18px!important;color:#08745d!important}#leadWorkViews button[aria-pressed=true]{background:#eef9f5!important;border-color:#92cdbc!important}.venue-assignment-card{width:min(1180px,96vw)!important;max-width:1180px!important;max-height:94vh!important;overflow-y:auto!important}.venue-assignment-list{min-height:160px!important;max-height:32vh!important;overflow:auto!important}.venue-assignment-note textarea,#venueAssignmentNote{width:100%!important;min-height:135px!important;max-height:190px!important;resize:vertical!important;font-size:12px!important;line-height:1.45!important}.venue-assignment-actions{position:sticky!important;bottom:0!important;background:#fff!important;padding-top:8px!important;z-index:4!important}.smv-assignment-summary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 10px;padding:0 1px}.smv-assignment-summary-top{position:sticky;top:0;z-index:8;background:#fff;padding-top:8px!important;padding-bottom:5px!important;border-bottom:1px solid #e6f0ed}.smv-assignment-summary>div{border:1px solid #d8ebe5;border-radius:10px;padding:8px;background:#f8fcfb;min-width:0}.smv-summary-title{display:flex;justify-content:space-between;align-items:center;color:#456b63;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}.smv-summary-title strong{background:#e0f4ed;color:#08745d;border-radius:12px;padding:2px 7px;font-size:11px}.smv-chip-row{display:flex;gap:5px;flex-wrap:wrap;max-height:76px;overflow:auto}.smv-venue-chip{display:inline-flex;align-items:center;gap:3px;border-radius:16px;padding:5px 8px;font-size:10.5px;line-height:1.2}.smv-assigned-chip{background:#e9f7f2;border:1px solid #b9e2d5;color:#175f51}.smv-selected-chip{background:#fff5d9;border:1px solid #ead18a;color:#684f08}.smv-venue-chip small{font-size:9px;opacity:.75}.smv-chip-check{font-size:9px;font-weight:800;color:#08745d;margin-left:3px}.smv-chip-remove{border:0;background:transparent;color:#8b6200;font-size:16px;line-height:12px;padding:0 1px;cursor:pointer}.smv-summary-empty{font-size:10px;color:#8ba09b;font-style:italic}.smv-assigned-badge{font-size:8px;font-weight:800;text-transform:uppercase;background:#e2f4ee;color:#08745d;border-radius:10px;padding:3px 6px}.smv-already-assigned-row{background:#f3faf7!important;opacity:.85}#venueTableBody td:first-child{cursor:pointer!important}#venueTableBody td:first-child strong{text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}.smv-history-card{width:min(1380px,97vw);max-height:94vh;overflow:auto;background:#fff;border-radius:18px;padding:18px;box-shadow:0 25px 80px rgba(0,0,0,.25)}.smv-history-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start}.smv-history-head h2{margin:4px 0;color:#075f4d}.smv-history-head p{margin:0;color:#6d817c}.smv-history-filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:15px 0;padding:10px;background:#f5fbf9;border:1px solid #d8ebe5;border-radius:12px}.smv-history-filters select,.smv-history-filters input{height:35px;border:1px solid #cfe3dd;border-radius:9px;padding:0 9px;background:#fff}.smv-history-filters strong{margin-left:auto;color:#08745d;font-size:16px}.smv-history-table-wrap{overflow:auto}.smv-history-table{width:100%;min-width:1150px;border-collapse:collapse}.smv-history-table th{background:#f3faf7;color:#52716a;font-size:9px;text-transform:uppercase;letter-spacing:.05em;text-align:left;padding:8px;border-bottom:1px solid #dcebe7}.smv-history-table td{font-size:11px;color:#254a43;padding:9px 8px;border-bottom:1px solid #edf4f2;vertical-align:top;max-width:260px;white-space:normal;word-break:break-word}@media(max-width:1000px){#leadWorkViews.lead-work-views{grid-template-columns:repeat(4,minmax(0,1fr))!important}.smv-assignment-summary{grid-template-columns:1fr}}`;document.head.appendChild(s);}
  window.smvGetAssignmentSelection=()=>[...selectedNow];
- function boot(){if(installed||!document.getElementById('leadWorkViews')||typeof renderAssignmentVenues!=='function'||typeof openVenueAssignmentModal!=='function')return;installed=true;styles();installAssignmentCloseReset();installAssignmentRenderer();installUnassignClicks();installVenueHistoryClicks();installAutomationControls();installVenueAssistant();installWhatsAppAssignment();renderCards();const m=document.getElementById('venueAssignmentModal');if(m)new MutationObserver(()=>{if(!m.hidden)setTimeout(()=>{resetAssignmentUiState();try{window.resetVenueAssignmentSaveState?.();}catch(_){}installWhatsAppAssignment(true);resetSelectionForLead();fillMessage();try{renderAssignmentVenues();}catch(_){}renderAssignmentSummary();},80);else{resetAssignmentUiState();rearmWhatsAppAssignment();}}).observe(m,{attributes:true,attributeFilter:['hidden']});document.addEventListener('change',e=>{if(e.target.matches?.('#venueAssignmentList .venue-assignment-checkbox')){const id=String(e.target.value);if(!e.target.disabled){smvSelectionTouched=true;if(e.target.checked)selectedNow.add(id);else selectedNow.delete(id);}renderAssignmentSummary();}});document.addEventListener('click',e=>{const remove=e.target.closest?.('.smv-chip-remove');if(remove){smvSelectionTouched=true;const chip=remove.closest('.smv-venue-chip'),id=String(chip?.dataset.venueId||'');selectedNow.delete(id);const cb=[...document.querySelectorAll('#venueAssignmentList .venue-assignment-checkbox')].find(x=>String(x.value)===id);if(cb&&!cb.disabled)cb.checked=false;renderAssignmentSummary();return;}if(e.target.closest?.('.venue-assign-btn,#assignAnotherVenueBtn'))setTimeout(fillMessage,150);});setInterval(()=>{refreshCards();fillMessage();refreshVenueAssistant();},1500);setInterval(refreshPreparationQueue,10000);setTimeout(refreshPreparationQueue,2500);}
+ function boot(){if(installed||!document.getElementById('leadWorkViews')||typeof renderAssignmentVenues!=='function'||typeof openVenueAssignmentModal!=='function')return;installed=true;styles();installAssignmentCloseReset();installAssignmentRenderer();installUnassignClicks();installVenueHistoryClicks();installAutomationControls();installVenueAssistant();installWhatsAppAssignment();renderCards();const m=document.getElementById('venueAssignmentModal');if(m)new MutationObserver(()=>{if(!m.hidden)setTimeout(()=>{resetAssignmentUiState();try{window.resetVenueAssignmentSaveState?.();}catch(_){}installWhatsAppAssignment(true);resetSelectionForLead();fillMessage();try{renderAssignmentVenues();}catch(_){}renderAssignmentSummary();},80);else{resetAssignmentUiState();rearmWhatsAppAssignment();}}).observe(m,{attributes:true,attributeFilter:['hidden']});document.addEventListener('change',e=>{if(e.target.matches?.('#venueAssignmentList .venue-assignment-checkbox')){const id=String(e.target.value);if(!e.target.disabled){smvSelectionTouched=true;if(e.target.checked)selectedNow.add(id);else selectedNow.delete(id);}renderAssignmentSummary();}});document.addEventListener('click',e=>{const remove=e.target.closest?.('.smv-chip-remove');if(remove){smvSelectionTouched=true;const chip=remove.closest('.smv-venue-chip'),id=String(chip?.dataset.venueId||'');selectedNow.delete(id);const cb=[...document.querySelectorAll('#venueAssignmentList .venue-assignment-checkbox')].find(x=>String(x.value)===id);if(cb&&!cb.disabled)cb.checked=false;renderAssignmentSummary();return;}if(e.target.closest?.('.venue-assign-btn,#assignAnotherVenueBtn'))setTimeout(fillMessage,150);});setInterval(()=>{refreshCards();fillMessage();refreshVenueAssistant();},1500);setInterval(refreshPreparationQueue,10000);setTimeout(refreshPreparationQueue,2500);setTimeout(()=>smvBackfillVenueCoordinates(),3500);}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,700));else setTimeout(boot,700);setTimeout(boot,1800);const bootRetry=setInterval(()=>{boot();if(installed)clearInterval(bootRetry);},500);setTimeout(()=>clearInterval(bootRetry),15000);
  window.addEventListener('focus',()=>{installWhatsAppAssignment(false);rearmWhatsAppAssignment();});
  window.addEventListener('pageshow',()=>{installWhatsAppAssignment(false);rearmWhatsAppAssignment();});

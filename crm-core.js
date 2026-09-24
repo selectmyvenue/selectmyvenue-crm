@@ -4983,6 +4983,14 @@ async function loadStage8Capabilities() {
         return false;
     }
 
+    /* Safe lifecycle maintenance only: this RPC never hides a venue or changes
+       listing/verification. It only marks an expired launch-trial status. */
+    try {
+        await client.rpc("smv_refresh_trial_statuses");
+    } catch (error) {
+        console.warn("Trial status refresh skipped:", error);
+    }
+
     const { data: plans, error: planError } =
         await client
             .from("venue_plans")
