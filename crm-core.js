@@ -6736,6 +6736,22 @@ async function saveVenue(event) {
     else {
         allVenues.unshift(savedVenue);
     }
+
+    /* Immediately turn a newly added/changed Maps link into coordinates in the
+       background. The Save itself is already complete and is never blocked by geocoding. */
+    if (safeValue(savedVenue.google_maps_url).trim() && typeof window.smvGeocodeVenueRecord === "function") {
+        Promise.resolve(window.smvGeocodeVenueRecord(savedVenue))
+            .then(point => {
+                if (!point) return;
+                const target = allVenues.find(item => String(item.id) === String(savedVenue.id));
+                if (target) {
+                    target.latitude = point.lat;
+                    target.longitude = point.lon;
+                }
+            })
+            .catch(error => console.warn("Venue coordinate enrichment failed:", error));
+    }
+
     updateVenueStats();
     renderVenues();
 

@@ -118,6 +118,7 @@ window.startEmployeeIntegration=async function(client){
    if(!p){const q=[v.venue_name,v.area,v.city,v.address].filter(Boolean).join(', ');if(q)p=await smvGeocode(q);}
    if(!p)return null;v.latitude=p.lat;v.longitude=p.lon;const db=typeof getSupabaseClient==='function'?getSupabaseClient():null;if(db&&v.id)await db.from('venues').update({latitude:p.lat,longitude:p.lon}).eq('id',v.id);return p;
  }
+ window.smvGeocodeVenueRecord=smvEnsureVenueGeo;
  async function smvRefreshAssignmentGeo(){
    if(smvGeoQueueBusy)return;const lead=currentAssignmentLead(),venues=Array.isArray(assignmentVenueRows)?assignmentVenueRows:[];if(!lead||!venues.length)return;smvGeoQueueBusy=true;
    try{
