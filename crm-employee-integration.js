@@ -258,13 +258,17 @@ window.startEmployeeIntegration=async function(client){
    const inferred=Object.assign({},smvParseNotes(l?.requirements),smvParseNotes(l?.contact_remark),smvParseNotes(l?.internal_notes));
    const food=smvText(l?.food_preference),structured={parking:l?.parking_required===true,lawn:l?.outdoor_preferred===true,indoor:l?.indoor_preferred===true,rooms:Number(l?.rooms_required)||0,venueType:smvText(l?.venue_type_preference),food};
    const hasFood=inferred.veg!==undefined||inferred.nonveg!==undefined;
-   const savedLocation=smvText([l?.preferred_city,l?.preferred_area,l?.location].filter(Boolean).join(' '));
+   const preferredArea=smvText(l?.preferred_area);
+   const savedCity=smvText(l?.preferred_city||l?.location);
+   /* Venue / Area is the customer's most specific location requirement.
+      A broad legacy city (e.g. Gurgaon) must never override Chattarpur / Sector 67. */
+   const savedLocation=preferredArea||savedCity;
    let inferredLocation=smvText(inferred.location);
    const broadLocation=/^(delhi(?: ncr)?|gurgaon|gurugram|manesar|noida|greater noida|faridabad|ghaziabad)$/.test(inferredLocation);
    const inferredSpecific=!!inferredLocation&&!broadLocation;
-   // Example: saved city = Delhi, note = Chattarpur. Preserve Chattarpur specificity
-   // but inherit Delhi so same-city alternatives are not treated as cross-region failures.
-   if(inferredSpecific&&!smvRegion(inferredLocation)&&smvRegion(savedLocation)){
+   // Only inherit a broad city when there is no explicit Venue / Area.
+   // Once Venue / Area exists, route/geocode data decides locality proximity.
+   if(!preferredArea&&inferredSpecific&&!smvRegion(inferredLocation)&&smvRegion(savedLocation)){
      inferredLocation=(inferredLocation+' '+smvRegion(savedLocation)).trim();
    }
    const location=inferredLocation&&(inferredSpecific||/\/|\bsector\b/.test(inferredLocation)||smvRegion(inferredLocation)!==smvRegion(savedLocation))
