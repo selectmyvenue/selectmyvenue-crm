@@ -640,7 +640,7 @@
     window.setTimeout(updateActionBadge, 1200);
   }
 
-  addScript("crm-base.js?v=20260923-venue-details-10", function () {
+  addScript("crm-base.js?v=20260924-core-loader-refresh-11", function () {
     let checks = 0;
     const waitForCore = window.setInterval(function () {
       checks += 1;
