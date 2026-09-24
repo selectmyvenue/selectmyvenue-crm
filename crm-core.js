@@ -4763,6 +4763,7 @@ function resetVenueSaveState() {
     if (button) {
         button.disabled = false;
         button.removeAttribute("aria-busy");
+        delete button.dataset.smvSaving;
         button.textContent = "Save Venue";
     }
 
@@ -4822,6 +4823,37 @@ function setupVenueManagement() {
     cancelBtn?.addEventListener("click", closeVenueModal);
 
     form.addEventListener("submit", saveVenue);
+
+    /* Save Venue is handled at document capture phase so no later wrapper,
+       modal re-render, or stale submit state can swallow the second click. */
+    if (document.documentElement.dataset.smvVenueSaveDelegated !== "1") {
+        document.documentElement.dataset.smvVenueSaveDelegated = "1";
+
+        document.addEventListener("click", event => {
+            const saveButton = event.target.closest?.("#saveVenueBtn");
+
+            if (!saveButton) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            const venueModal = document.getElementById("venueModal");
+
+            if (!venueModal || venueModal.hidden) {
+                return;
+            }
+
+            /* A stale disabled state must never make the next venue unclickable. */
+            if (saveButton.disabled) {
+                saveButton.disabled = false;
+            }
+
+            saveVenue(event);
+        }, true);
+    }
+
     partnerInviteButton?.addEventListener("click", sendPartnerInvite);
     coverImageInput?.addEventListener("change", handleVenueCoverSelection);
     replaceCoverButton?.addEventListener("click", () => coverImageInput?.click());
@@ -6637,8 +6669,9 @@ async function saveVenue(event) {
     }
 
     if (button) {
-        button.disabled = true;
+        button.disabled = false;
         button.setAttribute("aria-busy", "true");
+        button.dataset.smvSaving = "1";
         button.textContent = "Saving...";
     }
 
