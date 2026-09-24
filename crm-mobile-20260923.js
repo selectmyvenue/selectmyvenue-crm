@@ -89,8 +89,8 @@
   }
 
   function detailItem(label,value){
-    const safe=String(value || '').trim();
-    if(!safe || safe==='—' || safe==='-')return '';
+    const raw=String(value || '').trim();
+    const safe=(!raw || raw==='-' || raw==='—') ? '—' : raw;
     return '<div class="smv-mobile-detail-item"><span>'+escapeHTML(label)+'</span><strong>'+escapeHTML(safe)+'</strong></div>';
   }
 
