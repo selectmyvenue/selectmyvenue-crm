@@ -101,7 +101,7 @@
     const name=cleanText(cells[0]) || 'Unnamed enquiry';
     const phone=cleanText(cells[1]) || 'No phone';
     const created=cleanText(cells[2]);
-    const email=cleanText(cells[3]);
+    const venueArea=cleanText(cells[3]);
     const source=cleanText(cells[4]);
     const event=cleanText(cells[5]);
     const eventDate=cleanText(cells[6]);
@@ -115,13 +115,13 @@
     const assignCount=cleanText(assignButton?.querySelector('.venue-assignment-count'));
 
     const details=[
-      detailItem('Event',event),
+      detailItem('Venue / Area',venueArea),
       detailItem('Location',location),
+      detailItem('Event',event),
       detailItem('Event date',eventDate),
       detailItem('Guests',guests),
       detailItem('Source',source),
       detailItem('Created',created),
-      detailItem('Email',email),
       detailItem('Comment',comment)
     ].join('');
 
