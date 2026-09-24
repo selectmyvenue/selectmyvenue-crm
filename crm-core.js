@@ -6781,10 +6781,18 @@ async function saveVenue(event) {
             .catch(error => console.warn("Venue coordinate enrichment failed:", error));
     }
 
-    updateVenueStats();
-    renderVenues();
-
-    resetVenueSaveState();
+    try {
+        updateVenueStats();
+        renderVenues();
+    }
+    catch (uiError) {
+        console.warn("Venue saved, but the list refresh hit a UI error:", uiError);
+    }
+    finally {
+        /* A successful database save must never leave the next venue locked,
+           even if a secondary UI refresh fails. */
+        resetVenueSaveState();
+    }
 
     if (!id) {
         prepareSavedVenueForPartnerAccess(savedVenue);
