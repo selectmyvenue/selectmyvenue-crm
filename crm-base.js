@@ -672,7 +672,7 @@
     observer.observe(tbody, { childList: true, subtree: true });
   }
 
-  loadScript("crm-core.js?v=20260924-save-click-direct-18", function () {
+  loadScript("crm-core.js?v=20260924-toast-click-fix-19", function () {
     installInternalCommentOnlyBehavior();
     installLeadRenderNormalizer();
     installSaveCustomerCommentPreserver();

@@ -640,7 +640,7 @@
     window.setTimeout(updateActionBadge, 1200);
   }
 
-  addScript("crm-base.js?v=20260924-save-click-direct-12", function () {
+  addScript("crm-base.js?v=20260924-toast-click-fix-13", function () {
     let checks = 0;
     const waitForCore = window.setInterval(function () {
       checks += 1;

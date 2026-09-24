@@ -143,7 +143,8 @@ function showToast(
                 boxShadow:
                     "0 14px 40px rgba(0,0,0,.18)",
                 transition:
-                    "opacity .25s ease, transform .25s ease"
+                    "opacity .25s ease, transform .25s ease",
+                pointerEvents: "none"
             }
         );
 
@@ -160,6 +161,7 @@ function showToast(
         toast.style.background = "#087f6c";
     }
 
+    toast.style.pointerEvents = "none";
     toast.textContent = message;
     toast.style.opacity = "1";
     toast.style.transform = "translateY(0)";
