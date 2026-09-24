@@ -1603,9 +1603,18 @@ async function saveInlineField(
                 .from(
                     "customer_enquiries"
                 )
-                .update({
-                    [field]: value
-                })
+                .update(
+                    (field === "preferred_area" || field === "location")
+                        ? {
+                            [field]: value,
+                            preferred_latitude: null,
+                            preferred_longitude: null,
+                            preferred_geocoded_at: null
+                          }
+                        : {
+                            [field]: value
+                          }
+                )
                 .eq("updated_at", lead.updated_at)
                 .eq(
                     "id",
@@ -3297,6 +3306,14 @@ async function saveModalChanges() {
     data.outdoor_preferred=reqChecked("detailOutdoorPreferred");
     data.indoor_preferred=reqChecked("detailIndoorPreferred");
     data.requirements_structured={city:data.preferred_city,area:data.preferred_area,venue_type:data.venue_type_preference,budget_per_person:data.budget_per_person,rooms:data.rooms_required,food:data.food_preference,parking:data.parking_required,outdoor:data.outdoor_preferred,indoor:data.indoor_preferred};
+
+    const previousGeoKey = [safeValue(currentLead.preferred_area).trim(), safeValue(currentLead.preferred_city || currentLead.location).trim()].join("|").toLowerCase();
+    const nextGeoKey = [safeValue(data.preferred_area).trim(), safeValue(data.preferred_city || data.location).trim()].join("|").toLowerCase();
+    if (previousGeoKey !== nextGeoKey) {
+        data.preferred_latitude = null;
+        data.preferred_longitude = null;
+        data.preferred_geocoded_at = null;
+    }
 
     try {
 

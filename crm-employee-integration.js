@@ -78,11 +78,11 @@ window.startEmployeeIntegration=async function(client){
  function smvGeoNumber(v){const n=Number(v);return Number.isFinite(n)?n:null;}
  function smvMapPoint(url){
    const text=clean(url);if(!text)return null;let m;
-   m=text.match(/[?&]q=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i);if(m)return{lat:Number(m[1]),lon:Number(m[2]),source:'map'};
-   m=text.match(/\/\@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);if(m)return{lat:Number(m[1]),lon:Number(m[2]),source:'map'};
-   const pairs=[...text.matchAll(/!2d(-?\d+(?:\.\d+)?)!2d(-?\d+(?:\.\d+)?)/g)];
-   if(pairs.length){const x=pairs[pairs.length-1];return{lat:Number(x[2]),lon:Number(x[1]),source:'map'};}
-   m=text.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/);if(m)return{lat:Number(m[1]),lon:Number(m[2]),source:'map'};
+   m=text.match(/[?&]q=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i);if(m)return{lat:Number(m[1]),lon:Number(m[2]),source:'map-query'};
+   const dest=[...text.matchAll(/!1d(-?\d+(?:\.\d+)?)!2d(-?\d+(?:\.\d+)?)/g)];
+   if(dest.length){const x=dest[dest.length-1];return{lat:Number(x[2]),lon:Number(x[1]),source:'map-destination'};}
+   m=text.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/);if(m)return{lat:Number(m[1]),lon:Number(m[2]),source:'map-place'};
+   m=text.match(/\/\@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);if(m)return{lat:Number(m[1]),lon:Number(m[2]),source:'map-view'};
    return null;
  }
  function smvLeadPoint(l){const lat=smvGeoNumber(l?.preferred_latitude),lon=smvGeoNumber(l?.preferred_longitude);return lat!==null&&lon!==null?{lat,lon,source:'lead'}:null;}
@@ -104,8 +104,9 @@ window.startEmployeeIntegration=async function(client){
    try{const p=await smvGeocode(q);if(!p)return null;l.preferred_latitude=p.lat;l.preferred_longitude=p.lon;l.preferred_geocoded_at=new Date().toISOString();const db=typeof getSupabaseClient==='function'?getSupabaseClient():null;if(db&&l.id)await db.from('customer_enquiries').update({preferred_latitude:p.lat,preferred_longitude:p.lon,preferred_geocoded_at:l.preferred_geocoded_at}).eq('id',l.id);return p;}finally{smvGeoLeadBusy=false;}
  }
  async function smvEnsureVenueGeo(v){
-   if(!v||smvVenuePoint(v)||smvGeoVenueAttempted.has(String(v.id)))return smvVenuePoint(v);
-   smvGeoVenueAttempted.add(String(v.id));const parsed=smvMapPoint(v.google_maps_url);let p=parsed;
+   if(!v)return null;const storedLat=smvGeoNumber(v.latitude),storedLon=smvGeoNumber(v.longitude);if(storedLat!==null&&storedLon!==null)return{lat:storedLat,lon:storedLon,source:'venue'};
+   if(smvGeoVenueAttempted.has(String(v.id)))return smvVenuePoint(v);
+   smvGeoVenueAttempted.add(String(v.id));let p=smvMapPoint(v.google_maps_url);
    if(!p){const q=[v.venue_name,v.area,v.city,v.address].filter(Boolean).join(', ');if(q)p=await smvGeocode(q);}
    if(!p)return null;v.latitude=p.lat;v.longitude=p.lon;const db=typeof getSupabaseClient==='function'?getSupabaseClient():null;if(db&&v.id)await db.from('venues').update({latitude:p.lat,longitude:p.lon}).eq('id',v.id);return p;
  }
