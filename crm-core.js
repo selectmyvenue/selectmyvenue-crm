@@ -7388,6 +7388,7 @@ async function openVenueAssignmentModal(enquiryId) {
     );
 
     const requirement = [
+        lead.preferred_area ? `Venue / Area: ${lead.preferred_area}` : null,
         lead.location ? `Location: ${lead.location}` : null,
         lead.guests ? `Guests: ${lead.guests}` : null,
         lead.event_date ? `Event date: ${formatDate(lead.event_date)}` : null,
