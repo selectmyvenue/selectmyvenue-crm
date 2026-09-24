@@ -4753,6 +4753,7 @@ let currentVenueCoverImageUrl = "";
 let pendingVenueCoverImageFile = null;
 let pendingVenueCoverPreviewUrl = "";
 let pendingVenueCoverRemoval = false;
+let venueSaveInFlight = false;
 
 /* =========================================================
    STAGE 3 — VENUE ENQUIRY ASSIGNMENTS
@@ -4789,6 +4790,10 @@ function setupVenueManagement() {
     if (!venueBtn || !form || !table) {
         return;
     }
+
+    /* Venue data uses text columns in Supabase. Handle validation here so the browser
+       never silently blocks Save because an off-screen URL/email field is imperfect. */
+    form.noValidate = true;
 
     venueBtn.addEventListener("click", openVenueManagement);
     backBtn?.addEventListener("click", showLeadManagement);
@@ -6486,9 +6491,78 @@ function prepareSavedVenueForPartnerAccess(venue) {
     );
 }
 
+function validateVenuePayload(payload) {
+    const fail = (message, id) => {
+        showToast(message, "error");
+        const field = document.getElementById(id);
+        if (field) {
+            field.focus();
+            field.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        return false;
+    };
+
+    if (!payload.venue_name) return fail("Venue name is required.", "venueName");
+
+    const email = safeValue(payload.contact_email).trim();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return fail("Please enter a valid venue email, or leave it blank.", "venueEmail");
+    }
+
+    const urlChecks = [
+        ["google_maps_url", "venueMaps", "Google Maps URL"],
+        ["website_url", "venueWebsite", "Website URL"],
+        ["instagram_url", "venueInstagram", "Instagram URL"],
+        ["facebook_url", "venueFacebook", "Facebook URL"]
+    ];
+    for (const [key, id, label] of urlChecks) {
+        const value = safeValue(payload[key]).trim();
+        if (value && !/^https?:\/\//i.test(value)) {
+            return fail(label + " must start with http:// or https://", id);
+        }
+    }
+
+    if (
+        Number.isFinite(Number(payload.capacity_min)) &&
+        Number.isFinite(Number(payload.capacity_max)) &&
+        payload.capacity_min !== null &&
+        payload.capacity_max !== null &&
+        Number(payload.capacity_min) > Number(payload.capacity_max)
+    ) {
+        return fail("Minimum capacity cannot be higher than maximum capacity.", "venueCapacityMin");
+    }
+
+    if (
+        Number.isFinite(Number(payload.price_min_per_person)) &&
+        Number.isFinite(Number(payload.price_max_per_person)) &&
+        payload.price_min_per_person !== null &&
+        payload.price_max_per_person !== null &&
+        Number(payload.price_min_per_person) > Number(payload.price_max_per_person)
+    ) {
+        return fail("Minimum price cannot be higher than maximum price.", "venuePriceMin");
+    }
+
+    if (
+        payload.public_listing_enabled === true &&
+        (
+            payload.venue_status !== "approved" ||
+            payload.verification_status !== "verified"
+        )
+    ) {
+        return fail("A public venue must be both approved and verified.", "venuePublicListing");
+    }
+
+    return true;
+}
+
 async function saveVenue(event) {
 
     event.preventDefault();
+    event.stopPropagation();
+
+    if (venueSaveInFlight) {
+        return;
+    }
 
     const client = getSupabaseClient();
 
@@ -6502,35 +6576,29 @@ async function saveVenue(event) {
         ).trim();
 
     const payload = getVenueFormData();
+    const existingVenue = id
+        ? allVenues.find(item => String(item.id) === String(id))
+        : null;
 
-    if (!payload.venue_name) {
-
-        showToast(
-            "Venue name is required.",
-            "error"
-        );
-
-        document.getElementById("venueName")?.focus();
-
-        return;
+    /* A changed Maps link must invalidate old coordinates so nearest-venue
+       automation cannot keep using stale geography. */
+    if (
+        existingVenue &&
+        safeValue(existingVenue.google_maps_url).trim() !==
+        safeValue(payload.google_maps_url).trim()
+    ) {
+        payload.latitude = null;
+        payload.longitude = null;
     }
 
-    if (
-        payload.public_listing_enabled === true &&
-        (
-            payload.venue_status !== "approved" ||
-            payload.verification_status !== "verified"
-        )
-    ) {
-        showToast(
-            "A public venue must be both approved and verified.",
-            "error"
-        );
+    if (!validateVenuePayload(payload)) {
         return;
     }
 
     const button =
         document.getElementById("saveVenueBtn");
+
+    venueSaveInFlight = true;
 
     if (button) {
         button.disabled = true;
@@ -6539,38 +6607,44 @@ async function saveVenue(event) {
 
     let result;
 
-    if (id) {
-
-        result = await client
-            .from("venues")
-            .update(payload)
-            .eq("id", id)
-            .select()
-            .single();
-
+    try {
+        if (id) {
+            result = await client
+                .from("venues")
+                .update(payload)
+                .eq("id", id)
+                .select()
+                .single();
+        }
+        else {
+            const userResult = await client.auth.getUser();
+            result = await client
+                .from("venues")
+                .insert({
+                    ...payload,
+                    created_by:
+                        userResult.data?.user?.id || null
+                })
+                .select()
+                .single();
+        }
     }
-    else {
-
-        result = await client
-            .from("venues")
-            .insert({
-                ...payload,
-                created_by:
-                    (
-                        await client.auth.getUser()
-                    ).data?.user?.id || null
-            })
-            .select()
-            .single();
-    }
-
-    if (result.error) {
-
+    catch (saveError) {
+        console.error("Venue save request failed:", saveError);
+        showToast(
+            "Unable to save venue: " +
+            (saveError?.message || "Please try again."),
+            "error"
+        );
+        venueSaveInFlight = false;
         if (button) {
             button.disabled = false;
             button.textContent = "Save Venue";
         }
+        return;
+    }
 
+    if (result?.error) {
         console.error(
             "Venue save error:",
             result.error
@@ -6582,6 +6656,11 @@ async function saveVenue(event) {
             "error"
         );
 
+        venueSaveInFlight = false;
+        if (button) {
+            button.disabled = false;
+            button.textContent = "Save Venue";
+        }
         return;
     }
 
@@ -6648,12 +6727,23 @@ async function saveVenue(event) {
         }
     }
 
+    /* Reflect the successful database write immediately. A secondary list refresh
+       must never make the first Save appear to fail. */
+    const localIndex = allVenues.findIndex(item => String(item.id) === String(savedVenue.id));
+    if (localIndex >= 0) {
+        allVenues[localIndex] = { ...allVenues[localIndex], ...savedVenue };
+    }
+    else {
+        allVenues.unshift(savedVenue);
+    }
+    updateVenueStats();
+    renderVenues();
+
+    venueSaveInFlight = false;
     if (button) {
         button.disabled = false;
         button.textContent = "Save Venue";
     }
-
-    await loadVenues();
 
     if (!id) {
         prepareSavedVenueForPartnerAccess(savedVenue);
@@ -6661,9 +6751,11 @@ async function saveVenue(event) {
 
     if (coverMediaError) {
         showToast(
-            "Venue details were saved, but the cover image change could not be completed. Please try again.",
+            "Venue details were saved, but the cover image change could not be completed. Please try the image again.",
             "error"
         );
+        /* Details are already saved, so do not force a page refresh. */
+        loadVenues().catch(error => console.warn("Venue background refresh failed:", error));
         return;
     }
 
@@ -6675,15 +6767,18 @@ async function saveVenue(event) {
                 : "Venue updated successfully.",
             "success"
         );
-        return;
+    }
+    else {
+        showToast(
+            savedVenue.cover_image_url
+                ? "Venue and cover image added. Partner access is now ready."
+                : "Venue added. Partner access is now ready.",
+            "success"
+        );
     }
 
-    showToast(
-        savedVenue.cover_image_url
-            ? "Venue and cover image added. Partner access is now ready."
-            : "Venue added. Partner access is now ready.",
-        "success"
-    );
+    /* Reconcile from Supabase in the background; saving no longer waits on analytics/list refresh. */
+    loadVenues().catch(error => console.warn("Venue background refresh failed:", error));
 }
 
 async function handleVenueTableClick(event) {
