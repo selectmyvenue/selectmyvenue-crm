@@ -5600,6 +5600,75 @@ function selectedVenueEventTypes() {
     return Array.from(document.querySelectorAll('#venueEventTypes input:checked')).map(input => input.value);
 }
 
+async function loadVenueBillingSnapshot(venueId){
+    const amountEl=document.getElementById("venueBillingLastAmount");
+    const statusEl=document.getElementById("venueBillingLastStatus");
+    const methodEl=document.getElementById("venueBillingLastMethod");
+    const dateEl=document.getElementById("venueBillingLastDate");
+    const receiptEl=document.getElementById("venueBillingLastReceipt");
+    const validityEl=document.getElementById("venueBillingLastValidity");
+    const messageEl=document.getElementById("venueBillingSnapshotMessage");
+    const openBtn=document.getElementById("venueBillingOpenBtn");
+
+    if(!venueId){
+        if(messageEl) messageEl.textContent="Save the venue first to connect Billing.";
+        return;
+    }
+
+    if(openBtn){
+        openBtn.href=`billing.html?venue_id=${encodeURIComponent(venueId)}`;
+    }
+
+    if(amountEl) amountEl.textContent="Loading…";
+    if(statusEl) statusEl.textContent="Loading…";
+    if(methodEl) methodEl.textContent="—";
+    if(dateEl) dateEl.textContent="—";
+    if(receiptEl) receiptEl.textContent="—";
+    if(validityEl) validityEl.textContent="—";
+    if(messageEl) messageEl.textContent="Loading billing history…";
+
+    try{
+        const client=getSupabaseClient();
+        if(!client){
+            if(messageEl) messageEl.textContent="Billing connection is unavailable.";
+            return;
+        }
+
+        const {data,error}=await client
+            .from("billing_transactions")
+            .select("receipt_number,plan_name,total_amount,status,payment_method,received_at,start_date,end_date,created_at")
+            .eq("venue_id",venueId)
+            .order("created_at",{ascending:false})
+            .limit(1)
+            .maybeSingle();
+
+        if(error) throw error;
+
+        if(!data){
+            if(amountEl) amountEl.textContent="—";
+            if(statusEl) statusEl.textContent="No payment yet";
+            if(messageEl) messageEl.textContent="No Billing record exists for this venue yet.";
+            return;
+        }
+
+        const labels={cash:"Cash",cheque:"Cheque",upi:"UPI",bank_transfer:"Bank Transfer",other:"Other"};
+        const money=Number(data.total_amount||0).toLocaleString("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:2});
+        const fmtDate=value=>value?new Intl.DateTimeFormat("en-IN",{day:"2-digit",month:"short",year:"numeric"}).format(new Date(value)): "—";
+
+        if(amountEl) amountEl.textContent=money;
+        if(statusEl) statusEl.textContent=String(data.status||"").toUpperCase();
+        if(methodEl) methodEl.textContent=labels[data.payment_method] || "—";
+        if(dateEl) dateEl.textContent=fmtDate(data.received_at || data.created_at);
+        if(receiptEl) receiptEl.textContent=data.receipt_number || "—";
+        if(validityEl) validityEl.textContent=data.start_date || data.end_date ? `${fmtDate(data.start_date)} → ${fmtDate(data.end_date)}` : "—";
+        if(messageEl) messageEl.textContent=`${data.plan_name||"Plan"} · last Billing record`;
+    }catch(error){
+        console.warn("Venue billing snapshot could not be loaded:",error);
+        if(statusEl) statusEl.textContent="Unavailable";
+        if(messageEl) messageEl.textContent="Billing history could not be loaded. Open Billing to review.";
+    }
+}
+
 function openVenueModal(venue = null) {
 
     const modal = document.getElementById("venueModal");
@@ -5733,6 +5802,7 @@ function openVenueModal(venue = null) {
     }
 
     setStage8FormAvailability();
+    loadVenueBillingSnapshot(venue?.id || "");
 
     modal.hidden = false;
 }
