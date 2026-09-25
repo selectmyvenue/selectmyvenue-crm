@@ -5465,7 +5465,7 @@ function renderVenues() {
                     <div class="venue-row-actions">
                         <a
                             class="venue-row-btn"
-                            href="billing.html?venue_id=${encodeURIComponent(venue.id)}"
+                            href="billing.html?v=20260926-venue-billing-1&venue_id=${encodeURIComponent(venue.id)}"
                             target="_blank"
                             rel="noopener"
                         >
