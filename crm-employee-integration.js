@@ -160,11 +160,29 @@ window.startEmployeeIntegration=async function(client){
  let smvGeoLeadBusy=false,smvGeoQueueBusy=false;
  async function smvEnsureLeadGeo(l){
    if(!l||smvLeadPoint(l))return smvLeadPoint(l);
+   const db=typeof getSupabaseClient==='function'?getSupabaseClient():null;
+
+   // First re-read geo metadata. This lets a background/cache update appear
+   // on an already-open assignment screen without requiring a page refresh.
+   if(db&&l.id){
+     try{
+       const {data:fresh}=await db.from('customer_enquiries')
+         .select('preferred_latitude,preferred_longitude,preferred_geocoded_at')
+         .eq('id',l.id).maybeSingle();
+       const lat=smvGeoNumber(fresh?.preferred_latitude),lon=smvGeoNumber(fresh?.preferred_longitude);
+       if(lat!==null&&lon!==null){
+         l.preferred_latitude=lat;l.preferred_longitude=lon;
+         l.preferred_geocoded_at=fresh?.preferred_geocoded_at||l.preferred_geocoded_at;
+         return {lat,lon,source:'lead-db'};
+       }
+     }catch(_){}
+   }
+
    const q=smvGeoQueryForLead(l);if(!q)return null;
    const context=clean(l?.preferred_city||l?.location);
    const key=[String(l?.id||''),q,context].join('|').toLowerCase();
    const failedAt=Number(smvLeadGeoFailures.get(key)||0);
-   if(failedAt&&Date.now()-failedAt<60000)return null;
+   if(failedAt&&Date.now()-failedAt<15000)return null;
    if(smvGeoLeadBusy)return null;
    smvGeoLeadBusy=true;
    try{
@@ -174,7 +192,6 @@ window.startEmployeeIntegration=async function(client){
      l.preferred_latitude=p.lat;
      l.preferred_longitude=p.lon;
      l.preferred_geocoded_at=new Date().toISOString();
-     const db=typeof getSupabaseClient==='function'?getSupabaseClient():null;
      if(db&&l.id)await db.from('customer_enquiries').update({
        preferred_latitude:p.lat,
        preferred_longitude:p.lon,
@@ -498,7 +515,15 @@ window.startEmployeeIntegration=async function(client){
    const active=leads().filter(l=>!['booked','closed','lost','not-interested'].includes(norm(l.status)));
 
    smvQueueLoading=true;
-   try{const venues=await ensureAssistantVenues();const key=JSON.stringify([active,assignments(),venues]);if(key===smvQueueKey)return;
+   try{
+     // Background geo preparation: active enquiries with a specific area are
+     // geocoded automatically while the CRM is open, before staff opens Assign Venue.
+     const geoPending=active.filter(l=>smvGeoQueryForLead(l)&&!smvLeadPoint(l)).slice(0,2);
+     for(const l of geoPending){
+       try{await smvEnsureLeadGeo(l);}catch(_){}
+     }
+
+     const venues=await ensureAssistantVenues();const key=JSON.stringify([active,assignments(),venues]);if(key===smvQueueKey)return;
      smvQueueRows=active.map(l=>{const assigned=new Set(assignments().filter(a=>String(a.enquiry_id)===String(l.id)&&norm(a.assignment_status)!=='cancelled').map(a=>String(a.venue_id)));return {l,q:smvQuestions(l),shortlist:smvShortlist(l,venues,assigned)};});
      const missing=smvQueueRows.filter(r=>r.q.length),ready=smvQueueRows.filter(r=>r.shortlist.length);
      host.querySelector('summary').textContent='Automatic preparation · '+missing.length+' need details · '+ready.length+' have venue suggestions';
