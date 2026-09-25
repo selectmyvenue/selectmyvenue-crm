@@ -7805,16 +7805,27 @@ async function saveVenueAssignments(options = {}) {
 
     /* UI checkboxes are the final source of truth for staff intent.
        Merge them with the smart shortlist so either path remains reliable. */
+    const manualSelectionTouched =
+        typeof window.smvAssignmentSelectionTouched === "boolean"
+            ? window.smvAssignmentSelectionTouched
+            : false;
+
+    /* When staff has manually changed the checklist, the checklist becomes
+       the source of truth. Otherwise the automatic shortlist is preserved. */
     const selected = [
         ...new Set(
-            [
-                ...visibleSelected,
-                ...(Array.isArray(smartSelected) ? smartSelected : [])
-            ].map(String)
+            (
+                manualSelectionTouched
+                    ? visibleSelected
+                    : [
+                        ...visibleSelected,
+                        ...(Array.isArray(smartSelected) ? smartSelected : [])
+                    ]
+            ).map(String)
         )
     ];
 
-    if (!selected.length) {
+    if (!selected.length && !manualSelectionTouched) {
         showAssignmentMessage(
             "Select at least one approved and verified venue.",
             "error"
@@ -7899,6 +7910,34 @@ async function saveVenueAssignments(options = {}) {
             }
 
             reactivatedVenueIds.push(String(venueId));
+        }
+
+        /* Manual checklist mode also supports true unassignment:
+           any currently-active assignment that staff explicitly unchecked is
+           cancelled, while the assignment history is retained. */
+        const activeForLead = allVenueAssignments.filter(
+            item =>
+                String(item.enquiry_id) === String(leadToAssign.id) &&
+                safeValue(item.assignment_status) !== "cancelled"
+        );
+        const selectedSet = new Set(selectedUnique.map(String));
+        const deselectedAssignments = manualSelectionTouched
+            ? activeForLead.filter(item => !selectedSet.has(String(item.venue_id)))
+            : [];
+
+        for (const assignment of deselectedAssignments) {
+            const { error: cancelError } = await client
+                .from("venue_enquiry_assignments")
+                .update({
+                    assignment_status: "cancelled",
+                    updated_at: nowIso,
+                    last_activity_at: nowIso
+                })
+                .eq("id", assignment.id);
+
+            if (cancelError) {
+                throw cancelError;
+            }
         }
 
         const rows = selectedUnique
