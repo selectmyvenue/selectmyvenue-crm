@@ -347,6 +347,12 @@
     $("planCode").innerHTML = '<option value="">Select plan...</option>' +
       plans.map(p => '<option value="' + escapeHtml(p.plan_code) + '">' + escapeHtml(p.plan_name) + '</option>').join("") +
       '<option value="__custom__">Custom / One-time</option>';
+    const requestedVenueId = new URLSearchParams(window.location.search).get("venue_id");
+    if (requestedVenueId && venues.some(v => String(v.id) === String(requestedVenueId))) {
+      $("venueId").value = requestedVenueId;
+      updateVenueMeta();
+    }
+
     $("startDate").value = today();
     updateDates();
   }
