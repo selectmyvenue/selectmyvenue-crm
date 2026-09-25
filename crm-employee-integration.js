@@ -512,11 +512,9 @@ window.startEmployeeIntegration=async function(client){
    if(key===smvPreparedKey)return;
    smvPreparedKey=key;
    if(!smvSelectionTouched){
+     /* Smart matching prepares/recommends venues; it does not pre-check them.
+        Staff explicitly chooses the 1–2 venues to assign/send on WhatsApp. */
      selectedNow.clear();
-     smvShortlist(lead,venues,assigned).forEach(id=>{
-       const sid=String(id);
-       if(!smvAutoDeselected.has(sid))selectedNow.add(sid);
-     });
    }
    let hint=document.getElementById('smvPreparationStatus');
    const summary=ensureAssignmentSummary();
