@@ -672,7 +672,7 @@
     observer.observe(tbody, { childList: true, subtree: true });
   }
 
-  loadScript("crm-core.js?v=20260926-billing-link-1", function () {
+  loadScript("crm-core.js?v=20260926-billing-tab-only-1", function () {
     installInternalCommentOnlyBehavior();
     installLeadRenderNormalizer();
     installSaveCustomerCommentPreserver();
