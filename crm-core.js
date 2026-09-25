@@ -7803,14 +7803,14 @@ async function saveVenueAssignments(options = {}) {
             ? window.smvGetAssignmentSelection()
             : [];
 
-    /* UI checkboxes are the final source of truth for staff intent.
-       Merge them with the smart shortlist so either path remains reliable. */
+    /*
+       The assignment checkbox state is the source of truth. The smart layer
+       may prepare recommendations, but it must never silently re-add a venue
+       that staff manually unchecked.
+    */
     const selected = [
         ...new Set(
-            [
-                ...visibleSelected,
-                ...(Array.isArray(smartSelected) ? smartSelected : [])
-            ].map(String)
+            (Array.isArray(smartSelected) ? smartSelected : visibleSelected).map(String)
         )
     ];
 
