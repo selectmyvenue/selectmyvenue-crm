@@ -7806,9 +7806,11 @@ async function saveVenueAssignments(options = {}) {
     /* UI checkboxes are the final source of truth for staff intent.
        Merge them with the smart shortlist so either path remains reliable. */
     const manualSelectionTouched =
-        typeof window.smvAssignmentSelectionTouched === "boolean"
-            ? window.smvAssignmentSelectionTouched
-            : false;
+        typeof window.smvAssignmentSelectionTouched === "function"
+            ? window.smvAssignmentSelectionTouched()
+            : typeof window.smvAssignmentSelectionTouched === "boolean"
+                ? window.smvAssignmentSelectionTouched
+                : false;
 
     /* When staff has manually changed the checklist, the checklist becomes
        the source of truth. Otherwise the automatic shortlist is preserved. */
