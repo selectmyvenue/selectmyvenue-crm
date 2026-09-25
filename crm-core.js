@@ -5463,6 +5463,14 @@ function renderVenues() {
 
                 <td>
                     <div class="venue-row-actions">
+                        <a
+                            class="venue-row-btn"
+                            href="billing.html?venue_id=\${encodeURIComponent(venue.id)}"
+                            target="_blank"
+                            rel="noopener"
+                        >
+                            Billing
+                        </a>
                         <button
                             type="button"
                             class="venue-row-btn"
