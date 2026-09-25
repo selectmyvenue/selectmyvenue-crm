@@ -1,612 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="robots" content="noindex,nofollow,noarchive">
-  <title>Select My Venue — Billing Support</title>
-  <script>
-    window.SUPABASE_URL = "https://uajqwyoqbbswkfiwosyw.supabase.co";
-    window.SUPABASE_ANON_KEY = "sb_publishable_hfiuO4ZRn4VZmEkrN2RV-A_lZX_R3z7";
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    :root{
-      --bg:#071018; --panel:#0e1b26; --panel2:#122431; --line:rgba(255,255,255,.10);
-      --text:#f5fbf8; --muted:rgba(245,251,248,.62); --teal:#16b79f; --gold:#f3c34e;
-      --success:#53ddb7; --warn:#f7c85b; --danger:#ff8b8b;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:
-      radial-gradient(circle at 15% 0%,rgba(22,183,159,.10),transparent 30%),
-      radial-gradient(circle at 90% 10%,rgba(243,195,78,.06),transparent 26%),
-      linear-gradient(135deg,#050b12,#08131c 52%,#050b12);color:var(--text);min-height:100vh}
-    a{color:inherit;text-decoration:none}
-    button,input,select,textarea{font:inherit}
-    .app{max-width:1500px;margin:0 auto;padding:22px}
-    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 16px;border:1px solid var(--line);background:rgba(7,16,24,.78);backdrop-filter:blur(15px);border-radius:18px;position:sticky;top:10px;z-index:20}
-    .brand{display:flex;align-items:center;gap:12px}
-    .brand img{width:44px;height:44px;object-fit:contain;border-radius:10px}
-    .brand strong{font-size:16px;display:block}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
-    .top-actions{display:flex;gap:8px;align-items:center}
-    .btn{border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--text);padding:10px 14px;border-radius:11px;cursor:pointer;font-weight:700}
-    .btn:hover{background:rgba(255,255,255,.08)}
-    .btn.primary{background:linear-gradient(135deg,#18b7a0,#087f73);border-color:transparent}
-    .btn.primary:hover{filter:brightness(1.07)}
-    .btn.gold{background:linear-gradient(135deg,#e6bb45,#9f771f);border-color:transparent;color:#101216}
-    .btn.success{background:linear-gradient(135deg,#3bcaa6,#168b72);border-color:transparent}
-    .btn.danger{background:rgba(255,100,100,.10);border-color:rgba(255,140,140,.25);color:#ffd0d0}
-    .hero{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin:28px 2px 18px}
-    .hero h1{margin:0;font-size:31px;letter-spacing:-.6px}.hero p{margin:7px 0 0;color:var(--muted)}
-    .hero .security{padding:10px 12px;border:1px solid rgba(83,221,183,.18);border-radius:12px;background:rgba(83,221,183,.06);color:#b9ffe9;font-size:12px;font-weight:700}
-    .stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:16px}
-    .stat{padding:17px;border:1px solid var(--line);background:linear-gradient(145deg,rgba(18,36,49,.92),rgba(9,19,28,.95));border-radius:16px;box-shadow:0 14px 35px rgba(0,0,0,.18)}
-    .stat span{font-size:10px;letter-spacing:.12em;color:var(--muted);font-weight:800}.stat strong{display:block;font-size:25px;margin-top:7px}.stat small{display:block;color:var(--muted);margin-top:4px}
-    .grid{display:grid;grid-template-columns:minmax(390px,500px) minmax(0,1fr);gap:16px}
-    .card{border:1px solid var(--line);background:linear-gradient(145deg,rgba(18,36,49,.95),rgba(8,17,26,.98));border-radius:18px;box-shadow:0 20px 50px rgba(0,0,0,.20);overflow:hidden}
-    .card-head{display:flex;align-items:center;justify-content:space-between;padding:17px 18px;border-bottom:1px solid var(--line)}
-    .card-head h2{margin:0;font-size:16px}.card-head span{font-size:11px;color:var(--muted)}
-    .card-body{padding:18px}
-    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .field{display:grid;gap:7px}.field.full{grid-column:1/-1}
-    .field label{font-size:10px;letter-spacing:.09em;color:var(--muted);font-weight:800;text-transform:uppercase}
-    input,select,textarea{width:100%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.045);color:var(--text);border-radius:10px;padding:11px 12px;outline:none}
-    input:focus,select:focus,textarea:focus{border-color:rgba(22,183,159,.75);box-shadow:0 0 0 3px rgba(22,183,159,.10)}
-    textarea{min-height:76px;resize:vertical}
-    option{color:#111;background:#fff}
-    .venue-meta{margin:3px 0 14px;padding:13px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.025);display:none}
-    .venue-meta.active{display:block}
-    .venue-meta .row{display:flex;justify-content:space-between;gap:16px;margin:6px 0;font-size:12px}.venue-meta .row span{color:var(--muted)}
-    .actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.actions .btn{flex:1;min-width:130px}
-    .note{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:11px;line-height:1.5;color:var(--muted);background:rgba(243,195,78,.05);border:1px solid rgba(243,195,78,.12)}
-    .table-wrap{overflow:auto}
-    table{width:100%;border-collapse:collapse;min-width:920px}
-    th,td{text-align:left;padding:12px 13px;border-bottom:1px solid rgba(255,255,255,.065);font-size:12px;vertical-align:top}
-    th{font-size:10px;letter-spacing:.10em;color:var(--muted);text-transform:uppercase;background:rgba(0,0,0,.10)}
-    td strong{font-size:12px} td small{display:block;color:var(--muted);margin-top:3px}
-    .badge{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:800;border:1px solid transparent}
-    .badge.paid{background:rgba(83,221,183,.10);color:#a9ffe9;border-color:rgba(83,221,183,.18)}
-    .badge.pending{background:rgba(247,200,91,.10);color:#ffe6a0;border-color:rgba(247,200,91,.18)}
-    .badge.cancelled{background:rgba(255,139,139,.10);color:#ffc1c1;border-color:rgba(255,139,139,.18)}
-    .mini-actions{display:flex;flex-wrap:wrap;gap:6px}.mini-actions .btn{padding:7px 9px;font-size:10px}
-    .empty{padding:45px 20px;text-align:center;color:var(--muted)}
-    .toast{position:fixed;right:18px;bottom:18px;z-index:60;max-width:360px;padding:12px 14px;border-radius:12px;background:#0d2a25;color:#eafff8;border:1px solid rgba(83,221,183,.22);box-shadow:0 18px 45px rgba(0,0,0,.30);opacity:0;transform:translateY(10px);pointer-events:none;transition:.22s}
-    .toast.show{opacity:1;transform:none}
-    .toast.error{background:#37171a;border-color:rgba(255,139,139,.24);color:#ffe2e2}
-    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
-    .modal-backdrop.open{display:flex}
-    .modal{width:min(700px,100%);border:1px solid var(--line);border-radius:18px;background:#0b1823;box-shadow:0 40px 100px rgba(0,0,0,.55);overflow:hidden}
-    .modal-body{padding:22px}.confirm{background:#fff;color:#162128;border-radius:10px;padding:28px;box-shadow:0 15px 35px rgba(0,0,0,.18)}
-    .confirm-head{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid #dfe6e8;padding-bottom:18px}
-    .confirm-brand{font-weight:900;font-size:20px}.confirm-title{text-align:right}.confirm-title strong{display:block;font-size:22px}.confirm-title span{font-size:11px;color:#5f6c73}
-    .confirm-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}.confirm-cell{padding:12px;border:1px solid #e7ecee;border-radius:8px}.confirm-cell span{display:block;color:#6b7780;font-size:10px;text-transform:uppercase;letter-spacing:.08em}.confirm-cell strong{display:block;margin-top:4px}
-    .confirm-total{margin-top:18px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #dfe6e8;padding-top:18px}.confirm-total strong{font-size:25px}.print-note{margin-top:18px;color:#6b7780;font-size:11px}
-    .hidden{display:none!important}
-    @media(max-width:1050px){.stats{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr}}
-    @media(max-width:700px){.app{padding:12px}.topbar{position:static}.hero{display:block}.hero .security{margin-top:12px}.stats{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.brand img{width:38px;height:38px}.top-actions .btn{padding:9px 10px}.top-actions .logout{display:none}}
-    @media print{
-      body{background:#fff;color:#111}.app,.modal-backdrop{display:none!important}
-      #printArea{display:block!important;position:static!important;background:#fff!important}
-      #printArea .confirm{box-shadow:none;border-radius:0}
-    }
-    #printArea{display:none}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Select My Venue — Venue Billing</title>
+<script>
+window.SUPABASE_URL="https://uajqwyoqbbswkfiwosyw.supabase.co";
+window.SUPABASE_ANON_KEY="sb_publishable_hfiuO4ZRn4VZmEkrN2RV-A_lZX_R3z7";
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#061512;--panel:#0b211d;--panel2:#0e2924;--line:rgba(255,255,255,.10);--text:#f5fbf8;--muted:rgba(245,251,248,.62);--teal:#16d2b2;--gold:#ffc928;--ok:#54ddb8;--warn:#f5ca59;--danger:#ff8f8f}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(22,210,178,.12),transparent 30%),radial-gradient(circle at 92% 6%,rgba(255,201,40,.07),transparent 26%),linear-gradient(135deg,#04100d,#071b16 52%,#04110e);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;min-height:100vh}
+button,input,select,textarea{font:inherit}a{text-decoration:none;color:inherit}.wrap{max-width:1180px;margin:0 auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 14px;border:1px solid var(--line);border-radius:15px;background:rgba(3,17,14,.84);position:sticky;top:10px;z-index:20;backdrop-filter:blur(14px)}.brand{display:flex;align-items:center;gap:10px}.brand img{width:42px;height:42px;object-fit:contain}.brand strong{font-size:15px}.brand small{display:block;color:var(--muted);font-size:10px;margin-top:2px}.actions{display:flex;gap:8px}.btn{border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--text);padding:9px 12px;border-radius:10px;cursor:pointer;font-weight:750}.btn:hover{background:rgba(255,255,255,.08)}.btn.primary{background:linear-gradient(135deg,#18caae,#078477);border-color:transparent}.btn.gold{background:linear-gradient(135deg,#ffd85a,#b68816);border-color:transparent;color:#14200e}.btn.success{background:linear-gradient(135deg,#41d5ad,#168c72);border-color:transparent}.btn:disabled{opacity:.55;cursor:not-allowed}
+h1{font-size:28px;letter-spacing:-.5px;margin:26px 0 5px}.sub{color:var(--muted);font-size:13px;margin-bottom:18px}.card{border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,rgba(14,41,36,.92),rgba(7,24,20,.98));box-shadow:0 20px 55px rgba(0,0,0,.18);overflow:hidden}.cardhead{padding:15px 17px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}.cardhead h2{margin:0;font-size:15px}.cardhead span{font-size:10px;color:var(--muted)}.body{padding:17px}.selectrow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}.field{display:grid;gap:6px}.field label{font-size:9px;letter-spacing:.1em;color:var(--muted);font-weight:850;text-transform:uppercase}input,select,textarea{width:100%;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.12);border-radius:9px;color:var(--text);padding:10px 11px;outline:none}input:focus,select:focus,textarea:focus{border-color:rgba(22,210,178,.75);box-shadow:0 0 0 3px rgba(22,210,178,.10)}option{color:#111;background:#fff}textarea{min-height:75px;resize:vertical}.venue{display:none;margin-top:13px;padding:14px;border:1px solid rgba(22,210,178,.16);background:rgba(22,210,178,.045);border-radius:12px}.venue.show{display:block}.venuegrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px}.info span{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.08em}.info strong{display:block;margin-top:4px;font-size:13px;overflow-wrap:anywhere}.info .id{font-size:10px;line-height:1.35}.status{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:9px;font-weight:850;border:1px solid transparent}.status.active,.status.paid{color:#b9ffeb;background:rgba(84,221,184,.1);border-color:rgba(84,221,184,.18)}.status.trialing,.status.pending{color:#ffe5a1;background:rgba(245,202,89,.1);border-color:rgba(245,202,89,.18)}.status.expired,.status.paused,.status.cancelled{color:#ffc7c7;background:rgba(255,143,143,.1);border-color:rgba(255,143,143,.18)}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}.notice{margin-top:12px;padding:10px 12px;border-radius:9px;background:rgba(255,201,40,.05);border:1px solid rgba(255,201,40,.12);color:var(--muted);font-size:10px;line-height:1.5}.actionsrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}.actionsrow .btn{min-width:135px}
+.history{margin-top:16px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:830px}th,td{padding:11px 12px;border-bottom:1px solid rgba(255,255,255,.065);font-size:11px;text-align:left;vertical-align:top}th{font-size:9px;letter-spacing:.09em;color:var(--muted);text-transform:uppercase}td small{display:block;color:var(--muted);margin-top:3px}.empty{text-align:center;padding:36px;color:var(--muted)}
+.toast{position:fixed;right:17px;bottom:17px;z-index:60;max-width:360px;padding:11px 13px;border-radius:11px;background:#0d3028;border:1px solid rgba(84,221,184,.22);box-shadow:0 18px 45px rgba(0,0,0,.3);opacity:0;transform:translateY(10px);pointer-events:none;transition:.2s;font-size:12px}.toast.show{opacity:1;transform:none}.toast.error{background:#381719;border-color:rgba(255,143,143,.25);color:#ffe0e0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.68);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal.open{display:flex}.modalbox{width:min(540px,100%);background:#0a211b;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 35px 100px rgba(0,0,0,.55)}.modalbody{padding:17px}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.confirm{background:#fff;color:#182321;padding:24px;border-radius:9px}.confirmhead{display:flex;justify-content:space-between;gap:15px;border-bottom:1px solid #dfe6e8;padding-bottom:14px}.confirmbrand{font-weight:900;font-size:19px}.confirmtitle{text-align:right}.confirmtitle strong{display:block;font-size:18px}.confirmtitle span{font-size:10px;color:#627077}.confirmgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:15px}.confirmcell{padding:10px;border:1px solid #e7ecee;border-radius:8px}.confirmcell span{display:block;color:#68757b;font-size:9px;text-transform:uppercase;letter-spacing:.07em}.confirmcell strong{display:block;margin-top:3px;font-size:12px}.total{display:flex;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px solid #dfe6e8}.total strong{font-size:22px}.print{color:#68757b;font-size:10px;margin-top:14px}
+#printArea{display:none}@media print{body{background:#fff}body>*:not(#printArea){display:none!important}#printArea{display:block!important;padding:20px}.confirm{box-shadow:none}}
+@media(max-width:900px){.venuegrid{grid-template-columns:1fr 1fr}.selectrow{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}.full{grid-column:auto}}
+@media(max-width:600px){.wrap{padding:11px}.top{position:static}.brand small{display:none}.actions .back{display:none}.venuegrid{grid-template-columns:1fr}.twocol,.confirmgrid{grid-template-columns:1fr}h1{font-size:23px}.cardhead{align-items:flex-start;flex-direction:column}.actionsrow .btn{width:100%}}
+</style>
 </head>
 <body>
-<div class="app" id="app">
-  <header class="topbar">
-    <div class="brand">
-      <img src="https://selectmyvenue.com/logo.png" alt="Select My Venue">
-      <div><strong>Select My Venue — Billing Support</strong><small>Manual payment recording • No card/bank credentials stored</small></div>
+<div class="wrap">
+<header class="top">
+  <div class="brand"><img src="https://selectmyvenue.com/logo.png" alt="Select My Venue"><div><strong>Select My Venue — Venue Billing</strong><small>Admin-only manual payment management</small></div></div>
+  <div class="actions">
+    <a class="btn back" href="dashboard.html">← Venue Management</a>
+    <button class="btn" id="logoutBtn" type="button">Logout</button>
+  </div>
+</header>
+
+<h1>Venue Billing</h1>
+<div class="sub">One venue at a time. Record payment, activate the plan, and keep that venue's payment history here.</div>
+
+<section class="card">
+  <div class="cardhead"><h2>Venue</h2><span>Venue identity & current plan</span></div>
+  <div class="body">
+    <div class="selectrow">
+      <div class="field"><label for="venueId">Select venue</label><select id="venueId" required><option value="">Loading venues…</option></select></div>
+      <button class="btn" id="reloadBtn" type="button">↻ Reload</button>
     </div>
-    <div class="top-actions">
-      <a class="btn" href="dashboard.html">← Master CRM</a>
-      <button class="btn logout" id="logoutBtn">Logout</button>
-    </div>
-  </header>
-
-  <section class="hero">
-    <div>
-      <h1>Venue Billing & Payment Support</h1>
-      <p>Record cash, cheque, UPI or bank-transfer payments and start the venue plan in one step.</p>
-    </div>
-    <div class="security">🔒 Admin-only Billing tab</div>
-  </section>
-
-  <section class="stats">
-    <div class="stat"><span>TOTAL RECEIVED</span><strong id="statReceived">₹0</strong><small>Recorded paid payments</small></div>
-    <div class="stat"><span>PENDING</span><strong id="statPending">₹0</strong><small>Payment requests not yet received</small></div>
-    <div class="stat"><span>PAID RECORDS</span><strong id="statPaidCount">0</strong><small>Completed payment records</small></div>
-    <div class="stat"><span>PENDING RECORDS</span><strong id="statPendingCount">0</strong><small>Follow-up required</small></div>
-    <div class="stat"><span>ACTIVE PAID PLANS</span><strong id="statActivePlans">0</strong><small>Venue plans currently marked active</small></div>
-  </section>
-
-  <section class="grid">
-    <div class="card">
-      <div class="card-head">
-        <h2>Quick Payment / Billing Record</h2>
-        <span>Manual • simple • flexible</span>
-      </div>
-      <div class="card-body">
-        <form id="paymentForm">
-          <div class="form-grid">
-            <div class="field full">
-              <label for="venueId">Venue</label>
-              <select id="venueId" required><option value="">Select venue...</option></select>
-            </div>
-
-            <div id="venueMeta" class="venue-meta full">
-              <div class="row"><span>Owner</span><strong id="metaOwner">—</strong></div>
-              <div class="row"><span>Contact</span><strong id="metaContact">—</strong></div>
-              <div class="row"><span>Current Plan</span><strong id="metaPlan">—</strong></div>
-              <div class="row"><span>Current Expiry</span><strong id="metaExpiry">—</strong></div>
-            </div>
-
-            <div class="field">
-              <label for="planCode">Plan</label>
-              <select id="planCode" required><option value="">Select plan...</option></select>
-            </div>
-
-            <div class="field">
-              <label for="customPlanName">Custom plan name (optional)</label>
-              <input id="customPlanName" placeholder="Only for custom plan">
-            </div>
-
-            <div class="field">
-              <label for="amount">Amount received / payable</label>
-              <input id="amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="e.g. 15000" required>
-            </div>
-
-            <div class="field">
-              <label for="termMonths">Plan term</label>
-              <select id="termMonths">
-                <option value="1">1 Month</option>
-                <option value="3">3 Months</option>
-                <option value="6">6 Months</option>
-                <option value="12" selected>12 Months</option>
-                <option value="24">24 Months</option>
-                <option value="36">36 Months</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="status">Payment status</label>
-              <select id="status">
-                <option value="paid" selected>Paid — start plan now</option>
-                <option value="pending">Pending — send reminder later</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="paymentMethod">Payment method</label>
-              <select id="paymentMethod">
-                <option value="">Select after payment</option>
-                <option value="cash">Cash</option>
-                <option value="cheque">Cheque</option>
-                <option value="upi">UPI (GPay / Paytm / PhonePe etc.)</option>
-                <option value="bank_transfer">Bank Transfer</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="paymentReference">Reference / Cheque No. (optional)</label>
-              <input id="paymentReference" placeholder="Cheque no., UTR, UPI ref, etc.">
-            </div>
-
-            <div class="field">
-              <label for="startDate">Plan start date</label>
-              <input id="startDate" type="date">
-            </div>
-
-            <div class="field">
-              <label>Plan end date</label>
-              <input id="endDate" type="text" readonly placeholder="Automatic">
-            </div>
-
-            <div class="field full">
-              <label for="notes">Notes (optional)</label>
-              <textarea id="notes" placeholder="Any useful payment or owner note..."></textarea>
-            </div>
-          </div>
-
-          <div class="note">
-            Current billing mode: <strong>No GST / no tax calculation</strong>. The structure is ready for GST later, but no GST invoice is being created now.
-            Select My Venue does not store card numbers, UPI PINs, bank passwords or other payment credentials here.
-          </div>
-
-          <div class="actions">
-            <button class="btn primary" type="submit" id="saveBtn">✓ Record & Start Plan</button>
-            <button class="btn" type="button" id="resetBtn">Clear</button>
-          </div>
-        </form>
+    <div class="venue" id="venueCard">
+      <div class="venuegrid">
+        <div class="info"><span>Venue</span><strong id="vName">—</strong></div>
+        <div class="info"><span>Owner</span><strong id="vOwner">—</strong></div>
+        <div class="info"><span>Contact</span><strong id="vContact">—</strong></div>
+        <div class="info"><span>Current plan</span><strong id="vPlan">—</strong></div>
+        <div class="info"><span>Status</span><strong id="vStatus">—</strong></div>
+        <div class="info"><span>Start date</span><strong id="vStart">—</strong></div>
+        <div class="info"><span>Expiry</span><strong id="vExpiry">—</strong></div>
+        <div class="info"><span>Venue ID</span><strong class="id" id="vId">—</strong></div>
       </div>
     </div>
+  </div>
+</section>
 
-    <div class="card">
-      <div class="card-head">
-        <div>
-          <h2>Payment Records</h2>
-          <span>Every payment stays linked to its venue</span>
-        </div>
-        <button class="btn" id="refreshBtn">↻ Refresh</button>
+<section class="card" id="billingCard" style="margin-top:14px;display:none">
+  <div class="cardhead"><h2>Payment / Plan Record</h2><span>Cash • Cheque • UPI • Bank Transfer</span></div>
+  <div class="body">
+    <form id="paymentForm">
+      <div class="formgrid">
+        <div class="field"><label for="planCode">Plan</label><select id="planCode" required><option value="">Select plan…</option></select></div>
+        <div class="field"><label for="customPlanName">Custom plan name</label><input id="customPlanName" placeholder="Only for custom / one-time"></div>
+        <div class="field"><label for="amount">Amount</label><input id="amount" type="number" min="0.01" step="0.01" placeholder="e.g. 15000" required></div>
+        <div class="field"><label for="termMonths">Term</label><select id="termMonths"><option value="1">1 Month</option><option value="3">3 Months</option><option value="6">6 Months</option><option value="12" selected>12 Months</option><option value="24">24 Months</option><option value="36">36 Months</option></select></div>
+        <div class="field"><label for="status">Payment status</label><select id="status"><option value="paid" selected>Paid — activate now</option><option value="pending">Pending — follow up later</option></select></div>
+        <div class="field"><label for="paymentMethod">Payment method</label><select id="paymentMethod"><option value="">Select</option><option value="cash">Cash</option><option value="cheque">Cheque</option><option value="upi">UPI</option><option value="bank_transfer">Bank Transfer</option><option value="other">Other</option></select></div>
+        <div class="field"><label for="paymentReference">Reference / Cheque No.</label><input id="paymentReference" placeholder="Cheque no., UTR, UPI reference…"></div>
+        <div class="field"><label for="startDate">Plan start date</label><input id="startDate" type="date"></div>
+        <div class="field"><label>Automatic expiry</label><input id="endDate" type="text" readonly></div>
+        <div class="field full"><label for="notes">Notes</label><textarea id="notes" placeholder="Optional owner/payment note…"></textarea></div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Venue / Owner</th>
-              <th>Plan</th>
-              <th>Amount</th>
-              <th>Payment</th>
-              <th>Plan Dates</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="paymentsBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
+      <div class="notice">No card numbers, UPI PINs, passwords or banking credentials are stored. This page records the payment information you enter manually. GST/tax calculation is not enabled.</div>
+      <div class="actionsrow"><button class="btn primary" id="saveBtn" type="submit">✓ Record Payment</button><button class="btn" id="clearBtn" type="button">Clear</button></div>
+    </form>
+  </div>
+</section>
+
+<section class="card history" id="historyCard" style="display:none">
+  <div class="cardhead"><h2>Payment History</h2><span id="historyTitle">Selected venue only</span></div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Date</th><th>Plan</th><th>Amount</th><th>Method / Ref</th><th>Validity</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody id="historyBody"></tbody>
+    </table>
+  </div>
+</section>
 </div>
 
-<div class="modal-backdrop" id="modalBackdrop">
-  <div class="modal">
-    <div class="card-head"><h2>Payment Confirmation</h2><button class="btn" id="closeModal">Close</button></div>
-    <div class="modal-body">
-      <div class="confirm" id="confirmCard">
-        <div class="confirm-head">
-          <div>
-            <div class="confirm-brand">Select My Venue</div>
-            <div style="color:#6b7780;margin-top:4px;font-size:11px">Verified Venue Partner Billing Support</div>
-          </div>
-          <div class="confirm-title"><strong>PAYMENT CONFIRMATION</strong><span id="confirmReceipt">—</span></div>
-        </div>
-        <div class="confirm-grid">
-          <div class="confirm-cell"><span>Venue</span><strong id="confirmVenue">—</strong></div>
-          <div class="confirm-cell"><span>Plan</span><strong id="confirmPlan">—</strong></div>
-          <div class="confirm-cell"><span>Owner</span><strong id="confirmOwner">—</strong></div>
-          <div class="confirm-cell"><span>Payment Method</span><strong id="confirmMethod">—</strong></div>
-          <div class="confirm-cell"><span>Payment Date</span><strong id="confirmPaidAt">—</strong></div>
-          <div class="confirm-cell"><span>Plan Validity</span><strong id="confirmDates">—</strong></div>
-        </div>
-        <div class="confirm-total"><div><span style="display:block;color:#6b7780;font-size:10px;text-transform:uppercase;letter-spacing:.08em">Amount Received</span><strong id="confirmAmount">₹0</strong></div><div style="text-align:right"><span style="display:block;color:#27806c;font-weight:800;font-size:11px">STATUS</span><strong style="font-size:16px;color:#27806c">PAID</strong></div></div>
-        <div class="print-note">This is a payment confirmation/receipt record for Select My Venue's internal billing support. It is not a statutory GST invoice.</div>
+<div class="modal" id="paidModal">
+  <div class="modalbox">
+    <div class="cardhead"><h2>Mark Payment Paid</h2><button class="btn" type="button" id="closePaid">Close</button></div>
+    <div class="modalbody">
+      <div class="twocol">
+        <div class="field"><label for="paidMethod">Method</label><select id="paidMethod"><option value="cash">Cash</option><option value="cheque" selected>Cheque</option><option value="upi">UPI</option><option value="bank_transfer">Bank Transfer</option><option value="other">Other</option></select></div>
+        <div class="field"><label for="paidRef">Reference / Cheque No.</label><input id="paidRef"></div>
+        <div class="field"><label for="paidStart">Plan start date</label><input id="paidStart" type="date"></div>
       </div>
-      <div class="actions"><button class="btn gold" id="printBtn">Print / Save PDF</button><button class="btn" id="copyBtn">Copy Confirmation</button></div>
+      <div class="actionsrow"><button class="btn" type="button" id="cancelPaid">Cancel</button><button class="btn success" type="button" id="confirmPaid">✓ Mark Paid & Activate</button></div>
     </div>
   </div>
 </div>
 
-<div id="printArea"></div>
-<div class="toast" id="toast"></div>
+<div class="modal" id="confirmModal">
+  <div class="modalbox">
+    <div class="cardhead"><h2>Payment Confirmation</h2><button class="btn" type="button" id="closeConfirm">Close</button></div>
+    <div class="modalbody">
+      <div class="confirm" id="confirmCard">
+        <div class="confirmhead"><div><div class="confirmbrand">Select My Venue</div><div style="color:#68757b;font-size:10px;margin-top:3px">Venue Partner Payment Confirmation</div></div><div class="confirmtitle"><strong>PAYMENT CONFIRMATION</strong><span id="cReceipt">—</span></div></div>
+        <div class="confirmgrid">
+          <div class="confirmcell"><span>Venue</span><strong id="cVenue">—</strong></div>
+          <div class="confirmcell"><span>Owner</span><strong id="cOwner">—</strong></div>
+          <div class="confirmcell"><span>Plan</span><strong id="cPlan">—</strong></div>
+          <div class="confirmcell"><span>Method</span><strong id="cMethod">—</strong></div>
+          <div class="confirmcell"><span>Payment date</span><strong id="cDate">—</strong></div>
+          <div class="confirmcell"><span>Validity</span><strong id="cValidity">—</strong></div>
+        </div>
+        <div class="total"><div><span style="display:block;color:#68757b;font-size:9px;text-transform:uppercase">Amount received</span><strong id="cAmount">₹0</strong></div><div style="text-align:right"><span style="display:block;color:#27806c;font-size:10px;font-weight:850">STATUS</span><strong style="font-size:15px;color:#27806c">PAID</strong></div></div>
+        <div class="print">This confirmation is a record of the payment entered in Select My Venue's manual billing system.</div>
+      </div>
+      <div class="actionsrow"><button class="btn" type="button" id="copyConfirm">Copy Confirmation</button><button class="btn gold" type="button" id="printConfirm">Print / Save PDF</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="printArea"></div><div class="toast" id="toast"></div>
 
 <script>
-(() => {
-  "use strict";
+const sb=supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY);
+const $=id=>document.getElementById(id);
+let venues=[],plans=[],transactions=[],selectedVenueId="",pendingPaymentId="",lastConfirmation=null;
 
-  const sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-  let venues = [];
-  let plans = [];
-  let payments = [];
-  let lastConfirmation = null;
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
+function money(v){return Number(v||0).toLocaleString("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:2});}
+function dateLabel(v){if(!v)return"—";const d=new Date(v);return Number.isNaN(d.getTime())?"—":new Intl.DateTimeFormat("en-IN",{day:"2-digit",month:"short",year:"numeric"}).format(d);}
+function today(){const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);}
+function endDateFor(start,months){if(!start)return"";const d=new Date(start+"T00:00:00");d.setMonth(d.getMonth()+Number(months||0));d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
+function methodLabel(v){return({cash:"Cash",cheque:"Cheque",upi:"UPI",bank_transfer:"Bank Transfer",other:"Other"})[v]||"—";}
+function toast(msg,error=false){const t=$("toast");t.textContent=msg;t.className="toast show"+(error?" error":"");clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.className="toast",2600);}
+function selectedVenue(){return venues.find(v=>String(v.id)===String(selectedVenueId))||null;}
+function selectedPlan(){return plans.find(p=>p.plan_code===$("planCode").value)||null;}
+function updateEnd(){ $("endDate").value=endDateFor($("startDate").value,$("termMonths").value)||"Automatic"; }
 
-  const $ = (id) => document.getElementById(id);
-  const fmtMoney = (value) => "₹" + Number(value || 0).toLocaleString("en-IN", {maximumFractionDigits:2});
-  const fmtDate = (value) => value ? new Date(value + (String(value).length === 10 ? "T00:00:00" : "")).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}) : "—";
-  const today = () => {
-    const d = new Date();
-    const off = d.getTimezoneOffset();
-    const local = new Date(d.getTime() - off * 60000);
-    return local.toISOString().slice(0,10);
-  };
-  const escapeHtml = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+async function auth(){
+  const {data:{session},error}=await sb.auth.getSession();
+  if(error||!session){location.href="login.html?return=billing.html";return false;}
+  const {data:allowed,error:aerr}=await sb.rpc("smv_is_active_staff");
+  const ok=!aerr&&(allowed===true||allowed==="true"||allowed===1||allowed==="1");
+  if(!ok){await sb.auth.signOut();location.href="login.html?error=billing_admin_only";return false;}
+  return true;
+}
 
-  function toast(message, error=false){
-    const el = $("toast"); el.textContent = message; el.className = "toast show" + (error ? " error" : "");
-    clearTimeout(window.__smvBillToast); window.__smvBillToast = setTimeout(()=>el.className="toast",3000);
-  }
+async function loadBase(){
+  const [vr,pr]=await Promise.all([
+    sb.from("venues").select("id,venue_name,owner_name,contact_person,contact_mobile,contact_email,whatsapp_number,partner_plan,plan_status,plan_started_at,plan_expires_at").order("venue_name"),
+    sb.from("venue_plans").select("plan_code,plan_name,description,is_active,display_order").eq("is_active",true).order("display_order")
+  ]);
+  if(vr.error)throw vr.error;if(pr.error)throw pr.error;
+  venues=vr.data||[];plans=pr.data||[];
+  $("venueId").innerHTML='<option value="">Select venue…</option>'+venues.map(v=>'<option value="'+esc(v.id)+'">'+esc(v.venue_name)+'</option>').join("");
+  $("planCode").innerHTML='<option value="">Select plan…</option>'+plans.map(p=>'<option value="'+esc(p.plan_code)+'">'+esc(p.plan_name)+'</option>').join("")+'<option value="__custom__">Custom / One-time</option>';
+  const q=new URLSearchParams(location.search).get("venue_id");
+  const remembered=localStorage.getItem("smv_billing_venue_id");
+  const candidate=q||remembered;
+  if(candidate&&venues.some(v=>String(v.id)===String(candidate))){selectedVenueId=candidate;$("venueId").value=candidate;}
+  $("startDate").value=today();updateEnd();renderSelectedVenue();
+}
 
-  function endDateFor(start, months){
-    if (!start || !months) return "";
-    const d = new Date(start + "T00:00:00");
-    d.setMonth(d.getMonth() + Number(months));
-    d.setDate(d.getDate() - 1);
-    const off = d.getTimezoneOffset();
-    return new Date(d.getTime() - off*60000).toISOString().slice(0,10);
-  }
+function renderSelectedVenue(){
+  const v=selectedVenue();
+  if(!v){$("venueCard").classList.remove("show");$("billingCard").style.display="none";$("historyCard").style.display="none";return;}
+  $("venueCard").classList.add("show");$("billingCard").style.display="block";$("historyCard").style.display="block";
+  $("vName").textContent=v.venue_name||"—";$("vOwner").textContent=v.owner_name||v.contact_person||"—";
+  $("vContact").textContent=v.contact_mobile||v.whatsapp_number||v.contact_email||"—";
+  $("vPlan").textContent=v.partner_plan||"—";$("vStart").textContent=dateLabel(v.plan_started_at);$("vExpiry").textContent=dateLabel(v.plan_expires_at);
+  $("vId").textContent=v.id||"—";
+  $("vStatus").innerHTML='<span class="status '+esc(v.plan_status||"")+'">'+esc((v.plan_status||"—").toUpperCase())+'</span>';
+  $("historyTitle").textContent=(v.venue_name||"Venue")+" • ID "+v.id;
+}
 
-  function selectedVenue(){
-    return venues.find(v => v.id === $("venueId").value) || null;
-  }
+async function loadTransactions(){
+  if(!selectedVenueId)return;
+  const {data,error}=await sb.from("billing_transactions").select("*").eq("venue_id",selectedVenueId).order("created_at",{ascending:false}).limit(100);
+  if(error)throw error;transactions=data||[];renderHistory();
+}
 
-  function selectedPlan(){
-    return plans.find(p => p.plan_code === $("planCode").value) || null;
-  }
+function renderHistory(){
+  const b=$("historyBody");
+  if(!transactions.length){b.innerHTML='<tr><td colspan="7" class="empty">No billing record exists for this venue yet. Record the first payment above.</td></tr>';return;}
+  b.innerHTML=transactions.map(p=>{
+    const action=p.status==="pending"?'<button class="btn success" data-action="mark" data-id="'+esc(p.id)+'">Mark Paid</button><button class="btn" data-action="remind" data-id="'+esc(p.id)+'">Remind</button>':'<button class="btn" data-action="confirm" data-id="'+esc(p.id)+'">Confirmation</button>';
+    return '<tr><td><strong>'+dateLabel(p.received_at||p.created_at)+'</strong><small>'+esc(p.receipt_number||"No receipt yet")+'</small></td><td><strong>'+esc(p.plan_name||"—")+'</strong><small>'+esc((p.term_months||"—")+" month term")+'</small></td><td><strong>'+money(p.total_amount)+'</strong></td><td><strong>'+esc(methodLabel(p.payment_method))+'</strong><small>'+esc(p.payment_reference||"No reference")+'</small></td><td><strong>'+dateLabel(p.start_date)+'</strong><small>to '+dateLabel(p.end_date)+'</small></td><td><span class="status '+esc(p.status)+'">'+esc((p.status||"").toUpperCase())+'</span></td><td><div class="actionsrow">'+action+'</div></td></tr>';
+  }).join("");
+}
 
-  function updateDates(){
-    $("endDate").value = endDateFor($("startDate").value, $("termMonths").value) || "Automatic";
-  }
+async function savePayment(e){
+  e.preventDefault();
+  const v=selectedVenue(), code=$("planCode").value, plan=selectedPlan(), status=$("status").value;
+  if(!v){toast("Select a venue first.",true);return;}
+  if(!code){toast("Select a plan.",true);return;}
+  if(code==="__custom__"&&!$("customPlanName").value.trim()){toast("Enter the custom plan name.",true);return;}
+  const amount=Number($("amount").value);if(!Number.isFinite(amount)||amount<=0){toast("Enter a valid amount.",true);return;}
+  if(status==="paid"&&!$("paymentMethod").value){toast("Select the payment method.",true);return;}
+  const payload={p_venue_id:v.id,p_plan_code:code==="__custom__"?null:code,p_plan_name:code==="__custom__"?$("customPlanName").value.trim():null,p_amount:amount,p_term_months:Number($("termMonths").value),p_status:status,p_payment_method:status==="paid"?$("paymentMethod").value:null,p_payment_reference:$("paymentReference").value.trim()||null,p_received_at:status==="paid"?new Date().toISOString():null,p_start_date:$("startDate").value||today(),p_notes:$("notes").value.trim()||null};
+  $("saveBtn").disabled=true;$("saveBtn").textContent=status==="paid"?"Saving & activating…":"Saving pending…";
+  try{
+    const {data,error}=await sb.rpc("smv_billing_record_payment",payload);if(error)throw error;
+    toast(status==="paid"?"Payment recorded and plan activated.":"Pending payment saved.");
+    await loadBase();selectedVenueId=v.id;$("venueId").value=v.id;renderSelectedVenue();await loadTransactions();
+    if(status==="paid"&&data?.transaction)openConfirmation(data.transaction);
+    $("amount").value="";$("paymentReference").value="";$("notes").value="";$("customPlanName").value="";
+  }catch(err){console.error(err);toast(err.message||"Unable to save billing record.",true);}
+  finally{$("saveBtn").disabled=false;$("saveBtn").textContent="✓ Record Payment";}
+}
 
-  function updateVenueMeta(){
-    const v = selectedVenue();
-    const box = $("venueMeta");
-    if (!v){ box.classList.remove("active"); return; }
-    const contact = [v.contact_mobile || v.whatsapp_number, v.contact_email].filter(Boolean).join(" • ") || "Not provided";
-    $("metaOwner").textContent = v.contact_person || "Owner details not yet added";
-    $("metaContact").textContent = contact;
-    $("metaPlan").textContent = v.partner_plan || "—";
-    $("metaExpiry").textContent = fmtDate(v.plan_expires_at);
-    box.classList.add("active");
-  }
+function openPaidModal(id){
+  const p=transactions.find(x=>x.id===id);if(!p)return;
+  pendingPaymentId=id;$("paidMethod").value=p.payment_method||"cheque";$("paidRef").value=p.payment_reference||"";$("paidStart").value=p.start_date||today();$("paidModal").classList.add("open");
+}
+async function confirmPaid(){
+  const p=transactions.find(x=>x.id===pendingPaymentId);if(!p)return;
+  $("confirmPaid").disabled=true;
+  try{
+    const {data,error}=await sb.rpc("smv_billing_mark_paid",{p_transaction_id:p.id,p_payment_method:$("paidMethod").value,p_payment_reference:$("paidRef").value.trim()||null,p_received_at:new Date().toISOString(),p_start_date:$("paidStart").value||p.start_date||today()});
+    if(error)throw error;
+    $("paidModal").classList.remove("open");toast("Payment marked paid and plan activated.");await loadBase();selectedVenueId=p.venue_id;$("venueId").value=p.venue_id;renderSelectedVenue();await loadTransactions();if(data?.transaction)openConfirmation(data.transaction);
+  }catch(err){console.error(err);toast(err.message||"Unable to mark paid.",true);}
+  finally{$("confirmPaid").disabled=false;}
+}
 
-  function populateForm(){
-    $("venueId").innerHTML = '<option value="">Select venue...</option>' +
-      venues.map(v => '<option value="' + escapeHtml(v.id) + '">' + escapeHtml(v.venue_name) + '</option>').join("");
-    $("planCode").innerHTML = '<option value="">Select plan...</option>' +
-      plans.map(p => '<option value="' + escapeHtml(p.plan_code) + '">' + escapeHtml(p.plan_name) + '</option>').join("") +
-      '<option value="__custom__">Custom / One-time</option>';
-    const requestedVenueId = new URLSearchParams(window.location.search).get("venue_id");
-    if (requestedVenueId && venues.some(v => String(v.id) === String(requestedVenueId))) {
-      $("venueId").value = requestedVenueId;
-      updateVenueMeta();
-    }
+function reminderText(p){
+  const v=selectedVenue();return "Hello "+(v?.owner_name||v?.contact_person||"")+ ",\n\nThis is a payment reminder from Select My Venue.\nVenue: "+(v?.venue_name||"")+"\nPlan: "+(p.plan_name||"")+"\nAmount: "+money(p.total_amount)+"\nReceipt: "+(p.receipt_number||"Pending")+"\n\nPlease arrange the payment at your convenience.\n\nRegards,\nSelect My Venue";
+}
+function remind(p){
+  const v=selectedVenue();const text=reminderText(p);const digits=String(v?.contact_mobile||v?.whatsapp_number||"").replace(/\D/g,"");
+  if(digits.length>=10){const phone=digits.length===10?"91"+digits:digits;window.open("https://wa.me/"+phone+"?text="+encodeURIComponent(text),"_blank","noopener");return;}
+  navigator.clipboard?.writeText(text).then(()=>toast("Reminder copied to clipboard."),()=>toast("Reminder could not be copied.",true));
+}
 
-    $("startDate").value = today();
-    updateDates();
-  }
+function openConfirmation(p){
+  lastConfirmation=p;$("cReceipt").textContent=p.receipt_number||"—";$("cVenue").textContent=p.venue_name||selectedVenue()?.venue_name||"—";$("cOwner").textContent=p.owner_name||selectedVenue()?.owner_name||selectedVenue()?.contact_person||"—";$("cPlan").textContent=p.plan_name||"—";$("cMethod").textContent=methodLabel(p.payment_method);$("cDate").textContent=dateLabel(p.received_at||p.created_at);$("cValidity").textContent=dateLabel(p.start_date)+" — "+dateLabel(p.end_date);$("cAmount").textContent=money(p.total_amount);$("confirmModal").classList.add("open");
+}
+function copyConfirmation(){
+  if(!lastConfirmation)return;const p=lastConfirmation;const v=selectedVenue();const text=["Select My Venue — Payment Confirmation","Venue: "+(v?.venue_name||p.venue_name),"Owner: "+(v?.owner_name||v?.contact_person||p.owner_name||"—"),"Plan: "+p.plan_name,"Amount Received: "+money(p.total_amount),"Payment Method: "+methodLabel(p.payment_method),"Payment Date: "+dateLabel(p.received_at||p.created_at),"Valid: "+dateLabel(p.start_date)+" to "+dateLabel(p.end_date),"Receipt: "+(p.receipt_number||"—")].join("\n");navigator.clipboard?.writeText(text).then(()=>toast("Confirmation copied."));}
+function printConfirmation(){if(!lastConfirmation)return;$("printArea").innerHTML=$("confirmCard").outerHTML;window.print();}
 
-  async function auth(){
-    const {data:{session}, error} = await sb.auth.getSession();
-    if (error || !session){
-      window.location.href = "login.html?return=billing.html";
-      return false;
-    }
-    const {data:allowed, error:accessError} = await sb.rpc("smv_is_active_staff");
-    const ok = !accessError && (allowed === true || allowed === "true" || allowed === 1 || allowed === "1");
-    if (!ok){
-      await sb.auth.signOut();
-      window.location.href = "login.html?error=billing_admin_only";
-      return false;
-    }
-    return true;
-  }
-
-  async function loadAll(){
-    const [vRes,pRes,tRes] = await Promise.all([
-      sb.from("venues").select("id,venue_name,contact_person,contact_mobile,contact_email,whatsapp_number,partner_plan,plan_status,plan_started_at,plan_expires_at").order("venue_name"),
-      sb.from("venue_plans").select("plan_code,plan_name,description,is_active,display_order").eq("is_active",true).order("display_order"),
-      sb.from("billing_transactions").select("*").order("created_at",{ascending:false}).limit(500)
-    ]);
-    if (vRes.error) throw vRes.error;
-    if (pRes.error) throw pRes.error;
-    if (tRes.error) throw tRes.error;
-    venues = vRes.data || [];
-    plans = pRes.data || [];
-    payments = tRes.data || [];
-    populateForm();
-    renderPayments();
-    updateStats();
-  }
-
-  function updateStats(){
-    const paid = payments.filter(p=>p.status==="paid");
-    const pending = payments.filter(p=>p.status==="pending");
-    const activePaid = venues.filter(v=>v.plan_status==="active" && v.plan_started_at && v.plan_expires_at);
-    $("statReceived").textContent = fmtMoney(paid.reduce((s,p)=>s+Number(p.total_amount||0),0));
-    $("statPending").textContent = fmtMoney(pending.reduce((s,p)=>s+Number(p.total_amount||0),0));
-    $("statPaidCount").textContent = paid.length;
-    $("statPendingCount").textContent = pending.length;
-    $("statActivePlans").textContent = activePaid.length;
-  }
-
-  function methodLabel(method){
-    return ({cash:"Cash",cheque:"Cheque",upi:"UPI",bank_transfer:"Bank Transfer",other:"Other"})[method] || "—";
-  }
-
-  function renderPayments(){
-    const body = $("paymentsBody");
-    if (!payments.length){
-      body.innerHTML = '<tr><td colspan="7" class="empty">No payment records yet. Your first venue payment will appear here.</td></tr>';
-      return;
-    }
-    body.innerHTML = payments.map(p => {
-      const owner = p.owner_name || "";
-      const contact = p.owner_mobile || p.owner_email || "";
-      const status = p.status || "pending";
-      const actions = status === "pending"
-        ? '<button class="btn success" data-action="markpaid" data-id="'+escapeHtml(p.id)+'">Mark Paid</button>' +
-          '<button class="btn" data-action="remind" data-id="'+escapeHtml(p.id)+'">Remind</button>'
-        : '<button class="btn" data-action="confirm" data-id="'+escapeHtml(p.id)+'">Confirmation</button>';
-      return '<tr>' +
-        '<td><strong>'+escapeHtml(p.venue_name)+'</strong><small>'+escapeHtml(owner)+'</small><small>'+escapeHtml(contact)+'</small></td>' +
-        '<td><strong>'+escapeHtml(p.plan_name)+'</strong><small>'+escapeHtml(p.term_months ? p.term_months + " month term" : "")+'</small></td>' +
-        '<td><strong>'+fmtMoney(p.total_amount)+'</strong><small>'+escapeHtml(p.receipt_number)+'</small></td>' +
-        '<td><strong>'+escapeHtml(methodLabel(p.payment_method))+'</strong><small>'+escapeHtml(p.payment_reference || "No reference")+'</small></td>' +
-        '<td><strong>'+fmtDate(p.start_date)+'</strong><small>to '+fmtDate(p.end_date)+'</small></td>' +
-        '<td><span class="badge '+escapeHtml(status)+'">'+escapeHtml(status.toUpperCase())+'</span><small>'+fmtDate(p.received_at || p.created_at)+'</small></td>' +
-        '<td><div class="mini-actions">'+actions+'</div></td>' +
-      '</tr>';
-    }).join("");
-  }
-
-  async function savePayment(e){
-    e.preventDefault();
-    const venue = selectedVenue();
-    const plan = selectedPlan();
-    const status = $("status").value;
-    if (!venue){ toast("Please select a venue.", true); return; }
-    if (!plan && $("planCode").value !== "__custom__"){ toast("Please select a plan.", true); return; }
-    if ($("planCode").value === "__custom__" && !$("customPlanName").value.trim()){ toast("Enter the custom plan name.", true); return; }
-    const amount = Number($("amount").value);
-    if (!Number.isFinite(amount) || amount < 0){ toast("Enter a valid amount.", true); return; }
-    if (status === "paid" && !$("paymentMethod").value){ toast("Select the payment method received.", true); return; }
-
-    const payload = {
-      p_venue_id: venue.id,
-      p_plan_code: $("planCode").value === "__custom__" ? null : $("planCode").value,
-      p_plan_name: $("planCode").value === "__custom__" ? $("customPlanName").value.trim() : null,
-      p_amount: amount,
-      p_term_months: Number($("termMonths").value),
-      p_status: status,
-      p_payment_method: status === "paid" ? $("paymentMethod").value : null,
-      p_payment_reference: $("paymentReference").value.trim() || null,
-      p_received_at: status === "paid" ? new Date().toISOString() : null,
-      p_start_date: $("startDate").value || today(),
-      p_notes: $("notes").value.trim() || null
-    };
-
-    $("saveBtn").disabled = true;
-    $("saveBtn").textContent = status === "paid" ? "Saving & activating..." : "Saving pending payment...";
-    try{
-      const {data,error} = await sb.rpc("smv_billing_record_payment", payload);
-      if (error) throw error;
-      toast(status === "paid" ? "Payment recorded and venue plan activated." : "Pending payment saved.");
-      await loadAll();
-      resetForm(false);
-      if (status === "paid" && data?.transaction) openConfirmation(data.transaction);
-    }catch(err){
-      console.error(err);
-      toast(err.message || "Unable to save billing record.", true);
-    }finally{
-      $("saveBtn").disabled = false;
-      $("saveBtn").textContent = "✓ Record & Start Plan";
-    }
-  }
-
-  function resetForm(clearVenue=true){
-    if (clearVenue) $("venueId").value="";
-    $("planCode").value="";
-    $("customPlanName").value="";
-    $("amount").value="";
-    $("status").value="paid";
-    $("paymentMethod").value="";
-    $("paymentReference").value="";
-    $("startDate").value=today();
-    $("notes").value="";
-    updateDates(); updateVenueMeta();
-  }
-
-  async function markPendingPaid(id){
-    const p = payments.find(x=>x.id===id);
-    if (!p) return;
-    const venue = venues.find(v=>v.id===p.venue_id);
-    if (!venue) return;
-    const method = prompt("Payment received by? Enter one: cash, cheque, upi, bank_transfer, other", "cheque");
-    if (!method) return;
-    const allowed = ["cash","cheque","upi","bank_transfer","other"];
-    if (!allowed.includes(method.trim().toLowerCase())){ toast("Use cash, cheque, upi, bank_transfer or other.", true); return; }
-    const ref = prompt("Cheque / UTR / UPI reference (optional)", p.payment_reference || "") || null;
-    const start = prompt("Plan start date (YYYY-MM-DD)", p.start_date || today()) || p.start_date || today();
-    try{
-      const {data,error} = await sb.rpc("smv_billing_mark_paid",{
-        p_transaction_id:id,
-        p_payment_method:method.trim().toLowerCase(),
-        p_payment_reference:ref,
-        p_received_at:new Date().toISOString(),
-        p_start_date:start
-      });
-      if (error) throw error;
-      toast("Pending payment marked paid and plan activated.");
-      await loadAll();
-      if (data?.transaction) openConfirmation(data.transaction);
-    }catch(err){
-      console.error(err); toast(err.message || "Unable to mark payment as paid.", true);
-    }
-  }
-
-  function reminderText(p){
-    return "Hello " + (p.owner_name || "") + ",\n\nThis is a payment reminder from Select My Venue.\nVenue: " + p.venue_name +
-      "\nPlan: " + p.plan_name + "\nAmount: " + fmtMoney(p.total_amount) +
-      "\nReference: " + p.receipt_number + "\n\nPlease arrange the payment at your convenience. Once received, we will activate/continue the plan and confirm it to you.\n\nRegards,\nSelect My Venue";
-  }
-
-  function remind(p){
-    const msg = reminderText(p);
-    const phoneDigits = String(p.owner_mobile || "").replace(/\D/g,"");
-    if (phoneDigits.length >= 10){
-      const wa = phoneDigits.length === 10 ? "91"+phoneDigits : phoneDigits;
-      window.open("https://wa.me/"+wa+"?text="+encodeURIComponent(msg),"_blank","noopener");
-      return;
-    }
-    if (p.owner_email){
-      window.location.href = "mailto:"+encodeURIComponent(p.owner_email)+"?subject="+encodeURIComponent("Payment reminder - Select My Venue")+"&body="+encodeURIComponent(msg);
-      return;
-    }
-    navigator.clipboard?.writeText(msg).then(()=>toast("No phone/email found. Reminder text copied."));
-  }
-
-  function openConfirmation(p){
-    lastConfirmation = p;
-    $("confirmReceipt").textContent = p.receipt_number || "—";
-    $("confirmVenue").textContent = p.venue_name || "—";
-    $("confirmPlan").textContent = p.plan_name || "—";
-    $("confirmOwner").textContent = p.owner_name || "—";
-    $("confirmMethod").textContent = methodLabel(p.payment_method);
-    $("confirmPaidAt").textContent = fmtDate(p.received_at || p.created_at);
-    $("confirmDates").textContent = fmtDate(p.start_date) + " — " + fmtDate(p.end_date);
-    $("confirmAmount").textContent = fmtMoney(p.total_amount);
-    $("modalBackdrop").classList.add("open");
-  }
-
-  function copyConfirmation(){
-    if (!lastConfirmation) return;
-    const p = lastConfirmation;
-    const text = [
-      "Select My Venue — Payment Confirmation",
-      "Venue: " + p.venue_name,
-      "Owner: " + (p.owner_name || "—"),
-      "Plan: " + p.plan_name,
-      "Amount Received: " + fmtMoney(p.total_amount),
-      "Payment Method: " + methodLabel(p.payment_method),
-      "Payment Date: " + fmtDate(p.received_at || p.created_at),
-      "Valid: " + fmtDate(p.start_date) + " to " + fmtDate(p.end_date),
-      "Receipt: " + (p.receipt_number || "—")
-    ].join("\n");
-    navigator.clipboard?.writeText(text).then(()=>toast("Confirmation copied to clipboard."));
-  }
-
-  function printConfirmation(){
-    if (!lastConfirmation) return;
-    const p = lastConfirmation;
-    $("printArea").innerHTML = $("confirmCard").outerHTML;
-    window.print();
-  }
-
-  $("logoutBtn").addEventListener("click", async()=>{ await sb.auth.signOut(); window.location.href="login.html"; });
-  $("refreshBtn").addEventListener("click", ()=>loadAll().catch(err=>toast(err.message||"Refresh failed.",true)));
-  $("paymentForm").addEventListener("submit", savePayment);
-  $("resetBtn").addEventListener("click", ()=>resetForm(true));
-  $("venueId").addEventListener("change", updateVenueMeta);
-  $("startDate").addEventListener("change", updateDates);
-  $("termMonths").addEventListener("change", updateDates);
-  $("planCode").addEventListener("change", ()=>{
-    const p = selectedPlan();
-    if (p && p.plan_name) $("customPlanName").value = "";
-  });
-  $("paymentsBody").addEventListener("click", async(e)=>{
-    const btn = e.target.closest("[data-action]"); if(!btn) return;
-    const p = payments.find(x=>x.id===btn.dataset.id); if(!p) return;
-    if(btn.dataset.action==="markpaid") await markPendingPaid(p.id);
-    if(btn.dataset.action==="remind") remind(p);
-    if(btn.dataset.action==="confirm") openConfirmation(p);
-  });
-  $("closeModal").addEventListener("click", ()=>$("modalBackdrop").classList.remove("open"));
-  $("modalBackdrop").addEventListener("click", (e)=>{ if(e.target.id==="modalBackdrop") $("modalBackdrop").classList.remove("open"); });
-  $("copyBtn").addEventListener("click", copyConfirmation);
-  $("printBtn").addEventListener("click", printConfirmation);
-
-  (async()=>{
-    try{
-      if(!(await auth())) return;
-      await loadAll();
-    }catch(err){
-      console.error(err);
-      toast(err.message || "Billing could not load. Please refresh.", true);
-    }
-  })();
-})();
+$("logoutBtn").addEventListener("click",async()=>{await sb.auth.signOut();location.href="login.html";});
+$("reloadBtn").addEventListener("click",async()=>{try{await loadBase();await loadTransactions();toast("Billing refreshed.");}catch(e){toast(e.message||"Refresh failed.",true);}});
+$("venueId").addEventListener("change",async e=>{selectedVenueId=e.target.value;localStorage.setItem("smv_billing_venue_id",selectedVenueId||"");renderSelectedVenue();if(selectedVenueId){history.replaceState(null,"","billing.html?venue_id="+encodeURIComponent(selectedVenueId));try{await loadTransactions();}catch(err){toast(err.message||"Unable to load payment history.",true);}}});
+$("startDate").addEventListener("change",updateEnd);$("termMonths").addEventListener("change",updateEnd);
+$("status").addEventListener("change",()=>{$("paymentMethod").required=$("status").value==="paid";});
+$("planCode").addEventListener("change",()=>{if($("planCode").value!=="__custom__")$("customPlanName").value="";});
+$("clearBtn").addEventListener("click",()=>{$("planCode").value="";$("customPlanName").value="";$("amount").value="";$("status").value="paid";$("paymentMethod").value="";$("paymentReference").value="";$("startDate").value=today();$("notes").value="";updateEnd();});
+$("paymentForm").addEventListener("submit",savePayment);
+$("historyBody").addEventListener("click",async e=>{const btn=e.target.closest("[data-action]");if(!btn)return;const p=transactions.find(x=>x.id===btn.dataset.id);if(!p)return;if(btn.dataset.action==="mark")openPaidModal(p.id);if(btn.dataset.action==="remind")remind(p);if(btn.dataset.action==="confirm")openConfirmation(p);});
+$("closePaid").addEventListener("click",()=>$("paidModal").classList.remove("open"));$("cancelPaid").addEventListener("click",()=>$("paidModal").classList.remove("open"));$("confirmPaid").addEventListener("click",confirmPaid);
+$("closeConfirm").addEventListener("click",()=>$("confirmModal").classList.remove("open"));$("copyConfirm").addEventListener("click",copyConfirmation);$("printConfirm").addEventListener("click",printConfirmation);
+(async()=>{try{if(await auth())await loadBase();if(selectedVenueId)await loadTransactions();}catch(err){console.error(err);toast(err.message||"Billing could not load.",true);}})();
 </script>
 </body>
 </html>
