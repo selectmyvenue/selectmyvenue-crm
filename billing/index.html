@@ -146,7 +146,7 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
 <div id="printArea"></div><div class="toast" id="toast"></div>
 
 <script>
-const sb=supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY);
+const sb=supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY,{auth:{storageKey:"smv-master-crm-auth",persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
 let venues=[],plans=[],records=[],selectedVenueId="",pendingRecordId="",lastConfirmation=null;
 
