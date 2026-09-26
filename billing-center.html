@@ -124,7 +124,7 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
     <div class="card-head"><h2>Payment Confirmation</h2><button class="btn" id="closeConfirm" type="button">Close</button></div>
     <div class="modalbody">
       <div class="confirm" id="confirmCard">
-        <div class="confirm-head"><div><div class="confirm-brand">Select My Venue</div><div style="color:#687873;font-size:9px;margin-top:3px">Manual Venue Payment Confirmation</div></div><div class="confirm-title"><strong>PAYMENT CONFIRMATION</strong><span id="cReceipt">—</span></div></div>
+        <div class="confirm-head"><div style="display:flex;align-items:center;gap:9px"><img src="https://selectmyvenue.com/logo.png" alt="Select My Venue" style="width:34px;height:34px;object-fit:contain"><div><div class="confirm-brand">Select My Venue</div><div style="color:#687873;font-size:9px;margin-top:3px">Manual Payment Receipt / Confirmation</div></div></div><div class="confirm-title"><strong>PAYMENT RECEIPT</strong><span id="cReceipt">—</span></div></div>
         <div class="confirm-grid">
           <div class="confirm-cell"><span>Venue</span><strong id="cVenue">—</strong></div>
           <div class="confirm-cell"><span>Venue ID</span><strong id="cVenueId">—</strong></div>
@@ -138,7 +138,7 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
         <div class="confirm-total"><div><span style="display:block;color:#687873;font-size:8px;text-transform:uppercase">Amount Received</span><strong id="cAmount">₹0</strong></div><div style="text-align:right"><span style="display:block;color:#2b826c;font-size:9px;font-weight:900">STATUS</span><strong style="font-size:14px;color:#2b826c">PAID</strong></div></div>
         <div class="print-note">This document records a manually entered payment; it is not an online payment gateway receipt.</div>
       </div>
-      <div class="form-actions"><button class="btn" id="copyConfirm" type="button">Copy Confirmation</button><button class="btn gold" id="printConfirm" type="button">Print / Save PDF</button></div>
+      <div class="form-actions"><button class="btn" id="copyConfirm" type="button">Copy Confirmation</button><button class="btn" id="emailConfirm" type="button">Email</button><button class="btn" id="whatsappConfirm" type="button">WhatsApp</button><button class="btn gold" id="printConfirm" type="button">Print / Save PDF</button></div><div class="print-note" style="margin-top:7px">Email opens your email app with the receipt prepared. WhatsApp opens a pre-filled message; you still press Send.</div>
     </div>
   </div>
 </div>
@@ -288,8 +288,10 @@ function remind(r){
 function openConfirmation(r){
   const v=venue();lastConfirmation=r;$("cReceipt").textContent=r.receipt_number||"—";$("cVenue").textContent=v?.venue_name||r.venue_id;$("cVenueId").textContent=v?.id||r.venue_id;$("cPlan").textContent=r.plan_name||"—";$("cOwner").textContent=r.owner_name||v?.contact_person||"—";$("cMethod").textContent=methodLabel(r.payment_method);$("cDate").textContent=fmtDate(r.received_at||r.created_at);$("cValidity").textContent=fmtDate(r.start_date)+" — "+fmtDate(r.end_date);$("cRecord").textContent=r.record_number||"—";$("cAmount").textContent=money(r.amount);$("confirmModal").classList.add("open");
 }
-function copyConfirmation(){
-  if(!lastConfirmation)return;const r=lastConfirmation,v=venue();const text=["Select My Venue — Payment Confirmation","Venue: "+(v?.venue_name||r.venue_id),"Venue ID: "+(v?.id||r.venue_id),"Owner: "+(r.owner_name||v?.contact_person||"—"),"Plan: "+r.plan_name,"Amount Received: "+money(r.amount),"Payment Method: "+methodLabel(r.payment_method),"Payment Date: "+fmtDate(r.received_at||r.created_at),"Valid: "+fmtDate(r.start_date)+" to "+fmtDate(r.end_date),"Receipt: "+(r.receipt_number||"—"),"Record: "+r.record_number].join("\n");navigator.clipboard?.writeText(text).then(()=>toast("Confirmation copied."));}
+function confirmationText(){if(!lastConfirmation)return"";const r=lastConfirmation,v=venue();return ["Select My Venue — Payment Receipt / Confirmation","Venue: "+(v?.venue_name||r.venue_id),"Venue ID: "+(v?.id||r.venue_id),"Owner: "+(r.owner_name||v?.contact_person||"—"),"Plan: "+r.plan_name,"Amount Received: "+money(r.amount),"Payment Method: "+methodLabel(r.payment_method),"Payment Date: "+fmtDate(r.received_at||r.created_at),"Valid: "+fmtDate(r.start_date)+" to "+fmtDate(r.end_date),"Receipt: "+(r.receipt_number||"—"),"Record: "+r.record_number].join("\\n");}
+function copyConfirmation(){const text=confirmationText();if(!text)return;navigator.clipboard?.writeText(text).then(()=>toast("Confirmation copied."));}
+function shareByEmail(){if(!lastConfirmation)return;const r=lastConfirmation,v=venue();const email=r.owner_email||v?.contact_email||"";if(!email){toast("No owner email is saved for this venue.",true);return;}const subject="Payment Receipt — "+(v?.venue_name||"Select My Venue");const body=confirmationText();window.location.href="mailto:"+encodeURIComponent(email)+"?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);}
+function shareByWhatsApp(){if(!lastConfirmation)return;const r=lastConfirmation,v=venue();const raw=r.owner_mobile||v?.contact_mobile||v?.whatsapp_number||"";const digits=String(raw).replace(/\\D/g,"");if(digits.length<10){toast("No valid owner mobile/WhatsApp number is saved.",true);return;}const phone=digits.length===10?"91"+digits:digits;window.open("https://wa.me/"+phone+"?text="+encodeURIComponent(confirmationText()),"_blank","noopener");}
 function printConfirmation(){if(!lastConfirmation)return;$("printArea").innerHTML=$("confirmCard").outerHTML;window.print();}
 
 $("venueSearch").addEventListener("input",renderVenueList);
@@ -301,7 +303,7 @@ $("billingForm").addEventListener("submit",saveBilling);
 $("clearFormBtn").addEventListener("click",clearPaymentInputs);
 $("historyBody").addEventListener("click",e=>{const a=e.target.closest("[data-mark-paid],[data-remind],[data-confirm]");if(!a)return;if(a.dataset.markPaid)openPaidModal(a.dataset.markPaid);else if(a.dataset.remind){const r=records.find(x=>x.id===a.dataset.remind);if(r)remind(r);}else if(a.dataset.confirm){const r=records.find(x=>x.id===a.dataset.confirm);if(r)openConfirmation(r);}});
 $("closePaid").addEventListener("click",()=>$("paidModal").classList.remove("open"));$("cancelPaid").addEventListener("click",()=>$("paidModal").classList.remove("open"));$("confirmPaid").addEventListener("click",confirmPaid);
-$("closeConfirm").addEventListener("click",()=>$("confirmModal").classList.remove("open"));$("copyConfirm").addEventListener("click",copyConfirmation);$("printConfirm").addEventListener("click",printConfirmation);
+$("closeConfirm").addEventListener("click",()=>$("confirmModal").classList.remove("open"));$("copyConfirm").addEventListener("click",copyConfirmation);$("emailConfirm").addEventListener("click",shareByEmail);$("whatsappConfirm").addEventListener("click",shareByWhatsApp);$("printConfirm").addEventListener("click",printConfirmation);
 $("logoutBtn").addEventListener("click",async()=>{await sb.auth.signOut();location.href="login.html";});
 (async()=>{
   try{
