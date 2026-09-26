@@ -36,7 +36,7 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
 </header>
 
 <h1>Billing Center</h1>
-<div class="subtitle">Manage venue plans, manual payments and renewals here. This page does not contain customer enquiries or venue-edit tools.</div>
+<div class="subtitle">Manage venue plans, manual payments, renewals and confirmations here.</div>
 
 <div class="layout">
   <section class="card">
@@ -263,7 +263,7 @@ async function saveBilling(e){
   }catch(err){console.error(err);toast(err.message||"Could not save billing record.",true);}
   finally{$("recordBtn").disabled=false;$("recordBtn").textContent="✓ Record Billing";}
 }
-function clearPaymentInputs(){ $("amount").value="";$("paymentReference").value="";$("dueDate").value="";$("notes").value="";$("status").value="paid";$("paymentMethod").value="";updateStartSuggestion();}
+function clearPaymentInputs(){ $("amount").value="";$("paymentReference").value="";$("dueDate").value="";$("notes").value="";$("status").value="paid";$("paymentMethod").value="";$("paymentMethod").disabled=false;$("dueDate").disabled=true;updateStartSuggestion();}
 async function reloadAfterSelection(id){selectedVenueId=id;localStorage.setItem("smv_billing_center_venue_id",id);await loadData();}
 function openPaidModal(id){
   const r=records.find(x=>x.id===id);if(!r)return;
