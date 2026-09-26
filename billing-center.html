@@ -71,7 +71,7 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
               <div class="field"><label for="amount">Amount</label><input id="amount" type="number" min="0.01" step="0.01" required placeholder="e.g. 15000"></div>
               <div class="field"><label for="status">Status</label><select id="status"><option value="paid" selected>Paid — activate plan</option><option value="pending">Pending — follow up later</option></select></div>
               <div class="field"><label for="paymentMethod">Payment method</label><select id="paymentMethod"><option value="">Select method…</option><option value="cash">Cash</option><option value="cheque">Cheque</option><option value="upi">UPI</option><option value="bank_transfer">Bank Transfer</option><option value="other">Other</option></select></div>
-              <div class="field"><label for="paymentReference">Cheque / UTR / UPI reference</label><input id="paymentReference" placeholder="Optional for cash"></div>
+              <div class="field"><label for="paymentReference">Cheque / UTR / Transfer reference</label><input id="paymentReference" placeholder="Optional for cash"></div>
               <div class="field"><label for="startDate">Plan start date</label><input id="startDate" type="date" required><div id="startNote" class="date-note"></div></div>
               <div class="field"><label>Automatic expiry</label><input id="endDate" type="text" readonly></div>
               <div class="field"><label for="dueDate">Payment due date (pending only)</label><input id="dueDate" type="date"></div>
@@ -154,7 +154,7 @@ function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&l
 function money(v){return Number(v||0).toLocaleString("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:2});}
 function fmtDate(v){if(!v)return"—";const d=new Date(v);return Number.isNaN(d.getTime())?"—":new Intl.DateTimeFormat("en-IN",{day:"2-digit",month:"short",year:"numeric"}).format(d);}
 function localToday(){const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);}
-function endDateFor(start,months){if(!start)return"";const d=new Date(start+"T00:00:00");d.setMonth(d.getMonth()+Number(months||0));d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
+function endDateFor(start,months){if(!start)return"";const d=new Date(start+"T00:00:00");const day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+Number(months||0));const lastDay=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(day,lastDay));d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
 function addDay(dateString){if(!dateString)return"";const d=new Date(dateString+"T00:00:00");d.setDate(d.getDate()+1);return d.toISOString().slice(0,10);}
 function methodLabel(v){return({cash:"Cash",cheque:"Cheque",upi:"UPI",bank_transfer:"Bank Transfer",other:"Other"})[v]||"—";}
 function toast(msg,error=false){const t=$("toast");t.textContent=msg;t.className="toast show"+(error?" error":"");clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.className="toast",2700);}
@@ -199,7 +199,7 @@ function renderVenueList(){
     const status=v.plan_status||"—";
     return '<div class="venue-row '+(String(v.id)===String(selectedVenueId)?"selected":"")+'">'+
       '<div><div class="venue-name">'+esc(v.venue_name||"Unnamed Venue")+'</div>'+
-      '<div class="venue-meta"><span>ID: <span class="id">'+esc(v.id)+'</span></span><span>Plan: '+esc(v.partner_plan||"—")+'</span><span class="pill '+esc(status)+'">'+esc(status.toUpperCase())+'</span>'+
+      '<div class="venue-meta"><span>ID: <span class="id">'+esc(v.id)+'</span></span><span>Plan: '+esc(plans.find(p=>p.plan_code===v.partner_plan)?.plan_name||v.partner_plan||"—")+'</span><span class="pill '+esc(status)+'">'+esc(status.toUpperCase())+'</span>'+
       (last?'<span>Last: '+esc(last.status.toUpperCase())+' · '+money(last.amount)+'</span>':'<span>No billing yet</span>')+'</div></div>'+
       '<button class="btn '+(String(v.id)===String(selectedVenueId)?"success":"primary")+'" data-select-venue="'+esc(v.id)+'">'+(String(v.id)===String(selectedVenueId)?"Selected":"Manage Billing")+'</button></div>';
   }).join(""):'<div class="empty">No venues match your search.</div>';
@@ -212,7 +212,7 @@ function renderSelected(){
   $("selectedVenueId").textContent=v.id;
   $("selectedOwner").textContent=v.contact_person||"—";
   $("selectedContact").textContent=v.contact_mobile||v.whatsapp_number||v.contact_email||"—";
-  $("selectedPlan").textContent=v.partner_plan||"—";
+  $("selectedPlan").textContent=plans.find(p=>p.plan_code===v.partner_plan)?.plan_name||v.partner_plan||"—";
   $("selectedExpiry").textContent=fmtDate(v.plan_expires_at);
   $("selectedStatus").className="pill "+(v.plan_status||"");$("selectedStatus").textContent=(v.plan_status||"—").toUpperCase();
   const currentPlan=plans.find(p=>p.plan_code===v.partner_plan);$("planCode").value=currentPlan?currentPlan.plan_code:"";
