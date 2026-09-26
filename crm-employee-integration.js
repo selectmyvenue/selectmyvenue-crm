@@ -119,7 +119,9 @@ window.startEmployeeIntegration=async function(client){
  function smvDistanceKm(a,b){if(!a||!b)return null;const r=6371,toRad=d=>d*Math.PI/180,dLat=toRad(b.lat-a.lat),dLon=toRad(b.lon-a.lon),x=Math.sin(dLat/2)**2+Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLon/2)**2;return 2*r*Math.asin(Math.min(1,Math.sqrt(x)));}
  function smvIsBroadLocation(v){return /^(delhi(?: ncr)?|gurgaon|gurugram|manesar|noida|greater noida|faridabad|ghaziabad)$/i.test(clean(v));}
  function smvGeoQueryForLead(l){
+   const inferred=clean(smvLeadSpec(l)?.location);
    const area=clean(l?.preferred_area),city=clean(l?.preferred_city||l?.location);
+   if(inferred&&!smvIsBroadLocation(inferred))return inferred;
    if(area)return area;
    if(!city||smvIsBroadLocation(city))return'';
    return city;
@@ -138,7 +140,7 @@ window.startEmployeeIntegration=async function(client){
  let smvRoadBatchKey='';
  async function smvEnsureRoadDistances(l,venues){
    const db=typeof getSupabaseClient==='function'?getSupabaseClient():null,origin=smvLeadPoint(l);
-   if(!db||!origin||!clean(l?.preferred_area))return false;
+   if(!db||!origin||!smvGeoQueryForLead(l))return false;
    const rows=(venues||[]).map(v=>({v,p:smvVenuePoint(v)})).filter(x=>x.p).slice(0,25);
    if(!rows.length)return false;
    const originKey=smvRoadOriginKey(l),batchKey=originKey+'|'+rows.map(x=>String(x.v.id)+':'+x.p.lat.toFixed(5)+','+x.p.lon.toFixed(5)).sort().join(';');
@@ -216,7 +218,7 @@ window.startEmployeeIntegration=async function(client){
      const region=smvRegion(smvLeadSpec(lead).location);
      const pending=venues.filter(v=>!smvVenuePoint(v)&&(!region||smvRegion([v.area,v.city,v.address].filter(Boolean).join(' '))===region)).slice(0,8);
      for(const v of pending){const modal=document.getElementById('venueAssignmentModal');if(!modal||modal.hidden)break;await smvEnsureVenueGeo(v);await new Promise(r=>setTimeout(r,1100));}
-     if(hint&&smvLeadPoint(lead)&&clean(lead.preferred_area))hint.textContent='Calculating road distance to venues…';
+     if(hint&&smvLeadPoint(lead)&&smvGeoQueryForLead(lead))hint.textContent='Calculating road distance to venues…';
      const roadReady=await smvEnsureRoadDistances(lead,venues);
      if(hint&&roadReady)hint.textContent='Road-distance matching ready · OpenStreetMap / OSRM';
      smvPreparedKey='';
@@ -298,7 +300,37 @@ window.startEmployeeIntegration=async function(client){
        if(!out.location)out.location=place;
        else if(!smvText(out.location).includes(area))out.location=[out.location,place].join(' / ');
      }
-     const amount=s.match(/(?:budget|per\s*(?:person|plate|head)|pp)\s*(?:is|of|around|approx|:|=|-)?\s*(?:rs\.?|inr|₹)?\s*(\d+(?:\.\d+)?)\s*(lacs?|lakhs?|lac|lakh|k|thousand)?\b/)||s.match(/(?:rs\.?|inr|₹)?\s*(\d+(?:\.\d+)?)\s*(lacs?|lakhs?|k|thousand)?\s*(?:\/\s*|per\s*)(?:person|plate|head|pax)\b/);
+     // Accept explicit free-form location labels entered in Notes / Comment.
+   const labeledLocation=s.match(/\b(?:preferred\s+)?(?:venue\s*\/?\s*area|venue\s+area|location|locality|area)\s*[:=-]\s*(.+)$/i);
+   if(labeledLocation&&clean(labeledLocation[1])){
+     const labelValue=clean(labeledLocation[1]).replace(/[.;]+$/,'');
+     if(labelValue&&!smvIsBroadLocation(labelValue)){
+       out.location=out.location&&!smvText(out.location).includes(smvText(labelValue))
+         ? [out.location,labelValue].join(' / ')
+         : (out.location||labelValue);
+     }
+   }
+
+   // Common Delhi localities should be recognised even when Notes are plain text.
+   const commonLocalities=[
+     ['laxmi nagar',/\blaxmi\s*nagar\b/],
+     ['anand vihar',/\banand\s*vihar\b/],
+     ['mayur vihar',/\bmayur\s*vihar\b/],
+     ['janakpuri',/\bjanakpuri\b/],
+     ['saket',/\bsaket\b/],
+     ['vasant vihar',/\bvasant\s*vihar\b/],
+     ['malviya nagar',/\bmalviya\s*nagar\b/],
+     ['punjabi bagh',/\bpunjabi\s*bagh\b/],
+     ['rajouri garden',/\brajouri\s*garden\b/]
+   ];
+   const localityHit=commonLocalities.find(([,re])=>re.test(s));
+   if(localityHit&&!smvText(out.location).includes(localityHit[0])){
+     const citySuffix=city?' '+city[1]:'';
+     const place=(localityHit[0]+citySuffix).trim();
+     out.location=out.location?[out.location,place].join(' / '):place;
+   }
+
+   const amount=s.match(/(?:budget|per\s*(?:person|plate|head)|pp)\s*(?:is|of|around|approx|:|=|-)?\s*(?:rs\.?|inr|₹)?\s*(\d+(?:\.\d+)?)\s*(lacs?|lakhs?|lac|lakh|k|thousand)?\b/)||s.match(/(?:rs\.?|inr|₹)?\s*(\d+(?:\.\d+)?)\s*(lacs?|lakhs?|k|thousand)?\s*(?:\/\s*|per\s*)(?:person|plate|head|pax)\b/);
      if(amount){const factor=/^la/.test(amount[2]||'')?100000:/^(k|thousand)$/.test(amount[2]||'')?1000:1;const n=Number(amount[1])*factor;if(/per\s*(?:person|plate|head|pax)|\/\s*(?:person|plate|head|pax)|\bpp\b/.test(s))out.budget=n;else out.totalBudget=n;}
    }
    return out;
