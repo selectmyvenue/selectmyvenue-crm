@@ -119,8 +119,9 @@ window.startEmployeeIntegration=async function(client){
  function smvDistanceKm(a,b){if(!a||!b)return null;const r=6371,toRad=d=>d*Math.PI/180,dLat=toRad(b.lat-a.lat),dLon=toRad(b.lon-a.lon),x=Math.sin(dLat/2)**2+Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLon/2)**2;return 2*r*Math.asin(Math.min(1,Math.sqrt(x)));}
  function smvIsBroadLocation(v){return /^(delhi(?: ncr)?|gurgaon|gurugram|manesar|noida|greater noida|faridabad|ghaziabad)$/i.test(clean(v));}
  function smvGeoQueryForLead(l){
-   const inferred=clean(smvLeadSpec(l)?.location);
    const area=clean(l?.preferred_area),city=clean(l?.preferred_city||l?.location);
+   const inferred=clean(smvLeadSpec(l)?.location);
+   if(area&&!smvIsBroadLocation(area))return area;
    if(inferred&&!smvIsBroadLocation(inferred))return inferred;
    if(area)return area;
    if(!city||smvIsBroadLocation(city))return'';
