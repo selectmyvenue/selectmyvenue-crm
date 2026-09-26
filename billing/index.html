@@ -166,10 +166,10 @@ function updateStartSuggestion(){const v=venue();const suggested=suggestedStart(
 
 async function auth(){
   const {data:{session},error}=await sb.auth.getSession();
-  if(error||!session){location.href="login.html?return=billing/";return false;}
+  if(error||!session){location.href="../login.html?return=billing/";return false;}
   const {data:allowed,error:aerr}=await sb.rpc("smv_is_active_staff");
   const ok=!aerr&&(allowed===true||allowed==="true"||allowed===1||allowed==="1");
-  if(!ok){await sb.auth.signOut();location.href="login.html?error=billing_admin_only";return false;}
+  if(!ok){await sb.auth.signOut();location.href="../login.html?return=billing/&error=billing_admin_only";return false;}
   return true;
 }
 
@@ -302,7 +302,7 @@ $("clearFormBtn").addEventListener("click",clearPaymentInputs);
 $("historyBody").addEventListener("click",e=>{const a=e.target.closest("[data-mark-paid],[data-remind],[data-confirm]");if(!a)return;if(a.dataset.markPaid)openPaidModal(a.dataset.markPaid);else if(a.dataset.remind){const r=records.find(x=>x.id===a.dataset.remind);if(r)remind(r);}else if(a.dataset.confirm){const r=records.find(x=>x.id===a.dataset.confirm);if(r)openConfirmation(r);}});
 $("closePaid").addEventListener("click",()=>$("paidModal").classList.remove("open"));$("cancelPaid").addEventListener("click",()=>$("paidModal").classList.remove("open"));$("confirmPaid").addEventListener("click",confirmPaid);
 $("closeConfirm").addEventListener("click",()=>$("confirmModal").classList.remove("open"));$("copyConfirm").addEventListener("click",copyConfirmation);$("printConfirm").addEventListener("click",printConfirmation);
-$("logoutBtn").addEventListener("click",async()=>{await sb.auth.signOut();location.href="login.html";});
+$("logoutBtn").addEventListener("click",async()=>{await sb.auth.signOut();location.href="../login.html?return=billing/";});
 (async()=>{
   try{
     if(!(await auth()))return;
