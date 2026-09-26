@@ -13,7 +13,7 @@ window.SUPABASE_ANON_KEY="sb_publishable_hfiuO4ZRn4VZmEkrN2RV-A_lZX_R3z7";
 <style>
 :root{--bg:#071511;--panel:#0d211c;--panel2:#102922;--line:rgba(255,255,255,.1);--text:#f4fbf8;--muted:rgba(244,251,248,.62);--teal:#16d2b2;--gold:#ffc928;--ok:#55dfb9;--warn:#f4c85a;--danger:#ff8e8e;--light:#f6faf8;--ink:#18362f}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:radial-gradient(circle at 10% 0%,rgba(22,210,178,.11),transparent 28%),linear-gradient(135deg,#04100d,#081c16 55%,#04100d);color:var(--text);min-height:100vh}button,input,select,textarea{font:inherit}button{cursor:pointer}a{text-decoration:none;color:inherit}
-.shell{max-width:1440px;margin:0 auto;padding:18px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:13px 15px;border:1px solid var(--line);border-radius:15px;background:rgba(4,17,14,.86);backdrop-filter:blur(16px);position:sticky;top:10px;z-index:30}.brand{display:flex;align-items:center;gap:11px}.brand img{width:44px;height:44px;object-fit:contain}.brand strong{font-size:16px}.brand small{display:block;margin-top:2px;color:var(--muted);font-size:10px}.top-actions{display:flex;gap:8px}.btn{border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--text);padding:9px 12px;border-radius:10px;font-weight:780}.btn:hover{background:rgba(255,255,255,.08)}.btn.primary{background:linear-gradient(135deg,#18caae,#087e72);border-color:transparent}.btn.success{background:linear-gradient(135deg,#45d8b0,#168a72);border-color:transparent}.btn.gold{background:linear-gradient(135deg,#ffd85e,#b88918);border-color:transparent;color:#16200e}.btn.danger{color:#ffd4d4;background:rgba(255,100,100,.07);border-color:rgba(255,130,130,.22)}
+.shell{max-width:1440px;margin:0 auto;padding:18px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:13px 15px;border:1px solid var(--line);border-radius:15px;background:rgba(4,17,14,.86);backdrop-filter:blur(16px);position:sticky;top:10px;z-index:30}.brand{display:flex;align-items:center;gap:16px;min-width:0}.brand img{width:170px;height:58px;object-fit:contain;object-position:left center;flex:0 0 auto}.brand strong{font-size:16px}.brand small{display:block;margin-top:2px;color:var(--muted);font-size:10px}.top-actions{display:flex;gap:8px}.btn{border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--text);padding:9px 12px;border-radius:10px;font-weight:780}.btn:hover{background:rgba(255,255,255,.08)}.btn.primary{background:linear-gradient(135deg,#18caae,#087e72);border-color:transparent}.btn.success{background:linear-gradient(135deg,#45d8b0,#168a72);border-color:transparent}.btn.gold{background:linear-gradient(135deg,#ffd85e,#b88918);border-color:transparent;color:#16200e}.btn.danger{color:#ffd4d4;background:rgba(255,100,100,.07);border-color:rgba(255,130,130,.22)}
 h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--muted);font-size:12px;margin-bottom:18px}.layout{display:grid;grid-template-columns:minmax(430px,520px) minmax(0,1fr);gap:15px}.card{border:1px solid var(--line);background:linear-gradient(145deg,rgba(15,41,34,.94),rgba(7,23,19,.98));border-radius:16px;box-shadow:0 20px 55px rgba(0,0,0,.18);overflow:hidden}.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}.card-head h2{margin:0;font-size:15px}.card-head small{color:var(--muted);font-size:10px}.card-body{padding:15px}
 .search{display:grid;grid-template-columns:1fr 110px;gap:8px;margin-bottom:10px}.search input,.field input,.field select,.field textarea{width:100%;background:rgba(255,255,255,.045);color:var(--text);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:10px 11px;outline:none}.search input:focus,.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(22,210,178,.72);box-shadow:0 0 0 3px rgba(22,210,178,.09)}option{color:#111;background:#fff}
 .venue-list{display:grid;gap:8px;max-height:calc(100vh - 245px);overflow:auto;padding-right:2px}.venue-row{padding:11px;border:1px solid rgba(255,255,255,.075);border-radius:11px;background:rgba(255,255,255,.025);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center}.venue-row.selected{border-color:rgba(22,210,178,.43);background:rgba(22,210,178,.055)}.venue-name{font-weight:850;font-size:13px}.venue-meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:5px;color:var(--muted);font-size:10px}.id{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}.pill{display:inline-flex;align-items:center;padding:4px 7px;border-radius:999px;border:1px solid transparent;font-size:9px;font-weight:850}.pill.active,.pill.paid{color:#baffec;background:rgba(85,223,185,.1);border-color:rgba(85,223,185,.18)}.pill.pending,.pill.trialing{color:#ffe6a3;background:rgba(244,200,90,.1);border-color:rgba(244,200,90,.18)}.pill.expired,.pill.paused,.pill.cancelled{color:#ffcaca;background:rgba(255,142,142,.09);border-color:rgba(255,142,142,.18)}.empty{padding:35px 10px;text-align:center;color:var(--muted);font-size:12px}
@@ -22,10 +22,10 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
 .history{margin-top:14px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;padding:10px 11px;border-bottom:1px solid rgba(255,255,255,.065);font-size:10px;vertical-align:top}th{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}td strong{font-size:11px}td small{display:block;color:var(--muted);margin-top:3px}.mini{display:flex;flex-wrap:wrap;gap:5px}.mini .btn{padding:6px 8px;font-size:9px}.muted{color:var(--muted)}
 .toast{position:fixed;right:17px;bottom:17px;z-index:70;max-width:360px;padding:11px 13px;border-radius:11px;background:#0e332b;color:#eafff8;border:1px solid rgba(85,223,185,.24);box-shadow:0 18px 45px rgba(0,0,0,.32);opacity:0;transform:translateY(10px);pointer-events:none;transition:.2s;font-size:11px}.toast.show{opacity:1;transform:none}.toast.error{background:#381719;color:#ffe3e3;border-color:rgba(255,142,142,.25)}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.68);display:none;align-items:center;justify-content:center;padding:18px;z-index:60}.modal.open{display:flex}.modalbox{width:min(600px,100%);background:#092019;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 40px 110px rgba(0,0,0,.56)}.modalbody{padding:16px}.modalgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.confirm{background:#fff;color:#172823;border-radius:9px;padding:22px}.confirm-head{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #dfe7e4;padding-bottom:13px}.confirm-brand{font-size:18px;font-weight:900}.confirm-title{text-align:right}.confirm-title strong{display:block;font-size:17px}.confirm-title span{font-size:9px;color:#697773}.confirm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}.confirm-cell{padding:9px;border:1px solid #e3eae7;border-radius:8px}.confirm-cell span{display:block;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#6a7873}.confirm-cell strong{display:block;margin-top:3px;font-size:11px}.confirm-total{display:flex;justify-content:space-between;padding-top:13px;margin-top:13px;border-top:1px solid #dfe7e4}.confirm-total strong{font-size:22px}.print-note{margin-top:12px;color:#6a7873;font-size:9px}
+.confirm{background:#fff;color:#172823;border-radius:9px;padding:22px}.confirm-head{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #dfe7e4;padding-bottom:13px}.confirm-brand{font-size:18px;font-weight:900}.confirm-logo{width:165px;height:58px;object-fit:contain;object-position:left center}.confirm-title{text-align:right}.confirm-title strong{display:block;font-size:17px}.confirm-title span{font-size:9px;color:#697773}.confirm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}.confirm-cell{padding:9px;border:1px solid #e3eae7;border-radius:8px}.confirm-cell span{display:block;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#6a7873}.confirm-cell strong{display:block;margin-top:3px;font-size:11px}.confirm-total{display:flex;justify-content:space-between;padding-top:13px;margin-top:13px;border-top:1px solid #dfe7e4}.confirm-total strong{font-size:22px}.print-note{margin-top:12px;color:#6a7873;font-size:9px}
 #printArea{display:none}@media print{body{background:#fff}body>*:not(#printArea){display:none!important}#printArea{display:block!important;padding:18px}.confirm{box-shadow:none}}
 @media(max-width:1040px){.layout{grid-template-columns:1fr}.venue-list{max-height:360px}.identity{grid-template-columns:1fr 1fr}}
-@media(max-width:620px){.shell{padding:11px}.topbar{position:static}.top-actions{display:none}h1{font-size:24px}.search{grid-template-columns:1fr}.venue-row{grid-template-columns:1fr}.formgrid,.modalgrid,.confirm-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.identity{grid-template-columns:1fr}.venue-title{display:block}.form-actions .btn{width:100%}}
+@media(max-width:620px){.shell{padding:11px}.topbar{position:static}.top-actions{display:none}.brand{gap:9px}.brand img{width:138px;height:48px}.brand strong{font-size:13px}.confirm-logo{width:145px;height:52px}h1{font-size:24px}.search{grid-template-columns:1fr}.venue-row{grid-template-columns:1fr}.formgrid,.modalgrid,.confirm-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.identity{grid-template-columns:1fr}.venue-title{display:block}.form-actions .btn{width:100%}}
 </style>
 </head>
 <body>
@@ -124,7 +124,7 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
     <div class="card-head"><h2>Payment Confirmation</h2><button class="btn" id="closeConfirm" type="button">Close</button></div>
     <div class="modalbody">
       <div class="confirm" id="confirmCard">
-        <div class="confirm-head"><div style="display:flex;align-items:center;gap:9px"><img src="https://selectmyvenue.com/logo.png" alt="Select My Venue" style="width:34px;height:34px;object-fit:contain"><div><div class="confirm-brand">Select My Venue</div><div style="color:#687873;font-size:9px;margin-top:3px">Manual Payment Receipt / Confirmation</div></div></div><div class="confirm-title"><strong>PAYMENT RECEIPT</strong><span id="cReceipt">—</span></div></div>
+        <div class="confirm-head"><div style="display:flex;align-items:center;gap:9px"><img class="confirm-logo" src="https://selectmyvenue.com/logo.png" alt="Select My Venue"><div><div class="confirm-brand">Select My Venue</div><div style="color:#687873;font-size:9px;margin-top:3px">Manual Payment Receipt / Confirmation</div></div></div><div class="confirm-title"><strong>PAYMENT RECEIPT</strong><span id="cReceipt">—</span></div></div>
         <div class="confirm-grid">
           <div class="confirm-cell"><span>Venue</span><strong id="cVenue">—</strong></div>
           <div class="confirm-cell"><span>Venue ID</span><strong id="cVenueId">—</strong></div>
@@ -139,6 +139,20 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
         <div class="print-note">This document records a manually entered payment; it is not an online payment gateway receipt.</div>
       </div>
       <div class="form-actions"><button class="btn" id="copyConfirm" type="button">Copy Confirmation</button><button class="btn" id="emailConfirm" type="button">Email</button><button class="btn" id="whatsappConfirm" type="button">WhatsApp</button><button class="btn gold" id="printConfirm" type="button">Print / Save PDF</button></div><div class="print-note" style="margin-top:7px">Email opens your email app with the receipt prepared. WhatsApp opens a pre-filled message; you still press Send.</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="emailModal">
+  <div class="modalbox">
+    <div class="card-head"><h2>Choose Email App</h2><button class="btn" id="closeEmail" type="button">Close</button></div>
+    <div class="modalbody">
+      <div class="notice" style="margin-top:0"><strong>Recipient:</strong> <span id="emailRecipient">—</span><br><span style="display:block;margin-top:4px">Choose where to compose the payment receipt. This will not automatically open Outlook.</span></div>
+      <div class="form-actions" style="margin-top:12px">
+        <button class="btn primary" id="gmailEmail" type="button">Open Gmail</button>
+        <button class="btn" id="outlookEmail" type="button">Open Outlook Web</button>
+        <button class="btn" id="copyEmail" type="button">Copy Email + Receipt</button>
+      </div>
     </div>
   </div>
 </div>
@@ -290,7 +304,34 @@ function openConfirmation(r){
 }
 function confirmationText(){if(!lastConfirmation)return"";const r=lastConfirmation,v=venue();return ["Select My Venue — Payment Receipt / Confirmation","Venue: "+(v?.venue_name||r.venue_id),"Venue ID: "+(v?.id||r.venue_id),"Owner: "+(r.owner_name||v?.contact_person||"—"),"Plan: "+r.plan_name,"Amount Received: "+money(r.amount),"Payment Method: "+methodLabel(r.payment_method),"Payment Date: "+fmtDate(r.received_at||r.created_at),"Valid: "+fmtDate(r.start_date)+" to "+fmtDate(r.end_date),"Receipt: "+(r.receipt_number||"—"),"Record: "+r.record_number].join("\n");}
 function copyConfirmation(){const text=confirmationText();if(!text)return;navigator.clipboard?.writeText(text).then(()=>toast("Confirmation copied."));}
-function shareByEmail(){if(!lastConfirmation)return;const r=lastConfirmation,v=venue();const email=r.owner_email||v?.contact_email||"";if(!email){toast("No owner email is saved for this venue.",true);return;}const subject="Payment Receipt — "+(v?.venue_name||"Select My Venue");const body=confirmationText();window.location.href="mailto:"+encodeURIComponent(email)+"?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);}
+function emailDetails(){
+  if(!lastConfirmation)return null;
+  const r=lastConfirmation,v=venue();
+  const email=String(r.owner_email||v?.contact_email||"").trim();
+  if(!email){toast("No owner email is saved for this venue.",true);return null;}
+  return {email,subject:"Payment Receipt — "+(v?.venue_name||"Select My Venue"),body:confirmationText()};
+}
+function shareByEmail(){
+  const d=emailDetails();if(!d)return;
+  $("emailRecipient").textContent=d.email;
+  $("emailModal").classList.add("open");
+}
+function openGmail(){
+  const d=emailDetails();if(!d)return;
+  const url="https://mail.google.com/mail/?view=cm&fs=1&tf=1&to="+encodeURIComponent(d.email)+"&su="+encodeURIComponent(d.subject)+"&body="+encodeURIComponent(d.body);
+  window.open(url,"_blank","noopener");
+  $("emailModal").classList.remove("open");
+}
+function openOutlook(){
+  const d=emailDetails();if(!d)return;
+  const url="https://outlook.live.com/mail/0/deeplink/compose?to="+encodeURIComponent(d.email)+"&subject="+encodeURIComponent(d.subject)+"&body="+encodeURIComponent(d.body);
+  window.open(url,"_blank","noopener");
+  $("emailModal").classList.remove("open");
+}
+function copyEmailAndReceipt(){
+  const d=emailDetails();if(!d)return;
+  navigator.clipboard?.writeText("To: "+d.email+"\\nSubject: "+d.subject+"\\n\\n"+d.body).then(()=>toast("Email address and receipt copied."));
+}
 function shareByWhatsApp(){if(!lastConfirmation)return;const r=lastConfirmation,v=venue();const raw=r.owner_mobile||v?.contact_mobile||v?.whatsapp_number||"";const digits=String(raw).replace(/\D/g,"");if(digits.length<10){toast("No valid owner mobile/WhatsApp number is saved.",true);return;}const phone=digits.length===10?"91"+digits:digits;window.open("https://wa.me/"+phone+"?text="+encodeURIComponent(confirmationText()),"_blank","noopener");}
 function printConfirmation(){if(!lastConfirmation)return;$("printArea").innerHTML=$("confirmCard").outerHTML;window.print();}
 
@@ -303,7 +344,7 @@ $("billingForm").addEventListener("submit",saveBilling);
 $("clearFormBtn").addEventListener("click",clearPaymentInputs);
 $("historyBody").addEventListener("click",e=>{const a=e.target.closest("[data-mark-paid],[data-remind],[data-confirm]");if(!a)return;if(a.dataset.markPaid)openPaidModal(a.dataset.markPaid);else if(a.dataset.remind){const r=records.find(x=>x.id===a.dataset.remind);if(r)remind(r);}else if(a.dataset.confirm){const r=records.find(x=>x.id===a.dataset.confirm);if(r)openConfirmation(r);}});
 $("closePaid").addEventListener("click",()=>$("paidModal").classList.remove("open"));$("cancelPaid").addEventListener("click",()=>$("paidModal").classList.remove("open"));$("confirmPaid").addEventListener("click",confirmPaid);
-$("closeConfirm").addEventListener("click",()=>$("confirmModal").classList.remove("open"));$("copyConfirm").addEventListener("click",copyConfirmation);$("emailConfirm").addEventListener("click",shareByEmail);$("whatsappConfirm").addEventListener("click",shareByWhatsApp);$("printConfirm").addEventListener("click",printConfirmation);
+$("closeConfirm").addEventListener("click",()=>$("confirmModal").classList.remove("open"));$("copyConfirm").addEventListener("click",copyConfirmation);$("emailConfirm").addEventListener("click",shareByEmail);$("whatsappConfirm").addEventListener("click",shareByWhatsApp);$("printConfirm").addEventListener("click",printConfirmation);$("closeEmail").addEventListener("click",()=>$("emailModal").classList.remove("open"));$("gmailEmail").addEventListener("click",openGmail);$("outlookEmail").addEventListener("click",openOutlook);$("copyEmail").addEventListener("click",copyEmailAndReceipt);
 $("logoutBtn").addEventListener("click",async()=>{await sb.auth.signOut();location.href="../login.html?return=billing/";});
 (async()=>{
   try{
