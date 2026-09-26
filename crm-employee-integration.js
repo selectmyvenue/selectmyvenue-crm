@@ -342,11 +342,6 @@ window.startEmployeeIntegration=async function(client){
    const hasFood=inferred.veg!==undefined||inferred.nonveg!==undefined;
    const preferredArea=smvText(l?.preferred_area);
    const savedCity=smvText(l?.preferred_city||l?.location);
-   // A note such as "Rajiv Chowk, Sec 56" plus broad Venue/Area "Gurgaon"
-   // must resolve to a geocodable locality instead of remaining distance-less.
-   if(inferred.location&&/^sector\\s+\\d+[a-z]?(?:\\s*\\/.*)?$/i.test(inferred.location)&&smvIsBroadLocation(savedCity)){
-     inferred.location=(inferred.location+' '+savedCity).trim();
-   }
    /* Venue / Area is the customer's most specific location requirement.
       A broad legacy city (e.g. Gurgaon) must never override Chattarpur / Sector 67. */
    const savedLocation=preferredArea||savedCity;
