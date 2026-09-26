@@ -166,7 +166,7 @@ function updateStartSuggestion(){const v=venue();const suggested=suggestedStart(
 
 async function auth(){
   const {data:{session},error}=await sb.auth.getSession();
-  if(error||!session){location.href="login.html?return=billing-center.html";return false;}
+  if(error||!session){location.href="login.html?return=billing/";return false;}
   const {data:allowed,error:aerr}=await sb.rpc("smv_is_active_staff");
   const ok=!aerr&&(allowed===true||allowed==="true"||allowed===1||allowed==="1");
   if(!ok){await sb.auth.signOut();location.href="login.html?error=billing_admin_only";return false;}
@@ -294,7 +294,7 @@ function printConfirmation(){if(!lastConfirmation)return;$("printArea").innerHTM
 
 $("venueSearch").addEventListener("input",renderVenueList);
 $("refreshBtn").addEventListener("click",async()=>{try{await loadData();toast("Billing refreshed.");}catch(e){toast(e.message||"Refresh failed.",true);}});
-$("venueList").addEventListener("click",async e=>{const b=e.target.closest("[data-select-venue]");if(!b)return;selectedVenueId=b.dataset.selectVenue;localStorage.setItem("smv_billing_center_venue_id",selectedVenueId);history.replaceState(null,"","billing-center.html?venue_id="+encodeURIComponent(selectedVenueId));renderSelected();});
+$("venueList").addEventListener("click",async e=>{const b=e.target.closest("[data-select-venue]");if(!b)return;selectedVenueId=b.dataset.selectVenue;localStorage.setItem("smv_billing_center_venue_id",selectedVenueId);history.replaceState(null,"","billing/?venue_id="+encodeURIComponent(selectedVenueId));renderSelected();});
 $("termMonths").addEventListener("change",updateEnd);$("startDate").addEventListener("change",updateEnd);$("status").addEventListener("change",()=>{$("paymentMethod").disabled=$("status").value!=="paid";$("dueDate").disabled=$("status").value!=="pending";});
 $("planCode").addEventListener("change",()=>updateEnd());
 $("billingForm").addEventListener("submit",saveBilling);
