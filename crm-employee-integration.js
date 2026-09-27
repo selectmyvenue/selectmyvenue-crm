@@ -408,7 +408,7 @@ function smvCompareMatches(a,b){const ad=a.m.distanceKm,bd=b.m.distanceKm;return
    if(m.hardFail)return 'excluded';
    if(m.dataConfidence<45)return 'incomplete';
    if(m.score>=72&&m.dataConfidence>=65&&!m.warnings.some(w=>/mismatch|exceeds/i.test(w)))return 'strong';
-   return m.score>=50?'possible':'low';
+   return m.score>=55?'possible':'low';
  }
  function smvShortlist(lead,venues,assigned) {
    if(!lead||['booked','closed','lost','not-interested'].includes(norm(lead.status)))return [];
