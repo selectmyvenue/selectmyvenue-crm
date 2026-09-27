@@ -7441,9 +7441,9 @@ function renderLeadVenueAssignments(enquiryId) {
                             class="venue-assignment-remove-btn"
                             data-assignment-action="cancel"
                             data-assignment-id="${escapeHTML(assignment.id)}"
-                            title="Cancel this venue assignment"
+                            title="Unassign this venue"
                         >
-                            Remove
+                            Unassign
                         </button>
                     ` : ""}
                 </div>
