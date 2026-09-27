@@ -7729,12 +7729,13 @@ function renderAssignmentVenues() {
         const location = [venue.city, venue.area].filter(Boolean).join(" • ") || "Location not set";
 
         return `
-            <label class="venue-assignment-item">
+            <label class="venue-assignment-item ${assigned ? "is-assigned" : ""}">
                 <input
                     type="checkbox"
                     class="venue-assignment-checkbox"
                     value="${escapeHTML(venue.id)}"
-                    ${assigned ? "checked" : ""}
+                    ${assigned ? "checked disabled" : ""}
+                    aria-label="${escapeHTML(venue.venue_name || "Venue")}${assigned ? " — already assigned" : ""}"
                 >
                 <div class="venue-assignment-item-main">
                     <div class="venue-assignment-item-title">
@@ -7748,7 +7749,7 @@ function renderAssignmentVenues() {
                         <span>${escapeHTML(venue.venue_type || "Venue")}</span>
                     </div>
                 </div>
-                <span class="venue-assignment-item-status">Verified</span>
+                <span class="venue-assignment-item-status">${assigned ? "Assigned" : "Verified"}</span>
             </label>
         `;
     }).join("");
@@ -7794,7 +7795,7 @@ async function saveVenueAssignments(options = {}) {
 
     const visibleSelected = Array.from(
         document.querySelectorAll(
-            ".venue-assignment-checkbox:checked:not(:disabled)"
+            ".venue-assignment-checkbox:checked"
         )
     ).map(input => input.value);
 
@@ -7914,33 +7915,9 @@ async function saveVenueAssignments(options = {}) {
             reactivatedVenueIds.push(String(venueId));
         }
 
-        /* Manual checklist mode also supports true unassignment:
-           any currently-active assignment that staff explicitly unchecked is
-           cancelled, while the assignment history is retained. */
-        const activeForLead = allVenueAssignments.filter(
-            item =>
-                String(item.enquiry_id) === String(leadToAssign.id) &&
-                safeValue(item.assignment_status) !== "cancelled"
-        );
-        const selectedSet = new Set(selectedUnique.map(String));
-        const deselectedAssignments = manualSelectionTouched
-            ? activeForLead.filter(item => !selectedSet.has(String(item.venue_id)))
-            : [];
-
-        for (const assignment of deselectedAssignments) {
-            const { error: cancelError } = await client
-                .from("venue_enquiry_assignments")
-                .update({
-                    assignment_status: "cancelled",
-                    updated_at: nowIso,
-                    last_activity_at: nowIso
-                })
-                .eq("id", assignment.id);
-
-            if (cancelError) {
-                throw cancelError;
-            }
-        }
+        /* Active assignments are intentionally immutable from the checklist.
+           A venue can only be removed through the Unassign control in the
+           Assigned Venues section above. */
 
         const rows = selectedUnique
             .filter(
