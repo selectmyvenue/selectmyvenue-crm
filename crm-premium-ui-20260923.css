@@ -1913,3 +1913,10 @@ body{font-size:14.5px!important}
 .smv-customer-distance-hint{margin:8px 0 10px;padding:10px 12px;border:1px solid #cfe8df;border-radius:10px;background:linear-gradient(135deg,#f3fbf8,#fffdf4);display:flex;flex-direction:column;gap:4px;color:#315b52;font-size:11px;line-height:1.45}
 .smv-customer-distance-hint b{color:#08745d;font-size:10px;text-transform:uppercase;letter-spacing:.06em}
 .smv-customer-distance-hint span{font-weight:700}
+
+
+/* Assigned venues: clearly unavailable for re-selection */
+.venue-assignment-item.smv-assigned-disabled{background:#edf2f0!important;border-color:#cbd7d3!important;opacity:.58!important;filter:grayscale(.25)}
+.venue-assignment-item.smv-assigned-disabled .venue-assignment-checkbox{cursor:not-allowed!important;accent-color:#8fa19b!important}
+.venue-assignment-item.smv-assigned-disabled .venue-assignment-item-title strong{color:#64736f!important}
+.venue-assignment-item.smv-assigned-disabled .smv-assigned-badge{background:#d7e2de!important;color:#61736d!important}
