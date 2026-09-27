@@ -3973,6 +3973,29 @@ textarea:focus-visible {
     flex: 0 0 auto;
     accent-color: #0d9588;
 }
+.venue-assignment-item.is-assigned {
+    background: #f0f2f2;
+    border-color: #d5dcda;
+    opacity: .78;
+    cursor: not-allowed;
+}
+
+.venue-assignment-item.is-assigned:hover {
+    border-color: #d5dcda;
+    background: #f0f2f2;
+}
+
+.venue-assignment-item.is-assigned .venue-assignment-item-title strong,
+.venue-assignment-item.is-assigned .venue-assignment-item-meta,
+.venue-assignment-item.is-assigned .venue-assignment-item-status {
+    color: #7b8582;
+}
+
+.venue-assignment-item.is-assigned input[type="checkbox"] {
+    cursor: not-allowed;
+    accent-color: #8b9692;
+}
+
 
 .venue-assignment-item-main {
     min-width: 0;
