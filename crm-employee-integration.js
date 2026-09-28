@@ -75,6 +75,7 @@ window.startEmployeeIntegration=async function(client){
  function smvTokens(v){return smvText(v).split(/[^a-z0-9]+/).filter(x=>x.length>2);}
  function smvLocationTokens(v){
    return smvText(v)
+     .replace(/pritampura/g,'pitampura')
      .replace(/gurugram/g,'gurgaon')
      .replace(/\bsec(?:tor)?[ .-]*(\d+[a-z]?)\b/g,' sector$1 ')
      .replace(/\bphase[ .-]*(\d+[a-z]?)\b/g,' phase$1 ')
@@ -360,7 +361,7 @@ window.startEmployeeIntegration=async function(client){
  }
  function smvRequirementConflicts(l){const s=smvLeadSpec(l),n=s.notes||'',out=[];const structuredRooms=Number(l?.rooms_required)||0;if(structuredRooms&&s.inferred.rooms!==undefined&&structuredRooms!==s.inferred.rooms)out.push('Rooms: saved '+structuredRooms+', notes mention '+s.inferred.rooms+' (using notes)');const structuredType=smvText(l?.venue_type_preference);if(structuredType&&s.inferred.venueType&&structuredType!==s.inferred.venueType&&!structuredType.includes(s.inferred.venueType)&&!s.inferred.venueType.includes(structuredType))out.push('Venue type: saved '+l.venue_type_preference+', notes suggest '+s.inferred.venueType);const food=smvText(l?.food_preference);if(food&&s.inferred.nonveg===true&&food==='veg')out.push('Food: saved Veg, notes mention Non-Veg (using notes)');if(s.inferred.guests&&Number(l?.guests)&&s.inferred.guests!==Number(l.guests))out.push('Guests: using '+s.inferred.guests+' from notes');if(s.inferred.location&&smvRegion(l?.location)&&smvRegion(s.inferred.location)!==smvRegion(l?.location))out.push('Location: using '+s.inferred.location+' from notes');if(l?.outdoor_preferred===true&&/\b(indoor only|only indoor)\b/.test(n))out.push('Outdoor preference conflicts with notes');if(l?.indoor_preferred===true&&/\b(outdoor only|only outdoor|lawn only|only lawn)\b/.test(n))out.push('Indoor preference conflicts with notes');return out;}
  function smvLocationMatch(location, venueLocation){
-   const normalize=v=>smvText(v).replace(/gurugram/g,'gurgaon').replace(/\bkapas[ -]*hera\b/g,'kapashera').replace(/\bsec(?:tor)?[ .-]*/g,'sector ').replace(/\s+/g,' ').trim();
+   const normalize=v=>smvText(v).replace(/pritampura/g,'pitampura').replace(/gurugram/g,'gurgaon').replace(/\bkapas[ -]*hera\b/g,'kapashera').replace(/\bsec(?:tor)?[ .-]*/g,'sector ').replace(/\s+/g,' ').trim();
    const actual=normalize(venueLocation),actualTokens=new Set(actual.split(/[^a-z0-9]+/));
    return normalize(location).split(/\s*(?:,|\/|\bor\b|\band\b|&)\s*/).filter(Boolean).some(option=>{
      const region=smvRegion(option),venueRegion=smvRegion(actual);
