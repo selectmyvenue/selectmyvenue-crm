@@ -85,10 +85,44 @@ Deno.serve(async (req: Request) => {
       }
 
       const data = await response.json();
-      if (data?.code !== "Ok") throw new Error(data?.message || "Road route unavailable");
+      let distances = Array.isArray(data?.distances?.[0]) ? data.distances[0] : [];
+      let durations = Array.isArray(data?.durations?.[0]) ? data.durations[0] : [];
 
-      const distances = Array.isArray(data?.distances?.[0]) ? data.distances[0] : [];
-      const durations = Array.isArray(data?.durations?.[0]) ? data.durations[0] : [];
+      // Some OSRM deployments do not implement distance annotations on the Table
+      // service. Fall back to the Route service instead of losing road distance.
+      if (data?.code !== "Ok" || distances.length !== missingIndexes.length) {
+        const fallback = await Promise.all(missingIndexes.map(async (originalIndex) => {
+          const d = destinations[originalIndex];
+          const routeUrl = new URL(
+            `https://router.project-osrm.org/route/v1/driving/${Number(origin.lon)},${Number(origin.lat)};${Number(d.lon)},${Number(d.lat)}`
+          );
+          routeUrl.searchParams.set("overview", "false");
+          try {
+            const rr = await fetch(routeUrl, {
+              headers: {
+                "User-Agent": "SelectMyVenue-CRM/1.0 (https://selectmyvenue.com)",
+                "Accept": "application/json"
+              }
+            });
+            if (!rr.ok) return null;
+            const rd = await rr.json();
+            const route = Array.isArray(rd?.routes) ? rd.routes[0] : null;
+            if (rd?.code !== "Ok" || !route) return null;
+            return { originalIndex, distance: Number(route.distance), duration: Number(route.duration) };
+          } catch (_) {
+            return null;
+          }
+        }));
+        fallback.forEach(x => {
+          if (!x) return;
+          const j = missingIndexes.indexOf(x.originalIndex);
+          if (j >= 0) {
+            distances[j] = x.distance;
+            durations[j] = x.duration;
+          }
+        });
+      }
+
       const cachePayload: any[] = [];
 
       missingIndexes.forEach((originalIndex, j) => {
