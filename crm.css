@@ -6061,3 +6061,11 @@ body{
   .smv-automation-tools{gap:6px!important}
   .smv-automation-tools button{flex:1 1 auto!important}
 }
+
+
+/* Assigned venue lock: assigned rows remain visible and selected; only top Unassign can release them. */
+.venue-assignment-item.smv-assigned-disabled{opacity:.58!important;background:#eef2f0!important;border-color:#d3ddda!important;cursor:not-allowed!important;}
+.venue-assignment-item.smv-assigned-disabled .venue-assignment-item-title strong{color:#65736f!important;}
+.venue-assignment-item.smv-assigned-disabled .venue-assignment-item-status{color:#6d7c77!important;}
+.venue-assignment-item.smv-assigned-disabled input[type="checkbox"]{accent-color:#7b8c86!important;cursor:not-allowed!important;}
+.venue-assignment-item.smv-assigned-disabled .smv-assigned-badge{background:#dce5e1!important;color:#62726d!important;}
