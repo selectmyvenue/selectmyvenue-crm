@@ -390,6 +390,25 @@ window.startEmployeeIntegration=async function(client){
    return {location,occasion:inferred.occasion||clean(l?.occasion),guests:exactGuests,guestMin:Number(inferred.guestMin)||0,guestMax:Number(inferred.guestMax)||0,budget:exactBudget,totalBudget:inferred.totalBudget||0,rooms:inferred.rooms??structured.rooms,parking:inferred.parking??structured.parking,lawn:inferred.lawn??structured.lawn,indoor:inferred.indoor??structured.indoor,venueType:inferred.venueType||structured.venueType,veg:hasFood?!!inferred.veg:/\bveg(?:etarian)?\b/.test(food.replace(/non[ -]?veg(?:etarian)?/g,'')),nonveg:hasFood?!!inferred.nonveg:/non[ -]?veg(?:etarian)?/.test(food),notes:notes(l),inferred,structured};
  }
  function smvRequirementConflicts(l){const s=smvLeadSpec(l),n=s.notes||'',out=[];const structuredRooms=Number(l?.rooms_required)||0;if(structuredRooms&&s.inferred.rooms!==undefined&&structuredRooms!==s.inferred.rooms)out.push('Rooms: saved '+structuredRooms+', notes mention '+s.inferred.rooms+' (using notes)');const structuredType=smvText(l?.venue_type_preference);if(structuredType&&s.inferred.venueType&&structuredType!==s.inferred.venueType&&!structuredType.includes(s.inferred.venueType)&&!s.inferred.venueType.includes(structuredType))out.push('Venue type: saved '+l.venue_type_preference+', notes suggest '+s.inferred.venueType);const food=smvText(l?.food_preference);if(food&&s.inferred.nonveg===true&&food==='veg')out.push('Food: saved Veg, notes mention Non-Veg (using notes)');if(s.inferred.guests&&Number(l?.guests)&&s.inferred.guests!==Number(l.guests))out.push('Guests: using '+s.inferred.guests+' from notes');if(s.inferred.location&&smvRegion(l?.location)&&smvRegion(s.inferred.location)!==smvRegion(l?.location))out.push('Location: using '+s.inferred.location+' from notes');if(l?.outdoor_preferred===true&&/\b(indoor only|only indoor)\b/.test(n))out.push('Outdoor preference conflicts with notes');if(l?.indoor_preferred===true&&/\b(outdoor only|only outdoor|lawn only|only lawn)\b/.test(n))out.push('Indoor preference conflicts with notes');return out;}
+ function smvFreeTextRequirements(l){
+   const t=notes(l),out=[];
+   const groups=[
+     ['ac','air\\s*condition(?:ed|ing)?|\\bac\\b'],['dj','\\bdj\\b|disc\\s*jockey|music\\s*system|sound\\s*system'],
+     ['decoration','decoration|decor|decorated'],['stage','\\bstage\\b|mandap'],['generator','generator|power\\s*backup|power\\s*back\\s*up'],
+     ['bridal room','bridal\\s*room|bride\\s*room'],['valet','valet'],['parking','parking'],['lift','\\blift\\b|elevator'],
+     ['pool','\\bpool\\b|swimming\\s*pool'],['outdoor','outdoor|open\\s*area|open\\s*lawn'],['indoor','indoor|banquet\\s*hall|ballroom'],
+     ['catering','catering|in[- ]house\\s*catering'],['kitchen','\\bkitchen\\b'],['alcohol','alcohol|liquor|bar|beverage'],
+     ['wifi','wi[- ]?fi|internet'],['projector','projector|screen'],['soundproof','soundproof|sound\\s*proof']
+   ];
+   for(const [label,re] of groups){const rx=new RegExp(re,'i');if(rx.test(t)){const negative=new RegExp('(?:no|without|not|dont|don\\'t|avoid|nahi|nahin|nhi)\\s+(?:[a-z0-9 ]{0,18})?'+re,'i').test(t);if(!negative)out.push(label);}}
+   return [...new Set(out)];
+ }
+ function smvRequirementEvidence(label,blob){
+   const aliases={ac:['air conditioning','air conditioned','air-conditioning','ac'],dj:['dj','disc jockey','music system','sound system'],decoration:['decoration','decor'],stage:['stage','mandap'],generator:['generator','power backup','power back up'],
+   'bridal room':['bridal room','bride room'],valet:['valet'],parking:['parking'],lift:['lift','elevator'],pool:['pool','swimming pool'],outdoor:['outdoor','open area','lawn'],indoor:['indoor','banquet hall','ballroom'],
+   catering:['catering','in-house catering','in house catering'],kitchen:['kitchen'],alcohol:['alcohol','liquor','bar'],wifi:['wi-fi','wifi','internet'],projector:['projector','screen'],soundproof:['soundproof','sound proof']};
+   return (aliases[label]||[label]).some(x=>blob.includes(x));
+ }
  function smvLocationMatch(location, venueLocation){
    const normalize=v=>smvText(v).replace(/gurugram/g,'gurgaon').replace(/\bkapas[ -]*hera\b/g,'kapashera').replace(/\bsec(?:tor)?[ .-]*/g,'sector ').replace(/\s+/g,' ').trim();
    const actual=normalize(venueLocation),actualTokens=new Set(actual.split(/[^a-z0-9]+/));
@@ -401,7 +420,7 @@ window.startEmployeeIntegration=async function(client){
    });
  }
  function smartMatch(v,l){
-const spec=smvLeadSpec(l),blob=smvText([v.area,v.city,v.address,v.venue_type,v.food_options,v.facilities,v.description].filter(Boolean).join(" ")),foodSupport=smvVenueFoodSupport(v,blob);
+const spec=smvLeadSpec(l),blob=smvText([v.area,v.city,v.address,v.venue_type,v.food_options,v.facilities,v.description].filter(Boolean).join(" ")),foodSupport=smvVenueFoodSupport(v,blob),freeTextReqs=smvFreeTextRequirements(l);
 let score=0,max=0,reasons=[],warnings=[],hardFail=false,knownWeight=0,relevantWeight=0,criteria=0;
 const test=(pts,required,knownData,ok,label,hard=false)=>{if(!required)return;criteria++;relevantWeight+=pts;if(!knownData){warnings.push(label+" unknown");return;}knownWeight+=pts;max+=pts;if(ok){score+=pts;reasons.push(label);}else{warnings.push(label+" mismatch");if(hard)hardFail=true;}};
 const locWords=smvLocationTokens(spec.location),leadRegion=smvRegion(spec.location),venueLocation=smvText([v.venue_name,v.city,v.area,v.address].filter(Boolean).join(" ")),venueRegion=smvRegion(venueLocation),venueLocationTokens=new Set(smvLocationTokens(venueLocation)),specificArea=!!clean(l?.preferred_area)||locWords.length>0,areaMatch=specificArea&&locWords.some(w=>venueLocationTokens.has(w)),venueNameMatch=!!clean(l?.preferred_area)&&smvText(v.venue_name).includes(smvText(l.preferred_area)),sameRegion=leadRegion&&venueRegion&&(leadRegion===venueRegion||leadRegion==="delhi ncr"),locationMatch=smvLocationMatch(spec.location,venueLocation),crossRegion=!!leadRegion&&!!venueRegion&&leadRegion!=="delhi ncr"&&leadRegion!==venueRegion;
@@ -426,6 +445,11 @@ test(4,!!spec.lawn,v.outdoor_available!==null&&v.outdoor_available!==undefined||
 test(4,!!spec.indoor,v.indoor_available!==null&&v.indoor_available!==undefined||/(indoor|banquet|hall|ballroom)/.test(blob),v.indoor_available===true||/(indoor|banquet|hall|ballroom)/.test(blob),"Indoor",!!spec.indoor&&v.indoor_available===false);
 const supported=(Array.isArray(v.event_types)?v.event_types:clean(v.event_types).split(/[,;|]/)).map(smvEventFamily).filter(Boolean),event=smvEventFamily(spec.occasion);
 if(event&&event!=='other'){const known=supported.length>0,eventOk=supported.includes(event)||supported.includes('all')||supported.includes('all occasions');test(8,true,known,eventOk,"Event type",known&&!eventOk);}
+freeTextReqs.forEach(label=>{
+  const weight=3;criteria++;relevantWeight+=weight;
+  if(smvRequirementEvidence(label,blob)){knownWeight+=weight;max+=weight;score+=weight;reasons.push(label.replace(/\b\w/g,m=>m.toUpperCase()));}
+  else warnings.push(label.replace(/\b\w/g,m=>m.toUpperCase())+" unknown");
+});
 const dataConfidence=relevantWeight?Math.round(knownWeight/relevantWeight*100):0,rawScore=max?Math.round(score/max*100):0;
 let scorePct=hardFail?0:Math.round(rawScore*(dataConfidence/100));
 if(!hardFail&&specificArea&&!areaMatch&&distanceKm===null&&sameRegion)scorePct=Math.min(scorePct,72);
