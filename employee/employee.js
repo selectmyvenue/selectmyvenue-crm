@@ -1,6 +1,10 @@
 'use strict';
 (async()=>{
  const {client,el,esc,date,day,toast}=SMV;
+ const originalFetch=window.fetch.bind(window);
+ const employeeFetch=async(input,init={})=>{const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),25000);try{return await originalFetch(input,{...init,signal:controller.signal});}finally{clearTimeout(timer);}};
+ // Keep employee requests from hanging indefinitely on a stale/network connection.
+ try{client.rest.headers['X-Client-Info']='smv-employee-crm';}catch(_){}
  const statuses=['new','contacted','follow-up','detail-shared','interested','qualified','site-visit','not-pick','booked','converted','closed','lost','not-interested'];
  const outcomes=['Not Connected','Connected','Not Picked','Busy','Switched Off','Wrong Number','Call Back'];
  const label=s=>s.split('-').map(w=>w[0]?.toUpperCase()+w.slice(1)).join(' ');
@@ -63,7 +67,7 @@
 <td><button class="text-button" data-lead="${r.id}">${r.internal_notes?'View / add':'+ Add'}</button></td>
 </tr>`).join(''):'<tr><td colspan="11" class="empty">No leads match these filters.</td></tr>';
    el('pageInfo').textContent=total?`Showing ${page*20+1}–${Math.min(page*20+20,total)} of ${total}`:'No results';el('previous').disabled=page===0;el('next').disabled=(page+1)*20>=total;
-  }catch(e){toast(e.message||'Unable to load leads');el('leadsBody').innerHTML='<tr><td colspan="11" class="empty">Unable to load leads. Please refresh.</td></tr>';}
+  }catch(e){console.error('[Employee CRM] enquiry load failed',e);toast(e.message||'Unable to load leads');el('resultCount').textContent='Unable to load enquiries';el('leadsBody').innerHTML='<tr><td colspan="11" class="empty">Unable to load leads. Please refresh.</td></tr>';}
   finally{if(seq===sequence)el('refresh').disabled=false;}
  }
  async function stats(){
