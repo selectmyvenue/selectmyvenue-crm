@@ -1,8 +1,9 @@
 (function(){
+  'use strict';
   const MQ='(max-width:760px)';
   const root=document.documentElement;
   const byId=id=>document.getElementById(id);
-  const isPhone=()=>matchMedia(MQ).matches;
+  const isPhone=()=>window.matchMedia(MQ).matches;
 
   function ensureNav(){
     let nav=byId('empMobileNav');
@@ -10,6 +11,7 @@
       nav=document.createElement('nav');
       nav.id='empMobileNav';
       nav.className='emp-mobile-nav';
+      nav.setAttribute('aria-label','Employee CRM navigation');
       nav.innerHTML=
         '<button type="button" data-emp-nav="leads" class="active"><span>☷</span><b>Enquiries</b></button>'+
         '<button type="button" data-emp-nav="filters"><span>⌕</span><b>Filters</b></button>'+
@@ -30,18 +32,28 @@
     }
   }
 
+  function addQuickActions(row){
+    if(!isPhone()||!row||row.children.length<14)return;
+    const first=row.children[0], mobileCell=row.children[1];
+    if(!first||first.querySelector('.emp-lead-actions'))return;
+    const mobile=(mobileCell?.textContent||'').replace(/[^+0-9]/g,'');
+    if(!mobile)return;
+    const actions=document.createElement('span');
+    actions.className='emp-lead-actions';
+    actions.innerHTML='<a class="call" href="tel:'+mobile+'" aria-label="Call customer">☎</a>'+
+      '<a class="whatsapp" href="https://wa.me/'+mobile.replace(/^\+/,'')+'" target="_blank" rel="noopener" aria-label="WhatsApp customer">WA</a>';
+    first.appendChild(actions);
+  }
+
   function labels(){
     const table=document.querySelector('#workspace table');
     const body=byId('leadsBody');
     if(!table||!body)return;
-
-    /* Mobile affordances must never leak into desktop CRM. */
     if(!isPhone()){
-      body.querySelectorAll('.emp-mobile-toggle').forEach(button=>button.remove());
+      body.querySelectorAll('.emp-mobile-toggle,.emp-lead-actions').forEach(x=>x.remove());
       body.querySelectorAll('.emp-mobile-open').forEach(row=>row.classList.remove('emp-mobile-open'));
       return;
     }
-
     const heads=[...table.querySelectorAll('thead th')].map(x=>(x.textContent||'').trim());
     [...body.querySelectorAll(':scope>tr')].forEach(row=>{
       const cells=[...row.children];
@@ -50,12 +62,10 @@
       const first=cells[0];
       if(first&&!first.querySelector('.emp-mobile-toggle')){
         const b=document.createElement('button');
-        b.type='button';
-        b.className='emp-mobile-toggle';
-        b.textContent='More';
-        b.setAttribute('aria-expanded','false');
-        first.appendChild(b);
+        b.type='button';b.className='emp-mobile-toggle';b.textContent='More';
+        b.setAttribute('aria-expanded','false');first.appendChild(b);
       }
+      addQuickActions(row);
     });
   }
 
@@ -68,10 +78,10 @@
     button.setAttribute('aria-expanded',String(open));
   }
 
-  function closeMore(){
-    const m=byId('empMobileMore');
-    if(m)m.hidden=true;
+  function setActive(key){
+    document.querySelectorAll('[data-emp-nav]').forEach(x=>x.classList.toggle('active',x.dataset.empNav===key));
   }
+  function closeMore(){const m=byId('empMobileMore');if(m)m.hidden=true;}
 
   function bind(){
     if(root.dataset.empPhoneBound==='1')return;
@@ -81,11 +91,18 @@
       if(toggle){e.preventDefault();e.stopPropagation();toggleRow(toggle);return;}
       const n=e.target.closest('[data-emp-nav]');
       if(n){
-        const a=n.dataset.empNav;
-        if(a==='leads'){document.body.classList.remove('emp-phone-filters-open');closeMore();scrollTo({top:0,behavior:'smooth'});}
-        if(a==='filters'){document.body.classList.toggle('emp-phone-filters-open');closeMore();setTimeout(()=>byId('filters')?.scrollIntoView({behavior:'smooth',block:'start'}),30);}
-        if(a==='refresh'){byId('refresh')?.click();closeMore();}
-        if(a==='more'){const m=byId('empMobileMore');if(m)m.hidden=!m.hidden;}
+        const a=n.dataset.empNav;setActive(a);
+        if(a==='leads'){
+          document.body.classList.remove('emp-phone-filters-open');closeMore();
+          window.scrollTo({top:0,behavior:'smooth'});
+        }else if(a==='filters'){
+          document.body.classList.toggle('emp-phone-filters-open');closeMore();
+          setTimeout(()=>byId('filters')?.scrollIntoView({behavior:'smooth',block:'start'}),30);
+        }else if(a==='refresh'){
+          byId('refresh')?.click();closeMore();
+        }else if(a==='more'){
+          const m=byId('empMobileMore');if(m)m.hidden=!m.hidden;
+        }
         return;
       }
       const m=e.target.closest('[data-emp-more]');
@@ -107,20 +124,15 @@
 
   function install(){
     root.classList.toggle('emp-phone-crm',isPhone());
-    ensureNav();
-    labels();
-    bind();
-    observe();
+    ensureNav();labels();bind();observe();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
-  const mq=matchMedia(MQ);
+
+  const mq=window.matchMedia(MQ);
   const sync=()=>{
     root.classList.toggle('emp-phone-crm',mq.matches);
     labels();
-    if(!mq.matches){
-      closeMore();
-      document.body.classList.remove('emp-phone-filters-open');
-    }
+    if(!mq.matches){closeMore();document.body.classList.remove('emp-phone-filters-open');}
   };
   if(mq.addEventListener)mq.addEventListener('change',sync);else mq.addListener(sync);
 })();
