@@ -91,15 +91,21 @@
   el('history').innerHTML=historyError?'Unable to load activity.':history?.length?history.map(h=>`<div class="history-item"><small>${date(h.created_at,true)}</small>${esc(h.description)}${h.new_value?`<details><summary>Changed fields</summary><pre>${esc(h.new_value)}</pre></details>`:''}</div>`).join(''):'No activity recorded by you yet.';
  }
  async function saveEmployeeInline(id,field,value){
-  const row=rows.find(r=>String(r.id)===String(id)); if(!row)return;
+  let row=rows.find(r=>String(r.id)===String(id));
+  if(!row)return false;
   let parsed=value;
   if(field==='guests') parsed=value===''?null:Number(value);
   if(field==='event_date') parsed=value||null;
   const previous=row[field]??null;
-  if(String(previous??'')===String(parsed??''))return;
-  const {error}=await client.rpc('smv_employee_save_lead',{p_id:row.id,p_expected_updated_at:row.updated_at,p_patch:{[field]:parsed},p_comment:'',p_log_call:false});
-  if(error){toast(error.message||'Unable to save change');return;}
+  if(String(previous??'')===String(parsed??''))return true;
+  const {data:fresh,error:freshError}=await client.from('customer_enquiries').select('*').eq('id',row.id).single();
+  if(freshError||!fresh){toast(freshError?.message||'Unable to load latest lead');return false;}
+  row=fresh;
+  const {data:saved,error}=await client.rpc('smv_employee_save_lead',{p_id:row.id,p_expected_updated_at:row.updated_at,p_patch:{[field]:parsed},p_comment:'',p_log_call:false});
+  if(error){toast(error.message||'Unable to save change');return false;}
+  if(saved){const idx=rows.findIndex(r=>String(r.id)===String(id));if(idx>=0)rows[idx]=saved;}
   toast(label(field.replace(/_/g,' '))+' updated'); await Promise.all([load(),stats()]);
+  return true;
  }
  function startEmployeeInlineEdit(button){
   const id=button.dataset.lead,field=button.dataset.field,row=rows.find(r=>String(r.id)===String(id)); if(!row)return;
@@ -115,10 +121,10 @@
   }
   display.replaceWith(input); input.focus(); input.select?.();
   let done=false; const finish=async(save)=>{if(done)return;done=true;const v=input.value;
-    if(save) { await saveEmployeeInline(id,field,v); }
-    else { input.replaceWith(display);button.classList.remove('editing'); }
+    if(save){const ok=await saveEmployeeInline(id,field,v);if(!ok){input.replaceWith(display);button.classList.remove('editing');}}
+    else{input.replaceWith(display);button.classList.remove('editing');}
   };
-  if(input.tagName==='SELECT') input.addEventListener('change',()=>finish(true));
+    if(input.tagName==='SELECT') input.addEventListener('change',()=>finish(true));
   input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();finish(true)}else if(e.key==='Escape'){e.preventDefault();finish(false)}});
   input.addEventListener('blur',()=>finish(true));
  }
