@@ -1,16 +1,26 @@
 'use strict';
 (async()=>{
  const {client,el,esc,date,day,toast}=SMV;
- const statuses=['new','contacted','follow-up','detail-shared','interested','qualified','site-visit','negotiation','booked','converted','closed','lost','not-interested'];
+ const statuses=['new','contacted','follow-up','detail-shared','interested','qualified','site-visit','not-pick','booked','converted','closed','lost','not-interested'];
  const outcomes=['Not Connected','Connected','Not Picked','Busy','Switched Off','Wrong Number','Call Back'];
  const label=s=>s.split('-').map(w=>w[0]?.toUpperCase()+w.slice(1)).join(' ');
  const locations=['Delhi NCR','Delhi','Gurugram','Gurgaon','Noida','Greater Noida','Faridabad','Ghaziabad','Dwarka','Chhatarpur','GT Karnal Road','Kapashera','Peeragarhi','Alipur','Other'];
  const events=['Wedding','Engagement','Reception','Birthday','Corporate Event','Party','Anniversary','Other'];
- const fields=[['customer_name','Customer name','text'],['mobile','Mobile','tel'],['preferred_area','Preferred area / locality','text'],['location','Location',locations],['occasion','Event type',events],['event_date','Event date','date'],['guests','Guests','number'],['budget_per_person','Budget per person (₹)','number'],['food_preference','Food preference','text'],['call_outcome','Call status',outcomes],['status','Lead status',statuses],['priority','Priority',['low','normal','high','urgent']],['follow_up_at','Follow-up (India time)','datetime-local'],['site_visit_at','Visit date (India time)','datetime-local'],['lost_reason','Lost reason','text'],['lost_reason_other','Other lost reason','text'],['requirements','Customer requirements','textarea']];
+ const venueTypes=['Banquet Hall','Hotel','Farmhouse','Restaurant','Resort','Party Hall','Lawn','Other'];
+ const sourceOptions=['Website','Google','Meta','Instagram','Facebook','WhatsApp','Sulekha','Justdial','Referral','Other'];
+ const cityOptions=['','Delhi','Delhi NCR','Gurgaon','Noida','Greater Noida','Faridabad','Ghaziabad'];
+ const fields=[
+  ['customer_name','Customer name','text'],['mobile','Mobile','tel'],['email','Email','email'],['source','Lead source',sourceOptions],
+  ['preferred_city','City / region',cityOptions],['preferred_area','Venue / area','text'],['location','Location',locations],['occasion','Event type',events],['venue_type_preference','Venue type',venueTypes],
+  ['event_date','Event date','date'],['guests','Guests','number'],['budget_per_person','Budget per person (₹)','number'],['rooms_required','Rooms required','number'],['food_preference','Food preference','text'],
+  ['parking_required','Parking required','boolean'],['outdoor_preferred','Outdoor preferred','boolean'],['indoor_preferred','Indoor preferred','boolean'],
+  ['call_outcome','Call status',outcomes],['status','Lead status',statuses],['priority','Priority',['low','normal','high','urgent']],['follow_up_at','Follow-up (India time)','datetime-local'],['site_visit_at','Visit date (India time)','datetime-local'],
+  ['lost_reason','Lost reason','text'],['lost_reason_other','Other lost reason','text'],['requirements','Customer requirements','textarea'],['internal_notes','Comment','textarea']
+ ];
  let rows=[],page=0,total=0,selected=null,profile=null,channel=null,sequence=0,timer,reconnectTimer=null;
  const indiaLocal=s=>{if(!s)return '';const d=new Date(new Date(s).getTime()+330*60000);return d.toISOString().slice(0,16);};
  statuses.forEach(s=>el('filterStatus').add(new Option(label(s),s)));
- el('leadFields').innerHTML=fields.map(([key,title,type])=>`<label class="${type==='textarea'?'wide':''}">${esc(title)}${Array.isArray(type)?`<select id="field_${key}">${type.map(v=>`<option value="${esc(v)}">${esc(label(v))}</option>`).join('')}</select>`:type==='textarea'?`<textarea id="field_${key}" maxlength="10000" rows="3"></textarea>`:`<input id="field_${key}" type="${type}" ${type==='number'?'min="0" step="1"':''} ${key==='customer_name'?'required minlength="2" maxlength="120"':''}>`}</label>`).join('');
+ el('leadFields').innerHTML=fields.map(([key,title,type])=>`<label class="${type==='textarea'||type==='boolean'?'wide':''}">${esc(title)}${Array.isArray(type)?`<select id="field_${key}">${type.map(v=>`<option value="${esc(String(v))}">${esc(label(String(v)))}</option>`).join('')}</select>`:type==='textarea'?`<textarea id="field_${key}" maxlength="10000" rows="3"></textarea>`:type==='boolean'?`<select id="field_${key}"><option value="false">No</option><option value="true">Yes</option></select>`:`<input id="field_${key}" type="${type}" ${type==='number'?'min="0" step="1"':''} ${key==='customer_name'?'required minlength="2" maxlength="120"':''}>`}</label>`).join('');
  function query(count=false){
   let q=client.from('customer_enquiries').select('*',count?{count:'exact',head:true}:{count:'exact'});
   if(el('filterStatus').value)q=q.eq('status',el('filterStatus').value);
@@ -30,7 +40,7 @@
    if(page>0 && page*20>=total){page=Math.max(0,Math.ceil(total/20)-1);return load();}
    el('resultCount').textContent=`${total.toLocaleString('en-IN')} matching leads`;
    const options=(list,value,labels=true)=>{const vals=[...list];if(value&&!vals.includes(value))vals.unshift(value);return vals.map(v=>`<option value="${esc(v)}" ${String(v)===String(value)?'selected':''}>${esc(labels?label(v):v)}</option>`).join('');};
-   el('leadsBody').innerHTML=rows.length?rows.map(r=>`<tr><td><button class="lead-name" data-lead="${r.id}">${esc(r.customer_name)}</button></td><td><a href="tel:${esc(String(r.mobile||'').replace(/[^+0-9]/g,''))}">${esc(r.mobile||'—')}</a></td><td><select class="quick-edit" data-id="${r.id}" data-field="location">${options(locations,r.location,false)}</select></td><td><select class="quick-edit" data-id="${r.id}" data-field="occasion">${options(events,r.occasion,false)}</select></td><td>${date(r.event_date)}</td><td>${esc(r.guests??'—')}</td><td><select class="quick-edit" data-id="${r.id}" data-field="call_outcome">${options(outcomes,String(r.lost_reason_other||'').startsWith('__SMV_STATUS_NOT_PICK__')?'Not Picked':r.call_outcome,false)}</select></td><td><select class="quick-edit status-quick" data-id="${r.id}" data-field="status">${options(statuses,r.status)}</select></td><td><button class="text-button" data-lead="${r.id}">${r.contact_remark?'View / add':'+ Add'}</button></td><td>${esc(r.source)}</td><td>${date(r.site_visit_at)}</td><td>${date(r.follow_up_at,true)}</td><td>${date(r.created_at,true)}</td><td><button class="text-button" data-lead="${r.id}">View / edit</button></td></tr>`).join(''):'<tr><td colspan="14" class="empty">No leads match these filters.</td></tr>';
+   el('leadsBody').innerHTML=rows.length?rows.map(r=>`<tr><td><button class="lead-name" data-lead="${r.id}">${esc(r.customer_name)}</button></td><td><a href="tel:${esc(String(r.mobile||'').replace(/[^+0-9]/g,''))}">${esc(r.mobile||'—')}</a></td><td><select class="quick-edit" data-id="${r.id}" data-field="location">${options(locations,r.location,false)}</select></td><td><select class="quick-edit" data-id="${r.id}" data-field="occasion">${options(events,r.occasion,false)}</select></td><td>${date(r.event_date)}</td><td>${esc(r.guests??'—')}</td><td><select class="quick-edit" data-id="${r.id}" data-field="call_outcome">${options(outcomes,String(r.lost_reason_other||'').startsWith('__SMV_STATUS_NOT_PICK__')?'Not Picked':r.call_outcome,false)}</select></td><td><select class="quick-edit status-quick" data-id="${r.id}" data-field="status">${options(statuses,r.status)}</select></td><td><button class="text-button" data-lead="${r.id}">${r.internal_notes?'View / add':'+ Add'}</button></td><td>${esc(r.source)}</td><td>${date(r.site_visit_at)}</td><td>${date(r.follow_up_at,true)}</td><td>${date(r.created_at,true)}</td><td><button class="text-button" data-lead="${r.id}">View / edit</button></td></tr>`).join(''):'<tr><td colspan="14" class="empty">No leads match these filters.</td></tr>';
    el('pageInfo').textContent=total?`Showing ${page*20+1}–${Math.min(page*20+20,total)} of ${total}`:'No results';el('previous').disabled=page===0;el('next').disabled=(page+1)*20>=total;
   }catch(e){toast(e.message||'Unable to load leads');el('leadsBody').innerHTML='<tr><td colspan="14" class="empty">Unable to load leads. Please refresh.</td></tr>';}
   finally{if(seq===sequence)el('refresh').disabled=false;}
@@ -44,12 +54,13 @@
  }
  async function openLead(id){
   const {data,error}=await client.from('customer_enquiries').select('*').eq('id',id).single();if(error){toast(error.message);return;}
-  selected=data;el('latestComment').textContent=data.contact_remark?'Latest call comment: '+data.contact_remark:'';el('leadTitle').textContent=data.customer_name;el('saveMessage').textContent='';el('conflictNotice').hidden=true;el('saveLead').disabled=false;el('newComment').value='';el('logCall').checked=false;
+  selected=data;el('latestComment').textContent=data.internal_notes?'Latest comment: '+data.internal_notes:'';el('leadTitle').textContent=data.customer_name;el('saveMessage').textContent='';el('conflictNotice').hidden=true;el('saveLead').disabled=false;el('newComment').value='';el('logCall').checked=false;
   for(const [key,,type] of fields){
-   const control=el('field_'+key);const value=type==='datetime-local'?indiaLocal(data[key]):data[key]??'';
-   // Preserve existing free-text location/event values while offering a clean dropdown for future updates.
+   const control=el('field_'+key);let value=type==='datetime-local'?indiaLocal(data[key]):data[key]??'';
+   if(type==='boolean') value=String(Boolean(data[key]));
+   // Preserve existing values even when a lead contains a legacy option.
    if(Array.isArray(type)&&value&&!Array.from(control.options).some(o=>o.value===String(value)))control.add(new Option(String(value),String(value),true,true));
-   control.value=value;
+   control.value=String(value);
   }
   el('history').textContent='Loading…';el('leadDialog').showModal();
   const {data:history,error:historyError}=await client.from('crm_activity_log').select('description,created_at,old_value,new_value').eq('lead_id',id).order('created_at',{ascending:false}).limit(30);
@@ -63,7 +74,7 @@
   const field=control.dataset.field,value=control.value,previous=row[field]??'';
   if(String(previous)===String(value))return;
   control.disabled=true;
-  const patch={[field]:value};
+  const patch={[field]:(field==='parking_required'||field==='outdoor_preferred'||field==='indoor_preferred')?value==='true':value};
   if(field==='status'&&String(row.lost_reason_other||'').startsWith('__SMV_STATUS_NOT_PICK__'))patch.lost_reason_other=null;
   const {error}=await client.rpc('smv_employee_save_lead',{p_id:row.id,p_expected_updated_at:row.updated_at,p_patch:patch,p_comment:'',p_log_call:false});
   if(error){control.value=previous;control.disabled=false;toast(error.message||'Unable to save change');return;}
@@ -72,8 +83,11 @@
  el('leadForm').onsubmit=async e=>{
   e.preventDefault();if(!selected)return;el('saveLead').disabled=true;el('saveMessage').textContent='Saving…';
   const patch={};
-  for(const [key,,type] of fields){const value=el('field_'+key).value;const parsed=type==='number'?(value===''?null:Number(value)):type==='datetime-local'?(value?new Date(value+':00+05:30').toISOString():null):(value||(['location','occasion'].includes(key)?'':null));const original=selected[key]??null;
-   if(type==='datetime-local'?indiaLocal(original)!==value: String(original??'')!==String(parsed??''))patch[key]=parsed;
+  for(const [key,,type] of fields){
+   const value=el('field_'+key).value;
+   const parsed=type==='number'?(value===''?null:Number(value)):type==='datetime-local'?(value?new Date(value+':00+05:30').toISOString():null):type==='boolean'?(value==='true'):(value||(['location','occasion','source'].includes(key)?'':null));
+   const original=selected[key]??null;
+   if(type==='datetime-local'?indiaLocal(original)!==value:type==='boolean'?Boolean(original)!==parsed:String(original??'')!==String(parsed??''))patch[key]=parsed;
   }
   // Clear the legacy Not Pick marker when an explicit status is selected.
   if(patch.status && String(selected.lost_reason_other||'').startsWith('__SMV_STATUS_NOT_PICK__'))patch.lost_reason_other=null;
