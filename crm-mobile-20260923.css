@@ -1548,3 +1548,107 @@
     display:flex!important;
   }
 }
+
+
+/* =========================================================
+   SELECT MY VENUE CRM — MOBILE APP SHELL V4
+   Phone only. Desktop layout/functionality remains untouched.
+   ========================================================= */
+@media (max-width:760px){
+  html.smv-phone-crm body{
+    padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))!important;
+    background:#f3f6f5!important;
+  }
+
+  /* Always expose the app navigation on phone */
+  html.smv-phone-crm body .smv-mobile-nav{
+    display:grid!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+    position:fixed!important;
+    left:10px!important;
+    right:10px!important;
+    bottom:calc(10px + env(safe-area-inset-bottom,0px))!important;
+    z-index:99999!important;
+    height:64px!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    padding:5px!important;
+    gap:4px!important;
+    border:1px solid #d9e3df!important;
+    border-radius:18px!important;
+    background:rgba(255,255,255,.98)!important;
+    box-shadow:0 12px 34px rgba(16,24,40,.18)!important;
+    backdrop-filter:blur(16px)!important;
+  }
+
+  html.smv-phone-crm body .smv-mobile-nav button{
+    min-height:52px!important;
+    height:52px!important;
+    border-radius:13px!important;
+    color:#667085!important;
+    -webkit-tap-highlight-color:transparent!important;
+  }
+  html.smv-phone-crm body .smv-mobile-nav button span{
+    font-size:18px!important;
+    line-height:20px!important;
+  }
+  html.smv-phone-crm body .smv-mobile-nav button b{
+    font-size:9.5px!important;
+    line-height:12px!important;
+    font-weight:850!important;
+  }
+  html.smv-phone-crm body .smv-mobile-nav button.active{
+    background:#e6f5f0!important;
+    color:#08725d!important;
+  }
+  html.smv-phone-crm body .smv-mobile-nav .smv-mobile-primary{
+    background:#08725d!important;
+    color:#fff!important;
+    box-shadow:0 5px 14px rgba(8,114,93,.24)!important;
+  }
+
+  /* Keep Venue Management immediately reachable */
+  html.smv-phone-crm body #venueManagementSection:not([hidden]){
+    display:flex!important;
+    min-height:calc(100dvh - 10px)!important;
+    padding-bottom:90px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection[hidden]{
+    display:none!important;
+  }
+
+  /* App-like touch targets */
+  html.smv-phone-crm body button,
+  html.smv-phone-crm body select,
+  html.smv-phone-crm body input{
+    -webkit-tap-highlight-color:transparent!important;
+  }
+
+  /* Phone lead list should feel like native cards */
+  html.smv-phone-crm body .smv-mobile-lead-card{
+    transition:background .15s ease!important;
+  }
+  html.smv-phone-crm body .smv-mobile-lead-summary{
+    min-height:82px!important;
+    padding:14px!important;
+  }
+  html.smv-phone-crm body .smv-mobile-lead-summary:active{
+    background:#f8faf9!important;
+  }
+
+  /* Full-screen phone dialogs */
+  html.smv-phone-crm body #leadModal.modal-overlay:not([hidden]),
+  html.smv-phone-crm body #venueAssignmentModal.venue-assignment-modal:not([hidden]){
+    overscroll-behavior:contain!important;
+    touch-action:pan-y!important;
+  }
+
+  /* Venue cards: no horizontal desktop-table squeeze */
+  html.smv-phone-crm body .venue-table-wrapper{
+    overflow:visible!important;
+  }
+  html.smv-phone-crm body .venue-table{
+    table-layout:fixed!important;
+  }
+}
