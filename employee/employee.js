@@ -106,8 +106,9 @@
   input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();finish(true)}else if(e.key==='Escape'){e.preventDefault();finish(false)}}); input.addEventListener('blur',()=>finish(true));
  }
  el('leadsBody').onclick=e=>{const inline=e.target.closest('[data-inline-edit]');if(inline&&inline.tagName!=='SELECT'){startEmployeeInlineEdit(inline);return;}const b=e.target.closest('[data-lead]');if(b)openLead(b.dataset.lead);};
- el('leadsBody').onchange=async e=>{const inline=e.target.closest('[data-inline-edit].emp-inline-select');if(!inline)return;await saveEmployeeInline(inline.dataset.id,inline.dataset.field,inline.value);};
  el('leadsBody').onchange=async e=>{
+  const inline=e.target.closest('[data-inline-edit].emp-inline-select');
+  if(inline){await saveEmployeeInline(inline.dataset.id,inline.dataset.field,inline.value);return;}
   const control=e.target.closest('.quick-edit');if(!control)return;
   const row=rows.find(r=>String(r.id)===String(control.dataset.id));if(!row){toast('Lead changed. Refresh and try again.');return;}
   const field=control.dataset.field,value=control.value,previous=row[field]??'';
