@@ -4,13 +4,12 @@
  const statuses=['new','contacted','follow-up','detail-shared','interested','qualified','site-visit','not-pick','booked','converted','closed','lost','not-interested'];
  const outcomes=['Not Connected','Connected','Not Picked','Busy','Switched Off','Wrong Number','Call Back'];
  const label=s=>s.split('-').map(w=>w[0]?.toUpperCase()+w.slice(1)).join(' ');
- const locations=['Delhi NCR','Delhi','Gurugram','Gurgaon','Noida','Greater Noida','Faridabad','Ghaziabad','Dwarka','Chhatarpur','GT Karnal Road','Kapashera','Peeragarhi','Alipur','Other'];
- const events=['Wedding','Engagement','Reception','Birthday','Corporate Event','Party','Anniversary','Other'];
- const venueTypes=['Banquet Hall','Hotel','Farmhouse','Restaurant','Resort','Party Hall','Lawn','Other'];
- const sourceOptions=['Website','Google','Meta','Instagram','Facebook','WhatsApp','Sulekha','Justdial','Referral','Other'];
+ const locations=['','Delhi','Delhi NCR','Gurgaon','Noida','Greater Noida','Faridabad','Ghaziabad'];
+ const events=['','Wedding','Engagement','Birthday','Corporate','Anniversary','Party','Other'];
+ const venueTypes=['','Banquet Hall','Farmhouse','Hotel','Resort','Lawn','Party Hall','Restaurant'];
  const cityOptions=['','Delhi','Delhi NCR','Gurgaon','Noida','Greater Noida','Faridabad','Ghaziabad'];
  const fields=[
-  ['customer_name','Customer name','text'],['mobile','Mobile','tel'],['email','Email','email'],['source','Lead source',sourceOptions],
+  ['customer_name','Customer name','text'],['mobile','Mobile','tel'],['email','Email','email'],['source','Lead source','text'],
   ['preferred_city','City / region',cityOptions],['preferred_area','Venue / area','text'],['location','Location',locations],['occasion','Event type',events],['venue_type_preference','Venue type',venueTypes],
   ['event_date','Event date','date'],['guests','Guests','number'],['budget_per_person','Budget per person (₹)','number'],['rooms_required','Rooms required','number'],['food_preference','Food preference','text'],
   ['parking_required','Parking required','boolean'],['outdoor_preferred','Outdoor preferred','boolean'],['indoor_preferred','Indoor preferred','boolean'],
