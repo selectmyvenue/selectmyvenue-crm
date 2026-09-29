@@ -419,3 +419,157 @@
   }
   .emp-mobile-more button.danger{color:#b42318!important}
 }
+
+
+/* =========================================================
+   SELECT MY VENUE — EMPLOYEE CRM MOBILE APP SHELL V2
+   Premium app-like workspace. Mobile only; desktop untouched.
+   ========================================================= */
+@media(max-width:760px){
+  html.emp-phone-crm body{
+    background:linear-gradient(180deg,#f3f8f6 0%,#f7faf9 52%,#eef5f2 100%)!important;
+    padding-bottom:88px!important;
+  }
+  html.emp-phone-crm body.employee-page>header{
+    min-height:54px!important;
+    padding:7px 10px!important;
+    background:linear-gradient(135deg,#031b18,#075b4b)!important;
+    border-bottom:1px solid rgba(255,255,255,.14)!important;
+    box-shadow:0 8px 24px rgba(3,27,24,.18)!important;
+  }
+  html.emp-phone-crm .employee-page .brand img{
+    width:158px!important;height:auto!important;flex-basis:158px!important;
+  }
+  html.emp-phone-crm .employee-page .actions .sync{
+    font-size:8.5px!important;
+    color:#c7eee3!important;
+  }
+  html.emp-phone-crm #workspace .stats{
+    margin:0 -2px 9px!important;
+    padding:1px 2px 3px!important;
+  }
+  html.emp-phone-crm #workspace .stats>div{
+    flex-basis:122px!important;
+    min-height:64px!important;
+    padding:9px 10px!important;
+    border-radius:14px!important;
+    box-shadow:0 7px 18px rgba(10,72,59,.06)!important;
+  }
+  html.emp-phone-crm #workspace .stats strong{font-size:22px!important}
+  html.emp-phone-crm #workspace .section-head{
+    position:sticky!important;
+    top:54px!important;
+    z-index:20!important;
+    padding:10px 11px!important;
+    border-radius:14px!important;
+    box-shadow:0 5px 15px rgba(10,72,59,.05)!important;
+  }
+  html.emp-phone-crm #workspace .section-head h1{font-size:20px!important}
+  html.emp-phone-crm #workspace .section-head #resultCount{font-size:9.5px!important}
+  html.emp-phone-crm #workspace tbody tr{
+    grid-template-columns:1fr 1fr!important;
+    border-radius:15px!important;
+    padding:9px 10px!important;
+    box-shadow:0 7px 18px rgba(10,72,59,.055)!important;
+  }
+  html.emp-phone-crm #workspace tbody tr>td:nth-child(3),
+  html.emp-phone-crm #workspace tbody tr>td:nth-child(7),
+  html.emp-phone-crm #workspace tbody tr>td:nth-child(11),
+  html.emp-phone-crm #workspace tbody tr>td:nth-child(12){
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    justify-content:center!important;
+  }
+  html.emp-phone-crm #workspace tbody tr>td:nth-child(3),
+  html.emp-phone-crm #workspace tbody tr>td:nth-child(7){
+    display:flex!important;
+  }
+  html.emp-phone-crm #workspace tbody tr>td:nth-child(11),
+  html.emp-phone-crm #workspace tbody tr>td:nth-child(12){
+    display:flex!important;
+  }
+  html.emp-phone-crm #workspace tbody tr>td:nth-child(1){
+    min-height:42px!important;
+  }
+  html.emp-phone-crm #workspace tbody tr>td:nth-child(1) .emp-lead-actions{
+    display:flex!important;
+    gap:4px!important;
+    flex:0 0 auto!important;
+  }
+  .emp-lead-actions a{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    min-width:34px!important;
+    height:30px!important;
+    padding:0 7px!important;
+    border-radius:8px!important;
+    border:1px solid #cfe2db!important;
+    background:#f6fbf9!important;
+    color:#08705b!important;
+    text-decoration:none!important;
+    font-size:9px!important;
+    font-weight:850!important;
+  }
+  .emp-lead-actions a.whatsapp{border-color:#bfe1d5!important;background:#edf9f4!important}
+  html.emp-phone-crm .emp-mobile-nav{
+    left:7px!important;right:7px!important;bottom:calc(7px + env(safe-area-inset-bottom,0px))!important;
+    height:66px!important;border-radius:18px!important;padding:6px!important;
+    background:rgba(255,255,255,.97)!important;
+    box-shadow:0 14px 36px rgba(3,27,24,.20)!important;
+  }
+  html.emp-phone-crm .emp-mobile-nav button{
+    border-radius:12px!important;
+  }
+  html.emp-phone-crm .emp-mobile-nav button span{font-size:17px!important}
+  html.emp-phone-crm .emp-mobile-nav button b{font-size:8.5px!important}
+  html.emp-phone-crm .emp-mobile-nav button.active{
+    background:linear-gradient(135deg,#e5f5ef,#f4fbf8)!important;
+    color:#05624f!important;
+  }
+  html.emp-phone-crm .emp-mobile-more{
+    bottom:calc(82px + env(safe-area-inset-bottom,0px))!important;
+    border-radius:17px!important;
+    box-shadow:0 20px 48px rgba(3,27,24,.22)!important;
+  }
+  html.emp-phone-crm #leadDialog[open]{
+    padding:0!important;
+    background:#f5faf8!important;
+  }
+  html.emp-phone-crm #leadDialog form{padding:12px!important}
+  html.emp-phone-crm #leadDialog .section-head{
+    margin:-12px -12px 10px!important;
+    padding:13px 12px!important;
+    background:linear-gradient(135deg,#031b18,#075b4b)!important;
+    color:#fff!important;
+  }
+  html.emp-phone-crm #leadDialog .section-head h2,
+  html.emp-phone-crm #leadDialog .section-head .eyebrow{color:#fff!important}
+  html.emp-phone-crm #leadDialog .section-head .quiet{
+    color:#173f36!important;background:#fff!important;
+  }
+  html.emp-phone-crm #leadDialog .form-grid{
+    gap:9px!important;
+    padding-bottom:4px!important;
+  }
+  html.emp-phone-crm #leadDialog .form-grid label,
+  html.emp-phone-crm #leadDialog .comment-label{
+    background:#fff!important;
+    border:1px solid #dbe8e3!important;
+    border-radius:11px!important;
+    padding:9px!important;
+  }
+  html.emp-phone-crm #leadDialog .form-grid input,
+  html.emp-phone-crm #leadDialog .form-grid select,
+  html.emp-phone-crm #leadDialog .form-grid textarea,
+  html.emp-phone-crm #leadDialog .comment-label textarea{
+    border-color:#d4e3de!important;
+    background:#fbfdfc!important;
+  }
+  html.emp-phone-crm #leadDialog .dialog-actions{
+    margin:12px -12px -12px!important;
+    border-radius:0!important;
+    box-shadow:0 -6px 18px rgba(10,72,59,.06)!important;
+  }
+}
