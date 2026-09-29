@@ -48,7 +48,7 @@
    el('resultCount').textContent=`${total.toLocaleString('en-IN')} matching leads`;
    const options=(list,value,labels=true)=>{const vals=[...list];if(value&&!vals.includes(value))vals.unshift(value);return vals.map(v=>`<option value="${esc(v)}" ${String(v)===String(value)?'selected':''}>${esc(labels?label(v):v)}</option>`).join('');};
    const inlineText=(r,field,value,placeholder='—')=>`<button type="button" class="emp-inline-cell text-button" data-inline-edit="1" data-lead="${r.id}" data-field="${field}"><span class="inline-display">${esc(value??'')||esc(placeholder)}</span></button>`;
-   const inlineSelect=(r,field,value,list)=>`<button type="button" class="emp-inline-cell text-button" data-inline-edit="1" data-lead="${r.id}" data-field="${field}" data-editor="select"><span class="inline-display">${esc(value??'')||'—'}</span></button>`;
+   const inlineSelect=(r,field,value,list)=>`<select class="emp-inline-select" data-inline-edit="1" data-lead="${r.id}" data-field="${field}" aria-label="${esc(field)}">${options(list,value,false)}</select>`;
    el('leadsBody').innerHTML=rows.length?rows.map(r=>`<tr>
 <td><button class="lead-name" data-lead="${r.id}">${esc(r.customer_name)}</button></td>
 <td><a href="tel:${esc(String(r.mobile||'').replace(/[^+0-9]/g,''))}">${esc(r.mobile||'—')}</a></td>
