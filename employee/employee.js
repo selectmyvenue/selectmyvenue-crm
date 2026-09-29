@@ -39,9 +39,21 @@
    if(page>0 && page*20>=total){page=Math.max(0,Math.ceil(total/20)-1);return load();}
    el('resultCount').textContent=`${total.toLocaleString('en-IN')} matching leads`;
    const options=(list,value,labels=true)=>{const vals=[...list];if(value&&!vals.includes(value))vals.unshift(value);return vals.map(v=>`<option value="${esc(v)}" ${String(v)===String(value)?'selected':''}>${esc(labels?label(v):v)}</option>`).join('');};
-   el('leadsBody').innerHTML=rows.length?rows.map(r=>`<tr><td><button class="lead-name" data-lead="${r.id}">${esc(r.customer_name)}</button></td><td><a href="tel:${esc(String(r.mobile||'').replace(/[^+0-9]/g,''))}">${esc(r.mobile||'—')}</a></td><td><select class="quick-edit" data-id="${r.id}" data-field="location">${options(locations,r.location,false)}</select></td><td><select class="quick-edit" data-id="${r.id}" data-field="occasion">${options(events,r.occasion,false)}</select></td><td>${date(r.event_date)}</td><td>${esc(r.guests??'—')}</td><td><select class="quick-edit" data-id="${r.id}" data-field="call_outcome">${options(outcomes,String(r.lost_reason_other||'').startsWith('__SMV_STATUS_NOT_PICK__')?'Not Picked':r.call_outcome,false)}</select></td><td><select class="quick-edit status-quick" data-id="${r.id}" data-field="status">${options(statuses,r.status)}</select></td><td><button class="text-button" data-lead="${r.id}">${r.internal_notes?'View / add':'+ Add'}</button></td><td>${esc(r.source)}</td><td>${date(r.site_visit_at)}</td><td>${date(r.follow_up_at,true)}</td><td>${date(r.created_at,true)}</td><td><button class="text-button" data-lead="${r.id}">View / edit</button></td></tr>`).join(''):'<tr><td colspan="14" class="empty">No leads match these filters.</td></tr>';
+   el('leadsBody').innerHTML=rows.length?rows.map(r=>`<tr>
+<td><button class="lead-name" data-lead="${r.id}">${esc(r.customer_name)}</button></td>
+<td><a href="tel:${esc(String(r.mobile||'').replace(/[^+0-9]/g,''))}">${esc(r.mobile||'—')}</a></td>
+<td>${date(r.created_at,true)}</td>
+<td><button class="text-button" data-lead="${r.id}">${esc(r.preferred_area||'—')}</button></td>
+<td>${esc(r.source||'—')}</td>
+<td>${esc(r.occasion||'—')}</td>
+<td>${date(r.event_date)}</td>
+<td>${esc(r.guests??'—')}</td>
+<td>${esc(r.location||'—')}</td>
+<td><select class="quick-edit status-quick" data-id="${r.id}" data-field="status">${options(statuses,r.status)}</select></td>
+<td><button class="text-button" data-lead="${r.id}">${r.internal_notes?'View / add':'+ Add'}</button></td>
+</tr>`).join(''):'<tr><td colspan="11" class="empty">No leads match these filters.</td></tr>';
    el('pageInfo').textContent=total?`Showing ${page*20+1}–${Math.min(page*20+20,total)} of ${total}`:'No results';el('previous').disabled=page===0;el('next').disabled=(page+1)*20>=total;
-  }catch(e){toast(e.message||'Unable to load leads');el('leadsBody').innerHTML='<tr><td colspan="14" class="empty">Unable to load leads. Please refresh.</td></tr>';}
+  }catch(e){toast(e.message||'Unable to load leads');el('leadsBody').innerHTML='<tr><td colspan="11" class="empty">Unable to load leads. Please refresh.</td></tr>';}
   finally{if(seq===sequence)el('refresh').disabled=false;}
  }
  async function stats(){
