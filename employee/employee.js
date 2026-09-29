@@ -119,7 +119,17 @@
   } else {
     input=document.createElement('input'); input.className='emp-inline-editor'; input.type=field==='event_date'?'date':field==='guests'?'number':'text'; input.value=field==='event_date'?(row.event_date||''):String(row[field]??''); if(field==='guests'){input.min='0';input.step='1';}
   }
-  display.replaceWith(input); input.focus(); input.select?.();
+  display.replaceWith(input);
+  input.focus();
+  if(input.tagName==='SELECT'){
+    input.style.display='block';
+    input.style.width='100%';
+    input.style.minHeight='34px';
+    input.style.cursor='pointer';
+    try{ input.showPicker?.(); }catch(_){}
+  }else{
+    input.select?.();
+  }
   let done=false; const finish=async(save)=>{if(done)return;done=true;const v=input.value;
     if(save){const ok=await saveEmployeeInline(id,field,v);if(!ok){input.replaceWith(display);button.classList.remove('editing');}}
     else{input.replaceWith(display);button.classList.remove('editing');}
