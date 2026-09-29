@@ -187,7 +187,11 @@
             </div>
         </div>
 
-        <div class="venue-toolbar">
+        <section id="venueAssignmentAnalytics" class="venue-assignment-analytics" aria-label="Venue assignment analytics">
+<div class="vaa-head"><div><div class="venue-kicker">VENUE PERFORMANCE</div><h2>Venue-wise Assignment <span>Analytics</span></h2><p>See how many enquiries were assigned to each venue for any date range.</p></div>
+<div class="vaa-controls"><label>From <input type="date" id="assignmentAnalyticsFrom"></label><label>To <input type="date" id="assignmentAnalyticsTo"></label><button type="button" id="assignmentAnalyticsApply" class="primary-btn">Apply</button><button type="button" id="assignmentAnalyticsClear" class="secondary-btn">All Time</button></div></div>
+<div class="vaa-summary"><div><span>TOTAL ASSIGNMENTS</span><strong id="vaaTotal">0</strong></div><div><span>ACTIVE</span><strong id="vaaActive">0</strong></div><div><span>VENUES USED</span><strong id="vaaVenues">0</strong></div></div>
+<div class="vaa-table-wrap"><table class="vaa-table"><thead><tr><th>VENUE</th><th>AREA</th><th>ASSIGNMENTS</th><th>ACTIVE</th><th>LAST ASSIGNED</th></tr></thead><tbody id="venueAssignmentAnalyticsBody"><tr><td colspan="5">Load venue analytics…</td></tr></tbody></table></div></section><div class="venue-toolbar">
             <input
                 type="search"
                 id="venueSearchInput"
