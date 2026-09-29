@@ -13,10 +13,10 @@
       nav.className='emp-mobile-nav';
       nav.setAttribute('aria-label','Employee CRM navigation');
       nav.innerHTML=
-        '<button type="button" data-emp-nav="leads" class="active"><span>☷</span><b>Enquiries</b></button>'+
-        '<button type="button" data-emp-nav="filters"><span>⌕</span><b>Filters</b></button>'+
-        '<button type="button" data-emp-nav="refresh"><span>↻</span><b>Refresh</b></button>'+
-        '<button type="button" data-emp-nav="more"><span>•••</span><b>More</b></button>';
+        '<button type="button" data-emp-nav="leads" class="active"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><b>Enquiries</b></button>'+
+        '<button type="button" data-emp-nav="filters"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><b>Filters</b></button>'+
+        '<button type="button" data-emp-nav="refresh"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M20 11a8 8 0 0 0-14-4L4 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4 5v4h4M4 13a8 8 0 0 0 14 4l2-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M20 19v-4h-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><b>Refresh</b></button>'+
+        '<button type="button" data-emp-nav="more"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span><b>More</b></button>';
       document.body.appendChild(nav);
     }
     let menu=byId('empMobileMore');
@@ -40,8 +40,10 @@
     if(!mobile)return;
     const actions=document.createElement('span');
     actions.className='emp-lead-actions';
-    actions.innerHTML='<a class="call" href="tel:'+mobile+'" aria-label="Call customer">☎</a>'+
-      '<a class="whatsapp" href="https://wa.me/'+mobile.replace(/^\+/,'')+'" target="_blank" rel="noopener" aria-label="WhatsApp customer">WA</a>';
+    actions.innerHTML='<a class="call emp-3d-icon phone" href="tel:'+mobile+'" aria-label="Call customer" title="Call customer">'+
+      '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7.1 3.5 4.8 4.7c-.8.4-1.2 1.3-1 2.2 1.5 6.1 5.2 10.8 11.3 12.3.9.2 1.8-.2 2.2-1l1.2-2.3-3.1-1.7-1.5 1.4c-2.1-.9-4-2.8-4.9-4.9l1.4-1.5-1.7-3.1Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></a>'+
+      '<a class="whatsapp emp-3d-icon" href="https://wa.me/'+mobile.replace(/^\+/,'')+'" target="_blank" rel="noopener" aria-label="WhatsApp customer" title="WhatsApp customer">'+
+      '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3.4a8.6 8.6 0 0 0-7.5 12.8L3.2 20.7l4.7-1.2A8.6 8.6 0 1 0 12 3.4Z" stroke="currentColor" stroke-width="1.7"/><path d="M8.5 8.2c.3-.4.7-.4 1-.1l1.1 1.1c.3.3.3.6 0 1l-.5.6c.7 1.2 1.5 2 2.7 2.7l.6-.5c.3-.3.7-.3 1 0l1.1 1.1c.3.3.3.7-.1 1-1 .8-2.1.6-3.1.1-2.4-1.2-4.3-3.1-5.5-5.5-.5-1-.7-2.1.1-3.1Z" fill="currentColor"/></svg></a>';
     first.appendChild(actions);
   }
 
