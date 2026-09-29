@@ -41,7 +41,8 @@
   const seq=++sequence;
   el('refresh').disabled=true;
   try {
-   const {data,error,count}=await query().order('created_at',{ascending:false}).order('id',{ascending:false}).range(page*20,page*20+19);
+   const leadQuery=await query();
+   const {data,error,count}=await leadQuery.order('created_at',{ascending:false}).order('id',{ascending:false}).range(page*20,page*20+19);
    if(seq!==sequence)return;if(error)throw error;rows=data||[];total=count||0;
    if(page>0 && page*20>=total){page=Math.max(0,Math.ceil(total/20)-1);return load();}
    el('resultCount').textContent=`${total.toLocaleString('en-IN')} matching leads`;
