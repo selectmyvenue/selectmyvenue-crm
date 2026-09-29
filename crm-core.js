@@ -4882,6 +4882,7 @@ function setupVenueManagement() {
     });
 
     table.addEventListener("click", handleVenueTableClick);
+    setupVenueAssignmentAnalytics();
 
     document.getElementById("venueModal")?.addEventListener("click", event => {
         if (event.target === event.currentTarget) {
@@ -7210,7 +7211,7 @@ async function loadVenueAssignments() {
         if (currentLead) {
             renderLeadVenueAssignments(currentLead.id);
         }
-
+        renderVenueAssignmentAnalytics();
         await loadStage8Analytics();
     }
     catch (error) {
@@ -7221,6 +7222,25 @@ async function loadVenueAssignments() {
         allVenueAssignments = [];
         assignedVenueDetails = {};
     }
+}
+
+/* VENUE-WISE ASSIGNMENT ANALYTICS — existing assignment history, no schema change */
+let assignmentAnalyticsFrom="", assignmentAnalyticsTo="";
+function renderVenueAssignmentAnalytics(){
+ const body=document.getElementById("venueAssignmentAnalyticsBody"); if(!body)return;
+ const from=assignmentAnalyticsFrom?new Date(assignmentAnalyticsFrom+"T00:00:00"):null;
+ const to=assignmentAnalyticsTo?new Date(assignmentAnalyticsTo+"T23:59:59.999"):null;
+ const rows=allVenueAssignments.filter(i=>{if(!i.assigned_at)return false;const d=new Date(i.assigned_at);return(!from||d>=from)&&(!to||d<=to)});
+ const g={}; rows.forEach(i=>{const id=String(i.venue_id||"");if(!id)return;if(!g[id])g[id]={total:0,active:0,last:null};g[id].total++;if(safeValue(i.assignment_status).toLowerCase()!=="cancelled")g[id].active++;const d=new Date(i.assigned_at);if(!g[id].last||d>g[id].last)g[id].last=d});
+ const entries=Object.entries(g).sort((a,b)=>b[1].total-a[1].total), ids=new Set(rows.map(i=>String(i.venue_id)).filter(Boolean));
+ const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v}; set("vaaTotal",rows.length);set("vaaActive",rows.filter(i=>safeValue(i.assignment_status).toLowerCase()!=="cancelled").length);set("vaaVenues",ids.size);
+ if(!entries.length){body.innerHTML='<tr><td colspan="5">No assignments found for this date range.</td></tr>';return}
+ body.innerHTML=entries.map(([id,v])=>{const venue=assignedVenueDetails[id]||allVenues.find(x=>String(x.id)===id)||{};return '<tr><td><strong>'+escapeHTML(venue.venue_name||"Unknown Venue")+'</strong></td><td>'+escapeHTML([venue.area,venue.city].filter(Boolean).join(" • ")||"—")+'</td><td><strong>'+v.total+'</strong></td><td>'+v.active+'</td><td>'+escapeHTML(v.last?formatDateTime(v.last.toISOString()):"—")+'</td></tr>}).join("");
+}
+function setupVenueAssignmentAnalytics(){
+ const apply=document.getElementById("assignmentAnalyticsApply"),clear=document.getElementById("assignmentAnalyticsClear"),from=document.getElementById("assignmentAnalyticsFrom"),to=document.getElementById("assignmentAnalyticsTo");
+ apply?.addEventListener("click",()=>{assignmentAnalyticsFrom=from?.value||"";assignmentAnalyticsTo=to?.value||"";if(assignmentAnalyticsFrom&&assignmentAnalyticsTo&&assignmentAnalyticsFrom>assignmentAnalyticsTo){[assignmentAnalyticsFrom,assignmentAnalyticsTo]=[assignmentAnalyticsTo,assignmentAnalyticsFrom];if(from)from.value=assignmentAnalyticsFrom;if(to)to.value=assignmentAnalyticsTo}renderVenueAssignmentAnalytics()});
+ clear?.addEventListener("click",()=>{assignmentAnalyticsFrom="";assignmentAnalyticsTo="";if(from)from.value="";if(to)to.value="";renderVenueAssignmentAnalytics()});
 }
 
 function getAssignmentStatusLabel(status) {
