@@ -563,6 +563,12 @@ function getStatusStyle(status) {
             border: "#dfc8f6"
         },
 
+        "not-pick": {
+            background: "#fff3df",
+            color: "#9a5a00",
+            border: "#f0d2a2"
+        },
+
         "negotiation": {
             background: "#fff0df",
             color: "#a65312",
