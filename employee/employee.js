@@ -9,7 +9,7 @@
  const outcomes=['Not Connected','Connected','Not Picked','Busy','Switched Off','Wrong Number','Call Back'];
  const label=s=>s.split('-').map(w=>w[0]?.toUpperCase()+w.slice(1)).join(' ');
  const locations=['','Delhi','Delhi NCR','Gurgaon','Noida','Greater Noida','Faridabad','Ghaziabad'];
- const events=['','Wedding','Engagement','Birthday','Corporate','Anniversary','Party','Other'];
+ const events=['','Wedding','Engagement','Birthday','Corporate Event','Anniversary','Reception','Party','Other'];
  const venueTypes=['','Banquet Hall','Farmhouse','Hotel','Resort','Lawn','Party Hall','Restaurant'];
  const cityOptions=['','Delhi','Delhi NCR','Gurgaon','Noida','Greater Noida','Faridabad','Ghaziabad'];
  const fields=[
@@ -139,9 +139,9 @@
   control.disabled=true;
   const patch={[field]:(field==='parking_required'||field==='outdoor_preferred'||field==='indoor_preferred')?value==='true':value};
   if(field==='status'&&String(row.lost_reason_other||'').startsWith('__SMV_STATUS_NOT_PICK__'))patch.lost_reason_other=null;
-  const {error}=await client.rpc('smv_employee_save_lead',{p_id:row.id,p_expected_updated_at:row.updated_at,p_patch:patch,p_comment:'',p_log_call:false});
-  if(error){control.value=previous;control.disabled=false;toast(error.message||'Unable to save change');return;}
-  toast(label(field.replace('_',' '))+' updated');await Promise.all([load(),stats()]);
+  const ok=await saveEmployeeInline(row.id,field,field==='status'?value:value);
+  if(!ok){control.value=previous;control.disabled=false;return;}
+  control.disabled=false;
  };
  el('leadForm').onsubmit=async e=>{
   e.preventDefault();if(!selected)return;el('saveLead').disabled=true;el('saveMessage').textContent='Saving…';
