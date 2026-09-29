@@ -24,17 +24,13 @@
  const indiaLocal=s=>{if(!s)return '';const d=new Date(new Date(s).getTime()+330*60000);return d.toISOString().slice(0,16);};
  statuses.forEach(s=>el('filterStatus').add(new Option(label(s),s)));
  el('leadFields').innerHTML=fields.map(([key,title,type])=>`<label class="${type==='textarea'||type==='boolean'?'wide':''}">${esc(title)}${Array.isArray(type)?`<select id="field_${key}">${type.map(v=>`<option value="${esc(String(v))}">${esc(label(String(v)))}</option>`).join('')}</select>`:type==='textarea'?`<textarea id="field_${key}" maxlength="10000" rows="3"></textarea>`:type==='boolean'?`<select id="field_${key}"><option value="false">No</option><option value="true">Yes</option></select>`:`<input id="field_${key}" type="${type}" ${type==='number'?'min="0" step="1"':''} ${key==='customer_name'?'required minlength="2" maxlength="120"':''}>`}</label>`).join('');
- async function query(count=false){
-  if(activeQuickFilter==='assigned'){
-   const {data:assignments}=await client.from('venue_enquiry_assignments').select('enquiry_id,assignment_status').neq('assignment_status','cancelled');
-   assignedLeadIds=new Set((assignments||[]).map(a=>String(a.enquiry_id)).filter(Boolean));
-  }
+ function query(count=false){
   let q=client.from('customer_enquiries').select('*',count?{count:'exact',head:true}:{count:'exact'});
   if(el('filterStatus').value)q=q.eq('status',el('filterStatus').value);
   if(activeQuickFilter==='new'||activeQuickFilter==='interested'||activeQuickFilter==='follow-up'||activeQuickFilter==='not-pick')q=q.eq('status',activeQuickFilter);
   if(activeQuickFilter==='call-back')q=q.or('call_outcome.eq.Call Back,status.eq.converted');
   if(activeQuickFilter==='assigned')q=assignedLeadIds.size?q.in('id',[...assignedLeadIds]):q.eq('id','00000000-0000-0000-0000-000000000000');
-  const search=el('search').value.trim().replace(/[^\p{L}\p{N}\s+@.-]/gu,'');
+  const search=el('search').value.trim().replace(/[^\\p{L}\\p{N}\\s+@.-]/gu,'');
   if(search)q=q.or(`customer_name.ilike.%${search}%,mobile.ilike.%${search}%`);
   if(el('createdFrom').value)q=q.gte('created_at',el('createdFrom').value+'T00:00:00+05:30');
   if(el('createdTo').value)q=q.lte('created_at',el('createdTo').value+'T23:59:59.999999+05:30');
@@ -45,7 +41,7 @@
   const seq=++sequence;
   el('refresh').disabled=true;
   try {
-   const leadQuery=await query();
+   const leadQuery=query();
    const {data,error,count}=await leadQuery.order('created_at',{ascending:false}).order('id',{ascending:false}).range(page*20,page*20+19);
    if(seq!==sequence)return;if(error)throw error;rows=data||[];total=count||0;
    if(page>0 && page*20>=total){page=Math.max(0,Math.ceil(total/20)-1);return load();}
