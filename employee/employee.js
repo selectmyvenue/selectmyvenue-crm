@@ -55,7 +55,7 @@
 <td>${date(r.created_at,true)}</td>
 <td>${inlineText(r,'preferred_area',r.preferred_area)}</td>
 <td>${esc(r.source||'—')}</td>
-<td>${inlineSelect(r,'occasion',r.occasion,events)}</td>
+<td><select class="quick-edit event-quick" data-id="${r.id}" data-field="occasion">${options(events,r.occasion)}</select></td>
 <td><button type="button" class="emp-inline-cell text-button" data-inline-edit="1" data-lead="${r.id}" data-field="event_date"><span class="inline-display">${date(r.event_date)||'—'}</span></button></td>
 <td><button type="button" class="emp-inline-cell text-button" data-inline-edit="1" data-lead="${r.id}" data-field="guests"><span class="inline-display">${esc(r.guests??'—')}</span></button></td>
 <td>${inlineSelect(r,'location',r.location,locations)}</td>
