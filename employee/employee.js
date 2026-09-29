@@ -16,13 +16,16 @@
   ['call_outcome','Call status',outcomes],['status','Lead status',statuses],['priority','Priority',['low','normal','high','urgent']],['follow_up_at','Follow-up (India time)','datetime-local'],['site_visit_at','Visit date (India time)','datetime-local'],
   ['lost_reason','Lost reason','text'],['lost_reason_other','Other lost reason','text'],['requirements','Customer requirements','textarea'],['internal_notes','Comment','textarea']
  ];
- let rows=[],page=0,total=0,selected=null,profile=null,channel=null,sequence=0,timer,reconnectTimer=null;
+ let rows=[],page=0,total=0,selected=null,profile=null,channel=null,sequence=0,timer,reconnectTimer=null,activeQuickFilter='all';
  const indiaLocal=s=>{if(!s)return '';const d=new Date(new Date(s).getTime()+330*60000);return d.toISOString().slice(0,16);};
  statuses.forEach(s=>el('filterStatus').add(new Option(label(s),s)));
  el('leadFields').innerHTML=fields.map(([key,title,type])=>`<label class="${type==='textarea'||type==='boolean'?'wide':''}">${esc(title)}${Array.isArray(type)?`<select id="field_${key}">${type.map(v=>`<option value="${esc(String(v))}">${esc(label(String(v)))}</option>`).join('')}</select>`:type==='textarea'?`<textarea id="field_${key}" maxlength="10000" rows="3"></textarea>`:type==='boolean'?`<select id="field_${key}"><option value="false">No</option><option value="true">Yes</option></select>`:`<input id="field_${key}" type="${type}" ${type==='number'?'min="0" step="1"':''} ${key==='customer_name'?'required minlength="2" maxlength="120"':''}>`}</label>`).join('');
  function query(count=false){
   let q=client.from('customer_enquiries').select('*',count?{count:'exact',head:true}:{count:'exact'});
   if(el('filterStatus').value)q=q.eq('status',el('filterStatus').value);
+  if(activeQuickFilter==='new'||activeQuickFilter==='interested'||activeQuickFilter==='follow-up'||activeQuickFilter==='not-pick')q=q.eq('status',activeQuickFilter);
+  if(activeQuickFilter==='call-back')q=q.or('call_outcome.eq.Call Back,status.eq.converted');
+  if(activeQuickFilter==='assigned')q=q.not('assigned_to','is',null);
   const search=el('search').value.trim().replace(/[^\p{L}\p{N}\s+@.-]/gu,'');
   if(search)q=q.or(`customer_name.ilike.%${search}%,mobile.ilike.%${search}%`);
   if(el('createdFrom').value)q=q.gte('created_at',el('createdFrom').value+'T00:00:00+05:30');
@@ -39,16 +42,18 @@
    if(page>0 && page*20>=total){page=Math.max(0,Math.ceil(total/20)-1);return load();}
    el('resultCount').textContent=`${total.toLocaleString('en-IN')} matching leads`;
    const options=(list,value,labels=true)=>{const vals=[...list];if(value&&!vals.includes(value))vals.unshift(value);return vals.map(v=>`<option value="${esc(v)}" ${String(v)===String(value)?'selected':''}>${esc(labels?label(v):v)}</option>`).join('');};
+   const inlineText=(r,field,value,placeholder='—')=>`<button type="button" class="emp-inline-cell text-button" data-inline-edit="1" data-lead="${r.id}" data-field="${field}"><span class="inline-display">${esc(value??'')||esc(placeholder)}</span></button>`;
+   const inlineSelect=(r,field,value,list)=>`<select class="emp-inline-select" data-inline-edit="1" data-id="${r.id}" data-field="${field}">${options(list,value)}</select>`;
    el('leadsBody').innerHTML=rows.length?rows.map(r=>`<tr>
 <td><button class="lead-name" data-lead="${r.id}">${esc(r.customer_name)}</button></td>
 <td><a href="tel:${esc(String(r.mobile||'').replace(/[^+0-9]/g,''))}">${esc(r.mobile||'—')}</a></td>
 <td>${date(r.created_at,true)}</td>
-<td><button class="text-button" data-lead="${r.id}">${esc(r.preferred_area||'—')}</button></td>
+<td>${inlineText(r,'preferred_area',r.preferred_area)}</td>
 <td>${esc(r.source||'—')}</td>
-<td>${esc(r.occasion||'—')}</td>
-<td>${date(r.event_date)}</td>
-<td>${esc(r.guests??'—')}</td>
-<td>${esc(r.location||'—')}</td>
+<td>${inlineSelect(r,'occasion',r.occasion,events)}</td>
+<td><button type="button" class="emp-inline-cell text-button" data-inline-edit="1" data-lead="${r.id}" data-field="event_date"><span class="inline-display">${date(r.event_date)||'—'}</span></button></td>
+<td><button type="button" class="emp-inline-cell text-button" data-inline-edit="1" data-lead="${r.id}" data-field="guests"><span class="inline-display">${esc(r.guests??'—')}</span></button></td>
+<td>${inlineSelect(r,'location',r.location,locations)}</td>
 <td><select class="quick-edit status-quick" data-id="${r.id}" data-field="status">${options(statuses,r.status)}</select></td>
 <td><button class="text-button" data-lead="${r.id}">${r.internal_notes?'View / add':'+ Add'}</button></td>
 </tr>`).join(''):'<tr><td colspan="11" class="empty">No leads match these filters.</td></tr>';
@@ -57,11 +62,12 @@
   finally{if(seq===sequence)el('refresh').disabled=false;}
  }
  async function stats(){
-  const today=day(new Date()),start=today+'T00:00:00+05:30',end=today+'T23:59:59.999999+05:30';
-  const q=()=>client.from('customer_enquiries').select('id',{head:true,count:'exact'});
-  const active=()=>q().not('status','in','(booked,converted,closed,lost,not-interested)');
-  const result=await Promise.all([q(),q().eq('status','new'),active().gte('follow_up_at',start).lte('follow_up_at',end),active().lt('follow_up_at',start)]);
-  ['totalCount','newCount','todayCount','overdueCount'].forEach((id,i)=>el(id).textContent=result[i].error?'—':result[i].count);
+  const q=()=>client.from('customer_enquiries').select('id,status,call_outcome,assigned_to');
+  const {data,error}=await q(); const list=error?[]:(data||[]);
+  const counts={all:list.length,new:list.filter(r=>r.status==='new').length,interested:list.filter(r=>r.status==='interested').length,'call-back':list.filter(r=>r.call_outcome==='Call Back'||r.status==='converted').length,'follow-up':list.filter(r=>r.status==='follow-up').length,'not-pick':list.filter(r=>r.status==='not-pick').length,assigned:list.filter(r=>r.assigned_to!=null&&String(r.assigned_to).trim()!=='').length};
+  const ids={all:'totalCount',new:'newCount',interested:'interestedCount','call-back':'callBackCount','follow-up':'followUpCount','not-pick':'notPickCount',assigned:'assignedCount'};
+  Object.entries(ids).forEach(([key,id])=>el(id).textContent=counts[key]);
+  document.querySelectorAll('#employeeFilterCards [data-quick-filter]').forEach(c=>c.classList.toggle('active',c.dataset.quickFilter===activeQuickFilter));
  }
  async function openLead(id){
   const {data,error}=await client.from('customer_enquiries').select('*').eq('id',id).single();if(error){toast(error.message);return;}
@@ -78,7 +84,29 @@
   if(String(selected?.id)!==String(id))return;
   el('history').innerHTML=historyError?'Unable to load activity.':history?.length?history.map(h=>`<div class="history-item"><small>${date(h.created_at,true)}</small>${esc(h.description)}${h.new_value?`<details><summary>Changed fields</summary><pre>${esc(h.new_value)}</pre></details>`:''}</div>`).join(''):'No activity recorded by you yet.';
  }
- el('leadsBody').onclick=e=>{const b=e.target.closest('[data-lead]');if(b)openLead(b.dataset.lead);};
+ async function saveEmployeeInline(id,field,value){
+  const row=rows.find(r=>String(r.id)===String(id)); if(!row)return;
+  let parsed=value;
+  if(field==='guests') parsed=value===''?null:Number(value);
+  if(field==='event_date') parsed=value||null;
+  const previous=row[field]??null;
+  if(String(previous??'')===String(parsed??''))return;
+  const {error}=await client.rpc('smv_employee_save_lead',{p_id:row.id,p_expected_updated_at:row.updated_at,p_patch:{[field]:parsed},p_comment:'',p_log_call:false});
+  if(error){toast(error.message||'Unable to save change');return;}
+  toast(label(field.replace(/_/g,' '))+' updated'); await Promise.all([load(),stats()]);
+ }
+ function startEmployeeInlineEdit(button){
+  const id=button.dataset.lead,field=button.dataset.field,row=rows.find(r=>String(r.id)===String(id)); if(!row)return;
+  if(field==='occasion'||field==='location')return;
+  const display=button.querySelector('.inline-display'); if(!display||button.classList.contains('editing'))return;
+  button.classList.add('editing');
+  const input=document.createElement('input'); input.className='emp-inline-editor'; input.type=field==='event_date'?'date':field==='guests'?'number':'text'; input.value=field==='event_date'?(row.event_date||''):String(row[field]??''); if(field==='guests'){input.min='0';input.step='1';}
+  display.replaceWith(input); input.focus(); input.select?.();
+  let done=false; const finish=async(save)=>{if(done)return;done=true;const v=input.value;if(save)await saveEmployeeInline(id,field,v);else{input.replaceWith(display);button.classList.remove('editing');}};
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();finish(true)}else if(e.key==='Escape'){e.preventDefault();finish(false)}}); input.addEventListener('blur',()=>finish(true));
+ }
+ el('leadsBody').onclick=e=>{const inline=e.target.closest('[data-inline-edit]');if(inline&&inline.tagName!=='SELECT'){startEmployeeInlineEdit(inline);return;}const b=e.target.closest('[data-lead]');if(b)openLead(b.dataset.lead);};
+ el('leadsBody').onchange=async e=>{const inline=e.target.closest('[data-inline-edit].emp-inline-select');if(!inline)return;await saveEmployeeInline(inline.dataset.id,inline.dataset.field,inline.value);};
  el('leadsBody').onchange=async e=>{
   const control=e.target.closest('.quick-edit');if(!control)return;
   const row=rows.find(r=>String(r.id)===String(control.dataset.id));if(!row){toast('Lead changed. Refresh and try again.');return;}
@@ -108,7 +136,8 @@
  };
  const close=()=>{el('leadDialog').close();selected=null;};el('closeLead').onclick=close;el('cancelLead').onclick=close;el('leadDialog').addEventListener('close',()=>selected=null);
  el('filters').onsubmit=e=>e.preventDefault();el('filters').oninput=()=>{clearTimeout(timer);timer=setTimeout(()=>{page=0;load();},300);};
- el('clearFilters').onclick=()=>{el('filters').reset();page=0;load();};el('previous').onclick=()=>{page--;load();};el('next').onclick=()=>{page++;load();};el('refresh').onclick=()=>Promise.all([load(),stats()]);
+ document.querySelectorAll('#employeeFilterCards [data-quick-filter]').forEach(card=>card.addEventListener('click',()=>{activeQuickFilter=card.dataset.quickFilter;page=0;el('filterStatus').value='';load();stats();}));
+ el('clearFilters').onclick=()=>{el('filters').reset();activeQuickFilter='all';page=0;load();stats();};el('previous').onclick=()=>{page--;load();};el('next').onclick=()=>{page++;load();};el('refresh').onclick=()=>Promise.all([load(),stats()]);
  function resetView(){profile=null;rows=[];selected=null;el('workspace').hidden=true;el('accountActions').hidden=true;el('loginPanel').hidden=false;el('leadsBody').replaceChildren();el('history').replaceChildren();document.querySelectorAll('dialog[open]').forEach(d=>d.close());clearTimeout(reconnectTimer);reconnectTimer=null;if(channel){client.removeChannel(channel);channel=null;}}
  async function start(){
   const {data:{user},error}=await client.auth.getUser();if(error||!user){resetView();return;}
