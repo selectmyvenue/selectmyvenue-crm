@@ -580,3 +580,16 @@
 .emp-3d-icon.phone{background:linear-gradient(145deg,#20d3ae,#08705b)!important;color:#fff!important}
 .emp-3d-icon.whatsapp{background:linear-gradient(145deg,#39e58b,#0b8f5d)!important;color:#fff!important}
 .emp-mobile-nav svg{width:20px!important;height:20px!important;filter:drop-shadow(0 2px 2px rgba(3,27,24,.16))}
+
+
+/* v5 — premium 3D employee phone shell */
+@media(max-width:760px){
+html.emp-phone-crm .employee-page>header{background:linear-gradient(135deg,#021f1b 0%,#075b4c 52%,#0b7964 100%)!important;box-shadow:0 10px 26px rgba(2,31,27,.28)!important;border-bottom:1px solid rgba(255,255,255,.18)!important}
+html.emp-phone-crm #workspace .stats>div{background:linear-gradient(145deg,#ffffff,#edf8f4)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 8px 18px rgba(4,65,54,.11)!important;transform:translateZ(0)}
+html.emp-phone-crm #workspace tbody tr{background:linear-gradient(145deg,#ffffff,#f1f8f5)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 9px 22px rgba(4,65,54,.10)!important;border-color:#cfe1db!important}
+html.emp-phone-crm #workspace tbody tr:active{transform:scale(.995)}
+html.emp-phone-crm #workspace .quick-edit{box-shadow:inset 0 2px 4px rgba(10,54,46,.06),0 2px 5px rgba(10,54,46,.06)!important}
+html.emp-phone-crm #workspace .emp-3d-icon{filter:drop-shadow(0 3px 4px rgba(0,0,0,.18))!important}
+html.emp-phone-crm #workspace tbody tr>td:nth-child(3),html.emp-phone-crm #workspace tbody tr>td:nth-child(4),html.emp-phone-crm #workspace tbody tr>td:nth-child(5),html.emp-phone-crm #workspace tbody tr>td:nth-child(6),html.emp-phone-crm #workspace tbody tr>td:nth-child(7),html.emp-phone-crm #workspace tbody tr>td:nth-child(8),html.emp-phone-crm #workspace tbody tr>td:nth-child(9),html.emp-phone-crm #workspace tbody tr>td:nth-child(10),html.emp-phone-crm #workspace tbody tr>td:nth-child(11){display:none!important}
+html.emp-phone-crm #workspace tbody tr.emp-mobile-open>td:nth-child(3),html.emp-phone-crm #workspace tbody tr.emp-mobile-open>td:nth-child(4),html.emp-phone-crm #workspace tbody tr.emp-mobile-open>td:nth-child(5),html.emp-phone-crm #workspace tbody tr.emp-mobile-open>td:nth-child(6),html.emp-phone-crm #workspace tbody tr.emp-mobile-open>td:nth-child(7),html.emp-phone-crm #workspace tbody tr.emp-mobile-open>td:nth-child(8),html.emp-phone-crm #workspace tbody tr.emp-mobile-open>td:nth-child(9),html.emp-phone-crm #workspace tbody tr.emp-mobile-open>td:nth-child(10),html.emp-phone-crm #workspace tbody tr.emp-mobile-open>td:nth-child(11){display:flex!important}
+}
