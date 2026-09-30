@@ -324,7 +324,10 @@ window.startEmployeeIntegration=async function(client){
        // Keep lawn/outdoor as a feature preference unless lawn itself is clearly the venue type.
        if(!lawnAsPreference||!out.venueType)out.venueType=family;
      }
-     const city=s.match(/\b(gurgaon|gurugram|manesar|greater noida|noida|faridabad|ghaziabad|delhi(?: ncr)?)\b/);
+     // Do not parse the generic word "Delhi" from "South Delhi" as a separate broad location.
+     // Structured Location / Venue Area already carries the city; the note parser should
+     // preserve the actual locality/city alternatives explicitly mentioned by the customer.
+     const city=s.match(/\b(gurgaon|gurugram|manesar|greater noida|noida|faridabad|ghaziabad)\b/);
      if(city&&!negative(s.slice(Math.max(0,city.index-12),city.index))){const sector=s.match(/\bsec(?:tor)?\s*[.-]?\s*(\d+[a-z]?)\b/);const place=(sector?'sector '+sector[1]+' ':'')+city[1];out.location=out.location?[out.location,place].join(' / '):place;}
 
      // Delhi NCR venue-belt / locality inference from free-form comments.
