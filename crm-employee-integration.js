@@ -903,8 +903,8 @@ let venues=(assignmentVenueRows||[]).filter(v=>{if(!assignmentSearch)return true
      records remain available only in the explicit Assigned view when used. */
   if(tier==='all')return !isTestLike;
 
-  if(tier==='strong')return smvMatchTier(m)==='strong';
-  if(tier==='possible')return ['strong','possible'].includes(smvMatchTier(m));
+  if(tier==='strong')return isAssigned || smvMatchTier(m)==='strong';
+  if(tier==='possible')return isAssigned || ['strong','possible'].includes(smvMatchTier(m));
   if(tier==='excluded')return m.hardFail;
   return true;
 });venues.sort((a,b)=>smvCompareMatches({v:a,m:smartMatch(a,assignmentCurrentLead)},{v:b,m:smartMatch(b,assignmentCurrentLead)}));const reliableCount=(assignmentVenueRows||[]).filter(v=>{const m=smartMatch(v,assignmentCurrentLead);return smvMatchTier(m)==='strong';}).length;const reliableEl=document.getElementById('smvReliableMatchCount');if(reliableEl)reliableEl.textContent=reliableCount+' reliable';if(c){const assignedShown=venues.filter(v=>already.has(String(v.id))).length;c.textContent=`${venues.length} shown${assignedShown?' · '+assignedShown+' already assigned':''}`;}if(!venues.length){
