@@ -487,10 +487,32 @@ window.startEmployeeIntegration=async function(client){
  let locationOk=locationMatch||nearby25;
  let crossRegion=!!leadRegion&&!!venueRegion&&leadRegion!=="delhi ncr"&&!locationMatch&&!nearby25;
  if(crossRegion&&nearby35){crossRegion=false;locationOk=true;}
- test(25,!!locationOptions.length,!!venueLocation,locationOk,"Location",crossRegion);
- if(locationMatch&&matchedLocationOption?.source==='notes')reasons.push("Notes location");
- if(locationMatch&&matchedLocationOption?.source==='primary')reasons.push("Venue/Area");
- if(!locationMatch&&nearby25){score+=nearby15?21:17;max+=25;knownWeight+=25;relevantWeight+=25;reasons.push(nearbyLabel+" · "+optionLabel);}
+ if(locationOptions.length){
+   criteria++;
+   relevantWeight+=25;
+   if(!venueLocation){
+     warnings.push("Location unknown");
+   }else{
+     knownWeight+=25;
+     max+=25;
+     if(locationMatch){
+       score+=25;
+       reasons.push(matchedLocationOption?.source==='notes'?"Notes location":"Venue/Area");
+     }else if(nearby15){
+       score+=21;
+       reasons.push("Nearby area · "+optionLabel);
+     }else if(nearby25){
+       score+=17;
+       reasons.push("Nearby NCR · "+optionLabel);
+     }else if(nearby35){
+       score+=12;
+       reasons.push("Regional alternative · "+optionLabel);
+     }else{
+       warnings.push("Location mismatch");
+       if(crossRegion)hardFail=true;
+     }
+   }
+ }
  if(venueNameMatch){score+=12;max+=12;reasons.push("Requested venue");}
  else if(specificArea&&areaMatch){score+=8;max+=8;reasons.push(matchedLocationOption?.source==='notes'?"Notes area":"Exact area");}
 
