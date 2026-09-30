@@ -375,3 +375,265 @@ body .crm-app .leads-table td{overflow-wrap:anywhere;white-space:normal}
   }
 }
 
+
+
+/* =========================================================
+   SMV ASSIGNMENT COMMAND CENTER V3 — UI ONLY
+   Presentation layer: no data/workflow changes
+   ========================================================= */
+#venueAssignmentModal .venue-assignment-card{
+  background:
+    radial-gradient(circle at top right,rgba(10,139,112,.055),transparent 24%),
+    #f7faf9!important;
+}
+#venueAssignmentModal .venue-assignment-header{
+  position:sticky!important;
+  top:0!important;
+  z-index:60!important;
+  padding:10px 16px!important;
+  background:linear-gradient(135deg,#effaf6 0%,#ffffff 72%)!important;
+  box-shadow:0 5px 16px rgba(19,72,61,.055)!important;
+}
+#venueAssignmentModal .venue-assignment-header h2{
+  font-size:21px!important;
+  letter-spacing:-.35px!important;
+  margin:1px 0 2px!important;
+}
+#venueAssignmentModal .venue-assignment-header p{
+  font-size:10px!important;
+  color:#6f817c!important;
+}
+#venueAssignmentModal #smvAssignmentSummary{
+  position:sticky!important;
+  top:61px!important;
+  z-index:55!important;
+  margin:6px 0 7px!important;
+  padding:0 1px 5px!important;
+  background:rgba(247,250,249,.96)!important;
+  backdrop-filter:blur(8px)!important;
+}
+#venueAssignmentModal .smv-assignment-summary{
+  gap:6px!important;
+}
+#venueAssignmentModal .smv-assignment-summary>div{
+  padding:7px 9px!important;
+  border-radius:11px!important;
+  box-shadow:0 4px 12px rgba(20,72,61,.045)!important;
+}
+#venueAssignmentModal .smv-summary-title{
+  font-size:9px!important;
+  margin-bottom:5px!important;
+}
+#venueAssignmentModal .smv-summary-title strong{
+  font-size:10px!important;
+  padding:1px 6px!important;
+}
+#venueAssignmentModal .smv-venue-chip{
+  padding:4px 7px!important;
+  font-size:9.5px!important;
+}
+#venueAssignmentModal .smv-venue-chip small{
+  font-size:8px!important;
+}
+#venueAssignmentModal .smv-auto-badge{
+  padding:2px 5px!important;
+  font-size:6.5px!important;
+}
+#venueAssignmentModal .venue-assignment-requirement{
+  margin:5px 0!important;
+  padding:7px 10px!important;
+  font-size:10px!important;
+  border-radius:10px!important;
+}
+#venueAssignmentModal .venue-assignment-toolbar{
+  position:sticky!important;
+  top:122px!important;
+  z-index:50!important;
+  margin:5px 0 6px!important;
+  padding:5px 0!important;
+  background:rgba(247,250,249,.97)!important;
+  backdrop-filter:blur(8px)!important;
+}
+#venueAssignmentModal #assignmentVenueSearch{
+  height:40px!important;
+  font-size:11px!important;
+  border-radius:10px!important;
+  box-shadow:0 3px 10px rgba(20,72,61,.035)!important;
+}
+#venueAssignmentModal #assignmentVenueCount{
+  min-width:max-content!important;
+  padding:6px 9px!important;
+  border:1px solid #d5e7e0!important;
+  border-radius:999px!important;
+  background:#fff!important;
+  color:#5c766e!important;
+  font-size:9px!important;
+  font-weight:850!important;
+}
+#venueAssignmentModal .smv-match-tier-controls{
+  margin:5px 0 7px!important;
+  padding:9px 11px!important;
+  border-radius:12px!important;
+  box-shadow:0 5px 16px rgba(20,70,58,.055)!important;
+}
+#venueAssignmentModal .smv-match-panel-title{
+  margin-bottom:7px!important;
+}
+#venueAssignmentModal .smv-match-panel-title b{
+  font-size:12px!important;
+}
+#venueAssignmentModal .smv-match-panel-title span{
+  font-size:9px!important;
+}
+#venueAssignmentModal .smv-match-panel-title>strong{
+  padding:4px 8px!important;
+  font-size:9px!important;
+}
+#venueAssignmentModal .smv-match-panel-tabs{
+  gap:5px!important;
+}
+#venueAssignmentModal .smv-match-panel-tabs button{
+  min-height:31px!important;
+  padding:5px 10px!important;
+  font-size:9px!important;
+}
+#venueAssignmentModal .smv-match-panel-tabs button[data-tier="strong"]::before{
+  content:"AI";
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:20px;
+  height:16px;
+  margin-right:5px;
+  padding:0 4px;
+  border-radius:6px;
+  background:#dff5ec;
+  color:#08745d;
+  font-size:6.5px;
+  font-weight:950;
+  letter-spacing:.04em;
+}
+#venueAssignmentModal .smv-match-panel-tabs button[data-tier="strong"].active::before{
+  background:rgba(255,255,255,.18);
+  color:#fff;
+}
+#venueAssignmentModal .venue-assignment-list{
+  padding:0 1px 4px!important;
+}
+#venueAssignmentModal .venue-assignment-item{
+  border-radius:12px!important;
+  padding:9px 11px!important;
+  margin-bottom:5px!important;
+  border-color:#dde9e5!important;
+  box-shadow:0 3px 10px rgba(18,73,61,.035)!important;
+}
+#venueAssignmentModal .venue-assignment-item-title strong{
+  font-size:13px!important;
+}
+#venueAssignmentModal .venue-assignment-item-meta{
+  margin-top:4px!important;
+  gap:4px 10px!important;
+  font-size:9px!important;
+}
+#venueAssignmentModal .venue-assignment-item-meta span{
+  font-size:9px!important;
+}
+#venueAssignmentModal .smv-match-reasons{
+  margin-top:5px!important;
+  gap:4px!important;
+}
+#venueAssignmentModal .smv-match-chip{
+  padding:3px 6px!important;
+  font-size:8px!important;
+}
+#venueAssignmentModal .smv-readiness{
+  gap:4px!important;
+  margin-top:4px!important;
+}
+#venueAssignmentModal .smv-readiness span{
+  padding:3px 5px!important;
+  font-size:8px!important;
+}
+#venueAssignmentModal .venue-assignment-item.smv-premium-match-row{
+  border-color:#a9d7c9!important;
+  box-shadow:0 5px 15px rgba(16,101,82,.075)!important;
+}
+#venueAssignmentModal .venue-assignment-item.smv-premium-match-row:has(.venue-assignment-checkbox:checked){
+  outline:2px solid #08745d!important;
+  outline-offset:-2px!important;
+}
+#venueAssignmentModal .venue-assignment-actions{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:7px!important;
+  padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px))!important;
+  background:rgba(255,255,255,.985)!important;
+  border-top:1px solid #dce9e4!important;
+  box-shadow:0 -8px 22px rgba(17,72,60,.09)!important;
+}
+#venueAssignmentModal .venue-assignment-actions .cancel-btn{
+  min-height:38px!important;
+  border-radius:9px!important;
+  font-size:10px!important;
+}
+#venueAssignmentModal #saveVenueAssignment,
+#venueAssignmentModal #smvAssignWhatsApp{
+  min-height:38px!important;
+  border-radius:9px!important;
+  font-size:10px!important;
+  font-weight:900!important;
+}
+#venueAssignmentModal #saveVenueAssignment{
+  min-width:150px!important;
+  background:linear-gradient(135deg,#0b8067,#08705d)!important;
+  border-color:#08705d!important;
+  box-shadow:0 6px 16px rgba(8,112,93,.18)!important;
+}
+#venueAssignmentModal #saveVenueAssignment:disabled{
+  background:#e6eeeb!important;
+  border-color:#d6e4df!important;
+  color:#71847e!important;
+  box-shadow:none!important;
+}
+#venueAssignmentModal #smvAssignWhatsApp{
+  min-width:135px!important;
+  background:#fff!important;
+  border:1px solid #acd5c8!important;
+  color:#08705d!important;
+  box-shadow:none!important;
+}
+#venueAssignmentModal .venue-assignment-note:not(.smv-message-floating){
+  margin-top:5px!important;
+  padding:8px 10px!important;
+  border-radius:11px!important;
+}
+#venueAssignmentModal .venue-assignment-note:not(.smv-message-floating) textarea{
+  min-height:74px!important;
+  max-height:120px!important;
+  font-size:10px!important;
+}
+#venueAssignmentModal .smv-customer-brief{
+  border-radius:11px!important;
+  padding:8px 9px!important;
+  box-shadow:0 4px 12px rgba(18,73,61,.04)!important;
+}
+@media(max-width:900px){
+  #venueAssignmentModal #smvAssignmentSummary{
+    position:static!important;
+    background:transparent!important;
+    backdrop-filter:none!important;
+  }
+  #venueAssignmentModal .venue-assignment-toolbar{
+    position:static!important;
+    background:transparent!important;
+    backdrop-filter:none!important;
+  }
+  #venueAssignmentModal .venue-assignment-actions{
+    justify-content:stretch!important;
+  }
+  #venueAssignmentModal .venue-assignment-actions button{
+    flex:1 1 0!important;
+    min-width:0!important;
+  }
+}
