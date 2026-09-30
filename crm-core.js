@@ -4763,6 +4763,13 @@ let pendingVenueCoverPreviewUrl = "";
 let pendingVenueCoverRemoval = false;
 let venueSaveInFlight = false;
 
+/*
+   Venue form has two explicit modes.
+   CREATE mode always INSERTS a new row and never trusts a stale hidden
+   #venueId. EDIT mode updates only the venue that was explicitly opened.
+*/
+let venueFormMode = "create";
+
 function resetVenueSaveState() {
     venueSaveInFlight = false;
 
@@ -4825,7 +4832,11 @@ function setupVenueManagement() {
 
     venueBtn.addEventListener("click", openVenueManagement);
     backBtn?.addEventListener("click", showLeadManagement);
-    addBtn?.addEventListener("click", () => openVenueModal());
+    addBtn?.addEventListener("click", event => {
+        event.preventDefault();
+        event.stopPropagation();
+        openVenueModal(null);
+    });
     refreshBtn?.addEventListener("click", loadVenues);
     closeBtn?.addEventListener("click", closeVenueModal);
     cancelBtn?.addEventListener("click", closeVenueModal);
@@ -5615,12 +5626,29 @@ function openVenueModal(venue = null) {
         return;
     }
 
+    const hasVenueId = Boolean(venue?.id);
+    venueFormMode = hasVenueId ? "edit" : "create";
+
     setVenueDetailsMode(false);
     resetVenueSaveState();
+
+    /*
+       Start every new-venue session from a deterministic blank state.
+       Do not rely only on form.reset(), because dynamically populated
+       controls / autofill / a previously saved hidden id can survive.
+    */
     form.reset();
 
+    document.querySelectorAll("#venueForm input:not([type='checkbox']):not([type='file']), #venueForm textarea").forEach(field => {
+        if (field.id !== "venueId") field.value = "";
+    });
+
+    document.querySelectorAll("#venueForm input[type='checkbox']").forEach(field => {
+        field.checked = field.id === "venueFoodVeg";
+    });
+
     document.getElementById("venueId").value =
-        venue?.id || "";
+        hasVenueId ? String(venue.id) : "";
 
     document.getElementById("venueModalTitle").textContent =
         venue ? "Edit Venue" : "Add New Venue";
@@ -5824,6 +5852,7 @@ function closeVenueModal() {
     }
 
     resetVenueSaveState();
+    venueFormMode = "create";
     currentVenuePartnerProfile = null;
     clearPendingVenueCoverPreview();
     pendingVenueCoverImageFile = null;
@@ -6640,10 +6669,18 @@ async function saveVenue(event) {
         return;
     }
 
-    const id =
-        safeValue(
-            document.getElementById("venueId")?.value
-        ).trim();
+    /*
+       Critical safety rule:
+       CREATE mode is controlled by venueFormMode, not by the hidden input.
+       This prevents a stale venue id from ever turning "Add New Venue" into
+       an UPDATE.
+    */
+    const requestedId = safeValue(
+        document.getElementById("venueId")?.value
+    ).trim();
+
+    const isCreate = venueFormMode !== "edit";
+    const id = isCreate ? "" : requestedId;
 
     const payload = getVenueFormData();
     const existingVenue = id
@@ -6686,15 +6723,7 @@ async function saveVenue(event) {
     let result;
 
     try {
-        if (id) {
-            result = await client
-                .from("venues")
-                .update(payload)
-                .eq("id", id)
-                .select()
-                .single();
-        }
-        else {
+        if (isCreate) {
             const userResult = await client.auth.getUser();
             result = await client
                 .from("venues")
@@ -6703,6 +6732,14 @@ async function saveVenue(event) {
                     created_by:
                         userResult.data?.user?.id || null
                 })
+                .select()
+                .single();
+        }
+        else {
+            result = await client
+                .from("venues")
+                .update(payload)
+                .eq("id", id)
                 .select()
                 .single();
         }
@@ -6842,7 +6879,7 @@ async function saveVenue(event) {
            otherwise the next Save could update this same venue again.
            Existing-venue edits remain open so the image can be retried.
         */
-        if (!id) {
+        if (isCreate) {
             closeVenueModal();
         }
         showToast(
@@ -6855,7 +6892,7 @@ async function saveVenue(event) {
         return;
     }
 
-    if (id) {
+    if (!isCreate) {
         closeVenueModal();
         showToast(
             savedVenue.cover_image_url
@@ -6873,6 +6910,9 @@ async function saveVenue(event) {
            starts through openVenueModal(null) with a blank form.
         */
         closeVenueModal();
+        venueFormMode = "create";
+        const venueIdField = document.getElementById("venueId");
+        if (venueIdField) venueIdField.value = "";
         showToast(
             savedVenue.cover_image_url
                 ? "Venue and cover image added successfully. Add New Venue is ready for the next venue."
