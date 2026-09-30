@@ -4923,6 +4923,8 @@ function openVenueManagement() {
         title.textContent = "Venue Management";
     }
 
+    document.getElementById("crmLeadManagementBtn")?.classList.remove("active");
+    document.getElementById("crmLeadManagementBtn")?.removeAttribute("aria-current");
     document.getElementById("venueManagementBtn")?.classList.add("active");
 
     loadStage8Capabilities()
@@ -4946,6 +4948,8 @@ function showLeadManagement() {
     }
 
     document.getElementById("venueManagementBtn")?.classList.remove("active");
+    document.getElementById("crmLeadManagementBtn")?.classList.add("active");
+    document.getElementById("crmLeadManagementBtn")?.setAttribute("aria-current", "page");
 }
 
 async function loadVenues() {
