@@ -779,3 +779,56 @@ body .crm-app .leads-table td{overflow-wrap:anywhere;white-space:normal}
   .leads-table td{font-size:12px!important}
   .venue-assignment-item-title strong{font-size:14px!important}
 }
+
+
+/* SMV CRM HEADER V5 — clean, non-overlapping three-section header */
+.crm-header{
+  min-height:88px!important;height:88px!important;display:flex!important;align-items:center!important;gap:20px!important;
+  padding:0 20px!important;overflow:visible!important;
+  background:linear-gradient(100deg,#062f29 0%,#075b4e 48%,#087a69 100%)!important;
+  border-bottom:1px solid rgba(255,255,255,.12)!important;box-shadow:0 8px 24px rgba(3,35,30,.18)!important;
+}
+.crm-brand{display:flex!important;align-items:center!important;flex:0 1 400px!important;min-width:340px!important;gap:12px!important;overflow:hidden!important}
+.crm-header .crm-header-logo{flex:0 0 210px!important;width:210px!important;min-width:210px!important;max-width:210px!important;height:64px!important;min-height:64px!important;max-height:64px!important;object-fit:contain!important;object-position:left center!important}
+.crm-brand-text{min-width:0!important;overflow:hidden!important}
+.crm-brand-text strong{display:block!important;color:#f7fffd!important;font-size:22px!important;line-height:1.05!important;font-weight:800!important;letter-spacing:-.35px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.crm-header-title{display:flex!important;align-items:center!important;justify-content:center!important;flex:0 1 auto!important;min-width:0!important;margin:0!important;padding:0!important;position:static!important;gap:0!important;font-size:inherit!important;line-height:normal!important}
+.crm-header-title::after{display:none!important}
+.crm-top-nav{display:flex!important;align-items:center!important;gap:6px!important;padding:4px!important;border:1px solid rgba(255,255,255,.16)!important;border-radius:16px!important;background:rgba(255,255,255,.08)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 10px 22px rgba(0,0,0,.10)!important}
+.crm-nav-item{min-height:44px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;padding:0 14px!important;border:1px solid rgba(255,255,255,.20)!important;border-radius:12px!important;background:rgba(255,255,255,.95)!important;color:#14584e!important;font-size:13px!important;font-weight:850!important;letter-spacing:-.1px!important;white-space:nowrap!important;box-shadow:0 4px 12px rgba(0,0,0,.06)!important;transition:all .16s ease!important}
+.crm-nav-item:hover{transform:translateY(-1px)!important;border-color:#efcf76!important;background:#fffdf7!important;color:#075f54!important}
+.crm-nav-item.active{background:#eaf8f4!important;border-color:#9ed9cc!important;color:#075f54!important;box-shadow:0 6px 15px rgba(0,0,0,.10)!important}
+.crm-nav-icon{font-size:13px!important;line-height:1!important}
+.crm-header-actions{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:7px!important;flex:1 1 auto!important;min-width:0!important;margin-left:auto!important}
+.crm-header-actions>a,.crm-header-actions>button,.crm-header-actions .account-password-btn,.crm-header-actions .logout-btn{min-height:38px!important;padding:0 12px!important;border:1px solid rgba(255,255,255,.24)!important;border-radius:11px!important;background:rgba(255,255,255,.10)!important;color:#f4fffc!important;font-size:11px!important;font-weight:800!important;white-space:nowrap!important;box-shadow:none!important}
+.crm-header-actions>a:hover,.crm-header-actions>button:hover,.crm-header-actions .account-password-btn:hover,.crm-header-actions .logout-btn:hover{background:rgba(255,255,255,.16)!important;border-color:rgba(255,255,255,.42)!important;transform:translateY(-1px)!important}
+.staff-name{background:rgba(255,255,255,.10)!important;border-color:rgba(255,255,255,.20)!important;color:#f2fffc!important}
+.crm-main{padding-top:4px!important}
+.page-heading{margin-top:0!important;padding-top:0!important}
+.venue-management-section{padding-top:4px!important}
+@media(max-width:1500px){
+ .crm-brand{flex-basis:350px!important;min-width:290px!important}
+ .crm-header .crm-header-logo{flex-basis:190px!important;width:190px!important;min-width:190px!important}
+ .crm-brand-text strong{font-size:20px!important}
+ .crm-nav-item{padding:0 11px!important;font-size:12px!important}
+ .crm-header-actions>a,.crm-header-actions>button,.crm-header-actions .account-password-btn,.crm-header-actions .logout-btn{padding:0 9px!important}
+}
+@media(max-width:1180px){
+ .crm-header{height:auto!important;min-height:76px!important;flex-wrap:wrap!important;padding:7px 14px!important;gap:7px 12px!important}
+ .crm-brand{flex:1 1 360px!important;min-width:300px!important}
+ .crm-header-title{flex:1 1 100%!important;order:3!important;justify-content:flex-start!important;overflow:auto!important}
+ .crm-header-actions{flex:0 1 auto!important;margin-left:auto!important}
+}
+@media(max-width:760px){
+ .crm-header{min-height:64px!important;height:auto!important;flex-wrap:wrap!important;padding:7px 10px!important;gap:6px 8px!important}
+ .crm-brand{flex:1 1 auto!important;min-width:0!important}
+ .crm-header .crm-header-logo{width:150px!important;min-width:150px!important;flex-basis:150px!important;height:48px!important;min-height:48px!important;max-height:48px!important}
+ .crm-brand-text strong{font-size:18px!important}
+ .crm-header-title{width:100%!important;order:3!important}
+ .crm-top-nav{width:100%!important;overflow-x:auto!important;scrollbar-width:none!important}
+ .crm-top-nav::-webkit-scrollbar{display:none!important}
+ .crm-nav-item{min-height:39px!important;padding:0 10px!important;font-size:10.5px!important}
+ .crm-header-actions{gap:5px!important}
+ .crm-header-actions>a,.crm-header-actions>button,.crm-header-actions .account-password-btn,.crm-header-actions .logout-btn{min-height:33px!important;padding:0 8px!important;font-size:10px!important}
+ .crm-main{padding-top:2px!important}.page-heading{margin-bottom:12px!important}
+}
