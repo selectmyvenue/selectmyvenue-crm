@@ -337,14 +337,13 @@ window.startEmployeeIntegration=async function(client){
      out.location=out.location?[out.location,place].join(' / '):place;
    }
 
-   const amount=s.match(/(?:budget|per\s*(?:person|plate|head)|pp)\s*(?:is|of|around|approx|:|=|-)?\s*(?:rs\.?|inr|₹)?\s*(\d+(?:\.\d+)?)\s*(lacs?|lakhs?|lac|lakh|k|thousand)?\b/)||s.match(/(?:rs\.?|inr|₹)?\s*(\d+(?:\.\d+)?)\s*(lacs?|lakhs?|k|thousand)?\s*(?:\/\s*|per\s*)(?:person|plate|head|pax)\b/);
-     if(amount){const factor=/^la/.test(amount[2]||'')?100000:/^(k|thousand)$/.test(amount[2]||'')?1000:1;const n=Number(amount[1])*factor;if(/per\\s*(?:person|plate|head|pax)|\\/\\s*(?:person|plate|head|pax)|\\bpp\\b/.test(s))out.budget=n;else out.totalBudget=n;}
+   const amount=s.match(/(?:budget|per\s*(?:person|plate|head)|pp)\s*(?:is|of|around|approx|:|=|-)?\s*(?:rs\.?|inr|₹)?\s*(\d+(?:\.\d+)?)\s*(lacs?|lakhs?|lac|lakh|k|thousand)?\b/)||s.match(/(?:rs\.?|inr|₹)?\s*(\d+(?:\.\d+)?)\s*(lacs?|lakhs?|lac|lakh|k|thousand)?\s*(?:\/\s*|per\s*)(?:person|plate|head|pax)\b/);
+     if(amount){const factor=/^la/.test(amount[2]||'')?100000:/^(k|thousand)$/.test(amount[2]||'')?1000:1;const n=Number(amount[1])*factor;if(/per\s*(?:person|plate|head|pax)|\/\s*(?:person|plate|head|pax)|\bpp\b/.test(s))out.budget=n;else out.totalBudget=n;}
      else {
-       const total=s.match(/\\btotal(?:\\s+budget)?\\s*(?:is|of|:|=|-)?\\s*(?:rs\\.?|inr|₹)?\\s*(\\d+(?:\\.\\d+)?)\\b/i);
-       const lacOnly=s.match(/(?:^|\\s)(?:rs\\.?|inr|₹)?\\s*(\\d+(?:\\.\\d+)?)\\s*(lacs?|lakhs?|lac|lakh|k|thousand)\\b/i);
+       const total=s.match(/\btotal(?:\s+budget)?\s*(?:is|of|:|=|-)?\s*(?:rs\.?|inr|₹)?\s*(\d+(?:\.\d+)?)\b/i);
+       const lacOnly=s.match(/(?:^|\s)(?:rs\.?|inr|₹)?\s*(\d+(?:\.\d+)?)\s*(lacs?|lakhs?|lac|lakh|k|thousand)\b/i);
        if(total)out.totalBudget=Number(total[1]);
        else if(lacOnly){const factor=/^la/i.test(lacOnly[2])?100000:/^(k|thousand)$/i.test(lacOnly[2])?1000:1;out.totalBudget=Number(lacOnly[1])*factor;}
-     }
    }
    return out;
  }
