@@ -386,7 +386,8 @@ if(effectiveBudget>0){criteria++;relevantWeight+=15;if(!pmin)warnings.push("Pric
    if(!lead||['booked','closed','lost','not-interested'].includes(norm(lead.status)))return [];
    const spec=smvLeadSpec(lead);if(!spec.location||!spec.occasion)return [];
    const remaining=Math.max(0,2-assigned.size);if(!remaining)return[];
-   const rows=venues.filter(v=>v.venue_status==='approved'&&v.verification_status==='verified'&&!assigned.has(String(v.id)))
+   const isTestLikeVenue=v=>/\btest\b|\bdummy\b|\bsample\b/i.test(smvText(v?.venue_name));
+   const rows=venues.filter(v=>v.venue_status==='approved'&&v.verification_status==='verified'&&!assigned.has(String(v.id))&&!isTestLikeVenue(v))
      .map(v=>({v,m:smartMatch(v,lead)}))
      .filter(x=>!x.m.hardFail&&!x.m.warnings.some(w=>/budget exceeds/i.test(w)))
      .filter(x=>x.m.locationMatch||x.m.areaMatch||x.m.sameRegion||(x.m.distanceKm!==null&&x.m.distanceKm<=35))
