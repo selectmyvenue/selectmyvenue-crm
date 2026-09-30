@@ -385,7 +385,7 @@ if(effectiveBudget>0){criteria++;relevantWeight+=15;if(!pmin)warnings.push("Pric
  function smvShortlist(lead,venues,assigned) {
    if(!lead||['booked','closed','lost','not-interested'].includes(norm(lead.status)))return [];
    const spec=smvLeadSpec(lead);if(!spec.location||!spec.occasion)return [];
-   const remaining=Math.max(0,3-assigned.size);if(!remaining)return[];
+   const remaining=Math.max(0,2-assigned.size);if(!remaining)return[];
    const rows=venues.filter(v=>v.venue_status==='approved'&&v.verification_status==='verified'&&!assigned.has(String(v.id)))
      .map(v=>({v,m:smartMatch(v,lead)}))
      .filter(x=>!x.m.hardFail&&!x.m.warnings.some(w=>/budget exceeds/i.test(w)))
