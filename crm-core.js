@@ -6836,11 +6836,21 @@ async function saveVenue(event) {
     }
 
     if (coverMediaError) {
+        /*
+           The database row is already created/updated. For a NEW venue,
+           do not leave its id in the form after a partial media failure,
+           otherwise the next Save could update this same venue again.
+           Existing-venue edits remain open so the image can be retried.
+        */
+        if (!id) {
+            closeVenueModal();
+        }
         showToast(
-            "Venue details were saved, but the cover image change could not be completed. Please try the image again.",
+            !id
+                ? "Venue details were saved, but the cover image change could not be completed. Open Edit to retry the image."
+                : "Venue details were saved, but the cover image change could not be completed. Please try the image again.",
             "error"
         );
-        /* Details are already saved, so do not force a page refresh. */
         loadVenues().catch(error => console.warn("Venue background refresh failed:", error));
         return;
     }
