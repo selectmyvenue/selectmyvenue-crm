@@ -12,7 +12,7 @@
 
     <meta name="robots" content="noindex,nofollow,noarchive">
 
-    <title>Select My Venue CRM — Lead Management</title>
+    <title>Select My Venue — Lead Management</title>
 
     <link rel="stylesheet" href="crm.css?v=20260930-enquiry-sync-1">
 
@@ -48,8 +48,8 @@
         defer
     ></script>
 
-    <script defer src="crm-employee-integration.js?v=20261001-matching-reliability-20"></script><script defer src="crm-premium-ui-loader.js?v=20260924-balanced13-9"></script><script defer src="crm-mobile-20260923.js?v=20260924-all-fields-11"></script>
-<link rel="stylesheet" href="crm-branding.css?v=20260923-logo-tight-1"><link rel="stylesheet" href="crm-workspace.css?v=20261001-command-center-v3"><link rel="stylesheet" href="crm-premium-ui-20260923.css?v=20260924-location-final-6"><style>
+    <script defer src="crm-employee-integration.js?v=20261001-command-center-v4"></script><script defer src="crm-premium-ui-loader.js?v=20260924-balanced13-9"></script><script defer src="crm-mobile-20260923.js?v=20260924-all-fields-11"></script>
+<link rel="stylesheet" href="crm-branding.css?v=20260923-logo-tight-1"><link rel="stylesheet" href="crm-workspace.css?v=20261001-command-center-v4"><link rel="stylesheet" href="crm-premium-ui-20260923.css?v=20260924-location-final-6"><style>
 #venueForm #venueEventTypes{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
 #venueForm #venueEventTypes label{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;padding:8px 10px!important;border:1px solid #d5e8df;border-radius:8px;font-size:12px!important;letter-spacing:0!important;text-transform:none!important;cursor:pointer}
 #venueForm #venueEventTypes input{width:18px!important;height:18px!important;min-height:18px!important;flex:0 0 18px!important;margin:0!important;accent-color:#078568}
@@ -87,24 +87,45 @@
         </div>
 
 
-        <div class="crm-header-title">
-            <span id="crmPageTitle">Lead Management</span>
-            <button
-                type="button"
-                id="venueManagementBtn"
-                class="venue-nav-btn"
-            >
-                🏨 Venue Management
-            </button>
-            <a
-                href="billing/?v=20260926-3"
-                class="venue-nav-btn"
-                target="_blank"
-                rel="noopener"
-                title="Open standalone Billing Center"
-            >
-                💳 Billing Center
-            </a>
+        <div class="crm-header-title" aria-label="CRM navigation">
+            <div class="crm-module-pill" aria-label="CRM">
+                <span class="crm-module-icon" aria-hidden="true">▣</span>
+                <strong>CRM</strong>
+            </div>
+
+            <nav class="crm-top-nav" aria-label="CRM sections">
+                <button
+                    type="button"
+                    id="crmLeadManagementBtn"
+                    class="crm-nav-item active"
+                    aria-current="page"
+                    title="Lead Management"
+                >
+                    <span class="crm-nav-icon" aria-hidden="true">▦</span>
+                    <span id="crmPageTitle">Lead Management</span>
+                </button>
+
+                <button
+                    type="button"
+                    id="venueManagementBtn"
+                    class="crm-nav-item"
+                    title="Venue Management"
+                >
+                    <span class="crm-nav-icon" aria-hidden="true">🏨</span>
+                    <span>Venue Management</span>
+                </button>
+
+                <a
+                    href="billing/?v=20260926-3"
+                    class="crm-nav-item"
+                    target="_blank"
+                    rel="noopener"
+                    title="Open standalone Billing Center"
+                >
+                    <span class="crm-nav-icon" aria-hidden="true">💳</span>
+                    <span>Billing Center</span>
+                </a>
+            </nav>
         </div>
 
 
