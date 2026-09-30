@@ -7973,33 +7973,13 @@ async function saveVenueAssignments(options = {}) {
             reactivatedVenueIds.push(String(venueId));
         }
 
-        /* Manual checklist mode also supports true unassignment:
-           any currently-active assignment that staff explicitly unchecked is
-           cancelled, while the assignment history is retained. */
-        const activeForLead = allVenueAssignments.filter(
-            item =>
-                String(item.enquiry_id) === String(leadToAssign.id) &&
-                safeValue(item.assignment_status) !== "cancelled"
-        );
-        const selectedSet = new Set(selectedUnique.map(String));
-        const deselectedAssignments = manualSelectionTouched
-            ? activeForLead.filter(item => !selectedSet.has(String(item.venue_id)))
-            : [];
-
-        for (const assignment of deselectedAssignments) {
-            const { error: cancelError } = await client
-                .from("venue_enquiry_assignments")
-                .update({
-                    assignment_status: "cancelled",
-                    updated_at: nowIso,
-                    last_activity_at: nowIso
-                })
-                .eq("id", assignment.id);
-
-            if (cancelError) {
-                throw cancelError;
-            }
-        }
+        /*
+           IMPORTANT: assigning additional venues is append-only.
+           Existing active assignments must never be cancelled merely because
+           they are not visible/checked in this modal. Manual unassignment is
+           handled only by the explicit Remove/Unassign control, which updates
+           assignment_status to "cancelled".
+        */
 
         const rows = selectedUnique
             .filter(
