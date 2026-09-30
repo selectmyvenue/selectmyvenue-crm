@@ -102,7 +102,7 @@ window.startEmployeeIntegration=async function(client){
    ];
    rules.forEach(([label,re])=>{if(re.test(raw))add(label,'notes');});
    (raw.match(/\b(?:gurgaon|gurugram|delhi|noida)\s*(?:sec(?:tor)?|phase)[ .-]*\d+[a-z]?\b/gi)||[]).forEach(x=>add(x,'notes'));
-   if(city&&!out.some(x=>x.text.toLowerCase()===city.toLowerCase()))add(city,'city');
+   if(!out.length&&city)add(city,'city');
    return out;
  }
  function smvGeoNumber(v){
