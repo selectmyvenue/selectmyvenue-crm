@@ -454,8 +454,6 @@ window.startEmployeeIntegration=async function(client){
  const venueRegion=smvRegion(venueLocation);
  const optionRegions=locationOptions.map(x=>smvRegion(x.text)).filter(Boolean);
  const sameRegion=!!venueRegion&&optionRegions.includes(venueRegion);
- const nearestRequestedDistance=nearestOptionKm;
- const exactLocationPriority=locationMatch?3:(nearestRequestedDistance!==null&&nearestRequestedDistance<=15?2:(nearestRequestedDistance!==null&&nearestRequestedDistance<=25?1:0));
  const venueLocationTokens=new Set(smvLocationTokens(venueLocation));
  const explicitArea=!!clean(l?.preferred_area)&&!smvIsBroadLocation(clean(l?.preferred_area));
  const specificArea=explicitArea||locationOptions.length>0;
@@ -468,6 +466,7 @@ window.startEmployeeIntegration=async function(client){
  const optionDistances=venuePoint?optionPoints.map(p=>({key:p.key,km:smvDistanceKm(p,venuePoint)})).filter(x=>x.km!==null):[];
  const nearestOption=optionDistances.length?optionDistances.reduce((a,b)=>a.km<=b.km?a:b):null;
  const nearestOptionKm=nearestOption?.km??null;
+ const exactLocationPriority=locationMatch?3:(nearestOptionKm!==null&&nearestOptionKm<=15?2:(nearestOptionKm!==null&&nearestOptionKm<=25?1:0));
  const primaryDistanceKm=road?.km??directKm;
  const useRoadDistance=road&&primaryDistanceKm!==null&&(nearestOptionKm===null||primaryDistanceKm<=nearestOptionKm)&&!locationMatch;
  let distanceKm=null,distanceMode='unknown';
