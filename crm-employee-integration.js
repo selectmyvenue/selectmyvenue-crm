@@ -452,6 +452,8 @@ window.startEmployeeIntegration=async function(client){
  const leadRegion=smvRegion(primaryLocation);
  const venueLocation=smvText([v.venue_name,v.city,v.area,v.address].filter(Boolean).join(" "));
  const venueRegion=smvRegion(venueLocation);
+ const optionRegions=locationOptions.map(x=>smvRegion(x.text)).filter(Boolean);
+ const sameRegion=!!venueRegion&&optionRegions.includes(venueRegion);
  const venueLocationTokens=new Set(smvLocationTokens(venueLocation));
  const explicitArea=!!clean(l?.preferred_area)&&!smvIsBroadLocation(clean(l?.preferred_area));
  const specificArea=explicitArea||locationOptions.length>0;
