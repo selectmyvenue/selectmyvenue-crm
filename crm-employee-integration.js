@@ -407,6 +407,7 @@ if(effectiveBudget>0){criteria++;relevantWeight+=15;if(!pmin)warnings.push("Pric
    const rows=venues.filter(v=>v.venue_status==='approved'&&v.verification_status==='verified'&&!assigned.has(String(v.id))&&!isTestLikeVenue(v))
      .map(v=>({v,m:smartMatch(v,lead)}))
      .filter(x=>!x.m.hardFail&&!x.m.warnings.some(w=>/budget exceeds/i.test(w)))
+     .filter(x=>!x.m.spec.venueType||x.m.reasons.includes("Venue type"))
      .filter(x=>{
         const preferred=clean(lead?.preferred_area);
         if(preferred&&!smvIsBroadLocation(preferred)&&!x.m.areaMatch){
