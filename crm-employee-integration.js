@@ -238,7 +238,7 @@ window.startEmployeeIntegration=async function(client){
      const gap='(?:\\s*(?:requirements?|required|reqd|req|needed|need|want|around|about|approx|approximately|minimum|min|at least|of|count|chahiye|chaiye|chaheye|hai|hain|h|ka|ki|ke|total|available|hona|hone|should|be|:|=|-))*\\s*';
      let m=s.match(new RegExp('(?:'+noun+')\\b'+gap+n+'\\b','i'))||s.match(new RegExp('\\b'+n+gap+'(?:'+noun+')\\b','i'));
      if(!m)return null;
-     const nums=m[1].match(/\\d+/g)||[];
+     const nums=m[1].match(/\d+/g)||[];
      return {value:Math.max(...nums.map(Number)),exact:nums.length===1};
    };
    const numberNear=(s,noun)=>{
