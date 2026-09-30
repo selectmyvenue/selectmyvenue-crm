@@ -233,17 +233,11 @@ window.startEmployeeIntegration=async function(client){
    const out={};
    const clauses=t.split(/[\n;|,.!?]+(?!\d)/).filter(Boolean);
    const negative=s=>/\b(no|without|not|dont|don't|nahi|nahin|nhi)\b|नहीं/.test(s);
-   const numberNearInfo=(s,noun)=>{
+   const numberNear=(s,noun)=>{
      const n='(\\d+(?:\\s*(?:-|to|se)\\s*\\d+)?)';
      const gap='(?:\\s*(?:requirements?|required|reqd|req|needed|need|want|around|about|approx|approximately|minimum|min|at least|of|count|chahiye|chaiye|chaheye|hai|hain|h|ka|ki|ke|total|available|hona|hone|should|be|:|=|-))*\\s*';
      let m=s.match(new RegExp('(?:'+noun+')\\b'+gap+n+'\\b','i'))||s.match(new RegExp('\\b'+n+gap+'(?:'+noun+')\\b','i'));
-     if(!m)return null;
-     const nums=m[1].match(/\d+/g)||[];
-     return {value:Math.max(...nums.map(Number)),exact:nums.length===1};
-   };
-   const numberNear=(s,noun)=>{
-     const info=numberNearInfo(s,noun);
-     return info?info.value:null;
+     return m?Math.max(...m[1].match(/\d+/g).map(Number)):null;
    };
    for(const s of clauses){
      if(/\brooms?\b/.test(s)){
@@ -251,7 +245,8 @@ window.startEmployeeIntegration=async function(client){
        const n=numberNear(s,'rooms?');
        if(roomNeg||/\brooms?\s*[:=-]?\s*\d+\s+(?:nahi|nahin|nhi|not required)\b/.test(s))out.rooms=0;else if(n!==null)out.rooms=n;
      }
-     const guestInfo=numberNearInfo(s,'guests?|pax|people|persons?');if(guestInfo){if(guestInfo.exact||out.guestsExact!==true){out.guests=guestInfo.value;out.guestsExact=guestInfo.exact;}}
+     const guestMatch=s.match(/\bguest\s*count\s*[:=-]?\s*(\d+)(?:\s*(?:-|to|se)\s*(\d+))?/i)||s.match(/\b(\d+)(?:\s*(?:-|to|se)\s*(\d+))?\s*(?:guests?|pax|people|persons?)\b/i);
+     if(guestMatch){const nums=[guestMatch[1],guestMatch[2]].filter(Boolean).map(Number);out.guests=Math.max(...nums);out.guestsExact=nums.length===1;}
      const event=s.match(/\b(anniversary|birthday|engagement|reception|wedding|marriage|corporate|party)\b/);if(event&&!negative(s.slice(Math.max(0,event.index-12),event.index)))out.occasion=event[1];
      for(const [key,noun] of [['parking','parking'],['lawn','outdoor|lawn|open area'],['indoor','indoor|banquet hall']]){
        const re=new RegExp('\\b(?:'+noun+')\\b','g');let m;
