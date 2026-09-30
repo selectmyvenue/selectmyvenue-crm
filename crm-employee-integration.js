@@ -443,31 +443,58 @@ window.startEmployeeIntegration=async function(client){
      return words.length?words.every(w=>actualTokens.has(w)):!!region&&(region==='delhi ncr'||region===venueRegion);
    });
  }
- function smartMatch(v,l){const spec=smvLeadSpec(l),blob=smvText([v.area,v.city,v.address,v.venue_type,v.food_options,v.facilities,v.description].filter(Boolean).join(" ")),foodSupport=smvVenueFoodSupport(v,blob);let score=0,max=0,reasons=[],warnings=[],hardFail=false,knownWeight=0,relevantWeight=0,criteria=0;const test=(pts,required,knownData,ok,label,hard=false)=>{if(!required)return;criteria++;relevantWeight+=pts;if(!knownData){warnings.push(label+" unknown");return;}knownWeight+=pts;max+=pts;if(ok){score+=pts;reasons.push(label);}else{warnings.push(label+" mismatch");if(hard)hardFail=true;}};const locationOptions=Array.isArray(spec.locationOptions)&&spec.locationOptions.length?spec.locationOptions:[{text:spec.location||'',source:'primary'}],primaryOption=locationOptions.find(x=>x.source==='primary')||locationOptions[0],primaryLocation=clean(primaryOption?.text),locWords=smvLocationTokens(primaryLocation),leadRegion=smvRegion(primaryLocation),venueLocation=smvText([v.venue_name,v.city,v.area,v.address].filter(Boolean).join(" ")),venueRegion=smvRegion(venueLocation),venueLocationTokens=new Set(smvLocationTokens(venueLocation)),explicitArea=!!clean(l?.preferred_area)&&!smvIsBroadLocation(clean(l?.preferred_area)),specificArea=explicitArea||locationOptions.length>0,matchedLocationOption=locationOptions.find(x=>smvLocationMatch(x.text,venueLocation)),locationMatch=!!matchedLocationOption,areaMatch=locationOptions.some(x=>smvLocationTokens(x.text).some(w=>venueLocationTokens.has(w))),venueNameMatch=!!clean(l?.preferred_area)&&smvText(v.venue_name).includes(smvText(l.preferred_area)),optionRegions=locationOptions.map(x=>smvRegion(x.text)).filter(Boolean),sameRegion=!!venueRegion&&optionRegions.includes(venueRegion),crossRegion=!!leadRegion&&!!venueRegion&&leadRegion!=="delhi ncr"&&!optionRegions.includes(venueRegion)&&!locationMatch;test(25,!!locationOptions.length,!!venueLocation,!!locationMatch,"Location",crossRegion);if(locationMatch&&matchedLocationOption?.source==='notes')reasons.push("Notes location");if(venueNameMatch){score+=12;max+=12;reasons.push("Requested venue");}else if(specificArea&&areaMatch){score+=8;max+=8;reasons.push(matchedLocationOption?.source==='notes'?"Notes area":"Exact area");}else if(specificArea&&sameRegion&&!crossRegion){/* Location relationship is shown after distance is known. */}const leadPoint=smvLeadPoint(l),venuePoint=smvVenuePoint(v),road=smvRoadFor(v,l),directKm=smvDistanceKm(leadPoint,venuePoint);
-     const optionPoints=Object.values(l?.__smvLocationOptionPoints||{}).filter(p=>p&&Number.isFinite(Number(p.lat))&&Number.isFinite(Number(p.lon)));
-     const optionDistances=venuePoint?optionPoints.map(p=>smvDistanceKm(p,venuePoint)).filter(k=>k!==null):[];
-     const nearestOptionKm=optionDistances.length?Math.min(...optionDistances):null;
-     const primaryDistanceKm=road?.km??directKm;
-     const useRoadDistance=road&&primaryDistanceKm!==null&&(nearestOptionKm===null||primaryDistanceKm<=nearestOptionKm)&&!locationMatch;
-     /*
-       Never use a synthetic 0 km for a textual location match.
-       A matched area means "the venue satisfies the requested area", not
-       "the venue is physically at the same coordinate".
-       Prefer the real distance from the matched/requested location when
-       that option has been geocoded; otherwise fall back to the lead point.
-     */
-     let distanceKm=null,distanceMode='unknown';
-     if(locationMatch&&nearestOptionKm!==null){
-       distanceKm=nearestOptionKm;
-       distanceMode='straight';
-     }else if(primaryDistanceKm!==null){
-       distanceKm=primaryDistanceKm;
-       distanceMode=useRoadDistance?'road':'straight';
-     }else if(nearestOptionKm!==null){
-       distanceKm=nearestOptionKm;
-       distanceMode='straight';
-     }
-     const capMin=Number(v.capacity_min)||0,capMax=Number(v.capacity_max)||0,hasCapacity=!!(capMin||capMax),capacityOk=(!capMin||spec.guests>=capMin)&&(!capMax||spec.guests<=capMax);test(20,!!spec.guests,hasCapacity,capacityOk,"Capacity",true);const wanted=spec.venueType,actual=smvText(v.venue_type),wantedType=smvVenueTypeFamily(wanted),actualType=smvVenueTypeFamily(actual),typeMatch=!!wantedType&&!!actualType&&(wantedType===actualType||wanted.includes(actual)||actual.includes(wanted));test(10,!!wanted,!!actual,typeMatch,"Venue type");const effectiveBudget=spec.budget>0?spec.budget:(spec.totalBudget>0&&spec.guests>0?spec.totalBudget/spec.guests:0);
+ function smartMatch(v,l){const spec=smvLeadSpec(l),blob=smvText([v.area,v.city,v.address,v.venue_type,v.food_options,v.facilities,v.description].filter(Boolean).join(" ")),foodSupport=smvVenueFoodSupport(v,blob);
+ let score=0,max=0,reasons=[],warnings=[],hardFail=false,knownWeight=0,relevantWeight=0,criteria=0;
+ const test=(pts,required,knownData,ok,label,hard=false)=>{if(!required)return;criteria++;relevantWeight+=pts;if(!knownData){warnings.push(label+" unknown");return;}knownWeight+=pts;max+=pts;if(ok){score+=pts;reasons.push(label);}else{warnings.push(label+" mismatch");if(hard)hardFail=true;}};
+ const locationOptions=Array.isArray(spec.locationOptions)&&spec.locationOptions.length?spec.locationOptions:[{text:spec.location||'',source:'primary'}];
+ const primaryOption=locationOptions.find(x=>x.source==='primary')||locationOptions[0];
+ const primaryLocation=clean(primaryOption?.text);
+ const leadRegion=smvRegion(primaryLocation);
+ const venueLocation=smvText([v.venue_name,v.city,v.area,v.address].filter(Boolean).join(" "));
+ const venueRegion=smvRegion(venueLocation);
+ const venueLocationTokens=new Set(smvLocationTokens(venueLocation));
+ const explicitArea=!!clean(l?.preferred_area)&&!smvIsBroadLocation(clean(l?.preferred_area));
+ const specificArea=explicitArea||locationOptions.length>0;
+ const matchedLocationOption=locationOptions.find(x=>smvLocationMatch(x.text,venueLocation));
+ const locationMatch=!!matchedLocationOption;
+ const areaMatch=locationOptions.some(x=>smvLocationTokens(x.text).some(w=>venueLocationTokens.has(w)));
+ const venueNameMatch=!!clean(l?.preferred_area)&&smvText(v.venue_name).includes(smvText(l.preferred_area));
+ const leadPoint=smvLeadPoint(l),venuePoint=smvVenuePoint(v),road=smvRoadFor(v,l),directKm=smvDistanceKm(leadPoint,venuePoint);
+ const optionPoints=Object.entries(l?.__smvLocationOptionPoints||{}).map(([key,p])=>({key,...p})).filter(x=>x&&Number.isFinite(Number(x.lat))&&Number.isFinite(Number(x.lon)));
+ const optionDistances=venuePoint?optionPoints.map(p=>({key:p.key,km:smvDistanceKm(p,venuePoint)})).filter(x=>x.km!==null):[];
+ const nearestOption=optionDistances.length?optionDistances.reduce((a,b)=>a.km<=b.km?a:b):null;
+ const nearestOptionKm=nearestOption?.km??null;
+ const primaryDistanceKm=road?.km??directKm;
+ const useRoadDistance=road&&primaryDistanceKm!==null&&(nearestOptionKm===null||primaryDistanceKm<=nearestOptionKm)&&!locationMatch;
+ let distanceKm=null,distanceMode='unknown';
+ if(locationMatch&&nearestOptionKm!==null){distanceKm=nearestOptionKm;distanceMode='straight';}
+ else if(primaryDistanceKm!==null){distanceKm=primaryDistanceKm;distanceMode=useRoadDistance?'road':'straight';}
+ else if(nearestOptionKm!==null){distanceKm=nearestOptionKm;distanceMode='straight';}
+
+ /*
+   Every location supplied by the customer is an independent geographic requirement:
+   Venue/Area, plus each location mentioned in notes/comments. A venue can satisfy
+   the location requirement by being in the named place OR by being reasonably near
+   any one of those named places. The nearest requested location drives the location
+   label/bonus; other requirements still decide the final ranking.
+ */
+ const nearby15=nearestOptionKm!==null&&nearestOptionKm<=15;
+ const nearby25=nearestOptionKm!==null&&nearestOptionKm<=25;
+ const nearby35=nearestOptionKm!==null&&nearestOptionKm<=35;
+ const geographicMatch=locationMatch||nearby25;
+ const optionLabel=nearestOption?.key?smvPretty(nearestOption.key):'requested location';
+ const nearbyLabel=nearby15?'Nearby area':nearby25?'Nearby NCR':'Regional alternative';
+ let locationOk=locationMatch||nearby25;
+ let crossRegion=!!leadRegion&&!!venueRegion&&leadRegion!=="delhi ncr"&&!locationMatch&&!nearby25;
+ if(crossRegion&&nearby35){crossRegion=false;locationOk=true;}
+ test(25,!!locationOptions.length,!!venueLocation,locationOk,"Location",crossRegion);
+ if(locationMatch&&matchedLocationOption?.source==='notes')reasons.push("Notes location");
+ if(locationMatch&&matchedLocationOption?.source==='primary')reasons.push("Venue/Area");
+ if(!locationMatch&&nearby25){score+=nearby15?21:17;max+=25;knownWeight+=25;relevantWeight+=25;reasons.push(nearbyLabel+" · "+optionLabel);}
+ if(venueNameMatch){score+=12;max+=12;reasons.push("Requested venue");}
+ else if(specificArea&&areaMatch){score+=8;max+=8;reasons.push(matchedLocationOption?.source==='notes'?"Notes area":"Exact area");}
+
+const capMin=Number(v.capacity_min)||0,capMax=Number(v.capacity_max)||0,hasCapacity=!!(capMin||capMax),capacityOk=(!capMin||spec.guests>=capMin)&&(!capMax||spec.guests<=capMax);test(20,!!spec.guests,hasCapacity,capacityOk,"Capacity",true);const wanted=spec.venueType,actual=smvText(v.venue_type),wantedType=smvVenueTypeFamily(wanted),actualType=smvVenueTypeFamily(actual),typeMatch=!!wantedType&&!!actualType&&(wantedType===actualType||wanted.includes(actual)||actual.includes(wanted));test(10,!!wanted,!!actual,typeMatch,"Venue type");const effectiveBudget=spec.budget>0?spec.budget:(spec.totalBudget>0&&spec.guests>0?spec.totalBudget/spec.guests:0);
 const pmin=Number(v.price_min_per_person)||Number(v.budget_min)||0;
 if(effectiveBudget>0){criteria++;relevantWeight+=15;if(!pmin)warnings.push("Price unknown");else{knownWeight+=15;max+=15;if(pmin<=effectiveBudget){score+=15;reasons.push(spec.budget>0?"Budget":"Budget ≈ total budget ÷ guests");}else{const over=Math.round((pmin-effectiveBudget)/Math.max(effectiveBudget,1)*100);if(over<=15){score+=9;warnings.push("Budget slightly higher ("+over+"%)");}else{warnings.push("Budget exceeds by "+over+"%");hardFail=true;}}}}const hasRoomData=(v.room_count!==null&&v.room_count!==undefined&&String(v.room_count).trim()!==''&&Number.isFinite(Number(v.room_count)))||v.rooms_available===false;test(10,!!spec.rooms,hasRoomData,v.rooms_available!==false&&Number(v.room_count)>=spec.rooms,"Rooms",true);test(6,!!spec.parking,v.parking_available!==null&&v.parking_available!==undefined,v.parking_available===true,"Parking");const explicitFood=!!smvText(l?.food_preference)||spec.inferred.veg!==undefined||spec.inferred.nonveg!==undefined;test(5,!!spec.veg,v.food_veg!==null&&v.food_veg!==undefined||foodSupport.veg,foodSupport.veg,"Veg food",explicitFood,true);test(5,!!spec.nonveg,v.food_non_veg!==null&&v.food_non_veg!==undefined||foodSupport.nonveg,foodSupport.nonveg,"Non-veg food",explicitFood,true);test(4,!!spec.lawn,v.outdoor_available!==null&&v.outdoor_available!==undefined||/(lawn|outdoor|farmhouse|farm house|open area)/.test(blob),v.outdoor_available===true||/(lawn|outdoor|farmhouse|farm house|open area)/.test(blob),"Outdoor/Lawn");test(4,!!spec.indoor,v.indoor_available!==null&&v.indoor_available!==undefined||/(indoor|banquet|hall|ballroom)/.test(blob),v.indoor_available===true||/(indoor|banquet|hall|ballroom)/.test(blob),"Indoor");const supported=(Array.isArray(v.event_types)?v.event_types:clean(v.event_types).split(/[,;|]/)).map(smvEventFamily).filter(Boolean),event=smvEventFamily(spec.occasion);if(event&&event!=='other'){const known=supported.length>0;test(8,true,known,supported.includes(event)||supported.includes('all')||supported.includes('all occasions'),"Event type",true);}const dataConfidence=relevantWeight?Math.round(knownWeight/relevantWeight*100):0,rawScore=max?Math.round(score/max*100):0;let scorePct=hardFail?0:Math.round(rawScore*(dataConfidence/100));if(!hardFail&&specificArea&&!areaMatch&&distanceKm===null&&sameRegion)scorePct=Math.min(scorePct,72);const insufficient=criteria<2||relevantWeight===0;return{score:insufficient?0:scorePct,rawScore,dataConfidence,criteria,insufficient,hardFail,reasons,warnings:[...new Set(warnings)],spec,areaMatch,specificArea,locationMatch,sameRegion,distanceKm,distanceMode,roadMinutes:road?.min??null};}
  function smvCompareMatches(a,b){const ad=a.m.distanceKm,bd=b.m.distanceKm;return Number(a.m.hardFail)-Number(b.m.hardFail)||b.m.score-a.m.score||((ad===null)-(bd===null))||((ad??9999)-(bd??9999))||(a.m.spec.rooms ? Number(b.m.reasons.includes("Rooms"))-Number(a.m.reasons.includes("Rooms")) : 0)||clean(a.v.venue_name).localeCompare(clean(b.v.venue_name));}
