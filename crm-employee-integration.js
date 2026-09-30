@@ -101,6 +101,15 @@ window.startEmployeeIntegration=async function(client){
      ['faridabad',/\bfaridabad\b/i],['noida',/\bnoida\b/i],['greater noida',/\bgreater\s*noida\b/i],['ghaziabad',/\bghaziabad\b/i],['delhi ncr',/\bdelhi\s*ncr\b|\bncr\b/i]
    ];
    rules.forEach(([label,re])=>{if(re.test(raw))add(label,'notes');});
+   // Also preserve any free-form location explicitly written in the lead notes.
+   // This is intentionally additive: Venue / Area remains a single field, while
+   // every location written in COMMENT/notes becomes an equal matching option.
+   for(const source of [l?.requirements,l?.internal_notes,l?.contact_remark]){
+     const parsed=smvParseNotes(source);
+     if(parsed?.location)add(parsed.location,'notes');
+     const labeled=String(source||'').match(/(?:preferred\s+)?(?:venue\s*\/?\s*area|venue\s+area|location|locality|area)\s*[:=-]\s*([^\n]+)/i);
+     if(labeled?.[1])add(labeled[1],'notes');
+   }
    (raw.match(/\b(?:gurgaon|gurugram|delhi|noida)\s*(?:sec(?:tor)?|phase)[ .-]*\d+[a-z]?\b/gi)||[]).forEach(x=>add(x,'notes'));
    if(!out.length&&city)add(city,'city');
    return out;
