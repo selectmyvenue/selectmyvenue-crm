@@ -6835,10 +6835,6 @@ async function saveVenue(event) {
         resetVenueSaveState();
     }
 
-    if (!id) {
-        prepareSavedVenueForPartnerAccess(savedVenue);
-    }
-
     if (coverMediaError) {
         showToast(
             "Venue details were saved, but the cover image change could not be completed. Please try the image again.",
@@ -6859,10 +6855,18 @@ async function saveVenue(event) {
         );
     }
     else {
+        /*
+           A successful CREATE must finish the current entry session.
+           Keeping the newly-created venue id in #venueId caused the next
+           manual edit/save to update the same venue instead of creating
+           another record. Close the modal so the next "Add New Venue"
+           starts through openVenueModal(null) with a blank form.
+        */
+        closeVenueModal();
         showToast(
             savedVenue.cover_image_url
-                ? "Venue and cover image added. Partner access is now ready."
-                : "Venue added. Partner access is now ready.",
+                ? "Venue and cover image added successfully. Add New Venue is ready for the next venue."
+                : "Venue added successfully. Add New Venue is ready for the next venue.",
             "success"
         );
     }
