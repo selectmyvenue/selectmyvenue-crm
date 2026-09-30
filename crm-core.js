@@ -4910,20 +4910,13 @@ function setupVenueManagement() {
 function openVenueManagement() {
     const main = document.querySelector(".crm-main");
     const venueSection = document.getElementById("venueManagementSection");
-    const title = document.getElementById("crmPageTitle");
-
-    if (!main || !venueSection) {
+if (!main || !venueSection) {
         return;
     }
 
     main.hidden = true;
     venueSection.hidden = false;
-
-    if (title) {
-        title.textContent = "Venue Management";
-    }
-
-    document.getElementById("crmLeadManagementBtn")?.classList.remove("active");
+document.getElementById("crmLeadManagementBtn")?.classList.remove("active");
     document.getElementById("crmLeadManagementBtn")?.removeAttribute("aria-current");
     document.getElementById("venueManagementBtn")?.classList.add("active");
 
@@ -4934,20 +4927,13 @@ function openVenueManagement() {
 function showLeadManagement() {
     const main = document.querySelector(".crm-main");
     const venueSection = document.getElementById("venueManagementSection");
-    const title = document.getElementById("crmPageTitle");
-
-    if (!main || !venueSection) {
+if (!main || !venueSection) {
         return;
     }
 
     venueSection.hidden = true;
     main.hidden = false;
-
-    if (title) {
-        title.textContent = "Lead Management";
-    }
-
-    document.getElementById("venueManagementBtn")?.classList.remove("active");
+document.getElementById("venueManagementBtn")?.classList.remove("active");
     document.getElementById("crmLeadManagementBtn")?.classList.add("active");
     document.getElementById("crmLeadManagementBtn")?.setAttribute("aria-current", "page");
 }
