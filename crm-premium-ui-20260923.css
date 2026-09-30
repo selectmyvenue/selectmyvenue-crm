@@ -1907,3 +1907,229 @@ body{font-size:14.5px!important}
   .leads-table td:nth-child(12) .view-lead-btn{min-width:68px!important;max-width:none!important}
   .leads-table td:nth-child(13) .venue-assign-btn{min-width:78px!important;max-width:none!important}
 }
+
+
+/* =========================================================
+   SMV FINAL HEADER + TABLET OVERRIDE V10
+   This block is intentionally LAST in the premium stylesheet.
+   It wins over all historical header/table geometry rules.
+   ========================================================= */
+
+/* MASTER CRM HEADER — compact, contained, no overflow */
+.crm-header{
+  min-height:68px!important;
+  height:68px!important;
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:minmax(270px,310px) minmax(455px,1fr) minmax(355px,420px)!important;
+  align-items:center!important;
+  gap:10px!important;
+  padding:0 10px!important;
+  margin:0!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+}
+.crm-brand{
+  min-width:0!important;
+  max-width:310px!important;
+  width:100%!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  overflow:hidden!important;
+}
+.crm-header .crm-brand .crm-header-logo{
+  width:205px!important;
+  min-width:205px!important;
+  max-width:205px!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:54px!important;
+  flex:0 0 205px!important;
+  aspect-ratio:488/83!important;
+  object-fit:contain!important;
+  object-position:left center!important;
+  margin:0!important;
+}
+.crm-brand-text{
+  min-width:0!important;
+  max-width:58px!important;
+  flex:0 1 58px!important;
+  overflow:hidden!important;
+}
+.crm-brand-text strong{
+  display:block!important;
+  max-width:100%!important;
+  margin:0!important;
+  color:#f7fffc!important;
+  font-size:16px!important;
+  line-height:1!important;
+  font-weight:900!important;
+  letter-spacing:.04em!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.crm-header-title{
+  min-width:0!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+}
+.crm-top-nav{
+  width:max-content!important;
+  max-width:100%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  padding:3px!important;
+  border:1px solid rgba(255,255,255,.16)!important;
+  border-radius:13px!important;
+  background:rgba(255,255,255,.06)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07)!important;
+  overflow:hidden!important;
+}
+.crm-nav-item{
+  min-width:0!important;
+  min-height:40px!important;
+  height:40px!important;
+  padding:0 13px!important;
+  border-radius:10px!important;
+  font-size:11.5px!important;
+  font-weight:900!important;
+  white-space:nowrap!important;
+}
+.crm-nav-icon{
+  width:13px!important;
+  height:13px!important;
+  flex:0 0 13px!important;
+  font-size:10px!important;
+}
+.crm-header-actions{
+  min-width:0!important;
+  max-width:420px!important;
+  width:100%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:5px!important;
+  margin:0!important;
+  overflow:hidden!important;
+}
+.crm-header-actions .staff-name,
+.crm-header-actions .account-password-btn,
+.crm-header-actions .logout-btn{
+  min-width:0!important;
+  min-height:32px!important;
+  height:32px!important;
+  padding:0 8px!important;
+  border-radius:9px!important;
+  font-size:9.5px!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  flex:0 1 auto!important;
+}
+.crm-header-actions .staff-name{width:145px!important;max-width:145px!important}
+.crm-header-actions .account-password-btn{width:136px!important;max-width:136px!important}
+.crm-header-actions .logout-btn{width:72px!important;max-width:72px!important}
+.crm-main{
+  margin-top:0!important;
+  padding-top:0!important;
+}
+.crm-app{margin-top:0!important}
+.page-heading{
+  margin-top:0!important;
+  margin-bottom:8px!important;
+  padding-top:0!important;
+}
+
+/* At common desktop/tablet widths, keep every header control inside. */
+@media(max-width:1500px) and (min-width:1201px){
+  .crm-header{
+    grid-template-columns:minmax(255px,285px) minmax(440px,1fr) minmax(345px,390px)!important;
+    gap:8px!important;
+    padding:0 8px!important;
+  }
+  .crm-header .crm-brand .crm-header-logo{
+    width:190px!important;min-width:190px!important;max-width:190px!important;
+  }
+  .crm-brand-text{max-width:50px!important;flex-basis:50px!important}
+  .crm-brand-text strong{font-size:15px!important}
+  .crm-nav-item{padding:0 10px!important;font-size:10.8px!important}
+  .crm-header-actions .staff-name{width:132px!important;max-width:132px!important}
+  .crm-header-actions .account-password-btn{width:125px!important;max-width:125px!important}
+  .crm-header-actions .logout-btn{width:66px!important;max-width:66px!important}
+}
+
+/* 900–1200: two compact rows rather than letting boxes escape the shell. */
+@media(max-width:1200px) and (min-width:901px){
+  .crm-header{
+    min-height:78px!important;
+    height:78px!important;
+    grid-template-columns:minmax(250px,1fr) minmax(330px,430px)!important;
+    grid-template-rows:40px 32px!important;
+    gap:4px 8px!important;
+    padding:4px 8px!important;
+  }
+  .crm-brand{grid-column:1!important;grid-row:1!important}
+  .crm-header-actions{grid-column:2!important;grid-row:1!important;justify-content:flex-end!important}
+  .crm-header-title{
+    grid-column:1 / -1!important;
+    grid-row:2!important;
+    justify-content:flex-start!important;
+  }
+  .crm-top-nav{max-width:100%!important;justify-content:flex-start!important}
+  .crm-nav-item{min-height:32px!important;height:32px!important;padding:0 9px!important;font-size:10px!important}
+  .crm-header .crm-brand .crm-header-logo{width:175px!important;min-width:175px!important;max-width:175px!important}
+  .crm-brand-text strong{font-size:14px!important}
+  .crm-header-actions .staff-name{width:125px!important;max-width:125px!important}
+  .crm-header-actions .account-password-btn{width:118px!important;max-width:118px!important}
+  .crm-header-actions .logout-btn{width:62px!important;max-width:62px!important}
+}
+
+/* TABLET CUSTOMER ENQUIRIES — take width from EVENT + GUESTS for PHONE */
+@media(min-width:761px) and (max-width:1200px){
+  .leads-table{
+    min-width:1435px!important;
+    width:100%!important;
+    table-layout:fixed!important;
+  }
+  .leads-table th,.leads-table td{
+    display:table-cell!important;
+    box-sizing:border-box!important;
+  }
+  .leads-table th:nth-child(1),.leads-table td:nth-child(1){width:125px!important}
+  .leads-table th:nth-child(2),.leads-table td:nth-child(2){width:125px!important}
+  .leads-table th:nth-child(3),.leads-table td:nth-child(3){width:145px!important}
+  .leads-table th:nth-child(4),.leads-table td:nth-child(4){width:120px!important}
+  .leads-table th:nth-child(5),.leads-table td:nth-child(5){width:95px!important}
+  .leads-table th:nth-child(6),.leads-table td:nth-child(6){width:95px!important}
+  .leads-table th:nth-child(7),.leads-table td:nth-child(7){width:115px!important}
+  .leads-table th:nth-child(8),.leads-table td:nth-child(8){width:50px!important;text-align:center!important}
+  .leads-table th:nth-child(9),.leads-table td:nth-child(9){width:190px!important}
+  .leads-table th:nth-child(10),.leads-table td:nth-child(10){width:120px!important;text-align:center!important}
+  .leads-table th:nth-child(11),.leads-table td:nth-child(11){width:70px!important;text-align:center!important}
+  .leads-table th:nth-child(12),.leads-table td:nth-child(12){width:85px!important;text-align:center!important}
+  .leads-table th:nth-child(13),.leads-table td:nth-child(13){width:95px!important;text-align:center!important}
+  .leads-table td:nth-child(2){
+    white-space:nowrap!important;
+    overflow-wrap:normal!important;
+    word-break:normal!important;
+  }
+  .leads-table td:nth-child(6),
+  .leads-table td:nth-child(8){
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+}
