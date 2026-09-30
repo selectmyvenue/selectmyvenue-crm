@@ -637,3 +637,145 @@ body .crm-app .leads-table td{overflow-wrap:anywhere;white-space:normal}
     min-width:0!important;
   }
 }
+
+
+/* =========================================================
+   SMV PREMIUM WORKSPACE TYPE + CRM HEADER V4
+   UI ONLY — no data/workflow behavior changed.
+   ========================================================= */
+.crm-header{
+  min-height:88px!important;
+  grid-template-columns:minmax(250px,1fr) auto minmax(300px,1fr)!important;
+  gap:18px!important;
+  padding:10px 28px!important;
+}
+.crm-brand{gap:12px!important}
+.crm-brand-text strong{font-size:22px!important;letter-spacing:-.35px!important}
+.crm-header-title{
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:9px!important;
+  white-space:nowrap!important;
+  font-size:inherit!important;
+  line-height:normal!important;
+  letter-spacing:normal!important;
+  color:inherit!important;
+  text-align:left!important;
+}
+.crm-header-title::after{display:none!important}
+.crm-module-pill{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  min-height:42px!important;
+  padding:0 14px!important;
+  border:1px solid #0a796d!important;
+  border-radius:13px!important;
+  background:linear-gradient(135deg,#063f3a,#087f74)!important;
+  color:#fff!important;
+  box-shadow:0 8px 18px rgba(4,79,69,.20)!important;
+  flex:0 0 auto!important;
+}
+.crm-module-pill strong{font-size:14px!important;letter-spacing:.08em!important}
+.crm-module-icon{font-size:15px!important;line-height:1!important;opacity:.95!important}
+.crm-top-nav{
+  display:flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  padding:4px!important;
+  border:1px solid #d4e7e2!important;
+  border-radius:15px!important;
+  background:rgba(255,255,255,.86)!important;
+  box-shadow:0 7px 20px rgba(5,82,73,.08)!important;
+}
+.crm-nav-item{
+  min-height:40px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  padding:0 12px!important;
+  border:1px solid transparent!important;
+  border-radius:11px!important;
+  background:transparent!important;
+  color:#2a554d!important;
+  font-size:12px!important;
+  font-weight:850!important;
+  white-space:nowrap!important;
+  box-shadow:none!important;
+  transition:all .16s ease!important;
+}
+.crm-nav-item:hover{background:#eef8f5!important;border-color:#c4ded7!important;color:#075f54!important}
+.crm-nav-item.active{
+  background:linear-gradient(135deg,#dff4ee,#edf9f6)!important;
+  border-color:#a6d3c8!important;
+  color:#075f54!important;
+  box-shadow:0 5px 12px rgba(7,104,88,.10)!important;
+}
+.crm-nav-icon{font-size:14px!important;line-height:1!important}
+.crm-header-actions{gap:7px!important}
+.crm-header-actions>a,.crm-header-actions>button,.crm-header-actions .account-password-btn,.crm-header-actions .logout-btn{min-height:36px!important;padding:0 11px!important;font-size:12px!important}
+
+/* Readability lift across the working CRM — header branding is intentionally excluded. */
+.crm-main{font-size:15px!important}
+.page-kicker{font-size:11px!important}
+.page-heading h1{font-size:36px!important;line-height:1.08!important}
+.page-heading p{font-size:14px!important;line-height:1.55!important}
+.command-health{font-size:12px!important}
+.filter-bar input,.filter-bar select{font-size:14px!important}
+.filter-workspace-note{font-size:12px!important}
+#leadWorkViews button{font-size:12.5px!important}
+#leadWorkViews button strong{font-size:21px!important}
+.lead-pagination{font-size:13px!important}
+.leads-table th{font-size:11px!important}
+.leads-table td{font-size:13px!important;line-height:1.4!important}
+.leads-table td strong{font-size:13.5px!important}
+.leads-table .venue-assign-btn,.leads-table .assign-btn{font-size:12px!important}
+.detail-section-title,.detail-section-title span{font-size:13px!important}
+.detail-section-title h3{font-size:16px!important}
+.form-group label,.crm-field-label{font-size:12px!important}
+.form-group input,.form-group select,.form-group textarea{font-size:14px!important}
+.venue-page-heading h1{font-size:34px!important}
+.venue-page-heading p{font-size:14px!important}
+.venue-table th{font-size:10.5px!important}
+.venue-table td{font-size:13px!important}
+.venue-stat-card strong{font-size:24px!important}
+.venue-stat-card span{font-size:11px!important}
+.venue-search-input,.venue-filter-select{font-size:14px!important}
+.venue-assignment-requirement{font-size:13px!important}
+.venue-assignment-toolbar input{font-size:14px!important}
+.smv-match-panel-title b{font-size:15px!important}
+.smv-match-panel-title span{font-size:11px!important}
+.smv-match-panel-tabs button{font-size:12px!important;min-height:36px!important}
+.venue-assignment-item-title strong{font-size:15px!important}
+.venue-assignment-item-meta{font-size:11px!important;line-height:1.45!important}
+.venue-assignment-item-status{font-size:11px!important}
+.smv-match-score,.venue-assignment-recommended,.smv-assigned-badge,.smv-match-low{font-size:10.5px!important}
+.smv-match-chip{font-size:10px!important}
+.smv-readiness span{font-size:10px!important}
+.smv-summary-title{font-size:11px!important}
+.smv-venue-chip{font-size:11px!important}
+.smv-summary-empty{font-size:11px!important}
+.venue-assignment-note label{font-size:11px!important}
+.venue-assignment-note textarea{font-size:13px!important}
+.venue-assignment-actions button{font-size:13px!important}
+
+@media(max-width:1180px){
+  .crm-header{grid-template-columns:1fr auto!important;gap:10px!important}
+  .crm-brand{grid-column:1}
+  .crm-header-title{grid-column:2;justify-self:end}
+  .crm-header-actions{grid-column:1 / -1;justify-content:flex-end}
+}
+@media(max-width:760px){
+  .crm-header{grid-template-columns:1fr!important;padding:8px 12px!important;gap:8px!important}
+  .crm-brand,.crm-header-title,.crm-header-actions{grid-column:1!important;justify-self:stretch!important}
+  .crm-header-title{justify-content:flex-start!important;overflow:auto!important;padding-bottom:2px!important}
+  .crm-top-nav{overflow:auto!important;max-width:100%!important}
+  .crm-nav-item{font-size:11px!important;padding:0 9px!important}
+  .crm-module-pill{min-height:38px!important;padding:0 11px!important}
+  .page-heading h1{font-size:31px!important}
+  .leads-table td{font-size:12px!important}
+  .venue-assignment-item-title strong{font-size:14px!important}
+}
