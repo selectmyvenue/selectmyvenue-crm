@@ -918,7 +918,7 @@ let venues=(assignmentVenueRows||[]).filter(v=>{if(!assignmentSearch)return true
   if(!assignmentSearch&&tier!=='all'&&tier!=='assigned'&&tier==='possible'){
     controls.dataset.tier='all';
     controls.querySelectorAll('[data-tier]').forEach(button=>button.classList.toggle('active',button.dataset.tier==='all'));
-    venues=(assignmentVenueRows||[]).filter(v=>!already.has(String(v.id)));
+    venues=(assignmentVenueRows||[]).filter(v=>!already.has(String(v.id))&&!/\btest\b|\bdummy\b|\bsample\b/i.test(smvText(v?.venue_name)));
     venues.sort((a,b)=>smvCompareMatches({v:a,m:smartMatch(a,assignmentCurrentLead)},{v:b,m:smartMatch(b,assignmentCurrentLead)}));
   }
 }
