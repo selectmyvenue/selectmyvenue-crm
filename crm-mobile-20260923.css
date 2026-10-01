@@ -2492,3 +2492,13 @@
   html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(9)::before{content:"Plan"!important}
   html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(10)::before{content:"Public"!important}
 }
+
+@media(max-width:760px){
+  html.smv-phone-crm body #venueManagementSection .venue-page-heading{
+    min-height:126px!important;
+    align-items:start!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-heading-actions{
+    padding-top:1px!important;
+  }
+}
