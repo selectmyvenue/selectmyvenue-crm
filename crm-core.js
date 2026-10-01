@@ -7801,16 +7801,24 @@ async function loadAssignmentVenueOptions() {
        Venue Management but disappear from the assignment modal.
     */
     try {
-        if (!Array.isArray(allVenues) || allVenues.length === 0) {
-            await loadVenues();
+        /*
+           Always refresh this list from Supabase when the assignment modal opens.
+           Do not reuse a possibly stale in-memory allVenues array: a venue can be
+           approved/verified after the CRM workspace was first loaded, which used
+           to leave the assignment modal one venue short (e.g. Test Venue).
+        */
+        const { data, error } = await client
+            .from("venues")
+            .select("*")
+            .eq("venue_status", "approved")
+            .eq("verification_status", "verified")
+            .order("created_at", { ascending: false });
+
+        if (error) {
+            throw error;
         }
 
-        const managementVenues = Array.isArray(allVenues) ? allVenues : [];
-
-        assignmentVenueRows = managementVenues.filter(venue =>
-            safeValue(venue.venue_status) === "approved" &&
-            safeValue(venue.verification_status) === "verified"
-        );
+        assignmentVenueRows = Array.isArray(data) ? data : [];
 
         renderAssignmentVenues();
         return;
