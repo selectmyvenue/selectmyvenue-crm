@@ -373,7 +373,7 @@ $("venueSearch").addEventListener("input",renderVenueList);
 $("refreshBtn").addEventListener("click",async()=>{try{await loadData();toast("Billing refreshed.");}catch(e){toast(e.message||"Refresh failed.",true);}});
 $("venueList").addEventListener("click",async e=>{const b=e.target.closest("[data-select-venue]");if(!b)return;selectedVenueId=b.dataset.selectVenue;localStorage.setItem("smv_billing_center_venue_id",selectedVenueId);history.replaceState(null,"","billing/?venue_id="+encodeURIComponent(selectedVenueId));renderSelected();});
 $("termMonths").addEventListener("change",()=>{updatePricing();updateEnd();});$("startDate").addEventListener("change",updateEnd);$("amount").addEventListener("input",()=>{$("amount").dataset.auto="false";updateTotals();});$("gstApplied").addEventListener("change",updateTotals);$("status").addEventListener("change",()=>{$("paymentMethod").disabled=$("status").value!=="paid";$("dueDate").disabled=$("status").value!=="pending";});
-$("planCode").addEventListener("change",()=>{populateTermOptions();updateEnd();});
+$("planCode").addEventListener("change",()=>{$("amount").value="";$("amount").dataset.auto="true";populateTermOptions();updateEnd();});
 $("billingForm").addEventListener("submit",saveBilling);
 $("clearFormBtn").addEventListener("click",clearPaymentInputs);
 $("historyBody").addEventListener("click",e=>{const a=e.target.closest("[data-mark-paid],[data-remind],[data-confirm]");if(!a)return;if(a.dataset.markPaid)openPaidModal(a.dataset.markPaid);else if(a.dataset.remind){const r=records.find(x=>x.id===a.dataset.remind);if(r)remind(r);}else if(a.dataset.confirm){const r=records.find(x=>x.id===a.dataset.confirm);if(r)openConfirmation(r);}});
