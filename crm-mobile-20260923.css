@@ -2215,3 +2215,14 @@
     display:none!important;
   }
 }
+
+
+@media(max-width:760px){
+  /* Venue Management: keep account actions out of this workspace. */
+  html.smv-phone-crm body:has(#venueManagementSection:not([hidden])) .smv-mobile-more-menu [data-smv-more="logout"]{
+    display:none!important;
+  }
+  html.smv-phone-crm body:has(#venueManagementSection:not([hidden])) .crm-header .crm-header-actions{
+    display:none!important;
+  }
+}
