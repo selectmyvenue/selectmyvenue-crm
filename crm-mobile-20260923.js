@@ -264,7 +264,11 @@
     const button=document.getElementById('logoutBtn');
     const actions=document.querySelector('.crm-header-actions');
     const header=document.querySelector('.crm-header');
-    if(!button||!actions||!header)return;
+    const brand=document.querySelector('.crm-header .crm-brand');
+    if(!button||!actions||!header||!brand)return;
+    if(button.parentElement!==brand)brand.appendChild(button);
+    header.classList.add('smv-phone-logout-in-brand');
+    actions.setAttribute('data-smv-mobile-account-actions','hidden');
     button.hidden=false;
     button.removeAttribute('hidden');
     button.style.setProperty('display','inline-flex','important');
@@ -278,13 +282,19 @@
     button.style.setProperty('align-items','center','important');
     button.style.setProperty('justify-content','center','important');
     button.style.setProperty('overflow','visible','important');
-    actions.style.setProperty('display','flex','important');
-    actions.style.setProperty('width','82px','important');
-    actions.style.setProperty('max-width','82px','important');
-    actions.style.setProperty('overflow','visible','important');
-    actions.style.setProperty('justify-content','flex-end','important');
-    header.style.setProperty('grid-template-columns','minmax(0,1fr) auto','important');
+    actions.style.setProperty('display','none','important');
+    actions.style.setProperty('width','0','important');
+    actions.style.setProperty('max-width','0','important');
+    actions.style.setProperty('overflow','hidden','important');
+    brand.style.setProperty('position','relative','important');
+    brand.style.setProperty('overflow','visible','important');
+    brand.style.setProperty('padding-right','84px','important');
+    header.style.setProperty('grid-template-columns','1fr','important');
     header.style.setProperty('overflow','visible','important');
+    button.style.setProperty('position','absolute','important');
+    button.style.setProperty('right','2px','important');
+    button.style.setProperty('top','50%','important');
+    button.style.setProperty('transform','translateY(-50%)','important');
   }
 
   function bindEvents(){
