@@ -5699,6 +5699,11 @@ function openVenueModal(venue = null) {
     );
 
     setVenueChecked(
+        "venuePlanNotificationsEnabled",
+        venue?.plan_notifications_enabled !== false
+    );
+
+    setVenueChecked(
         "venueFoodVeg",
         venue?.food_veg !== false
     );
@@ -6310,6 +6315,9 @@ function getVenueFormData() {
         }
         : {};
 
+    const planNotificationsEnabled =
+        checked("venuePlanNotificationsEnabled");
+
     return {
 
         venue_name:
@@ -6444,6 +6452,9 @@ function getVenueFormData() {
 
         featured:
             checked("venueFeatured"),
+
+        plan_notifications_enabled:
+            planNotificationsEnabled,
 
         ...stage8Fields
     };
