@@ -7794,20 +7794,31 @@ async function loadAssignmentVenueOptions() {
         return;
     }
 
-    // Use the staff-only RPC so assignment options are not accidentally
-    // filtered by venue-row RLS. Public listing rules stay separate.
-    const { data, error } = await client
-        .rpc("smv_assignment_venues");
+    /*
+       Assignment and Venue Management must use the SAME venue source.
+       Venue Management already loads the complete staff-visible venues
+       collection. Reuse that collection here so a venue cannot appear in
+       Venue Management but disappear from the assignment modal.
+    */
+    try {
+        if (!Array.isArray(allVenues) || allVenues.length === 0) {
+            await loadVenues();
+        }
 
-    if (error) {
+        const managementVenues = Array.isArray(allVenues) ? allVenues : [];
+
+        assignmentVenueRows = managementVenues.filter(venue =>
+            safeValue(venue.venue_status) === "approved" &&
+            safeValue(venue.verification_status) === "verified"
+        );
+
+        renderAssignmentVenues();
+        return;
+    } catch (error) {
         console.error("Assignment venue load error:", error);
         list.innerHTML = `<div class="venue-assignment-empty">Unable to load approved and verified venues.</div>`;
         showAssignmentMessage(error.message || "Unable to load venues.", "error");
-        return;
     }
-
-    assignmentVenueRows = Array.isArray(data) ? data : [];
-    renderAssignmentVenues();
 }
 
 function isVenueAlreadyAssigned(venueId) {
