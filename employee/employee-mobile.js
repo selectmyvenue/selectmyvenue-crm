@@ -10,7 +10,11 @@
     const actions=byId('accountActions');
     const button=byId('logout');
     const header=document.querySelector('.employee-page>header');
-    if(!actions||!button||!header||actions.hidden)return;
+    const brand=document.querySelector('.employee-page>header .brand');
+    if(!actions||!button||!header||!brand||actions.hidden)return;
+    if(button.parentElement!==brand)brand.appendChild(button);
+    header.classList.add('emp-phone-logout-in-brand');
+    actions.setAttribute('data-emp-mobile-account-actions','hidden');
     button.hidden=false;
     button.removeAttribute('hidden');
     button.style.setProperty('display','inline-flex','important');
@@ -24,13 +28,19 @@
     button.style.setProperty('align-items','center','important');
     button.style.setProperty('justify-content','center','important');
     button.style.setProperty('overflow','visible','important');
-    actions.style.setProperty('display','flex','important');
-    actions.style.setProperty('width','76px','important');
-    actions.style.setProperty('max-width','76px','important');
-    actions.style.setProperty('overflow','visible','important');
-    actions.style.setProperty('justify-content','flex-end','important');
-    header.style.setProperty('grid-template-columns','minmax(0,1fr) auto','important');
+    actions.style.setProperty('display','none','important');
+    actions.style.setProperty('width','0','important');
+    actions.style.setProperty('max-width','0','important');
+    actions.style.setProperty('overflow','hidden','important');
+    brand.style.setProperty('position','relative','important');
+    brand.style.setProperty('overflow','visible','important');
+    brand.style.setProperty('padding-right','80px','important');
+    header.style.setProperty('grid-template-columns','1fr','important');
     header.style.setProperty('overflow','visible','important');
+    button.style.setProperty('position','absolute','important');
+    button.style.setProperty('right','2px','important');
+    button.style.setProperty('top','50%','important');
+    button.style.setProperty('transform','translateY(-50%)','important');
   }
 
   function ensureNav(){
@@ -163,6 +173,12 @@
   const mq=window.matchMedia(MQ);
   const sync=()=>{
     root.classList.toggle('emp-phone-crm',mq.matches);
+    if(!mq.matches){
+      const button=byId('logout');
+      const actions=byId('accountActions');
+      if(button&&actions&&button.parentElement!==actions)actions.appendChild(button);
+      document.querySelector('.employee-page>header')?.classList.remove('emp-phone-logout-in-brand');
+    }
     enforceEmployeePhoneLogout();
     labels();
     if(!mq.matches){closeMore();document.body.classList.remove('emp-phone-filters-open');}
