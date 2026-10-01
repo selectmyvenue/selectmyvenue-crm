@@ -7794,12 +7794,10 @@ async function loadAssignmentVenueOptions() {
         return;
     }
 
+    // Use the staff-only RPC so assignment options are not accidentally
+    // filtered by venue-row RLS. Public listing rules stay separate.
     const { data, error } = await client
-        .from("venues")
-        .select("*")
-        .eq("venue_status", "approved")
-        .eq("verification_status", "verified")
-        .order("venue_name", { ascending: true });
+        .rpc("smv_assignment_venues");
 
     if (error) {
         console.error("Assignment venue load error:", error);
