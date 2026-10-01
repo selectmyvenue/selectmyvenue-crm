@@ -2226,3 +2226,269 @@
     display:none!important;
   }
 }
+
+
+/* =========================================================
+   MOBILE VENUE MANAGEMENT — FINAL CORRECTION V11
+   Billing + filters + Details + correct table-column mapping
+   ========================================================= */
+@media(max-width:760px){
+
+  /* Header actions: Add / Refresh / Billing — all visible. */
+  html.smv-phone-crm body #venueManagementSection .venue-page-heading{
+    grid-template-columns:minmax(0,1fr) 116px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-heading-actions{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    width:116px!important;
+    gap:5px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection #addVenueBtn,
+  html.smv-phone-crm body #venueManagementSection #refreshVenuesBtn,
+  html.smv-phone-crm body #venueManagementSection .venue-heading-actions a[href*="billing"]{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+    white-space:nowrap!important;
+    text-overflow:ellipsis!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-heading-actions a[href*="billing"]{
+    min-height:32px!important;
+    height:32px!important;
+    padding:0 6px!important;
+    border:1px solid #cfe1db!important;
+    border-radius:9px!important;
+    background:#fff!important;
+    color:#23584c!important;
+    font-size:9px!important;
+    font-weight:850!important;
+    text-decoration:none!important;
+  }
+
+  /* Compact filters: search + all 3 filters visibly on one row. */
+  html.smv-phone-crm body #venueManagementSection .venue-toolbar{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:6px!important;
+    padding:7px!important;
+    margin-bottom:7px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-toolbar input{
+    grid-column:1/-1!important;
+    width:100%!important;
+    height:38px!important;
+    min-height:38px!important;
+    padding:0 10px!important;
+    font-size:11px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-toolbar select{
+    grid-column:auto!important;
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:34px!important;
+    min-height:34px!important;
+    padding:0 5px!important;
+    font-size:9px!important;
+    line-height:1!important;
+  }
+  html.smv-phone-crm body #venueManagementSection #venuePlanFilter{
+    grid-column:auto!important;
+  }
+
+  /* Correct venue table columns:
+     1 venue, 2 contact, 3 location, 4 type, 5 capacity,
+     6 price, 7 status, 8 verification, 9 plan, 10 public, 11 actions.
+  */
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td{
+    display:none!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(1),
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(3),
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(7),
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(8),
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(9),
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(10),
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(11){
+    display:flex!important;
+  }
+
+  /* Venue identity + Details button */
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(1){
+    grid-column:1/-1!important;
+    grid-row:1!important;
+    min-height:0!important;
+    padding:0 0 8px!important;
+    border:0!important;
+    align-items:stretch!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-name-cell{
+    width:100%!important;
+    min-width:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-name-cell strong{
+    width:100%!important;
+    font-size:15px!important;
+    line-height:1.15!important;
+    font-weight:900!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-name-cell small{
+    font-size:9.5px!important;
+    line-height:1.2!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-name-details-btn{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:34px!important;
+    min-height:34px!important;
+    margin:7px 0 0!important;
+    padding:0 10px!important;
+    border:1px solid #c9ded7!important;
+    border-radius:9px!important;
+    background:#f7fbf9!important;
+    color:#176352!important;
+    font-size:10.5px!important;
+    line-height:1!important;
+    font-weight:850!important;
+    white-space:nowrap!important;
+    overflow:visible!important;
+    opacity:1!important;
+    visibility:visible!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-name-details-btn::after{
+    content:"⌄"!important;
+    margin-left:6px!important;
+    font-size:13px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection tr.smv-mobile-venue-open .venue-name-details-btn::after{
+    content:"⌃"!important;
+  }
+
+  /* Location */
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(3){
+    grid-column:1/-1!important;
+    grid-row:2!important;
+    min-height:30px!important;
+    padding:5px 0!important;
+    border:0!important;
+    font-size:10px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(3)::before{
+    display:none!important;
+  }
+
+  /* Status + verification + plan + public */
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(7),
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(8),
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(9),
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(10){
+    min-height:25px!important;
+    padding:3px 2px!important;
+    border:0!important;
+    align-items:flex-start!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(7){grid-column:1!important;grid-row:3!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(8){grid-column:2!important;grid-row:3!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(9){grid-column:1!important;grid-row:4!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(10){grid-column:2!important;grid-row:4!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(7)::before,
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(8)::before,
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(9)::before,
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(10)::before{
+    display:block!important;
+    margin-bottom:3px!important;
+    color:#82918c!important;
+    font-size:7px!important;
+    font-weight:850!important;
+    letter-spacing:.06em!important;
+    text-transform:uppercase!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(7)::before{content:"Status"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(8)::before{content:"Verification"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(9)::before{content:"Plan"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(10)::before{content:"Public"!important}
+
+  html.smv-phone-crm body #venueManagementSection .venue-pill,
+  html.smv-phone-crm body #venueManagementSection .venue-plan-pill,
+  html.smv-phone-crm body #venueManagementSection .venue-public-pill{
+    width:auto!important;
+    min-height:21px!important;
+    padding:3px 7px!important;
+    font-size:8px!important;
+  }
+
+  /* Actions stay fully inside the card. */
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(11){
+    grid-column:1/-1!important;
+    grid-row:5!important;
+    min-height:38px!important;
+    margin-top:4px!important;
+    padding:7px 0 0!important;
+    border-top:1px solid #edf3f0!important;
+    border-bottom:0!important;
+    align-items:stretch!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-row-actions{
+    display:flex!important;
+    width:100%!important;
+    justify-content:flex-end!important;
+    align-items:center!important;
+    gap:6px!important;
+    overflow-x:auto!important;
+    padding-bottom:1px!important;
+    scrollbar-width:none!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-row-actions::-webkit-scrollbar{display:none!important}
+  html.smv-phone-crm body #venueManagementSection .venue-row-actions .venue-row-btn{
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:74px!important;
+    height:32px!important;
+    min-height:32px!important;
+    padding:0 9px!important;
+    border-radius:8px!important;
+    font-size:9px!important;
+    white-space:nowrap!important;
+  }
+
+  /* Expanded details: reveal hidden data without changing the compact default card. */
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td{
+    display:flex!important;
+    min-height:42px!important;
+    padding:6px 3px!important;
+    border-bottom:1px solid #edf3f0!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(1),
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(3),
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(11){
+    grid-column:1/-1!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(1){grid-row:1!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(3){grid-row:2!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(11){grid-row:auto!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(1)::before{display:none!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(2)::before{content:"Contact"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(4)::before{content:"Type"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(5)::before{content:"Capacity"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(6)::before{content:"Price"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(7)::before{content:"Status"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(8)::before{content:"Verification"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(9)::before{content:"Plan"!important}
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(10)::before{content:"Public"!important}
+}
