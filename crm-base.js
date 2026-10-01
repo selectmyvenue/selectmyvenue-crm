@@ -672,7 +672,7 @@
     observer.observe(tbody, { childList: true, subtree: true });
   }
 
-  loadScript("crm-core.js?v=20261002-assignment-source-fix-2", function () {
+  loadScript("crm-core.js?v=20261002-assignment-refresh-3", function () {
     installInternalCommentOnlyBehavior();
     installLeadRenderNormalizer();
     installSaveCustomerCommentPreserver();
