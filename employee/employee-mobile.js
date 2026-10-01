@@ -5,6 +5,34 @@
   const byId=id=>document.getElementById(id);
   const isPhone=()=>window.matchMedia(MQ).matches;
 
+  function enforceEmployeePhoneLogout(){
+    if(!isPhone())return;
+    const actions=byId('accountActions');
+    const button=byId('logout');
+    const header=document.querySelector('.employee-page>header');
+    if(!actions||!button||!header||actions.hidden)return;
+    button.hidden=false;
+    button.removeAttribute('hidden');
+    button.style.setProperty('display','inline-flex','important');
+    button.style.setProperty('visibility','visible','important');
+    button.style.setProperty('opacity','1','important');
+    button.style.setProperty('width','72px','important');
+    button.style.setProperty('min-width','72px','important');
+    button.style.setProperty('max-width','72px','important');
+    button.style.setProperty('height','36px','important');
+    button.style.setProperty('min-height','36px','important');
+    button.style.setProperty('align-items','center','important');
+    button.style.setProperty('justify-content','center','important');
+    button.style.setProperty('overflow','visible','important');
+    actions.style.setProperty('display','flex','important');
+    actions.style.setProperty('width','76px','important');
+    actions.style.setProperty('max-width','76px','important');
+    actions.style.setProperty('overflow','visible','important');
+    actions.style.setProperty('justify-content','flex-end','important');
+    header.style.setProperty('grid-template-columns','minmax(0,1fr) auto','important');
+    header.style.setProperty('overflow','visible','important');
+  }
+
   function ensureNav(){
     let nav=byId('empMobileNav');
     if(!nav){
@@ -127,12 +155,15 @@
   function install(){
     root.classList.toggle('emp-phone-crm',isPhone());
     ensureNav();labels();bind();observe();
+    enforceEmployeePhoneLogout();
+    [50,250,700,1500].forEach(ms=>setTimeout(enforceEmployeePhoneLogout,ms));
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 
   const mq=window.matchMedia(MQ);
   const sync=()=>{
     root.classList.toggle('emp-phone-crm',mq.matches);
+    enforceEmployeePhoneLogout();
     labels();
     if(!mq.matches){closeMore();document.body.classList.remove('emp-phone-filters-open');}
   };
