@@ -61,6 +61,34 @@
 <!-- Stage 7B.3: Final Action + Comment Polish -->
 <body>
 
+<script>
+(function () {
+    // Remove accidental literal "\\n" text nodes that can appear above the CRM header.
+    function cleanLiteralNewlines() {
+        if (!document.body) return;
+        const nodes = Array.from(document.body.childNodes);
+        for (const node of nodes) {
+            if (node.nodeType !== Node.TEXT_NODE) break;
+            const value = (node.nodeValue || "").trim();
+            if (!value) {
+                node.remove();
+                continue;
+            }
+            if (/^(?:\\n\\s*)+$/.test(value)) {
+                node.remove();
+                continue;
+            }
+            break;
+        }
+    }
+
+    cleanLiteralNewlines();
+    if (document.body) {
+        new MutationObserver(cleanLiteralNewlines).observe(document.body, { childList: true });
+    }
+})();
+</script>
+
 <div class="crm-app">
 
 
