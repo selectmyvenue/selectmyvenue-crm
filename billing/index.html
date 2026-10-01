@@ -212,9 +212,9 @@ function updateTotals(){
   const gst=gstOn?Math.round(negotiated*rate)/100:0;
   $("gstAmount").value=money(gst);$("totalAmount").value=money(negotiated+gst);
 }
-function suggestedStart(v){if(v?.plan_status==="active"&&v.plan_expires_at){const expiry=String(v.plan_expires_at).slice(0,10);if(expiry>=localToday())return addDay(expiry);}return localToday();}
+function suggestedStart(){return localToday();}
 function updateEnd(){ $("endDate").value=endDateFor($("startDate").value,$("termMonths").value)||"Automatic"; }
-function updateStartSuggestion(){const v=venue();const suggested=suggestedStart(v);$("startDate").value=suggested;$("startNote").textContent=(v?.plan_expires_at&&v.plan_status==="active")?"Suggested start: day after current expiry. You can change it when needed.":"Suggested start: today.";updateEnd();}
+function updateStartSuggestion(){const suggested=suggestedStart();$("startDate").value=suggested;$("startNote").textContent="Suggested start: today. You can change it when needed.";updateEnd();}
 
 async function auth(){
   const {data:{session},error}=await sb.auth.getSession();
