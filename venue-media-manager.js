@@ -88,11 +88,14 @@
     byId("venueGalleryVideos")?.addEventListener("change", handleVideoSelection);
     byId("venueGalleryPreview")?.addEventListener("click", handleRemoveClick);
 
-    const form = byId("venueForm");
-    if (form) form.addEventListener("submit", () => {
-      if (!pendingImages.length && !pendingVideos.length) return;
-      setTimeout(() => processPendingAfterVenueSave(), 250);
-    }, true);
+    /* Save Venue is handled by a document-level click interceptor in crm-core,
+       so a normal form submit listener is not reliable here. crm-core now emits
+       smv:venue-saved after the database write. */
+    document.addEventListener("smv:venue-saved", event => {
+      const venueId = safe(event.detail?.venueId).trim();
+      if (!venueId || (!pendingImages.length && !pendingVideos.length)) return;
+      processPendingAfterVenueSave(venueId);
+    });
 
     const modal = byId("venueModal");
     if (modal && !modalObserver) {
@@ -335,9 +338,9 @@
     return path;
   }
 
-  async function processPendingAfterVenueSave() {
+  async function processPendingAfterVenueSave(savedVenueId) {
     if (uploadInProgress || (!pendingImages.length && !pendingVideos.length)) return;
-    const venueId = await waitForVenueId(9000);
+    const venueId = safe(savedVenueId).trim() || await waitForVenueId(9000);
     if (!venueId) { setStatus("Venue was not saved, so media was not uploaded.", "error"); return; }
 
     uploadInProgress = true;
