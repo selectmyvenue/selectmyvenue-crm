@@ -83,7 +83,7 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
               <div class="field full"><label for="notes">Notes</label><textarea id="notes" placeholder="Optional payment/owner note…"></textarea></div>
             </div>
             <div class="notice"><strong>No actual money transaction happens here.</strong> This module only records the manual payment you receive or expect. No card data, UPI PIN, bank password or payment gateway credentials are stored.</div>
-            <div class="form-actions"><button class="btn primary" id="recordBtn" type="submit">✓ Record Billing</button><button class="btn" id="clearFormBtn" type="button">Clear</button></div>
+            <div class="form-actions"><button class="btn primary" id="recordBtn" type="submit">✓ Record Billing</button><button class="btn" id="renewFromExpiryBtn" type="button">Renew from Expiry</button><button class="btn" id="clearFormBtn" type="button">Clear</button></div>
           </form>
         </div>
 
@@ -227,6 +227,7 @@ async function auth(){
 }
 
 async function loadData(){
+  try{ await sb.rpc("smv_sync_venue_plan_expiry"); }catch(planSyncError){ console.warn("Plan lifecycle sync unavailable:",planSyncError); }
   const [vr,pr,br,pp]=await Promise.all([
     sb.from("venues").select("id,venue_name,contact_person,contact_mobile,contact_email,whatsapp_number,partner_plan,plan_status,plan_started_at,plan_expires_at").order("venue_name"),
     sb.from("venue_plans").select("plan_code,plan_name,description,is_active,display_order").eq("is_active",true).order("display_order"),
@@ -385,6 +386,17 @@ $("venueList").addEventListener("click",async e=>{const b=e.target.closest("[dat
 $("termMonths").addEventListener("change",()=>{updatePricing();updateEnd();});$("startDate").addEventListener("change",updateEnd);$("amount").addEventListener("input",()=>{$("amount").dataset.auto="false";updateTotals();});$("gstApplied").addEventListener("change",updateTotals);$("status").addEventListener("change",()=>{$("paymentMethod").disabled=$("status").value!=="paid";$("dueDate").disabled=$("status").value!=="pending";});
 $("planCode").addEventListener("change",()=>{$("amount").value="";$("amount").dataset.auto="true";populateTermOptions();updateEnd();});
 $("billingForm").addEventListener("submit",saveBilling);
+$("renewFromExpiryBtn").addEventListener("click",()=>{
+  const v=venue();
+  if(!v)return;
+  const expiry=v.plan_expires_at?String(v.plan_expires_at).slice(0,10):"";
+  $("startDate").value=expiry?addDay(expiry):localToday();
+  updateEnd();
+  $("startNote").textContent=expiry
+    ? "Renewal start set to the day after the current expiry. You can change it when needed."
+    : "No current expiry found; renewal start set to today.";
+  $("startDate").focus();
+});
 $("clearFormBtn").addEventListener("click",clearPaymentInputs);
 $("historyBody").addEventListener("click",e=>{const a=e.target.closest("[data-mark-paid],[data-remind],[data-confirm]");if(!a)return;if(a.dataset.markPaid)openPaidModal(a.dataset.markPaid);else if(a.dataset.remind){const r=records.find(x=>x.id===a.dataset.remind);if(r)remind(r);}else if(a.dataset.confirm){const r=records.find(x=>x.id===a.dataset.confirm);if(r)openConfirmation(r);}});
 $("closePaid").addEventListener("click",()=>$("paidModal").classList.remove("open"));$("cancelPaid").addEventListener("click",()=>$("paidModal").classList.remove("open"));$("confirmPaid").addEventListener("click",confirmPaid);
