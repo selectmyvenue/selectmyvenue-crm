@@ -22,10 +22,10 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
 .history{margin-top:14px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;padding:10px 11px;border-bottom:1px solid rgba(255,255,255,.065);font-size:10px;vertical-align:top}th{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}td strong{font-size:11px}td small{display:block;color:var(--muted);margin-top:3px}.mini{display:flex;flex-wrap:wrap;gap:5px}.mini .btn{padding:6px 8px;font-size:9px}.muted{color:var(--muted)}
 .toast{position:fixed;right:17px;bottom:17px;z-index:70;max-width:360px;padding:11px 13px;border-radius:11px;background:#0e332b;color:#eafff8;border:1px solid rgba(85,223,185,.24);box-shadow:0 18px 45px rgba(0,0,0,.32);opacity:0;transform:translateY(10px);pointer-events:none;transition:.2s;font-size:11px}.toast.show{opacity:1;transform:none}.toast.error{background:#381719;color:#ffe3e3;border-color:rgba(255,142,142,.25)}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.68);display:none;align-items:center;justify-content:center;padding:18px;z-index:60}.modal.open{display:flex}.modalbox{width:min(600px,100%);background:#092019;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 40px 110px rgba(0,0,0,.56)}.modalbody{padding:16px}.modalgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.confirm{background:#fff;color:#172823;border-radius:9px;padding:22px}.confirm-head{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #dfe7e4;padding-bottom:13px}.confirm-brand{font-size:18px;font-weight:900}.confirm-logo{width:165px;height:58px;object-fit:contain;object-position:left center}.confirm-title{text-align:right}.confirm-title strong{display:block;font-size:17px}.confirm-title span{font-size:9px;color:#697773}.confirm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}.confirm-cell{padding:9px;border:1px solid #e3eae7;border-radius:8px}.confirm-cell span{display:block;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#6a7873}.confirm-cell strong{display:block;margin-top:3px;font-size:11px}.confirm-total{display:flex;justify-content:space-between;padding-top:13px;margin-top:13px;border-top:1px solid #dfe7e4}.confirm-total strong{font-size:22px}.print-note{margin-top:12px;color:#6a7873;font-size:9px}
+.confirm{background:#fff;color:#172823;border-radius:9px;padding:22px}.confirm-head{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #dfe7e4;padding-bottom:13px}.confirm-brand{font-size:18px;font-weight:900}.confirm-logo{width:220px;height:78px;object-fit:contain;object-position:left center}.confirm-title{text-align:right}.confirm-title strong{display:block;font-size:19px}.confirm-title span{font-size:9px;color:#697773}.confirm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}.confirm-cell{padding:9px;border:1px solid #e3eae7;border-radius:8px}.confirm-cell span{display:block;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#6a7873}.confirm-cell strong{display:block;margin-top:3px;font-size:11px}.confirm-total{display:flex;justify-content:space-between;padding-top:13px;margin-top:13px;border-top:1px solid #dfe7e4}.confirm-total strong{font-size:22px}.print-note{margin-top:12px;color:#6a7873;font-size:9px}
 #printArea{display:none}@media print{body{background:#fff}body>*:not(#printArea){display:none!important}#printArea{display:block!important;padding:18px}.confirm{box-shadow:none}}
 @media(max-width:1040px){.layout{grid-template-columns:1fr}.venue-list{max-height:360px}.identity{grid-template-columns:1fr 1fr}}
-@media(max-width:620px){.shell{padding:11px}.topbar{position:static}.top-actions{display:none}.brand{gap:9px}.brand img{width:138px;height:48px}.brand strong{font-size:13px}.confirm-logo{width:145px;height:52px}h1{font-size:24px}.search{grid-template-columns:1fr}.venue-row{grid-template-columns:1fr}.formgrid,.modalgrid,.confirm-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.identity{grid-template-columns:1fr}.venue-title{display:block}.form-actions .btn{width:100%}}
+@media(max-width:620px){.shell{padding:11px}.topbar{position:static}.top-actions{display:none}.brand{gap:9px}.brand img{width:138px;height:48px}.brand strong{font-size:13px}.confirm-logo{width:190px;height:68px}h1{font-size:24px}.search{grid-template-columns:1fr}.venue-row{grid-template-columns:1fr}.formgrid,.modalgrid,.confirm-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.identity{grid-template-columns:1fr}.venue-title{display:block}.form-actions .btn{width:100%}}
 </style>
 </head>
 <body>
@@ -67,7 +67,7 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
           <form id="billingForm">
             <div class="formgrid">
               <div class="field"><label for="planCode">Plan</label><select id="planCode" required><option value="">Select plan…</option></select></div>
-              <div class="field"><label for="termMonths">Term</label><select id="termMonths" required></select></div>
+              <div class="field"><label for="termMonths">Term</label><select id="termMonths" required></select><div id="termNote" class="date-note"></div></div>
               <div class="field"><label for="standardAmount">Standard price (before GST)</label><input id="standardAmount" type="number" readonly></div>
               <div class="field"><label for="amount">Negotiated price (before GST)</label><input id="amount" type="number" min="0" step="0.01" required placeholder="Enter agreed amount"></div>
               <div class="field"><label for="gstApplied">GST</label><select id="gstApplied"><option value="no" selected>Do not apply GST</option><option value="yes">Apply GST</option></select></div>
@@ -189,7 +189,15 @@ function pricesForPlan(code){return planPrices.filter(x=>x.plan_code===code&&x.i
 function selectedPrice(){return planPrices.find(x=>x.plan_code===$("planCode").value&&Number(x.term_months)===Number($("termMonths").value)&&x.is_active)||null;}
 function populateTermOptions(){
   const rows=pricesForPlan(plan()?.plan_code);
-  $("termMonths").innerHTML=rows.length?rows.map(x=>'<option value="'+esc(x.term_months)+'">'+esc(String(x.term_months)+(Number(x.term_months)===1?" Month":" Months"))+'</option>').join(""):'<option value="">No priced term</option>';
+  $("termMonths").innerHTML=rows.length?rows.map(x=>{
+    const months=Number(x.term_months);
+    const label=months===12?"1 Year (12 Months)":(months===1?"1 Month":months+" Months");
+    return '<option value="'+esc(x.term_months)+'">'+esc(label)+'</option>';
+  }).join(""):'<option value="">No priced term</option>';
+  const premium12=rows.some(x=>Number(x.term_months)===12);
+  $("termNote").textContent=rows.length
+    ? (premium12 ? "1-year Premium term is available here. Select it from the Term dropdown." : "Terms come from the active plan pricing table.")
+    : "No priced term is configured for this plan.";
   updatePricing();
 }
 function updatePricing(){
