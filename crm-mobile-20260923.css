@@ -2502,3 +2502,166 @@
     padding-top:1px!important;
   }
 }
+
+
+/* =========================================================
+   MOBILE VENUE MANAGEMENT — HEADER + DETAILS FIX V12
+   ========================================================= */
+@media(max-width:760px){
+
+  /* Use the large white logo/header area efficiently.
+     Logo left + compact actions right, instead of 3 stacked buttons. */
+  html.smv-phone-crm body #venueManagementSection .venue-page-heading{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 174px!important;
+    align-items:center!important;
+    min-height:84px!important;
+    height:84px!important;
+    margin:0 0 7px!important;
+    padding:9px 10px!important;
+    overflow:visible!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-page-heading > div:first-child{
+    min-width:0!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-kicker{
+    font-size:7px!important;
+    margin:0!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-page-heading h1,
+  html.smv-phone-crm body #venueManagementSection .venue-page-heading h1 span{
+    font-size:18px!important;
+    line-height:1.05!important;
+    white-space:nowrap!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-page-heading p{
+    font-size:8.5px!important;
+    line-height:1.2!important;
+    margin-top:3px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  /* Three actions sit beside the title in a compact 3-column strip. */
+  html.smv-phone-crm body #venueManagementSection .venue-heading-actions{
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:4px!important;
+    width:174px!important;
+    margin:0!important;
+    padding:0!important;
+    align-self:center!important;
+  }
+  html.smv-phone-crm body #venueManagementSection #addVenueBtn,
+  html.smv-phone-crm body #venueManagementSection #refreshVenuesBtn,
+  html.smv-phone-crm body #venueManagementSection .venue-heading-actions a[href*="billing"]{
+    width:100%!important;
+    min-width:0!important;
+    height:42px!important;
+    min-height:42px!important;
+    max-height:42px!important;
+    margin:0!important;
+    padding:0 3px!important;
+    border-radius:8px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+    white-space:normal!important;
+    overflow:hidden!important;
+    line-height:1.05!important;
+    font-size:7.5px!important;
+    font-weight:850!important;
+  }
+  html.smv-phone-crm body #venueManagementSection #addVenueBtn span{
+    display:inline!important;
+    margin-right:2px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection #refreshVenuesBtn span{
+    display:inline!important;
+    margin-right:2px!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-heading-actions a[href*="billing"]{
+    text-decoration:none!important;
+  }
+
+  /* Fix Details: never collapse/clip the button inside venue-name-cell. */
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(1) .venue-name-cell{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    width:100%!important;
+    min-width:0!important;
+    overflow:visible!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(1) .venue-name-cell strong{
+    display:block!important;
+    width:100%!important;
+    min-height:18px!important;
+    overflow:visible!important;
+    color:#0a4338!important;
+    font-size:15px!important;
+    line-height:1.2!important;
+    opacity:1!important;
+    visibility:visible!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(1) .venue-name-cell small{
+    display:block!important;
+    width:100%!important;
+    min-height:13px!important;
+    margin-top:3px!important;
+    overflow:visible!important;
+    color:#74847f!important;
+    font-size:9.5px!important;
+    line-height:1.2!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(1) .venue-name-cell .venue-name-details-btn{
+    display:flex!important;
+    position:relative!important;
+    visibility:visible!important;
+    opacity:1!important;
+    flex:0 0 34px!important;
+    width:100%!important;
+    min-width:100%!important;
+    max-width:none!important;
+    height:34px!important;
+    min-height:34px!important;
+    max-height:34px!important;
+    margin:7px 0 0!important;
+    padding:0 10px!important;
+    box-sizing:border-box!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border:1px solid #c3dbd3!important;
+    border-radius:9px!important;
+    background:#f5faf8!important;
+    color:#176352!important;
+    font-family:inherit!important;
+    font-size:10.5px!important;
+    font-weight:850!important;
+    line-height:1!important;
+    text-align:center!important;
+    overflow:visible!important;
+    clip:unset!important;
+    clip-path:none!important;
+    transform:none!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr>td:nth-child(1) .venue-name-details-btn::after{
+    content:"⌄"!important;
+    display:inline-block!important;
+    margin-left:6px!important;
+    color:#176352!important;
+    font-size:13px!important;
+    line-height:1!important;
+  }
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr.smv-mobile-venue-open>td:nth-child(1) .venue-name-details-btn::after{
+    content:"⌃"!important;
+  }
+
+  /* Give the card enough room for Details before status/action information. */
+  html.smv-phone-crm body #venueManagementSection .venue-table tbody tr{
+    min-height:125px!important;
+    overflow:visible!important;
+  }
+}
