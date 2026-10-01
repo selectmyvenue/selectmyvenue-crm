@@ -266,14 +266,15 @@
     const header=document.querySelector('.crm-header');
     if(!button||!actions||!header)return;
 
-    // Phone header is intentionally clean: logo only.
-    // Account actions remain available from the existing More menu.
+    const venue=venueOpen();
+
+    // Enquiries: keep a compact Logout action in the header.
+    // Venue Management: intentionally no Logout in the visual header.
     if(button.parentElement!==actions)actions.appendChild(button);
     header.classList.remove('smv-phone-logout-in-brand');
 
     button.hidden=false;
     button.removeAttribute('hidden');
-    button.style.removeProperty('display');
     button.style.removeProperty('visibility');
     button.style.removeProperty('opacity');
     button.style.removeProperty('width');
@@ -288,15 +289,12 @@
     button.style.removeProperty('right');
     button.style.removeProperty('top');
     button.style.removeProperty('transform');
+    button.style.setProperty('display',venue?'none':'inline-flex','important');
 
-    // Dynamic live-status / employee controls must not overlay the phone page.
+    // Dynamic employee/live status controls never occupy the logo space.
     [...actions.children].forEach(el=>{
       if(el===button)return;
-      if(el.classList?.contains('staff-name') ||
-         el.classList?.contains('account-password-btn') ||
-         el.tagName==='SPAN'){
-        el.style.removeProperty('display');
-      }
+      el.style.setProperty('display','none','important');
     });
   }
 
