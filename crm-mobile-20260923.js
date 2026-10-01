@@ -259,6 +259,34 @@
     if(target)target.textContent=cleanText(total) || '0';
   }
 
+  function enforcePhoneLogout(){
+    if(!isPhone())return;
+    const button=document.getElementById('logoutBtn');
+    const actions=document.querySelector('.crm-header-actions');
+    const header=document.querySelector('.crm-header');
+    if(!button||!actions||!header)return;
+    button.hidden=false;
+    button.removeAttribute('hidden');
+    button.style.setProperty('display','inline-flex','important');
+    button.style.setProperty('visibility','visible','important');
+    button.style.setProperty('opacity','1','important');
+    button.style.setProperty('width','76px','important');
+    button.style.setProperty('min-width','76px','important');
+    button.style.setProperty('max-width','76px','important');
+    button.style.setProperty('height','36px','important');
+    button.style.setProperty('min-height','36px','important');
+    button.style.setProperty('align-items','center','important');
+    button.style.setProperty('justify-content','center','important');
+    button.style.setProperty('overflow','visible','important');
+    actions.style.setProperty('display','flex','important');
+    actions.style.setProperty('width','82px','important');
+    actions.style.setProperty('max-width','82px','important');
+    actions.style.setProperty('overflow','visible','important');
+    actions.style.setProperty('justify-content','flex-end','important');
+    header.style.setProperty('grid-template-columns','minmax(0,1fr) auto','important');
+    header.style.setProperty('overflow','visible','important');
+  }
+
   function bindEvents(){
     if(root.dataset.smvPhoneV3Bound==='1')return;
     root.dataset.smvPhoneV3Bound='1';
@@ -418,6 +446,8 @@
   function install(){
     root.classList.toggle('smv-phone-crm',isPhone());
     ensurePhoneHeader();
+    enforcePhoneLogout();
+    [50,250,700,1500].forEach(ms=>setTimeout(enforcePhoneLogout,ms));
     ensureLeadToolbar();
     ensureMobileList();
     ensureMobileNav();
