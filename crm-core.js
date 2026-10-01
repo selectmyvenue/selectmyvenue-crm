@@ -4755,6 +4755,7 @@ let venueVerificationFilter = "all";
 let venuePlanFilter = "all";
 let stage8SchemaReady = false;
 let stage8Plans = [];
+let stage8PlanPrices = [];
 let stage8ActivePartnerCount = 0;
 let currentVenuePartnerProfile = null;
 let currentVenueCoverImageUrl = "";
@@ -4896,6 +4897,19 @@ function setupVenueManagement() {
     plan?.addEventListener("change", event => {
         venuePlanFilter = event.target.value;
         renderVenues();
+    });
+
+    const planForm = document.getElementById("venuePlan");
+    planForm?.addEventListener("change", event => {
+        populateVenuePlanTermOptions(event.target.value, "");
+    });
+
+    document.getElementById("venuePlanTerm")?.addEventListener("change", () => {
+        updateVenuePlanExpiryFromTerm(true);
+    });
+
+    document.getElementById("venuePlanStartedAt")?.addEventListener("change", () => {
+        updateVenuePlanExpiryFromTerm(true);
     });
 
     table.addEventListener("click", handleVenueTableClick);
@@ -5058,10 +5072,24 @@ async function loadStage8Capabilities() {
             .eq("is_active", true)
             .order("display_order", { ascending: true });
 
+    const { data: planPrices, error: planPriceError } =
+        await client
+            .from("venue_plan_prices")
+            .select("plan_code,term_months,standard_amount,currency,is_active")
+            .eq("is_active", true)
+            .order("term_months", { ascending: true });
+
     stage8SchemaReady = !planError;
     stage8Plans = stage8SchemaReady && Array.isArray(plans)
         ? plans
         : [];
+    stage8PlanPrices = !planPriceError && Array.isArray(planPrices)
+        ? planPrices
+        : [];
+
+    if (planPriceError) {
+        console.warn("Venue plan duration pricing unavailable:", planPriceError.message);
+    }
 
     if (stage8SchemaReady) {
         const { data: partnerRows, error: partnerError } =
@@ -5129,9 +5157,70 @@ function populateVenuePlanOptions() {
     }
 }
 
+function populateVenuePlanTermOptions(planCode, selectedTerm) {
+    const select = document.getElementById("venuePlanTerm");
+    if (!select) return;
+
+    const rows = stage8PlanPrices
+        .filter(row => row.plan_code === planCode && row.is_active)
+        .sort((a, b) => Number(a.term_months) - Number(b.term_months));
+
+    const current = selectedTerm != null && selectedTerm !== ""
+        ? String(selectedTerm)
+        : String(select.value || "");
+
+    select.innerHTML = rows.length
+        ? '<option value="">Select duration…</option>' +
+          rows.map(row => {
+              const months = Number(row.term_months);
+              const label = months === 12
+                  ? "1 Year (12 Months)"
+                  : months === 1
+                      ? "1 Month"
+                      : months + " Months";
+              return '<option value="' + escapeHTML(String(months)) + '">' +
+                  escapeHTML(label) + '</option>';
+          }).join("")
+        : '<option value="">Manual / existing dates</option>';
+
+    if (current && rows.some(row => String(row.term_months) === current)) {
+        select.value = current;
+    } else if (rows.length === 1) {
+        select.value = String(rows[0].term_months);
+    } else {
+        select.value = "";
+    }
+
+    updateVenuePlanExpiryFromTerm(false);
+}
+
+function updateVenuePlanExpiryFromTerm(force) {
+    const term = Number(document.getElementById("venuePlanTerm")?.value || 0);
+    const start = safeValue(document.getElementById("venuePlanStartedAt")?.value).trim();
+    const expiry = document.getElementById("venuePlanExpiresAt");
+
+    if (!expiry || !term || !start) return;
+
+    if (!force && expiry.value) return;
+
+    const date = new Date(start + "T00:00:00");
+    if (Number.isNaN(date.getTime())) return;
+
+    const originalDay = date.getDate();
+    date.setDate(1);
+    date.setMonth(date.getMonth() + term);
+    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+    date.setDate(Math.min(originalDay, lastDay));
+    date.setDate(date.getDate() - 1);
+
+    const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    expiry.value = local.toISOString().slice(0, 10);
+}
+
 function setStage8FormAvailability() {
     const ids = [
         "venuePlan",
+        "venuePlanTerm",
         "venuePlanStatus",
         "venuePlanStartedAt",
         "venuePlanExpiresAt",
@@ -5686,6 +5775,11 @@ function openVenueModal(venue = null) {
     setVenueField(
         "venuePlanStatus",
         venue?.plan_status || "trialing"
+    );
+
+    populateVenuePlanTermOptions(
+        venue?.partner_plan || "launch_trial",
+        venue?.plan_term_months
     );
 
     setVenueField(
@@ -6299,6 +6393,9 @@ function getVenueFormData() {
                 safeValue(
                     document.getElementById("venuePlanStatus")?.value
                 ) || "trialing",
+
+            plan_term_months:
+                numberOrNull("venuePlanTerm"),
 
             plan_started_at:
                 safeValue(
