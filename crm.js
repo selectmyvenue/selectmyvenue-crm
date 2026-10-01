@@ -640,7 +640,7 @@
     window.setTimeout(updateActionBadge, 1200);
   }
 
-  addScript("crm-base.js?v=20261002-plan-term-1", function () {
+  addScript("crm-base.js?v=20261002-assignment-refresh-3", function () {
     let checks = 0;
     const waitForCore = window.setInterval(function () {
       checks += 1;
