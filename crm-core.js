@@ -6762,6 +6762,17 @@ async function saveVenue(event) {
     }
 
     const savedVenue = result.data;
+
+    /* Notify the additive venue gallery manager immediately after the venue row
+       exists. The Save button is handled by a document-level click interceptor,
+       so the gallery cannot depend on the native form submit event. */
+    document.dispatchEvent(new CustomEvent("smv:venue-saved", {
+        detail: {
+            venueId: savedVenue?.id || "",
+            venue: savedVenue
+        }
+    }));
+
     let coverMediaError = null;
 
     if (pendingVenueCoverImageFile) {
