@@ -733,7 +733,7 @@
 
   installAssignmentFullscreenPolish();
 
-  loadScript("crm-core.js?v=20261002-save-confirmation-7", function () {
+  loadScript("crm-core.js?v=20261002-add-venue-reset-1", function () {
     installInternalCommentOnlyBehavior();
     installLeadRenderNormalizer();
     installSaveCustomerCommentPreserver();
