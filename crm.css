@@ -6069,3 +6069,49 @@ body{
 .venue-assignment-item.smv-assigned-disabled .venue-assignment-item-status{color:#6d7c77!important;}
 .venue-assignment-item.smv-assigned-disabled input[type="checkbox"]{accent-color:#7b8c86!important;cursor:not-allowed!important;}
 .venue-assignment-item.smv-assigned-disabled .smv-assigned-badge{background:#dce5e1!important;color:#62726d!important;}
+
+
+/* SMV ASSIGNMENT SCROLL HOTFIX */
+/* The assignment board is a full-screen workspace. The modal itself owns scrolling;
+   the venue list must never become a second nested scroll container. */
+.venue-assignment-modal {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: none !important;
+    padding: 0 !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+.venue-assignment-card {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 100% !important;
+    min-height: 100vh !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    flex: 0 0 auto !important;
+    overflow: visible !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+.venue-assignment-list {
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+}
+.venue-assignment-actions {
+    position: sticky !important;
+    bottom: 0 !important;
+    z-index: 30 !important;
+    background: rgba(255,255,255,.97) !important;
+    box-shadow: 0 -8px 22px rgba(0,72,60,.08) !important;
+}
+@media (max-width: 650px) {
+    .venue-assignment-modal { padding: 0 !important; }
+    .venue-assignment-card { min-height: 100vh !important; border-radius: 0 !important; }
+}
