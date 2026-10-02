@@ -6871,6 +6871,17 @@ async function saveVenue(event) {
 
     const savedVenue = result.data;
 
+    /*
+       Track whether the cover image was actually changed in this save.
+       The previous confirmation logic checked only whether the saved venue
+       already had a cover_image_url, which incorrectly said "cover image
+       updated" on ordinary field edits when an old cover image was already
+       present.
+    */
+    const coverImageChanged =
+        Boolean(pendingVenueCoverImageFile) ||
+        Boolean(pendingVenueCoverRemoval && currentVenueCoverImageUrl);
+
     /* Notify the additive venue gallery manager immediately after the venue row
        exists. The Save button is handled by a document-level click interceptor,
        so the gallery cannot depend on the native form submit event. */
@@ -7004,7 +7015,7 @@ async function saveVenue(event) {
     if (!isCreate) {
         closeVenueModal();
         showToast(
-            savedVenue.cover_image_url
+            coverImageChanged
                 ? "Venue and cover image updated successfully."
                 : "Venue updated successfully.",
             "success"
