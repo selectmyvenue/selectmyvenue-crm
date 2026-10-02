@@ -24,29 +24,97 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.68);display:none;align-items:flex-start;justify-content:center;padding:18px;z-index:60;overflow-y:auto}.modal.open{display:flex}.modalbox{width:min(760px,100%);max-height:calc(100vh - 36px);display:flex;flex-direction:column;background:#092019;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 40px 110px rgba(0,0,0,.56)}.modalbox>.card-head{flex:0 0 auto;position:sticky;top:0;z-index:2;background:#092019}.modalbody{padding:16px;overflow-y:auto}.modalgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .confirm{background:#fff;color:#172823;border-radius:9px;padding:22px;max-width:100%;box-sizing:border-box}.invoice-company{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;padding:0 0 12px;margin-bottom:13px;border-bottom:2px solid #dcebe6}.invoice-company-left{display:flex;align-items:center;gap:12px}.invoice-company-logo{width:118px;height:48px;object-fit:contain;object-position:left center}.invoice-company-name{font-size:20px;font-weight:950;letter-spacing:-.35px;color:#173f35}.invoice-company-tag{margin-top:3px;font-size:9px;color:#687873}.invoice-company-details{display:grid;grid-template-columns:1fr 1fr;gap:3px 18px;text-align:right;font-size:8px;color:#50635e}.invoice-company-details strong{color:#263f39;font-weight:850}.invoice-accent{height:2px;background:linear-gradient(90deg,#0b8f7a,#16d2b2,#ffc928);border-radius:99px;margin:-7px 0 15px}.confirm-head{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #dfe7e4;padding-bottom:13px}.confirm-brand{font-size:18px;font-weight:900}.confirm-logo{width:165px;height:58px;object-fit:contain;object-position:left center}.confirm-title{text-align:right}.confirm-title strong{display:block;font-size:21px;letter-spacing:.04em;color:#174b40}.confirm-title span{font-size:9px;color:#697773;margin-top:3px;display:block}.confirm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}.confirm-cell{padding:9px;border:1px solid #e3eae7;border-radius:8px}.confirm-cell span{display:block;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#6a7873}.confirm-cell strong{display:block;margin-top:3px;font-size:11px}.history-note{white-space:normal;max-width:240px;color:#6a7873}.confirm-total{display:flex;justify-content:space-between;padding-top:13px;margin-top:13px;border-top:1px solid #dfe7e4}.confirm-total strong{font-size:22px}.confirm-notes{margin-top:13px;padding:10px;border:1px solid #e3eae7;border-radius:8px}.confirm-notes span{display:block;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#6a7873}.confirm-notes strong{display:block;margin-top:4px;font-size:11px;white-space:pre-wrap}.print-note{margin-top:12px;color:#6a7873;font-size:9px}
 #printArea{display:none}@page{size:A4;margin:0}@media print{body{background:#fff}body>*:not(#printArea){display:none!important}#printArea{display:block!important;padding:15mm 14mm 14mm}.confirm{box-shadow:none;width:100%;padding:24px;font-size:13px;line-height:1.4}.invoice-company{padding-bottom:18px;margin-bottom:16px;gap:20px}.invoice-company-logo{width:205px;height:52px}.invoice-company-name{font-size:22px}.invoice-company-tag{font-size:10px}.invoice-company-details{font-size:9px;gap:4px 20px}.invoice-accent{margin:-8px 0 17px}.confirm-head{padding-bottom:15px}.confirm-head>div:first-child>div:first-child{font-size:10px!important}.confirm-head>div:first-child>div:last-child{font-size:11px!important}.confirm-title strong{font-size:25px}.confirm-title span{font-size:10px}.confirm-grid{gap:10px;margin-top:15px}.confirm-cell{padding:11px}.confirm-cell span{font-size:9px}.confirm-cell strong{font-size:12px;margin-top:4px}.confirm-total{padding-top:15px;margin-top:15px}.confirm-total strong{font-size:23px}.confirm-notes{margin-top:15px;padding:11px}.confirm-notes span{font-size:9px}.confirm-notes strong{font-size:12px}.print-note{font-size:10px}.confirm-logo{width:165px;height:62px}}
-/* Invoice readability polish */
-.invoice-company-name{white-space:nowrap}
-.invoice-company-tag{color:#4f625c}
-.invoice-company-details{font-size:9px;color:#435650}
+/* Invoice readability + print header polish */
+.invoice-company{
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  padding:4px 0 15px;
+}
+.invoice-company-left{
+  display:grid;
+  grid-template-columns:150px minmax(0,1fr);
+  align-items:center;
+  gap:14px;
+  min-width:0;
+}
+.invoice-company-logo{width:150px;height:48px}
+.invoice-company-name{font-size:20px;line-height:1.05;white-space:nowrap;color:#173f35}
+.invoice-company-tag{font-size:9.5px;color:#465a54}
+.invoice-company-details{
+  font-size:9px;
+  line-height:1.35;
+  color:#3f514c;
+}
 .invoice-company-details strong{color:#203c35}
-.confirm-head>div:first-child>div:last-child{color:#4f625c!important}
-.confirm-cell span{color:#52655f}
-.confirm-cell strong{color:#172823}
-.print-note{color:#4f625c}
-.confirm-notes span{color:#52655f}
+.confirm-head>div:first-child>div:last-child{color:#4a5b56!important}
+.confirm-cell span,.confirm-notes span{color:#52625d}
+.confirm-cell strong,.confirm-notes strong{color:#172823}
+.print-note{color:#4a5b56}
 @media print{
-  .invoice-company{grid-template-columns:minmax(0,1fr) auto}
-  .invoice-company-left{min-width:0}
-  .invoice-company-logo{width:165px;height:52px}
-  .invoice-company-name{font-size:22px;white-space:nowrap}
-  .invoice-company-tag{font-size:10px;color:#4f625c}
-  .invoice-company-details{font-size:9.5px;color:#435650}
-  .confirm-head>div:first-child>div:last-child{font-size:11px!important;color:#4f625c!important}
-  .confirm-cell span{font-size:9.5px;color:#52655f}
-  .confirm-cell strong{font-size:12.5px}
-  .print-note{font-size:10px;color:#4f625c}
-  .confirm-notes span{font-size:9.5px;color:#52655f}
-  .confirm-notes strong{font-size:12px}
+  .confirm{padding:22px}
+  .invoice-company{
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:22px;
+    padding:2px 0 16px;
+    margin-bottom:14px;
+  }
+  .invoice-company-left{
+    grid-template-columns:165px minmax(0,1fr);
+    gap:15px;
+  }
+  .invoice-company-logo{
+    width:165px;
+    height:50px;
+  }
+  .invoice-company-name{
+    font-size:23px!important;
+    line-height:1.05!important;
+    white-space:nowrap!important;
+    color:#173f35!important;
+  }
+  .invoice-company-tag{
+    font-size:10px!important;
+    line-height:1.25!important;
+    color:#465a54!important;
+  }
+  .invoice-company-details{
+    font-size:9.5px!important;
+    line-height:1.45!important;
+    color:#3f514c!important;
+  }
+  .invoice-company-details strong{color:#203c35!important}
+  .confirm-head>div:first-child>div:first-child{
+    font-size:10px!important;
+    color:#40534d!important;
+  }
+  .confirm-head>div:first-child>div:last-child{
+    font-size:11px!important;
+    color:#4a5b56!important;
+  }
+  .confirm-title span{
+    font-size:10px!important;
+    color:#4a5b56!important;
+  }
+  .confirm-cell span{
+    font-size:9.5px!important;
+    color:#4d5e59!important;
+  }
+  .confirm-cell strong{
+    font-size:12.5px!important;
+    color:#172823!important;
+  }
+  .print-note{
+    font-size:10px!important;
+    color:#4a5b56!important;
+  }
+  .confirm-notes span{
+    font-size:9.5px!important;
+    color:#4d5e59!important;
+  }
+  .confirm-notes strong{
+    font-size:12px!important;
+    color:#172823!important;
+  }
 }
 @media(max-width:1040px){.layout{grid-template-columns:1fr}.venue-list{max-height:360px}.identity{grid-template-columns:1fr 1fr}}
 @media(max-width:620px){.shell{padding:11px}.topbar{position:relative}.top-actions{display:none}.brand{gap:9px}.brand img{width:190px;height:54px}.brand strong{font-size:13px}.confirm-logo{width:180px;height:54px;object-fit:contain}h1{font-size:24px}.search{grid-template-columns:1fr}.venue-row{grid-template-columns:1fr}.formgrid,.modalgrid,.confirm-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.identity{grid-template-columns:1fr}.venue-title{display:block}.form-actions .btn{width:100%}}
