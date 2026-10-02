@@ -5696,6 +5696,69 @@ function selectedVenueEventTypes() {
     return Array.from(document.querySelectorAll('#venueEventTypes input:checked')).map(input => input.value);
 }
 
+function forceBlankVenueCreateForm() {
+    const form = document.getElementById("venueForm");
+    if (!form) return;
+
+    venueFormMode = "create";
+    form.reset();
+    form.setAttribute("autocomplete", "off");
+    form.dataset.smvCreateMode = "1";
+
+    form.querySelectorAll("input, textarea, select").forEach(field => {
+        if (field.type === "checkbox" || field.type === "radio") {
+            field.checked = false;
+        } else if (field.type === "file") {
+            field.value = "";
+        } else if (field.tagName === "SELECT") {
+            /* Add mode must never inherit a previous venue's selected option. */
+            const blank = Array.from(field.options).find(option => option.value === "");
+            if (blank) {
+                field.value = "";
+            } else {
+                field.selectedIndex = -1;
+            }
+        } else {
+            field.value = "";
+        }
+    });
+
+    const id = document.getElementById("venueId");
+    if (id) id.value = "";
+
+    const title = document.getElementById("venueModalTitle");
+    if (title) title.textContent = "Add New Venue";
+
+    resetVenueCoverEditor(null);
+    resetPartnerAccessPanel(null);
+    currentVenuePartnerProfile = null;
+    clearPendingVenueCoverPreview();
+    pendingVenueCoverImageFile = null;
+    pendingVenueCoverRemoval = false;
+
+    setStage8FormAvailability();
+
+    /* Re-clear once after the browser has applied any autofill/restoration. */
+    requestAnimationFrame(() => {
+        if (venueFormMode !== "create") return;
+        form.querySelectorAll("input, textarea, select").forEach(field => {
+            if (field.id === "venueId") {
+                field.value = "";
+            } else if (field.type === "checkbox" || field.type === "radio") {
+                field.checked = false;
+            } else if (field.type === "file") {
+                field.value = "";
+            } else if (field.tagName === "SELECT") {
+                const blank = Array.from(field.options).find(option => option.value === "");
+                if (blank) field.value = "";
+                else field.selectedIndex = -1;
+            } else {
+                field.value = "";
+            }
+        });
+    });
+}
+
 function openVenueModal(venue = null) {
 
     const modal = document.getElementById("venueModal");
