@@ -5717,14 +5717,24 @@ function openVenueModal(venue = null) {
        controls / autofill / a previously saved hidden id can survive.
     */
     form.reset();
+    form.setAttribute("autocomplete", "off");
 
-    document.querySelectorAll("#venueForm input:not([type='checkbox']):not([type='file']), #venueForm textarea").forEach(field => {
-        if (field.id !== "venueId") field.value = "";
-    });
+    /*
+       CREATE mode must never inherit browser autofill or a previous venue's
+       values. Clear every user-entered field explicitly. Selects are assigned
+       only safe CREATE defaults below, never the previous venue's values.
+    */
+    if (!hasVenueId) {
+        document.querySelectorAll(
+            "#venueForm input:not([type='checkbox']):not([type='file']), #venueForm textarea"
+        ).forEach(field => {
+            field.value = "";
+        });
 
-    document.querySelectorAll("#venueForm input[type='checkbox']").forEach(field => {
-        field.checked = field.id === "venueFoodVeg";
-    });
+        document.querySelectorAll("#venueForm input[type='checkbox']").forEach(field => {
+            field.checked = false;
+        });
+    }
 
     document.getElementById("venueId").value =
         hasVenueId ? String(venue.id) : "";
@@ -5794,12 +5804,12 @@ function openVenueModal(venue = null) {
 
     setVenueChecked(
         "venuePlanNotificationsEnabled",
-        venue?.plan_notifications_enabled !== false
+        hasVenueId ? venue?.plan_notifications_enabled !== false : true
     );
 
     setVenueChecked(
         "venueFoodVeg",
-        venue?.food_veg !== false
+        hasVenueId ? venue?.food_veg !== false : false
     );
 
     setVenueChecked(
@@ -5849,9 +5859,9 @@ function openVenueModal(venue = null) {
 
     resetVenueCoverEditor(venue);
 
-    resetPartnerAccessPanel(venue);
+    resetPartnerAccessPanel(hasVenueId ? venue : null);
 
-    if (venue?.id) {
+    if (hasVenueId) {
         loadVenuePartnerAccess(venue.id);
     }
 
