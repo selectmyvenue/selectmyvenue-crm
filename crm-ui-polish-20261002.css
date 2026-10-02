@@ -107,6 +107,21 @@
   font-weight:850!important;
 }
 
+/* ---------- Venue Assignment: full-screen only ---------- */
+#venueAssignmentModal{
+  padding:0!important;
+}
+#venueAssignmentModal .venue-assignment-card{
+  width:100vw!important;
+  max-width:none!important;
+  height:100vh!important;
+  max-height:none!important;
+  min-height:100vh!important;
+  margin:0!important;
+  border-radius:0!important;
+}
+/* Keep existing assignment internals, sizing, selection and scroll behavior unchanged. */
+
 /* ---------- Venue Assignment: Partner CRM visual language ---------- */
 #venueAssignmentModal{
   padding:12px!important;
