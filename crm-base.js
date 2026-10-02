@@ -733,7 +733,7 @@
 
   installAssignmentFullscreenPolish();
 
-  loadScript("crm-core.js?v=20261002-add-venue-reset-1", function () {
+  loadScript("crm-core.js?v=20261002-add-venue-reset-2", function () {
     installInternalCommentOnlyBehavior();
     installLeadRenderNormalizer();
     installSaveCustomerCommentPreserver();
