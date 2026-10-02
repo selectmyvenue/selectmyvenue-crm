@@ -891,7 +891,6 @@ if(tier==='strong'&&!hasStrong){
 }
 let venues=(assignmentVenueRows||[]).filter(v=>{if(!assignmentSearch)return true;const searchable=norm([v.venue_name,v.contact_person,v.city,v.area,v.address,v.venue_type,v.food_options,v.facilities,v.description,v.capacity_min,v.capacity_max,v.price_min_per_person,v.price_max_per_person,v.parking_available===true?'parking':'',v.indoor_available===true?'indoor hall':'',v.outdoor_available===true?'outdoor lawn':'',v.food_veg===true?'veg vegetarian':'',v.food_non_veg===true?'non veg nonvegetarian':'',Number(v.room_count)>0?'room rooms '+Number(v.room_count):''].filter(Boolean).join(' '));const words=norm(assignmentSearch).split(/\s+/).filter(Boolean);return words.every(word=>(word==='room'||word==='rooms')?Number(v.room_count)>0:searchable.includes(word));}).filter(v=>{
   const isAssigned=already.has(String(v.id));
-  const isTestLike=/\btest\b|\bdummy\b|\bsample\b/i.test(smvText(v?.venue_name));
 
   /* Assigned venues stay visible in the matching views so staff can see
      the exact venue + matching reasons that led to the assignment. */
@@ -899,9 +898,9 @@ let venues=(assignmentVenueRows||[]).filter(v=>{if(!assignmentSearch)return true
 
   const m=smartMatch(v,assignmentCurrentLead);
 
-  /* All = all operational approved+verified venues. Test/dummy/sample
-     records remain available only in the explicit Assigned view when used. */
-  if(tier==='all')return !isTestLike;
+  /* All = every operational approved+verified venue. Venue names such as
+     "Test Venue" are legitimate records and must never be excluded by name. */
+  if(tier==='all')return true;
 
   if(tier==='strong')return isAssigned || smvMatchTier(m)==='strong';
   if(tier==='possible')return isAssigned || ['strong','possible'].includes(smvMatchTier(m));
@@ -918,7 +917,7 @@ let venues=(assignmentVenueRows||[]).filter(v=>{if(!assignmentSearch)return true
   if(!assignmentSearch&&tier!=='all'&&tier!=='assigned'&&tier==='possible'){
     controls.dataset.tier='all';
     controls.querySelectorAll('[data-tier]').forEach(button=>button.classList.toggle('active',button.dataset.tier==='all'));
-    venues=(assignmentVenueRows||[]).filter(v=>!already.has(String(v.id))&&!/\btest\b|\bdummy\b|\bsample\b/i.test(smvText(v?.venue_name)));
+    venues=(assignmentVenueRows||[]).filter(v=>!already.has(String(v.id)));
     venues.sort((a,b)=>smvCompareMatches({v:a,m:smartMatch(a,assignmentCurrentLead)},{v:b,m:smartMatch(b,assignmentCurrentLead)}));
   }
 }
