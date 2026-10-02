@@ -129,25 +129,38 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
     <div class="card-head"><h2>Invoice</h2><button class="btn" id="closeConfirm" type="button">Close</button></div>
     <div class="modalbody">
       <div class="confirm" id="confirmCard">
-        <div class="invoice-company"><div class="invoice-company-left"><img class="invoice-company-logo" src="https://selectmyvenue.com/logo.png" alt="Select My Venue"><div><div class="invoice-company-name">Select My Venue</div><div class="invoice-company-tag">Venue Discovery &amp; Partner Services</div></div></div><div class="invoice-company-details"><div><strong>Udyam:</strong> UDYAM-DL-06-0224613</div><div><strong>PAN:</strong> BTAPK8541A</div><div><strong>Phone:</strong> 8368322256</div><div><strong>Email:</strong> support@selectmyvenue.com</div><div style="grid-column:1/-1"><strong>Website:</strong> selectmyvenue.com</div></div></div><div class="invoice-accent"></div><div class="confirm-head"><div><div style="font-size:9px;color:#687873;font-weight:800;letter-spacing:.08em;text-transform:uppercase">Business Invoice</div><div style="font-size:12px;color:#50635e;margin-top:3px">Manual billing record • GST applied only when selected</div></div><div class="confirm-title"><strong>INVOICE</strong><span>Invoice No. <b id="cReceipt">—</b></span></div></div>
+        <div class="invoice-company"><div class="invoice-company-left"><img class="invoice-company-logo" src="https://selectmyvenue.com/logo.png" alt="Select My Venue"><div><div class="invoice-company-name">Select My Venue</div><div class="invoice-company-tag">Venue Discovery &amp; Partner Services</div></div></div><div class="invoice-company-details"><div><strong>Udyam:</strong> UDYAM-DL-06-0224613</div><div><strong>PAN:</strong> BTAPK8541A</div><div><strong>Phone:</strong> 8368322256</div><div><strong>Email:</strong> support@selectmyvenue.com</div><div style="grid-column:1/-1"><strong>Website:</strong> selectmyvenue.com</div></div></div>
+        <div class="invoice-accent"></div>
+        <div class="confirm-head"><div><div style="font-size:9px;color:#687873;font-weight:800;letter-spacing:.08em;text-transform:uppercase">Commercial Invoice</div><div style="font-size:12px;color:#50635e;margin-top:3px">GST not charged — supplier is not registered under GST</div></div><div class="confirm-title"><strong>INVOICE</strong><span>Invoice No. <b id="cReceipt">—</b></span></div></div>
         <div class="confirm-grid">
+          <div class="confirm-cell"><span>Invoice Date</span><strong id="cDate">—</strong></div>
+          <div class="confirm-cell"><span>Payment Status</span><strong>PAID</strong></div>
+          <div class="confirm-cell"><span>Billed To</span><strong id="cOwner">—</strong></div>
           <div class="confirm-cell"><span>Venue</span><strong id="cVenue">—</strong></div>
-          <div class="confirm-cell"><span>Venue ID</span><strong id="cVenueId">—</strong></div>
-          <div class="confirm-cell"><span>Plan</span><strong id="cPlan">—</strong></div>
-          <div class="confirm-cell"><span>Owner</span><strong id="cOwner">—</strong></div>
-          <div class="confirm-cell"><span>Payment Method</span><strong id="cMethod">—</strong></div>
-          <div class="confirm-cell"><span>Payment Date</span><strong id="cDate">—</strong></div>
-          <div class="confirm-cell"><span>Validity</span><strong id="cValidity">—</strong></div>
+          <div class="confirm-cell"><span>Contact</span><strong id="cContact">—</strong></div>
+          <div class="confirm-cell"><span>Plan Validity</span><strong id="cValidity">—</strong></div>
         </div>
-        <div class="confirm-grid" style="margin-top:10px">
-          <div class="confirm-cell"><span>Standard Price</span><strong id="cStandard">₹0</strong></div>
-          <div class="confirm-cell"><span>Negotiated Price</span><strong id="cNegotiated">₹0</strong></div>
-          <div class="confirm-cell"><span>GST</span><strong id="cGst">Not applied</strong></div>
-          <div class="confirm-cell"><span>Final Amount</span><strong id="cTotal">₹0</strong></div>
+        <div style="margin-top:14px;border:1px solid #dce6e2;border-radius:10px;overflow:hidden">
+          <div style="display:grid;grid-template-columns:1fr 90px 120px;padding:10px 12px;background:#f3f7f5;color:#4d625d;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.05em">
+            <span>Description of Services</span><span style="text-align:center">Term</span><span style="text-align:right">Amount</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 90px 120px;padding:13px 12px;font-size:11px;align-items:center">
+            <div><strong id="cService">Venue Partner Services</strong><small style="display:block;color:#71817d;margin-top:3px" id="cServiceDetail">—</small></div>
+            <strong style="text-align:center" id="cTerm">—</strong>
+            <strong style="text-align:right" id="cTotal">₹0</strong>
+          </div>
         </div>
-        <div class="confirm-total"><div><span style="display:block;color:#687873;font-size:8px;text-transform:uppercase">Amount Received</span><strong id="cAmount">₹0</strong></div><div style="text-align:right"><span style="display:block;color:#2b826c;font-size:9px;font-weight:900">STATUS</span><strong style="font-size:14px;color:#2b826c">PAID</strong></div></div>
+        <div style="margin-top:10px;display:flex;justify-content:flex-end">
+          <div style="width:290px;border-top:2px solid #dfe8e4;padding-top:9px">
+            <div style="display:flex;justify-content:space-between;font-size:10px;margin:4px 0"><span>Service Amount</span><strong id="cAmount">₹0</strong></div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;margin:4px 0"><span>GST</span><strong>Not charged</strong></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:8px;padding-top:8px;border-top:1px solid #dfe8e4"><strong>Total Amount</strong><strong id="cFinal">₹0</strong></div>
+          </div>
+        </div>
+        <div class="confirm-total" style="margin-top:12px"><div><span style="display:block;color:#687873;font-size:8px;text-transform:uppercase">Amount Received</span><strong id="cReceived">₹0</strong></div><div style="text-align:right"><span style="display:block;color:#2b826c;font-size:9px;font-weight:900">PAYMENT METHOD</span><strong style="font-size:12px;color:#2b826c" id="cMethod">—</strong></div></div>
+        <div style="margin-top:12px;padding:10px 12px;background:#f8faf9;border-radius:8px;font-size:10px"><strong>Amount in Words:</strong> <span id="cWords">—</span></div>
         <div class="confirm-notes"><span>Notes</span><strong id="cNotes">—</strong></div>
-        <div class="print-note">This invoice records a manually entered business payment. It is not an online payment gateway receipt or GST tax invoice unless GST is explicitly applied and the business is GST-registered.</div>
+        <div class="print-note">GST has not been charged because Select My Venue is currently not registered under GST. This is a commercial invoice for services and not a GST tax invoice.</div>
       </div>
       <div class="form-actions"><button class="btn" id="copyConfirm" type="button">Copy Invoice</button><button class="btn" id="emailConfirm" type="button">Email</button><button class="btn" id="whatsappConfirm" type="button">WhatsApp</button><button class="btn gold" id="printConfirm" type="button">Print / Save PDF</button></div><div class="print-note" style="margin-top:7px">Email opens your email app with the invoice prepared. WhatsApp opens a pre-filled message; you still press Send.</div>
     </div>
@@ -158,7 +171,7 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
   <div class="modalbox">
     <div class="card-head"><h2>Choose Email App</h2><button class="btn" id="closeEmail" type="button">Close</button></div>
     <div class="modalbody">
-      <div class="notice" style="margin-top:0"><strong>Recipient:</strong> <span id="emailRecipient">—</span><br><span style="display:block;margin-top:4px">Choose where to compose the payment receipt. This will not automatically open Outlook.</span></div>
+      <div class="notice" style="margin-top:0"><strong>Recipient:</strong> <span id="emailRecipient">—</span><br><span style="display:block;margin-top:4px">Choose where to compose the invoice. This will not automatically open Outlook.</span></div>
       <div class="form-actions" style="margin-top:12px">
         <button class="btn primary" id="gmailEmail" type="button">Open Gmail</button>
         <button class="btn" id="outlookEmail" type="button">Open Outlook Web</button>
@@ -349,10 +362,41 @@ function remind(r){
   if(digits.length>=10){const phone=digits.length===10?"91"+digits:digits;window.open("https://wa.me/"+phone+"?text="+encodeURIComponent(msg),"_blank","noopener");return;}
   navigator.clipboard?.writeText(msg).then(()=>toast("Reminder copied to clipboard."),()=>toast("Reminder could not be copied.",true));
 }
-function openConfirmation(r){
-  const v=venue();lastConfirmation=r;$("cReceipt").textContent=r.invoice_number||"—";$("cVenue").textContent=v?.venue_name||r.venue_id;$("cVenueId").textContent=v?.id||r.venue_id;$("cPlan").textContent=r.plan_name||"—";$("cOwner").textContent=r.owner_name||v?.contact_person||"—";$("cMethod").textContent=methodLabel(r.payment_method);$("cDate").textContent=fmtDate(r.received_at||r.created_at);$("cValidity").textContent=fmtDate(r.start_date)+" — "+fmtDate(r.end_date);$("cStandard").textContent=money(r.standard_amount);$("cNegotiated").textContent=money(r.negotiated_amount ?? r.amount);$("cNotes").textContent=r.notes||"—";$("cGst").textContent=r.gst_applied?money(r.gst_amount)+" @ "+Number(r.gst_rate)+"%":"Not applied";$("cTotal").textContent=money(r.total_amount ?? r.amount);$("cAmount").textContent=money(r.total_amount ?? r.amount);$("confirmModal").classList.add("open");
+function numberToWords(n){
+  n=Math.round(Number(n||0)); if(n===0)return"Zero Rupees Only";
+  const ones=["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
+  const tens=["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+  function two(x){if(x<20)return ones[x];return tens[Math.floor(x/10)]+(x%10?" "+ones[x%10]:"");}
+  function part(x){let a=[];if(x>=100){a.push(ones[Math.floor(x/100)]+" Hundred");x%=100;}if(x)a.push(two(x));return a.join(" ");}
+  let out=[];const crore=Math.floor(n/10000000);n%=10000000;const lakh=Math.floor(n/100000);n%=100000;const thousand=Math.floor(n/1000);n%=1000;
+  if(crore)out.push(part(crore)+" Crore");if(lakh)out.push(part(lakh)+" Lakh");if(thousand)out.push(part(thousand)+" Thousand");if(n)out.push(part(n));
+  return out.join(" ")+" Rupees Only";
 }
-function confirmationText(){if(!lastConfirmation)return"";const r=lastConfirmation,v=venue();return ["Select My Venue — INVOICE","Venue: "+(v?.venue_name||r.venue_id),"Venue ID: "+(v?.id||r.venue_id),"Owner: "+(r.owner_name||v?.contact_person||"—"),"Plan: "+r.plan_name+" ("+r.term_months+" months)","Standard Price: "+money(r.standard_amount),"Negotiated Price: "+money(r.negotiated_amount ?? r.amount),"GST: "+(r.gst_applied?money(r.gst_amount)+" @ "+Number(r.gst_rate)+"%":"Not applied"),"Final Amount: "+money(r.total_amount ?? r.amount),"Payment Method: "+methodLabel(r.payment_method),"Payment Date: "+fmtDate(r.received_at||r.created_at),"Valid: "+fmtDate(r.start_date)+" to "+fmtDate(r.end_date),"Invoice No.: "+(r.invoice_number||"—"),"Notes: "+(r.notes||"—")].join("\n");}
+function openConfirmation(r){
+  const v=venue(),amount=Number(r.amount||r.total_amount||0);
+  lastConfirmation=r;
+  $("cReceipt").textContent=r.invoice_number||"—";
+  $("cDate").textContent=fmtDate(r.received_at||r.created_at);
+  $("cOwner").textContent=r.owner_name||v?.contact_person||"—";
+  $("cVenue").textContent=v?.venue_name||r.venue_id||"—";
+  $("cContact").textContent=r.owner_email||v?.contact_email||v?.contact_mobile||v?.whatsapp_number||"—";
+  $("cValidity").textContent=fmtDate(r.start_date)+" — "+fmtDate(r.end_date);
+  $("cTerm").textContent=Number(r.term_months||0)+" month"+(Number(r.term_months||0)===1?"":"s");
+  $("cServiceDetail").textContent=(r.plan_name||"Venue Partner")+" Plan";
+  $("cTotal").textContent=money(amount);
+  $("cAmount").textContent=money(amount);
+  $("cFinal").textContent=money(amount);
+  $("cReceived").textContent=money(amount);
+  $("cMethod").textContent=methodLabel(r.payment_method);
+  $("cWords").textContent=numberToWords(amount);
+  $("cNotes").textContent=r.notes||"—";
+  $("confirmModal").classList.add("open");
+}
+function confirmationText(){
+  if(!lastConfirmation)return"";
+  const r=lastConfirmation,v=venue(),amount=Number(r.amount||r.total_amount||0);
+  return ["Select My Venue — INVOICE","Invoice No.: "+(r.invoice_number||"—"),"Invoice Date: "+fmtDate(r.received_at||r.created_at),"Billed To: "+(r.owner_name||v?.contact_person||"—"),"Venue: "+(v?.venue_name||r.venue_id),"Service: Venue Partner Services — "+r.plan_name+" Plan","Term: "+r.term_months+" months","Plan Validity: "+fmtDate(r.start_date)+" to "+fmtDate(r.end_date),"Service Amount: "+money(amount),"GST: Not charged — supplier is not registered under GST","Total Amount: "+money(amount),"Amount in Words: "+numberToWords(amount),"Payment Method: "+methodLabel(r.payment_method),"Notes: "+(r.notes||"—")].join("\n");
+}
 function copyConfirmation(){const text=confirmationText();if(!text)return;navigator.clipboard?.writeText(text).then(()=>toast("Invoice copied."));}
 function emailDetails(){
   if(!lastConfirmation)return null;
