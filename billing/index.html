@@ -214,7 +214,13 @@ function updateTotals(){
   $("gstAmount").value=money(gst);$("totalAmount").value=money(negotiated+gst);
 }
 function suggestedStart(){return localToday();}
-function updateEnd(){ $("endDate").value=endDateFor($("startDate").value,$("termMonths").value)||"Automatic"; }
+function updateEnd(){
+  const start=$("startDate").value;
+  const term=Number($("termMonths").value);
+  $("endDate").value=(start&&Number.isFinite(term)&&term>0)
+    ? endDateFor(start,term)
+    : (start ? "Select a priced term" : "Automatic");
+}
 function updateStartSuggestion(){const suggested=suggestedStart();$("startDate").value=suggested;$("startNote").textContent="Suggested start: today. You can change it when needed.";updateEnd();}
 
 async function auth(){
