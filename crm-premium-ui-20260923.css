@@ -2408,3 +2408,48 @@ body .page-heading{
   .crm-brand-text strong{font-size:15px!important}
   .crm-nav-item{min-height:32px!important;height:32px!important;padding:0 9px!important;font-size:10px!important}
 }
+
+
+/* =========================================================
+   VENUE ASSIGNMENT READABILITY — 2026-10-02
+   UI-only: increase assignment-board typography without changing layout/workflow.
+   ========================================================= */
+#venueAssignmentModal .venue-assignment-header h2{font-size:23px!important;line-height:1.2!important}
+#venueAssignmentModal .venue-assignment-header p{font-size:12px!important;line-height:1.4!important}
+#venueAssignmentModal .smv-summary-title{font-size:12px!important}
+#venueAssignmentModal .smv-summary-title strong{font-size:13px!important}
+#venueAssignmentModal .smv-venue-chip{font-size:12px!important}
+#venueAssignmentModal .smv-venue-chip small{font-size:10px!important}
+#venueAssignmentModal .smv-auto-badge{font-size:8px!important}
+#venueAssignmentModal .venue-assignment-requirement{font-size:13px!important;line-height:1.45!important}
+#venueAssignmentModal #assignmentVenueSearch{font-size:14px!important}
+#venueAssignmentModal #assignmentVenueCount{font-size:12px!important}
+#venueAssignmentModal .smv-match-panel-title b{font-size:14px!important}
+#venueAssignmentModal .smv-match-panel-title span{font-size:11px!important}
+#venueAssignmentModal .smv-match-panel-title>strong{font-size:11px!important}
+#venueAssignmentModal .smv-match-panel-tabs button{font-size:12px!important}
+#venueAssignmentModal .venue-assignment-item-title strong{font-size:16px!important;line-height:1.3!important}
+#venueAssignmentModal .venue-assignment-item-meta,
+#venueAssignmentModal .venue-assignment-item-meta span{font-size:13px!important;line-height:1.45!important}
+#venueAssignmentModal .smv-match-reasons{font-size:12px!important}
+#venueAssignmentModal .smv-match-chip{font-size:11px!important}
+#venueAssignmentModal .smv-readiness span{font-size:11px!important}
+#venueAssignmentModal .venue-assignment-item-status{font-size:12px!important}
+#venueAssignmentModal .venue-assignment-note label{font-size:12px!important}
+#venueAssignmentModal .venue-assignment-note:not(.smv-message-floating) textarea{font-size:13px!important;line-height:1.45!important}
+#venueAssignmentModal .venue-assignment-actions button{font-size:14px!important}
+#venueAssignmentModal #saveVenueAssignment,
+#venueAssignmentModal #smvAssignWhatsApp{font-size:14px!important}
+#venueAssignmentModal .venue-assignment-item{font-size:13px!important}
+
+@media(max-width:760px){
+  #venueAssignmentModal .venue-assignment-header h2{font-size:20px!important}
+  #venueAssignmentModal .venue-assignment-header p{font-size:11px!important}
+  #venueAssignmentModal .venue-assignment-item-title strong{font-size:15px!important}
+  #venueAssignmentModal .venue-assignment-item-meta,
+  #venueAssignmentModal .venue-assignment-item-meta span{font-size:12px!important}
+  #venueAssignmentModal .smv-match-chip{font-size:10.5px!important}
+  #venueAssignmentModal .venue-assignment-actions button,
+  #venueAssignmentModal #saveVenueAssignment,
+  #venueAssignmentModal #smvAssignWhatsApp{font-size:13px!important}
+}
