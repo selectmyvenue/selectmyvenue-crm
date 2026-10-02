@@ -733,7 +733,7 @@
 
   installAssignmentFullscreenPolish();
 
-  loadScript("crm-core.js?v=20261002-add-venue-isolation-1", function () {
+  loadScript("crm-core.js?v=20261002-add-venue-blank-final-2", function () {
     installInternalCommentOnlyBehavior();
     installLeadRenderNormalizer();
     installSaveCustomerCommentPreserver();
