@@ -5867,6 +5867,38 @@ function openVenueModal(venue = null) {
 
     setStage8FormAvailability();
 
+    /*
+       FINAL CREATE-MODE GUARD:
+       Add New Venue must open as a completely blank form even if another
+       handler, browser autofill, or a previous edit session populated a
+       control earlier in this function. Do this as the final step immediately
+       before showing the modal so no stale venue value can survive.
+    */
+    if (!hasVenueId) {
+        form.reset();
+
+        form.querySelectorAll("input, textarea, select").forEach(field => {
+            if (field.type === "checkbox" || field.type === "radio") {
+                field.checked = false;
+            } else if (field.type === "file") {
+                field.value = "";
+            } else if (field.id !== "venueId") {
+                field.value = "";
+            }
+        });
+
+        const venueIdField = document.getElementById("venueId");
+        if (venueIdField) venueIdField.value = "";
+
+        /* Clear any edit-session cover image/preview as well. */
+        resetVenueCoverEditor(null);
+        resetPartnerAccessPanel(null);
+        currentVenuePartnerProfile = null;
+        clearPendingVenueCoverPreview();
+        pendingVenueCoverImageFile = null;
+        pendingVenueCoverRemoval = false;
+    }
+
     modal.hidden = false;
 }
 
