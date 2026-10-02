@@ -672,7 +672,7 @@
     observer.observe(tbody, { childList: true, subtree: true });
   }
 
-  loadScript("crm-core.js?v=20261002-assignment-merge-4", function () {
+  loadScript("crm-core.js?v=20261002-save-confirmation-7", function () {
     installInternalCommentOnlyBehavior();
     installLeadRenderNormalizer();
     installSaveCustomerCommentPreserver();
