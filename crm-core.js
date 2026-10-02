@@ -7818,7 +7818,29 @@ async function loadAssignmentVenueOptions() {
             throw error;
         }
 
-        assignmentVenueRows = Array.isArray(data) ? data : [];
+        /*
+           Merge the fresh approved+verified query with the Venue Management
+           dataset as a safety net. Venue Management is the same staff-visible
+           source and currently contains all 18 approved venues. This prevents
+           a single row (including Test Venue) from disappearing if the
+           assignment query is affected by a different cached/RLS response.
+        */
+        const freshVenues = Array.isArray(data) ? data : [];
+        const managementVenues = Array.isArray(allVenues) ? allVenues : [];
+        const merged = new Map();
+
+        [...freshVenues, ...managementVenues].forEach(venue => {
+            if (
+                venue &&
+                safeValue(venue.venue_status) === "approved" &&
+                safeValue(venue.verification_status) === "verified" &&
+                venue.id
+            ) {
+                merged.set(String(venue.id), venue);
+            }
+        });
+
+        assignmentVenueRows = Array.from(merged.values());
 
         renderAssignmentVenues();
         return;
