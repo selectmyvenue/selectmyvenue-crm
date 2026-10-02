@@ -197,7 +197,93 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
 .invoice-supplier-footer span{display:block}
 .invoice-supplier-footer span+span{margin-top:3px}
 }
-</style></style>
+<style id="invoice-header-composition-final">
+/* Header composition: company left, registration/contact right, address upper, website centered */
+.invoice-company-top{
+  grid-template-columns:minmax(0,1fr) minmax(235px,255px);
+  gap:22px;
+  min-width:0;
+}
+.invoice-company-left{min-width:0}
+.invoice-company-details{
+  width:255px;
+  max-width:100%;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:4px 18px;
+  text-align:left;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+.invoice-company-details>div{min-width:0}
+.invoice-company-details strong{white-space:nowrap}
+.invoice-company-address{
+  position:relative;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  column-gap:12px;
+  margin-top:8px;
+  padding:7px 0 0;
+  border-top:1px solid #edf2f0;
+  font-size:9px;
+  line-height:1.35;
+  color:#435650;
+}
+.invoice-company-address .invoice-address-text{
+  min-width:0;
+  text-align:left;
+  overflow-wrap:anywhere;
+}
+.invoice-company-address .invoice-website{
+  justify-self:center;
+  text-align:center;
+  white-space:nowrap;
+}
+.invoice-company-address .invoice-address-spacer{min-width:0}
+.invoice-company-address strong{color:#203c35;font-weight:850}
+
+/* Keep all monetary blocks safely inside the invoice card */
+.invoice-totals{
+  width:280px;
+  max-width:calc(100% - 12px);
+  margin-right:6px;
+  padding:9px 8px 0;
+}
+.confirm-total{padding-left:8px;padding-right:8px}
+
+@media print{
+  .invoice-company-top{
+    grid-template-columns:minmax(0,1fr) 235px;
+    gap:18px;
+  }
+  .invoice-company-details{
+    width:235px;
+    font-size:9px!important;
+    gap:4px 14px;
+  }
+  .invoice-company-address{
+    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+    margin-top:8px;
+    padding-top:7px;
+    font-size:9px!important;
+  }
+  .invoice-company-address .invoice-website{justify-self:center}
+}
+@media(max-width:620px){
+  .invoice-company-top{grid-template-columns:1fr}
+  .invoice-company-details{
+    width:100%;
+    grid-template-columns:1fr 1fr;
+    text-align:left;
+  }
+  .invoice-company-address{
+    grid-template-columns:1fr;
+    row-gap:4px;
+  }
+  .invoice-company-address .invoice-website{justify-self:start;text-align:left}
+  .invoice-company-address .invoice-address-spacer{display:none}
+}
+</style></style></style>
 </head>
 <body>
 <div class="shell">
@@ -325,7 +411,7 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
         <div class="confirm-total" style="margin-top:12px"><div><span style="display:block;color:#687873;font-size:8px;text-transform:uppercase">Amount Received</span><strong id="cReceived">₹0</strong></div><div style="text-align:right"><span style="display:block;color:#2b826c;font-size:9px;font-weight:900">PAYMENT METHOD</span><strong style="font-size:12px;color:#2b826c" id="cMethod">—</strong></div></div>
         <div style="margin-top:12px;padding:10px 12px;background:#f8faf9;border-radius:8px;font-size:10px"><strong>Amount in Words:</strong> <span id="cWords">—</span></div>
         <div class="confirm-notes"><span>Notes</span><strong id="cNotes">—</strong></div>
-        <div class="invoice-supplier-footer"><span><strong>Supplier address:</strong> 4401/8, Jai Mata Market, Tri Nagar, Delhi – 110035, Delhi, India</span><span><strong>Website:</strong> selectmyvenue.com</span></div><div class="print-note">GST has not been charged because Select My Venue is currently not registered under GST. This is a commercial invoice for services and not a GST tax invoice.</div>
+        <div class="invoice-company-address"><span class="invoice-address-text"><strong>Address:</strong> 4401/8, Jai Mata Market, Tri Nagar, Delhi – 110035, Delhi, India</span><span class="invoice-website"><strong>Website:</strong> selectmyvenue.com</span><span class="invoice-address-spacer" aria-hidden="true"></span></div><div class="print-note">GST has not been charged because Select My Venue is currently not registered under GST. This is a commercial invoice for services and not a GST tax invoice.</div>
       </div>
       <div class="form-actions"><button class="btn" id="copyConfirm" type="button">Copy Invoice</button><button class="btn" id="emailConfirm" type="button">Email</button><button class="btn" id="whatsappConfirm" type="button">WhatsApp</button><button class="btn gold" id="printConfirm" type="button">Print / Save PDF</button></div><div class="print-note" style="margin-top:7px">Email opens your email app with the invoice prepared. WhatsApp opens a pre-filled message; you still press Send.</div>
     </div>
