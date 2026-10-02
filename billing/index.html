@@ -164,7 +164,40 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
 }
 @media(max-width:1040px){.layout{grid-template-columns:1fr}.venue-list{max-height:360px}.identity{grid-template-columns:1fr 1fr}}
 @media(max-width:620px){.shell{padding:11px}.topbar{position:relative}.top-actions{display:none}.brand{gap:9px}.brand img{width:190px;height:54px}.brand strong{font-size:13px}.confirm-logo{width:180px;height:54px;object-fit:contain}h1{font-size:24px}.search{grid-template-columns:1fr}.venue-row{grid-template-columns:1fr}.formgrid,.modalgrid,.confirm-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.identity{grid-template-columns:1fr}.venue-title{display:block}.form-actions .btn{width:100%}}
-</style>
+<style id="invoice-layout-polish">
+/* Final invoice layout polish: keep header metadata contained and totals visually inset */
+.invoice-company-top{grid-template-columns:minmax(0,1fr) minmax(220px,250px);gap:20px;min-width:0}
+.invoice-company-left{min-width:0}
+.invoice-company-details{width:250px;max-width:100%;grid-template-columns:minmax(0,1fr) minmax(0,1fr);text-align:left;white-space:normal;overflow-wrap:anywhere;word-break:break-word}
+.invoice-company-details>div{min-width:0}
+.invoice-company-details strong{white-space:nowrap}
+.confirm{overflow:hidden}
+.confirm-head>div,.confirm-title{min-width:0}
+.confirm-title span{overflow-wrap:anywhere}
+.invoice-supplier-footer{display:flex;justify-content:space-between;gap:18px;margin-top:13px;padding:8px 10px;border:1px solid #e3ebe8;border-radius:7px;background:#fafcfb;color:#465a54;font-size:8.5px;line-height:1.4}
+.invoice-supplier-footer span{min-width:0}
+.invoice-supplier-footer strong{color:#203c35;font-weight:800}
+.confirm-total{padding-left:8px;padding-right:8px}
+.invoice-totals{width:280px;max-width:calc(100% - 8px);margin-right:4px;border-top:2px solid #dfe8e4;padding:9px 8px 0}
+.invoice-totals .line{display:flex;justify-content:space-between;gap:18px;font-size:10px;margin:4px 0}
+.invoice-totals .line span{color:#465a54}
+.invoice-totals .line strong{white-space:nowrap}
+.invoice-totals .grand{font-size:13px;margin-top:8px;padding-top:8px;border-top:1px solid #dfe8e4}
+@media print{
+.invoice-company-top{grid-template-columns:minmax(0,1fr) 235px;gap:18px}
+.invoice-company-left{min-width:0}
+.invoice-company-details{width:235px;font-size:9px!important;gap:4px 16px}
+.invoice-supplier-footer{margin-top:12px;padding:8px 10px;font-size:9px!important}
+.invoice-totals{width:280px;max-width:calc(100% - 8px);margin-right:4px;padding:9px 8px 0}
+}
+@media(max-width:620px){
+.invoice-company-top{grid-template-columns:1fr}
+.invoice-company-details{width:100%;grid-template-columns:1fr 1fr;text-align:left}
+.invoice-supplier-footer{display:block}
+.invoice-supplier-footer span{display:block}
+.invoice-supplier-footer span+span{margin-top:3px}
+}
+</style></style>
 </head>
 <body>
 <div class="shell">
@@ -267,7 +300,7 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
     <div class="card-head"><h2>Invoice</h2><button class="btn" id="closeConfirm" type="button">Close</button></div>
     <div class="modalbody">
       <div class="confirm" id="confirmCard">
-        <div class="invoice-company"><div class="invoice-company-top"><div class="invoice-company-left"><img class="invoice-company-logo" src="https://selectmyvenue.com/logo.png" alt="Select My Venue"><div><div class="invoice-company-name">Select My Venue</div><div class="invoice-company-tag">Venue Discovery &amp; Partner Services</div></div></div><div class="invoice-company-details"><div><strong>Udyam:</strong> UDYAM-DL-06-0224613</div><div><strong>PAN:</strong> BTAPK8541A</div><div><strong>Phone:</strong> 8368322256</div><div><strong>Email:</strong> support@selectmyvenue.com</div></div></div><div class="invoice-company-address"><span><strong>Address:</strong> 4401/8, Jai Mata Market, Tri Nagar, Delhi – 110035, Delhi, India</span><span><strong>Website:</strong> selectmyvenue.com</span></div></div>
+        <div class="invoice-company"><div class="invoice-company-top"><div class="invoice-company-left"><img class="invoice-company-logo" src="https://selectmyvenue.com/logo.png" alt="Select My Venue"><div><div class="invoice-company-name">Select My Venue</div><div class="invoice-company-tag">Venue Discovery &amp; Partner Services</div></div></div><div class="invoice-company-details"><div><strong>Udyam:</strong> UDYAM-DL-06-0224613</div><div><strong>PAN:</strong> BTAPK8541A</div><div><strong>Phone:</strong> 8368322256</div><div><strong>Email:</strong> support@selectmyvenue.com</div></div></div></div>
         <div class="invoice-accent"></div>
         <div class="confirm-head"><div><div style="font-size:9px;color:#687873;font-weight:800;letter-spacing:.08em;text-transform:uppercase">Commercial Invoice</div><div style="font-size:12px;color:#50635e;margin-top:3px">GST not charged — supplier is not registered under GST</div></div><div class="confirm-title"><strong>INVOICE</strong><span>Invoice No. <b id="cReceipt">—</b></span></div></div>
         <div class="confirm-grid">
@@ -288,17 +321,11 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
             <strong style="text-align:right" id="cTotal">₹0</strong>
           </div>
         </div>
-        <div style="margin-top:10px;display:flex;justify-content:flex-end">
-          <div style="width:290px;border-top:2px solid #dfe8e4;padding-top:9px">
-            <div style="display:flex;justify-content:space-between;font-size:10px;margin:4px 0"><span>Service Amount</span><strong id="cAmount">₹0</strong></div>
-            <div style="display:flex;justify-content:space-between;font-size:10px;margin:4px 0"><span>GST</span><strong>Not charged</strong></div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:8px;padding-top:8px;border-top:1px solid #dfe8e4"><strong>Total Amount</strong><strong id="cFinal">₹0</strong></div>
-          </div>
-        </div>
+        <div style="margin-top:10px;display:flex;justify-content:flex-end"><div class="invoice-totals"><div class="line"><span>Service Amount</span><strong id="cAmount">₹0</strong></div><div class="line"><span>GST</span><strong>Not charged</strong></div><div class="line grand"><strong>Total Amount</strong><strong id="cFinal">₹0</strong></div></div></div>
         <div class="confirm-total" style="margin-top:12px"><div><span style="display:block;color:#687873;font-size:8px;text-transform:uppercase">Amount Received</span><strong id="cReceived">₹0</strong></div><div style="text-align:right"><span style="display:block;color:#2b826c;font-size:9px;font-weight:900">PAYMENT METHOD</span><strong style="font-size:12px;color:#2b826c" id="cMethod">—</strong></div></div>
         <div style="margin-top:12px;padding:10px 12px;background:#f8faf9;border-radius:8px;font-size:10px"><strong>Amount in Words:</strong> <span id="cWords">—</span></div>
         <div class="confirm-notes"><span>Notes</span><strong id="cNotes">—</strong></div>
-        <div class="print-note">GST has not been charged because Select My Venue is currently not registered under GST. This is a commercial invoice for services and not a GST tax invoice.</div>
+        <div class="invoice-supplier-footer"><span><strong>Supplier address:</strong> 4401/8, Jai Mata Market, Tri Nagar, Delhi – 110035, Delhi, India</span><span><strong>Website:</strong> selectmyvenue.com</span></div><div class="print-note">GST has not been charged because Select My Venue is currently not registered under GST. This is a commercial invoice for services and not a GST tax invoice.</div>
       </div>
       <div class="form-actions"><button class="btn" id="copyConfirm" type="button">Copy Invoice</button><button class="btn" id="emailConfirm" type="button">Email</button><button class="btn" id="whatsappConfirm" type="button">WhatsApp</button><button class="btn gold" id="printConfirm" type="button">Print / Save PDF</button></div><div class="print-note" style="margin-top:7px">Email opens your email app with the invoice prepared. WhatsApp opens a pre-filled message; you still press Send.</div>
     </div>
