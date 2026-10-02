@@ -24,6 +24,65 @@
     console[type === "error" ? "error" : "log"](message);
   }
 
+  function installAssignmentFullscreenPolish() {
+    if (document.getElementById("smvAssignmentFullscreenPolish")) return;
+    const style = document.createElement("style");
+    style.id = "smvAssignmentFullscreenPolish";
+    style.textContent = `
+      .venue-assignment-modal{
+        position:fixed!important;inset:0!important;z-index:5000!important;
+        display:flex!important;align-items:flex-start!important;justify-content:flex-start!important;
+        width:100vw!important;height:100vh!important;max-height:none!important;padding:0!important;
+        overflow-x:hidden!important;overflow-y:auto!important;
+        background:rgba(12,31,28,.42)!important;backdrop-filter:blur(5px)!important;
+      }
+      .venue-assignment-card{
+        width:100%!important;max-width:none!important;min-height:100vh!important;max-height:none!important;height:auto!important;
+        overflow:visible!important;display:flex!important;flex-direction:column!important;
+        border-radius:0!important;border:0!important;box-shadow:none!important;background:#fff!important;
+      }
+      .venue-assignment-header{flex:0 0 auto!important;padding:24px 30px 18px!important}
+      .venue-assignment-header h2{font-size:30px!important}
+      .venue-assignment-header p{font-size:14px!important}
+      .venue-assignment-requirement{margin:16px 28px 10px!important;padding:15px 18px!important;font-size:14px!important}
+      .venue-assignment-toolbar{padding:10px 28px 16px!important}
+      .venue-assignment-toolbar input{height:48px!important;font-size:14px!important;padding:0 15px!important}
+      .venue-assignment-toolbar span{font-size:13px!important}
+      .venue-assignment-list{
+        flex:0 0 auto!important;min-height:120px!important;max-height:none!important;height:auto!important;
+        overflow:visible!important;padding:0 28px 18px!important;
+      }
+      .venue-assignment-item{min-height:72px!important;padding:16px 15px!important;margin-bottom:10px!important;gap:14px!important;border-radius:14px!important}
+      .venue-assignment-item input[type="checkbox"]{width:21px!important;height:21px!important}
+      .venue-assignment-item-title strong{font-size:16px!important}
+      .venue-assignment-item-meta{margin-top:6px!important;gap:10px 16px!important;font-size:13px!important;line-height:1.45!important}
+      .venue-assignment-recommended{padding:4px 8px!important;font-size:10px!important}
+      .venue-assignment-item-status{font-size:13px!important;font-weight:850!important}
+      .venue-assignment-note{margin:2px 28px 18px!important}
+      .venue-assignment-note label{font-size:11px!important}
+      .venue-assignment-note textarea{min-height:78px!important;font-size:14px!important}
+      .venue-assignment-actions{
+        position:sticky!important;bottom:0!important;z-index:20!important;display:flex!important;justify-content:flex-end!important;gap:12px!important;
+        margin:0!important;padding:14px 28px!important;background:rgba(255,255,255,.97)!important;
+        border-top:1px solid #dcebe6!important;box-shadow:0 -8px 24px rgba(0,72,60,.08)!important;backdrop-filter:blur(8px)!important;
+      }
+      .venue-assignment-actions button{min-height:44px!important;font-size:13px!important;padding:0 18px!important}
+      @media(max-width:700px){
+        .venue-assignment-header{padding:18px 16px 14px!important}
+        .venue-assignment-header h2{font-size:25px!important}
+        .venue-assignment-requirement{margin:12px 16px 8px!important}
+        .venue-assignment-toolbar{padding:8px 16px 12px!important}
+        .venue-assignment-list{padding:0 16px 14px!important}
+        .venue-assignment-item{align-items:flex-start!important}
+        .venue-assignment-item-status{display:none!important}
+        .venue-assignment-note{margin:0 16px 14px!important}
+        .venue-assignment-actions{padding:12px 16px!important;flex-wrap:wrap!important}
+        .venue-assignment-actions button{flex:1 1 160px!important}
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   function installSafeLeadDelete() {
     if (document.body?.dataset.smvLeadDeleteInstalled === "1") return;
     if (document.body) document.body.dataset.smvLeadDeleteInstalled = "1";
@@ -671,6 +730,8 @@
     });
     observer.observe(tbody, { childList: true, subtree: true });
   }
+
+  installAssignmentFullscreenPolish();
 
   loadScript("crm-core.js?v=20261002-save-confirmation-7", function () {
     installInternalCommentOnlyBehavior();
