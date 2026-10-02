@@ -126,7 +126,7 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
 
 <div class="modal" id="confirmModal">
   <div class="modalbox">
-    <div class="card-head"><h2>Payment Confirmation</h2><button class="btn" id="closeConfirm" type="button">Close</button></div>
+    <div class="card-head"><h2>Invoice</h2><button class="btn" id="closeConfirm" type="button">Close</button></div>
     <div class="modalbody">
       <div class="confirm" id="confirmCard">
         <div class="invoice-company"><div class="invoice-company-left"><img class="invoice-company-logo" src="https://selectmyvenue.com/logo.png" alt="Select My Venue"><div><div class="invoice-company-name">Select My Venue</div><div class="invoice-company-tag">Venue Discovery &amp; Partner Services</div></div></div><div class="invoice-company-details"><div><strong>Udyam:</strong> UDYAM-DL-06-0224613</div><div><strong>PAN:</strong> BTAPK8541A</div><div><strong>Phone:</strong> 8368322256</div><div><strong>Email:</strong> support@selectmyvenue.com</div><div style="grid-column:1/-1"><strong>Website:</strong> selectmyvenue.com</div></div></div><div class="invoice-accent"></div><div class="confirm-head"><div><div style="font-size:9px;color:#687873;font-weight:800;letter-spacing:.08em;text-transform:uppercase">Business Invoice</div><div style="font-size:12px;color:#50635e;margin-top:3px">Manual billing record • GST applied only when selected</div></div><div class="confirm-title"><strong>INVOICE</strong><span>Invoice No. <b id="cReceipt">—</b></span></div></div>
@@ -138,7 +138,6 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
           <div class="confirm-cell"><span>Payment Method</span><strong id="cMethod">—</strong></div>
           <div class="confirm-cell"><span>Payment Date</span><strong id="cDate">—</strong></div>
           <div class="confirm-cell"><span>Validity</span><strong id="cValidity">—</strong></div>
-          <div class="confirm-cell"><span>Record</span><strong id="cRecord">—</strong></div>
         </div>
         <div class="confirm-grid" style="margin-top:10px">
           <div class="confirm-cell"><span>Standard Price</span><strong id="cStandard">₹0</strong></div>
@@ -288,8 +287,8 @@ function renderHistory(){
   $("historyBody").innerHTML=rows.length?rows.map(r=>{
     const action=r.status==="pending"
       ?'<button class="btn success" data-mark-paid="'+esc(r.id)+'">Mark Paid</button><button class="btn" data-remind="'+esc(r.id)+'">Remind</button>'
-      :'<button class="btn" data-confirm="'+esc(r.id)+'">Confirmation</button>';
-    return '<tr><td><strong>'+esc(r.record_number)+'</strong><small>'+fmtDate(r.created_at)+(r.receipt_number?' · '+esc(r.receipt_number):'')+'</small>'+(r.notes?'<small class="history-note">Note: '+esc(r.notes)+'</small>':'')+'</td>'+
+      :'<button class="btn" data-confirm="'+esc(r.id)+'">View Invoice</button>';
+    return '<tr><td><strong>'+esc(r.record_number)+'</strong><small>'+fmtDate(r.created_at)+(r.invoice_number?' · Invoice '+esc(r.invoice_number):'')+'</small>'+(r.notes?'<small class="history-note">Note: '+esc(r.notes)+'</small>':'')+'</td>'+
       '<td><strong>'+esc(r.plan_name)+'</strong><small>'+esc(String(r.term_months)+' month')+'</small></td>'+
       '<td><strong>'+money(r.amount)+'</strong></td>'+
       '<td><strong>'+esc(methodLabel(r.payment_method))+'</strong><small>'+esc(r.payment_reference||"No reference")+'</small></td>'+
@@ -351,9 +350,9 @@ function remind(r){
   navigator.clipboard?.writeText(msg).then(()=>toast("Reminder copied to clipboard."),()=>toast("Reminder could not be copied.",true));
 }
 function openConfirmation(r){
-  const v=venue();lastConfirmation=r;$("cReceipt").textContent=r.receipt_number||"—";$("cVenue").textContent=v?.venue_name||r.venue_id;$("cVenueId").textContent=v?.id||r.venue_id;$("cPlan").textContent=r.plan_name||"—";$("cOwner").textContent=r.owner_name||v?.contact_person||"—";$("cMethod").textContent=methodLabel(r.payment_method);$("cDate").textContent=fmtDate(r.received_at||r.created_at);$("cValidity").textContent=fmtDate(r.start_date)+" — "+fmtDate(r.end_date);$("cRecord").textContent=r.record_number||"—";$("cStandard").textContent=money(r.standard_amount);$("cNegotiated").textContent=money(r.negotiated_amount ?? r.amount);$("cNotes").textContent=r.notes||"—";$("cGst").textContent=r.gst_applied?money(r.gst_amount)+" @ "+Number(r.gst_rate)+"%":"Not applied";$("cTotal").textContent=money(r.total_amount ?? r.amount);$("cAmount").textContent=money(r.total_amount ?? r.amount);$("confirmModal").classList.add("open");
+  const v=venue();lastConfirmation=r;$("cReceipt").textContent=r.invoice_number||"—";$("cVenue").textContent=v?.venue_name||r.venue_id;$("cVenueId").textContent=v?.id||r.venue_id;$("cPlan").textContent=r.plan_name||"—";$("cOwner").textContent=r.owner_name||v?.contact_person||"—";$("cMethod").textContent=methodLabel(r.payment_method);$("cDate").textContent=fmtDate(r.received_at||r.created_at);$("cValidity").textContent=fmtDate(r.start_date)+" — "+fmtDate(r.end_date);$("cStandard").textContent=money(r.standard_amount);$("cNegotiated").textContent=money(r.negotiated_amount ?? r.amount);$("cNotes").textContent=r.notes||"—";$("cGst").textContent=r.gst_applied?money(r.gst_amount)+" @ "+Number(r.gst_rate)+"%":"Not applied";$("cTotal").textContent=money(r.total_amount ?? r.amount);$("cAmount").textContent=money(r.total_amount ?? r.amount);$("confirmModal").classList.add("open");
 }
-function confirmationText(){if(!lastConfirmation)return"";const r=lastConfirmation,v=venue();return ["Select My Venue — Invoice","Venue: "+(v?.venue_name||r.venue_id),"Venue ID: "+(v?.id||r.venue_id),"Owner: "+(r.owner_name||v?.contact_person||"—"),"Plan: "+r.plan_name+" ("+r.term_months+" months)","Standard Price: "+money(r.standard_amount),"Negotiated Price: "+money(r.negotiated_amount ?? r.amount),"GST: "+(r.gst_applied?money(r.gst_amount)+" @ "+Number(r.gst_rate)+"%":"Not applied"),"Final Amount: "+money(r.total_amount ?? r.amount),"Payment Method: "+methodLabel(r.payment_method),"Payment Date: "+fmtDate(r.received_at||r.created_at),"Valid: "+fmtDate(r.start_date)+" to "+fmtDate(r.end_date),"Receipt: "+(r.receipt_number||"—"),"Record: "+r.record_number,"Notes: "+(r.notes||"—")].join("\n");}
+function confirmationText(){if(!lastConfirmation)return"";const r=lastConfirmation,v=venue();return ["Select My Venue — INVOICE","Venue: "+(v?.venue_name||r.venue_id),"Venue ID: "+(v?.id||r.venue_id),"Owner: "+(r.owner_name||v?.contact_person||"—"),"Plan: "+r.plan_name+" ("+r.term_months+" months)","Standard Price: "+money(r.standard_amount),"Negotiated Price: "+money(r.negotiated_amount ?? r.amount),"GST: "+(r.gst_applied?money(r.gst_amount)+" @ "+Number(r.gst_rate)+"%":"Not applied"),"Final Amount: "+money(r.total_amount ?? r.amount),"Payment Method: "+methodLabel(r.payment_method),"Payment Date: "+fmtDate(r.received_at||r.created_at),"Valid: "+fmtDate(r.start_date)+" to "+fmtDate(r.end_date),"Invoice No.: "+(r.invoice_number||"—"),"Notes: "+(r.notes||"—")].join("\n");}
 function copyConfirmation(){const text=confirmationText();if(!text)return;navigator.clipboard?.writeText(text).then(()=>toast("Invoice copied."));}
 function emailDetails(){
   if(!lastConfirmation)return null;
