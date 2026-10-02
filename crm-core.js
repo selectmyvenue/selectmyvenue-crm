@@ -5701,9 +5701,7 @@ function openVenueModal(venue = null) {
     const modal = document.getElementById("venueModal");
     const form = document.getElementById("venueForm");
 
-    if (!modal || !form) {
-        return;
-    }
+    if (!modal || !form) return;
 
     const hasVenueId = Boolean(venue?.id);
     venueFormMode = hasVenueId ? "edit" : "create";
@@ -5711,197 +5709,86 @@ function openVenueModal(venue = null) {
     setVenueDetailsMode(false);
     resetVenueSaveState();
 
-    /*
-       Start every new-venue session from a deterministic blank state.
-       Do not rely only on form.reset(), because dynamically populated
-       controls / autofill / a previously saved hidden id can survive.
-    */
+    /* CREATE is deliberately isolated from EDIT. */
+    if (!hasVenueId) {
+        forceBlankVenueCreateForm();
+        modal.hidden = false;
+        return;
+    }
+
+    /* EDIT mode only: populate from the selected venue. */
     form.reset();
     form.setAttribute("autocomplete", "off");
 
-    /*
-       CREATE mode must never inherit browser autofill or a previous venue's
-       values. Clear every user-entered field explicitly. Selects are assigned
-       only safe CREATE defaults below, never the previous venue's values.
-    */
-    if (!hasVenueId) {
-        document.querySelectorAll(
-            "#venueForm input:not([type='checkbox']):not([type='file']), #venueForm textarea"
-        ).forEach(field => {
-            field.value = "";
-        });
+    document.getElementById("venueId").value = String(venue.id);
+    document.getElementById("venueModalTitle").textContent = "Edit Venue";
 
-        document.querySelectorAll("#venueForm input[type='checkbox']").forEach(field => {
-            field.checked = false;
-        });
-    }
-
-    document.getElementById("venueId").value =
-        hasVenueId ? String(venue.id) : "";
-
-    document.getElementById("venueModalTitle").textContent =
-        venue ? "Edit Venue" : "Add New Venue";
-
-    setVenueField("venueName", venue?.venue_name);
-    setVenueField("venueType", venue?.venue_type);
-    setVenueField("venueDescription", venue?.description);
-
-    setVenueField("venueContactPerson", venue?.contact_person);
-    setVenueField("venueMobile", venue?.contact_mobile);
-    setVenueField("venueWhatsapp", venue?.whatsapp_number);
-    setVenueField("venueEmail", venue?.contact_email);
-
-    setVenueField("venueCity", venue?.city);
-    setVenueField("venueArea", venue?.area);
-    setVenueField("venueAddress", venue?.address);
-    setVenueField("venueState", venue?.state);
-    setVenueField("venuePincode", venue?.pincode);
-    setVenueField("venueMaps", venue?.google_maps_url);
-
-    setVenueField("venueCapacityMin", venue?.capacity_min);
-    setVenueField("venueCapacityMax", venue?.capacity_max);
-    setVenueField("venuePriceMin", venue?.price_min_per_person);
-    setVenueField("venuePriceMax", venue?.price_max_per_person);
-
-    setVenueField("venueWebsite", venue?.website_url);
-    setVenueField("venueInstagram", venue?.instagram_url);
-    setVenueField("venueFacebook", venue?.facebook_url);
-
-    setVenueField(
-        "venueStatus",
-        venue?.venue_status || "pending"
-    );
-
-    setVenueField(
-        "venueVerification",
-        venue?.verification_status || "pending"
-    );
-
-    setVenueField(
-        "venuePlan",
-        venue?.partner_plan || "launch_trial"
-    );
-
-    setVenueField(
-        "venuePlanStatus",
-        venue?.plan_status || "trialing"
-    );
+    setVenueField("venueName", venue.venue_name);
+    setVenueField("venueType", venue.venue_type);
+    setVenueField("venueDescription", venue.description);
+    setVenueField("venueContactPerson", venue.contact_person);
+    setVenueField("venueMobile", venue.contact_mobile);
+    setVenueField("venueWhatsapp", venue.whatsapp_number);
+    setVenueField("venueEmail", venue.contact_email);
+    setVenueField("venueCity", venue.city);
+    setVenueField("venueArea", venue.area);
+    setVenueField("venueAddress", venue.address);
+    setVenueField("venueState", venue.state);
+    setVenueField("venuePincode", venue.pincode);
+    setVenueField("venueMaps", venue.google_maps_url);
+    setVenueField("venueCapacityMin", venue.capacity_min);
+    setVenueField("venueCapacityMax", venue.capacity_max);
+    setVenueField("venuePriceMin", venue.price_min_per_person);
+    setVenueField("venuePriceMax", venue.price_max_per_person);
+    setVenueField("venueWebsite", venue.website_url);
+    setVenueField("venueInstagram", venue.instagram_url);
+    setVenueField("venueFacebook", venue.facebook_url);
+    setVenueField("venueStatus", venue.venue_status || "pending");
+    setVenueField("venueVerification", venue.verification_status || "pending");
+    setVenueField("venuePlan", venue.partner_plan || "launch_trial");
+    setVenueField("venuePlanStatus", venue.plan_status || "trialing");
 
     populateVenuePlanTermOptions(
-        venue?.partner_plan || "launch_trial",
-        venue?.plan_term_months
+        venue.partner_plan || "launch_trial",
+        venue.plan_term_months
     );
 
-    setVenueField(
-        "venuePlanStartedAt",
-        toDateInputValue(venue?.plan_started_at)
-    );
-
-    setVenueField(
-        "venuePlanExpiresAt",
-        toDateInputValue(venue?.plan_expires_at)
-    );
+    setVenueField("venuePlanStartedAt", toDateInputValue(venue.plan_started_at));
+    setVenueField("venuePlanExpiresAt", toDateInputValue(venue.plan_expires_at));
 
     setVenueChecked(
         "venuePlanNotificationsEnabled",
-        hasVenueId ? venue?.plan_notifications_enabled !== false : true
+        venue.plan_notifications_enabled !== false
     );
-
-    setVenueChecked(
-        "venueFoodVeg",
-        hasVenueId ? venue?.food_veg !== false : false
+    setVenueChecked("venueFoodVeg", venue.food_veg !== false);
+    setVenueChecked("venueFoodNonVeg", venue.food_non_veg === true);
+    setVenueChecked("venueParking", venue.parking_available === true);
+    setVenueChecked("venueRooms", venue.rooms_available === true);
+    setVenueChecked("venueCatering", venue.catering_available === true);
+    setVenueChecked("venueDecoration", venue.decoration_available === true);
+    setVenueField("venueRoomCount", venue.room_count);
+    setVenueField("venueParkingCapacity", venue.parking_capacity);
+    renderVenueEventTypes(venue.event_types);
+    setVenueField(
+        "venueFacilities",
+        Array.isArray(venue.facilities) ? venue.facilities.join(", ") : venue.facilities
     );
-
-    setVenueChecked(
-        "venueFoodNonVeg",
-        venue?.food_non_veg === true
-    );
-
-    setVenueChecked(
-        "venueParking",
-        venue?.parking_available === true
-    );
-
-    setVenueChecked(
-        "venueRooms",
-        venue?.rooms_available === true
-    );
-
-    setVenueChecked(
-        "venueCatering",
-        venue?.catering_available === true
-    );
-
-    setVenueChecked(
-        "venueDecoration",
-        venue?.decoration_available === true
-    );
-    setVenueField("venueRoomCount", venue?.room_count);
-    setVenueField("venueParkingCapacity", venue?.parking_capacity);
-    renderVenueEventTypes(venue?.event_types);
-    setVenueField("venueFacilities", Array.isArray(venue?.facilities) ? venue.facilities.join(", ") : venue?.facilities);
-    setVenueField("venueMatchingNotes", venue?.matching_notes);
-    setVenueChecked("venueIndoor", venue?.indoor_available === true);
-    setVenueChecked("venueOutdoor", venue?.outdoor_available === true);
-    setVenueChecked("venueAlcohol", venue?.alcohol_allowed === true);
-    setVenueChecked("venueOutsideCatering", venue?.outside_catering_allowed === true);
-
-
-    setVenueChecked(
-        "venueFeatured",
-        venue?.featured === true
-    );
-
-    setVenueChecked(
-        "venuePublicListing",
-        venue?.public_listing_enabled === true
-    );
+    setVenueField("venueMatchingNotes", venue.matching_notes);
+    setVenueChecked("venueIndoor", venue.indoor_available === true);
+    setVenueChecked("venueOutdoor", venue.outdoor_available === true);
+    setVenueChecked("venueAlcohol", venue.alcohol_allowed === true);
+    setVenueChecked("venueOutsideCatering", venue.outside_catering_allowed === true);
+    setVenueChecked("venueFeatured", venue.featured === true);
+    setVenueChecked("venuePublicListing", venue.public_listing_enabled === true);
 
     resetVenueCoverEditor(venue);
-
-    resetPartnerAccessPanel(hasVenueId ? venue : null);
-
-    if (hasVenueId) {
-        loadVenuePartnerAccess(venue.id);
-    }
-
+    resetPartnerAccessPanel(venue);
+    loadVenuePartnerAccess(venue.id);
     setStage8FormAvailability();
 
-    /*
-       FINAL CREATE-MODE GUARD:
-       Add New Venue must open as a completely blank form even if another
-       handler, browser autofill, or a previous edit session populated a
-       control earlier in this function. Do this as the final step immediately
-       before showing the modal so no stale venue value can survive.
-    */
-    if (!hasVenueId) {
-        form.reset();
-
-        form.querySelectorAll("input, textarea, select").forEach(field => {
-            if (field.type === "checkbox" || field.type === "radio") {
-                field.checked = false;
-            } else if (field.type === "file") {
-                field.value = "";
-            } else if (field.id !== "venueId") {
-                field.value = "";
-            }
-        });
-
-        const venueIdField = document.getElementById("venueId");
-        if (venueIdField) venueIdField.value = "";
-
-        /* Clear any edit-session cover image/preview as well. */
-        resetVenueCoverEditor(null);
-        resetPartnerAccessPanel(null);
-        currentVenuePartnerProfile = null;
-        clearPendingVenueCoverPreview();
-        pendingVenueCoverImageFile = null;
-        pendingVenueCoverRemoval = false;
-    }
-
+    form.dataset.smvCreateMode = "0";
     modal.hidden = false;
 }
-
 function setVenueDetailsMode(enabled) {
     const modal = document.getElementById("venueModal");
     const form = document.getElementById("venueForm");
