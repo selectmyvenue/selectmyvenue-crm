@@ -5738,9 +5738,12 @@ function forceBlankVenueCreateForm() {
 
     setStage8FormAvailability();
 
-    /* Re-clear once after the browser has applied any autofill/restoration. */
-    requestAnimationFrame(() => {
-        if (venueFormMode !== "create") return;
+    /* Browser autofill/restoration can run after the modal opens. Re-assert
+       blank CREATE state for a short window, but stop immediately if the user
+       has switched to EDIT mode. */
+    const clearCreateFields = () => {
+        if (venueFormMode !== "create" || form.dataset.smvCreateMode !== "1") return;
+
         form.querySelectorAll("input, textarea, select").forEach(field => {
             if (field.id === "venueId") {
                 field.value = "";
@@ -5750,13 +5753,18 @@ function forceBlankVenueCreateForm() {
                 field.value = "";
             } else if (field.tagName === "SELECT") {
                 const blank = Array.from(field.options).find(option => option.value === "");
-                if (blank) field.value = "";
-                else field.selectedIndex = -1;
+                field.value = blank ? "" : "";
+                if (!blank) field.selectedIndex = -1;
             } else {
                 field.value = "";
             }
         });
-    });
+    };
+
+    requestAnimationFrame(clearCreateFields);
+    setTimeout(clearCreateFields, 50);
+    setTimeout(clearCreateFields, 200);
+    setTimeout(clearCreateFields, 500);
 }
 
 function openVenueModal(venue = null) {
