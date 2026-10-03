@@ -313,6 +313,117 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
 .invoice-company-address{grid-template-columns:1fr!important}
 .invoice-company-address .invoice-website{justify-self:start!important}
 }
+</style><style id="invoice-typography-final">
+/* Invoice readability pass: larger type + stronger secondary text */
+.confirm{
+  font-size:12px;
+  line-height:1.45;
+}
+.invoice-company-tag{font-size:10.5px!important;color:#334b44!important}
+.invoice-company-details{font-size:9.5px!important;color:#334b44!important;line-height:1.35!important}
+.invoice-company-address{font-size:9.5px!important;color:#334b44!important}
+.confirm-head>div:first-child>div:first-child{
+  font-size:10px!important;
+  color:#304840!important;
+}
+.confirm-head>div:first-child>div:last-child{
+  font-size:12px!important;
+  color:#334b44!important;
+}
+.confirm-title strong{font-size:23px!important}
+.confirm-title span{font-size:10px!important;color:#465a54!important}
+.confirm-cell{padding:10px!important}
+.confirm-cell span{
+  font-size:9px!important;
+  color:#425851!important;
+}
+.confirm-cell strong{
+  font-size:12px!important;
+  margin-top:4px!important;
+  color:#142f28!important;
+}
+.confirm-notes{padding:11px!important}
+.confirm-notes span{
+  font-size:9px!important;
+  color:#425851!important;
+}
+.confirm-notes strong{
+  font-size:12px!important;
+  color:#142f28!important;
+}
+.confirm-total{
+  padding-top:14px!important;
+  margin-top:14px!important;
+}
+.confirm-total>div>span{
+  font-size:9px!important;
+  color:#425851!important;
+}
+.confirm-total>div:last-child>span{
+  font-size:10px!important;
+}
+.confirm-total strong{font-size:23px!important}
+.confirm-total>div:last-child strong{
+  font-size:13px!important;
+}
+.invoice-totals .line{
+  font-size:11px!important;
+  margin:5px 0!important;
+}
+.invoice-totals .line span{color:#3f554e!important}
+.invoice-totals .grand{
+  font-size:14px!important;
+}
+.print-note{
+  font-size:10px!important;
+  line-height:1.45!important;
+  color:#435a53!important;
+}
+.confirm > div[style*="grid-template-columns:1fr 90px 120px"]{
+  font-size:10px!important;
+}
+.confirm > div[style*="grid-template-columns:1fr 90px 120px"] + div{
+  font-size:12px!important;
+}
+.confirm > div[style*="grid-template-columns:1fr 90px 120px"] + div small{
+  font-size:10px!important;
+  color:#405750!important;
+}
+.confirm > div[style*="grid-template-columns:1fr 90px 120px"]{
+  padding:11px 13px!important;
+}
+.confirm > div[style*="grid-template-columns:1fr 90px 120px"] + div{
+  padding:14px 13px!important;
+}
+.confirm > div[style*="background:#f8faf9"]{
+  font-size:11px!important;
+  color:#304840!important;
+}
+.confirm > div[style*="background:#f8faf9"] span{
+  color:#304840!important;
+}
+@media print{
+  .confirm{
+    font-size:13px!important;
+    line-height:1.45!important;
+  }
+  .invoice-company-tag{font-size:10.5px!important}
+  .invoice-company-details{font-size:9.5px!important}
+  .invoice-company-address{font-size:9.5px!important}
+  .confirm-cell span{font-size:9.5px!important}
+  .confirm-cell strong{font-size:13px!important}
+  .confirm-head>div:first-child>div:last-child{font-size:12px!important}
+  .confirm-title strong{font-size:26px!important}
+  .confirm-title span{font-size:10.5px!important}
+  .invoice-totals .line{font-size:11.5px!important}
+  .invoice-totals .grand{font-size:15px!important}
+  .confirm-total>div>span{font-size:9.5px!important}
+  .confirm-total>div:last-child>span{font-size:10.5px!important}
+  .confirm-total>div:last-child strong{font-size:13px!important}
+  .confirm-notes span{font-size:9.5px!important}
+  .confirm-notes strong{font-size:13px!important}
+  .print-note{font-size:10.5px!important}
+}
 </style></head>
 <body>
 <div class="shell">
