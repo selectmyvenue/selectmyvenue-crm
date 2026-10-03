@@ -2750,3 +2750,297 @@ body .page-heading{
     max-height:100vh!important;
   }
 }
+
+
+/* =========================================================
+   2026-10-04 — VENUE TABLE FINAL COMPACT GEOMETRY + HISTORY
+   Keep every venue field/action. Give the venue-name column priority.
+   ========================================================= */
+@media(min-width:1001px){
+  #venueManagementSection .venue-table{
+    min-width:0!important;
+    width:100%!important;
+    table-layout:fixed!important;
+  }
+
+  #venueManagementSection .venue-table thead th{
+    padding:0 9px!important;
+    font-size:10px!important;
+  }
+
+  #venueManagementSection .venue-table td{
+    padding:10px 9px!important;
+    font-size:12px!important;
+  }
+
+  /* Venue name gets priority: one clean line, never split into half-name rows. */
+  #venueManagementSection .venue-table th:first-child,
+  #venueManagementSection .venue-table td:first-child{
+    width:205px!important;
+    min-width:205px!important;
+    max-width:205px!important;
+  }
+  #venueManagementSection .venue-table td:first-child{
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  #venueManagementSection .venue-name-cell{
+    width:100%!important;
+    min-width:0!important;
+  }
+  #venueManagementSection .venue-name-cell strong{
+    max-width:100%!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    font-size:13px!important;
+    line-height:1.25!important;
+  }
+  #venueManagementSection .venue-name-cell small{
+    font-size:10.5px!important;
+    white-space:nowrap!important;
+  }
+  #venueManagementSection .venue-name-details-btn{
+    min-height:29px!important;
+    height:29px!important;
+    margin-top:5px!important;
+    padding:0 11px!important;
+    border-radius:8px!important;
+    font-size:10.5px!important;
+    font-weight:900!important;
+  }
+
+  #venueManagementSection .venue-table th:nth-child(2),
+  #venueManagementSection .venue-table td:nth-child(2){width:105px!important;min-width:105px!important}
+  #venueManagementSection .venue-table th:nth-child(3),
+  #venueManagementSection .venue-table td:nth-child(3){width:135px!important;min-width:135px!important}
+  #venueManagementSection .venue-table th:nth-child(4),
+  #venueManagementSection .venue-table td:nth-child(4){width:90px!important;min-width:90px!important}
+  #venueManagementSection .venue-table th:nth-child(5),
+  #venueManagementSection .venue-table td:nth-child(5){width:75px!important;min-width:75px!important}
+  #venueManagementSection .venue-table th:nth-child(6),
+  #venueManagementSection .venue-table td:nth-child(6){width:85px!important;min-width:85px!important}
+  #venueManagementSection .venue-table th:nth-child(7),
+  #venueManagementSection .venue-table td:nth-child(7){width:95px!important;min-width:95px!important}
+  #venueManagementSection .venue-table th:nth-child(8),
+  #venueManagementSection .venue-table td:nth-child(8){width:100px!important;min-width:100px!important}
+  #venueManagementSection .venue-table th:nth-child(9),
+  #venueManagementSection .venue-table td:nth-child(9){width:100px!important;min-width:100px!important}
+  #venueManagementSection .venue-table th:nth-child(10),
+  #venueManagementSection .venue-table td:nth-child(10){width:70px!important;min-width:70px!important}
+  #venueManagementSection .venue-table th:nth-child(11),
+  #venueManagementSection .venue-table td:nth-child(11){width:180px!important;min-width:180px!important}
+
+  #venueManagementSection .venue-row-actions{
+    min-width:0!important;
+    width:100%!important;
+    gap:5px!important;
+    flex-wrap:wrap!important;
+  }
+  #venueManagementSection .venue-row-actions .venue-row-btn{
+    min-height:34px!important;
+    padding:0 9px!important;
+    font-size:10.5px!important;
+  }
+}
+
+/* Venue assignment history — full-screen premium workspace */
+#smvVenueHistoryModal.modal-overlay{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100vh!important;
+  padding:18px!important;
+  background:rgba(2,22,19,.82)!important;
+  backdrop-filter:blur(10px)!important;
+  z-index:100000!important;
+}
+#smvVenueHistoryModal .smv-history-card{
+  width:100%!important;
+  max-width:none!important;
+  height:100%!important;
+  max-height:none!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  border:1px solid rgba(143,215,199,.22)!important;
+  border-radius:20px!important;
+  overflow:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
+  background:linear-gradient(180deg,#f8fcfb 0%,#eef7f4 100%)!important;
+  box-shadow:0 24px 70px rgba(0,0,0,.34)!important;
+}
+#smvVenueHistoryModal .smv-history-head{
+  flex:0 0 auto!important;
+  min-height:92px!important;
+  padding:20px 26px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:18px!important;
+  color:#fff!important;
+  background:linear-gradient(135deg,#063b34 0%,#07584c 58%,#0a6657 100%)!important;
+  border-bottom:1px solid rgba(255,255,255,.12)!important;
+}
+#smvVenueHistoryModal .smv-history-head .venue-kicker{
+  color:#a9ddd1!important;
+  font-size:10px!important;
+  font-weight:950!important;
+  letter-spacing:.12em!important;
+}
+#smvVenueHistoryModal #smvHistoryTitle{
+  margin:4px 0 2px!important;
+  color:#fff!important;
+  font-size:26px!important;
+  line-height:1.15!important;
+  font-weight:950!important;
+}
+#smvVenueHistoryModal .smv-history-head p{
+  margin:0!important;
+  color:#c7e5df!important;
+  font-size:13px!important;
+}
+#smvVenueHistoryModal #smvHistoryClose{
+  flex:0 0 auto!important;
+  width:44px!important;
+  height:44px!important;
+  border-radius:12px!important;
+  border:1px solid rgba(255,255,255,.18)!important;
+  background:rgba(255,255,255,.09)!important;
+  color:#fff!important;
+  font-size:27px!important;
+}
+#smvVenueHistoryModal .smv-history-filters{
+  flex:0 0 auto!important;
+  margin:16px 20px 10px!important;
+  padding:12px 14px!important;
+  border:1px solid #d5e8e2!important;
+  border-radius:14px!important;
+  background:#f6fbf9!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+}
+#smvVenueHistoryModal .smv-history-filters select,
+#smvVenueHistoryModal .smv-history-filters input{
+  min-height:42px!important;
+  padding:0 12px!important;
+  border:1px solid #c7ddd7!important;
+  border-radius:9px!important;
+  background:#fff!important;
+  color:#16463d!important;
+  font-size:13px!important;
+  font-weight:700!important;
+}
+#smvVenueHistoryModal .smv-history-filters button{
+  min-height:42px!important;
+  padding:0 16px!important;
+  border-radius:9px!important;
+  font-size:12px!important;
+  font-weight:900!important;
+}
+#smvVenueHistoryModal #smvHistoryCount{
+  margin-left:auto!important;
+  font-size:15px!important;
+  font-weight:950!important;
+  color:#08765f!important;
+}
+#smvVenueHistoryModal .smv-history-summary{
+  flex:0 0 auto!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:12px!important;
+  margin:0 20px 12px!important;
+}
+#smvVenueHistoryModal .smv-history-summary>div{
+  min-height:66px!important;
+  box-sizing:border-box!important;
+  padding:12px 15px!important;
+  border:1px solid #d6e8e3!important;
+  border-radius:12px!important;
+  background:#fff!important;
+  box-shadow:0 4px 15px rgba(12,72,62,.05)!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+}
+#smvVenueHistoryModal .smv-history-summary span{
+  color:#607d76!important;
+  font-size:10px!important;
+  font-weight:950!important;
+  letter-spacing:.08em!important;
+  text-transform:uppercase!important;
+}
+#smvVenueHistoryModal .smv-history-summary b{
+  margin-top:3px!important;
+  color:#08765f!important;
+  font-size:21px!important;
+  line-height:1!important;
+}
+#smvVenueHistoryModal .smv-history-body{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow:auto!important;
+  margin:0 20px 20px!important;
+  border:1px solid #d6e8e3!important;
+  border-radius:14px!important;
+  background:#fff!important;
+}
+#smvVenueHistoryModal .smv-history-table-wrap{
+  width:100%!important;
+  overflow:auto!important;
+}
+#smvVenueHistoryModal .smv-history-table{
+  width:100%!important;
+  min-width:1050px!important;
+  border-collapse:separate!important;
+  border-spacing:0!important;
+}
+#smvVenueHistoryModal .smv-history-table th{
+  position:sticky!important;
+  top:0!important;
+  z-index:2!important;
+  padding:13px 14px!important;
+  background:#eaf5f1!important;
+  color:#52716a!important;
+  border-bottom:1px solid #d3e6e0!important;
+  font-size:10px!important;
+  font-weight:950!important;
+  letter-spacing:.055em!important;
+  text-align:left!important;
+  white-space:nowrap!important;
+}
+#smvVenueHistoryModal .smv-history-table td{
+  padding:14px!important;
+  border-bottom:1px solid #e6efec!important;
+  color:#234941!important;
+  font-size:13px!important;
+  line-height:1.45!important;
+  font-weight:600!important;
+  vertical-align:middle!important;
+}
+#smvVenueHistoryModal .smv-history-table td strong{
+  color:#123f37!important;
+  font-size:13.5px!important;
+  font-weight:950!important;
+}
+#smvVenueHistoryModal .smv-history-table td small{
+  color:#718983!important;
+  font-size:11px!important;
+}
+#smvVenueHistoryModal .smv-history-table tbody tr:hover td{
+  background:#f5fbf9!important;
+}
+
+@media(max-width:760px){
+  #smvVenueHistoryModal.modal-overlay{padding:7px!important}
+  #smvVenueHistoryModal .smv-history-card{border-radius:14px!important}
+  #smvVenueHistoryModal .smv-history-head{padding:15px!important;min-height:78px!important}
+  #smvVenueHistoryModal #smvHistoryTitle{font-size:19px!important}
+  #smvVenueHistoryModal .smv-history-summary{grid-template-columns:repeat(2,minmax(0,1fr))!important;margin:0 10px 10px!important}
+  #smvVenueHistoryModal .smv-history-filters{margin:10px!important;flex-wrap:wrap!important}
+  #smvVenueHistoryModal #smvHistoryCount{margin-left:0!important;width:100%!important}
+  #smvVenueHistoryModal .smv-history-body{margin:0 10px 10px!important}
+}
