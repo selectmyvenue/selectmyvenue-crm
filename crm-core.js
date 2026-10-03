@@ -7848,40 +7848,19 @@ async function loadAssignmentVenueOptions() {
            approved/verified after the CRM workspace was first loaded, which used
            to leave the assignment modal one venue short (e.g. Test Venue).
         */
-        const { data, error } = await client
-            .from("venues")
-            .select("*")
-            .eq("venue_status", "approved")
-            .eq("verification_status", "verified")
-            .order("created_at", { ascending: false });
+        /*
+           Assignment source of truth:
+           use the server-side eligibility function so the matching board can
+           never offer a venue whose approval, verification, or partner plan
+           makes it ineligible for a NEW assignment.
+        */
+        const { data, error } = await client.rpc("smv_assignment_venues");
 
         if (error) {
             throw error;
         }
 
-        /*
-           Merge the fresh approved+verified query with the Venue Management
-           dataset as a safety net. Venue Management is the same staff-visible
-           source and currently contains all 18 approved venues. This prevents
-           a single row (including Test Venue) from disappearing if the
-           assignment query is affected by a different cached/RLS response.
-        */
-        const freshVenues = Array.isArray(data) ? data : [];
-        const managementVenues = Array.isArray(allVenues) ? allVenues : [];
-        const merged = new Map();
-
-        [...freshVenues, ...managementVenues].forEach(venue => {
-            if (
-                venue &&
-                safeValue(venue.venue_status) === "approved" &&
-                safeValue(venue.verification_status) === "verified" &&
-                venue.id
-            ) {
-                merged.set(String(venue.id), venue);
-            }
-        });
-
-        assignmentVenueRows = Array.from(merged.values());
+        assignmentVenueRows = Array.isArray(data) ? data : [];
 
         renderAssignmentVenues();
         return;
