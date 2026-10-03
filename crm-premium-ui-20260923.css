@@ -2453,3 +2453,136 @@ body .page-heading{
   #venueAssignmentModal #saveVenueAssignment,
   #venueAssignmentModal #smvAssignWhatsApp{font-size:13px!important}
 }
+
+
+/* =========================================================
+   VENUE MANAGEMENT — Premium readable desktop table
+   2026-10-04
+   Keep all 11 columns + every row action; improve hierarchy,
+   spacing and readability without hiding or removing data.
+   ========================================================= */
+@media(min-width:1001px){
+  #venueManagementSection .venue-table-wrapper{
+    border-radius:16px!important;
+    box-shadow:0 10px 28px rgba(21,74,65,.07)!important;
+    background:#fff!important;
+    max-height:calc(100vh - 230px)!important;
+  }
+
+  #venueManagementSection .venue-table{
+    width:100%!important;
+    min-width:1540px!important;
+    table-layout:auto!important;
+  }
+
+  #venueManagementSection .venue-table thead th{
+    height:46px!important;
+    padding:0 14px!important;
+    font-size:10.5px!important;
+    line-height:1.2!important;
+    font-weight:950!important;
+    letter-spacing:.055em!important;
+    color:#496d65!important;
+    white-space:nowrap!important;
+    background:#f1f8f6!important;
+  }
+
+  #venueManagementSection .venue-table tbody tr{
+    min-height:76px!important;
+  }
+
+  #venueManagementSection .venue-table tbody tr:hover{
+    background:#f7fcfa!important;
+  }
+
+  #venueManagementSection .venue-table td{
+    padding:13px 14px!important;
+    font-size:13px!important;
+    line-height:1.4!important;
+    font-weight:650!important;
+    color:#183d37!important;
+    vertical-align:middle!important;
+    white-space:nowrap!important;
+  }
+
+  /* Keep the two-line information readable without making rows excessively tall. */
+  #venueManagementSection .venue-table td:first-child{
+    min-width:245px!important;
+    white-space:normal!important;
+  }
+  #venueManagementSection .venue-table td:nth-child(2){
+    min-width:150px!important;
+  }
+  #venueManagementSection .venue-table td:nth-child(3){
+    min-width:190px!important;
+    white-space:normal!important;
+  }
+  #venueManagementSection .venue-table td:nth-child(4){min-width:130px!important}
+  #venueManagementSection .venue-table td:nth-child(5){min-width:105px!important}
+  #venueManagementSection .venue-table td:nth-child(6){min-width:120px!important}
+  #venueManagementSection .venue-table td:nth-child(7){min-width:120px!important}
+  #venueManagementSection .venue-table td:nth-child(8){min-width:125px!important}
+  #venueManagementSection .venue-table td:nth-child(9){min-width:125px!important}
+  #venueManagementSection .venue-table td:nth-child(10){min-width:100px!important}
+  #venueManagementSection .venue-table td:nth-child(11){min-width:275px!important}
+
+  #venueManagementSection .venue-name-cell strong{
+    display:block!important;
+    margin-bottom:4px!important;
+    font-size:14px!important;
+    line-height:1.3!important;
+    font-weight:950!important;
+    color:#123f38!important;
+  }
+
+  #venueManagementSection .venue-name-cell small,
+  #venueManagementSection .venue-table .venue-muted{
+    display:block!important;
+    font-size:11.5px!important;
+    line-height:1.35!important;
+    font-weight:600!important;
+    color:#6b8780!important;
+  }
+
+  #venueManagementSection .venue-name-details-btn{
+    min-height:32px!important;
+    margin-top:7px!important;
+    padding:0 13px!important;
+    border-radius:9px!important;
+    font-size:11.5px!important;
+    font-weight:900!important;
+  }
+
+  #venueManagementSection .venue-pill,
+  #venueManagementSection .venue-plan-pill,
+  #venueManagementSection .venue-public-pill{
+    min-height:34px!important;
+    padding:7px 12px!important;
+    border-radius:999px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    font-size:11px!important;
+    line-height:1!important;
+    font-weight:950!important;
+    white-space:nowrap!important;
+  }
+
+  #venueManagementSection .venue-row-actions{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    align-items:center!important;
+    gap:8px!important;
+    min-width:255px!important;
+  }
+
+  #venueManagementSection .venue-row-actions .venue-row-btn{
+    min-height:38px!important;
+    padding:0 13px!important;
+    border-radius:9px!important;
+    font-size:11.5px!important;
+    line-height:1!important;
+    font-weight:900!important;
+    white-space:nowrap!important;
+  }
+}
