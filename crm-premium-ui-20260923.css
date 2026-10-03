@@ -3044,3 +3044,50 @@ body .page-heading{
   #smvVenueHistoryModal #smvHistoryCount{margin-left:0!important;width:100%!important}
   #smvVenueHistoryModal .smv-history-body{margin:0 10px 10px!important}
 }
+
+
+/* Final venue table action-row fit: keep Edit / Deactivate / Delete on one line.
+   Reclaim only modest width from secondary columns; no fields/actions removed. */
+@media(min-width:1001px){
+  #venueManagementSection .venue-table th:first-child,
+  #venueManagementSection .venue-table td:first-child{width:190px!important;min-width:190px!important;max-width:190px!important}
+
+  #venueManagementSection .venue-table th:nth-child(2),
+  #venueManagementSection .venue-table td:nth-child(2){width:95px!important;min-width:95px!important}
+  #venueManagementSection .venue-table th:nth-child(3),
+  #venueManagementSection .venue-table td:nth-child(3){width:120px!important;min-width:120px!important}
+  #venueManagementSection .venue-table th:nth-child(4),
+  #venueManagementSection .venue-table td:nth-child(4){width:80px!important;min-width:80px!important}
+  #venueManagementSection .venue-table th:nth-child(5),
+  #venueManagementSection .venue-table td:nth-child(5){width:70px!important;min-width:70px!important}
+  #venueManagementSection .venue-table th:nth-child(6),
+  #venueManagementSection .venue-table td:nth-child(6){width:75px!important;min-width:75px!important}
+  #venueManagementSection .venue-table th:nth-child(7),
+  #venueManagementSection .venue-table td:nth-child(7){width:85px!important;min-width:85px!important}
+  #venueManagementSection .venue-table th:nth-child(8),
+  #venueManagementSection .venue-table td:nth-child(8){width:95px!important;min-width:95px!important}
+  #venueManagementSection .venue-table th:nth-child(9),
+  #venueManagementSection .venue-table td:nth-child(9){width:90px!important;min-width:90px!important}
+  #venueManagementSection .venue-table th:nth-child(10),
+  #venueManagementSection .venue-table td:nth-child(10){width:65px!important;min-width:65px!important}
+  #venueManagementSection .venue-table th:nth-child(11),
+  #venueManagementSection .venue-table td:nth-child(11){width:185px!important;min-width:185px!important}
+
+  #venueManagementSection .venue-row-actions{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    flex-wrap:nowrap!important;
+    gap:5px!important;
+    white-space:nowrap!important;
+  }
+  #venueManagementSection .venue-row-actions .venue-row-btn{
+    flex:0 0 auto!important;
+    white-space:nowrap!important;
+    min-height:32px!important;
+    height:32px!important;
+    padding:0 8px!important;
+    font-size:10px!important;
+    line-height:1!important;
+  }
+}
