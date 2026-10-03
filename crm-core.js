@@ -5705,7 +5705,7 @@ function forceBlankVenueCreateForm() {
     form.setAttribute("autocomplete", "off");
     form.dataset.smvCreateMode = "1";
 
-    form.querySelectorAll("input, textarea, select").forEach(field => {
+    form.querySelectorAll("input, textarea, select, [contenteditable=\"true\"]").forEach(field => {
         if (field.type === "checkbox" || field.type === "radio") {
             field.checked = false;
         } else if (field.type === "file") {
@@ -5751,6 +5751,8 @@ function forceBlankVenueCreateForm() {
                 field.checked = false;
             } else if (field.type === "file") {
                 field.value = "";
+            } else if (field.getAttribute("contenteditable") === "true") {
+                field.innerHTML = "";
             } else if (field.tagName === "SELECT") {
                 const blank = Array.from(field.options).find(option => option.value === "");
                 field.value = blank ? "" : "";
@@ -5796,7 +5798,11 @@ function openVenueModal(venue = null) {
 
     setVenueField("venueName", venue.venue_name);
     setVenueField("venueType", venue.venue_type);
-    setVenueField("venueDescription", venue.description);
+    if (window.SMVVenueDescription?.setValue) {
+        window.SMVVenueDescription.setValue(venue.description || "");
+    } else {
+        setVenueField("venueDescription", venue.description);
+    }
     setVenueField("venueContactPerson", venue.contact_person);
     setVenueField("venueMobile", venue.contact_mobile);
     setVenueField("venueWhatsapp", venue.whatsapp_number);
@@ -5844,6 +5850,7 @@ function openVenueModal(venue = null) {
         "venueFacilities",
         Array.isArray(venue.facilities) ? venue.facilities.join(", ") : venue.facilities
     );
+    setVenueOptionalFeatures(venue.facilities);
     setVenueField("venueMatchingNotes", venue.matching_notes);
     setVenueChecked("venueIndoor", venue.indoor_available === true);
     setVenueChecked("venueOutdoor", venue.outdoor_available === true);
@@ -5872,18 +5879,26 @@ function setVenueDetailsMode(enabled) {
 
     modal.classList.toggle("venue-readonly-mode", Boolean(enabled));
 
-    form.querySelectorAll("input,select,textarea,button").forEach(control => {
+    form.querySelectorAll("input,select,textarea,button,[contenteditable=\"true\"]").forEach(control => {
         if (control.id === "cancelVenueBtn") {
             return;
         }
 
         if (enabled) {
             control.dataset.smvPreviousDisabled = control.disabled ? "1" : "0";
+            if (control.getAttribute("contenteditable") === "true") {
+                control.dataset.smvPreviousContenteditable = "true";
+                control.setAttribute("contenteditable", "false");
+            }
             control.disabled = true;
         }
         else if (control.dataset.smvPreviousDisabled !== undefined) {
             control.disabled = control.dataset.smvPreviousDisabled === "1";
             delete control.dataset.smvPreviousDisabled;
+            if (control.dataset.smvPreviousContenteditable === "true") {
+                control.setAttribute("contenteditable", "true");
+                delete control.dataset.smvPreviousContenteditable;
+            }
         }
     });
 
@@ -6357,6 +6372,14 @@ async function sendPartnerInvite() {
     }
 }
 
+function setVenueOptionalFeatures(facilities) {
+    const values = Array.isArray(facilities) ? facilities : [];
+    const normalized = values.map(v => safeValue(v).trim().toLowerCase());
+    document.querySelectorAll("#venueOptionalFeatures input[type=\"checkbox\"]").forEach(input => {
+        input.checked = normalized.includes(safeValue(input.value).trim().toLowerCase());
+    });
+}
+
 function getVenueFormData() {
 
     const numberOrNull = id => {
@@ -6428,9 +6451,10 @@ function getVenueFormData() {
             ).trim() || null,
 
         description:
-            safeValue(
-                document.getElementById("venueDescription")?.value
-            ).trim() || null,
+            (window.SMVVenueDescription?.getHtml?.() ||
+                safeValue(
+                    document.getElementById("venueDescription")?.value
+                ).trim() || null),
 
         contact_person:
             safeValue(
@@ -6515,7 +6539,13 @@ function getVenueFormData() {
         room_count: numberOrNull("venueRoomCount"),
         parking_capacity: numberOrNull("venueParkingCapacity"),
         event_types: selectedVenueEventTypes(),
-        facilities: safeValue(document.getElementById("venueFacilities")?.value).split(",").map(v=>v.trim()).filter(Boolean),
+        facilities: (() => {
+            const manual = safeValue(document.getElementById("venueFacilities")?.value)
+                .split(",").map(v => v.trim()).filter(Boolean);
+            const optional = Array.from(document.querySelectorAll("#venueOptionalFeatures input:checked"))
+                .map(input => safeValue(input.value).trim()).filter(Boolean);
+            return [...new Set([...manual, ...optional])];
+        })(),
         matching_notes: safeValue(document.getElementById("venueMatchingNotes")?.value).trim() || null,
         indoor_available: checked("venueIndoor"),
         outdoor_available: checked("venueOutdoor"),
