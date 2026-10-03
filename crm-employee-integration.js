@@ -189,11 +189,56 @@ window.startEmployeeIntegration=async function(client){
      return true;
    }catch(e){console.warn('Road distance unavailable',e);return false;}
  }
- const smvGeoVenueAttempted=new Set();let smvGeoLeadBusy=false,smvGeoQueueBusy=false;
+ const smvGeoVenueAttempted=new Set();let smvGeoLeadBusy=false,smvGeoQueueBusy=false,smvGeoKickAt=0;
+ function smvLeadGeoQueries(l){
+   const raw=clean(smvGeoQueryForLead(l)), context=clean(l?.preferred_city||l?.location);
+   if(!raw)return [];
+   const values=[];
+   const add=value=>{
+     const q=clean(value);
+     if(q&&!values.some(x=>x.toLowerCase()===q.toLowerCase()))values.push(q);
+   };
+   add(raw);
+   // Nominatim/Photon can be less reliable when a CRM value is written as
+   // "Delhi - Lajpat Nagar". Retry the specific locality without the city
+   // prefix, while keeping Delhi as the geocoder context.
+   const specific=raw.replace(/^(?:delhi|new\s+delhi|delhi\s+ncr)\s*[-,:]\s*/i,'').trim();
+   add(specific);
+   if(specific&&context&&!/^delhi|new delhi|delhi ncr$/i.test(context)){
+     add(specific+', '+context);
+   }else if(specific&&context){
+     add(specific+', Delhi');
+   }
+   return values.slice(0,4);
+ }
  async function smvEnsureLeadGeo(l){
-   if(!l||smvLeadPoint(l)||smvGeoLeadBusy)return smvLeadPoint(l);
-   const q=smvGeoQueryForLead(l);if(!q)return null;smvGeoLeadBusy=true;
-   try{const p=await smvGeocode(q,clean(l?.preferred_city||l?.location));if(!p)return null;l.preferred_latitude=p.lat;l.preferred_longitude=p.lon;l.preferred_geocoded_at=new Date().toISOString();const db=typeof getSupabaseClient==='function'?getSupabaseClient():null;if(db&&l.id)await db.from('customer_enquiries').update({preferred_latitude:p.lat,preferred_longitude:p.lon,preferred_geocoded_at:l.preferred_geocoded_at}).eq('id',l.id);return p;}finally{smvGeoLeadBusy=false;}
+   if(!l)return null;
+   const existing=smvLeadPoint(l);
+   if(existing)return existing;
+   if(smvGeoLeadBusy)return null;
+   const queries=smvLeadGeoQueries(l);
+   if(!queries.length)return null;
+   smvGeoLeadBusy=true;
+   try{
+     const context=clean(l?.preferred_city||l?.location)||'Delhi';
+     for(const q of queries){
+       const p=await smvGeocode(q,context);
+       if(!p)continue;
+       l.preferred_latitude=p.lat;
+       l.preferred_longitude=p.lon;
+       l.preferred_geocoded_at=new Date().toISOString();
+       const db=typeof getSupabaseClient==='function'?getSupabaseClient():null;
+       if(db&&l.id){
+         await db.from('customer_enquiries').update({
+           preferred_latitude:p.lat,
+           preferred_longitude:p.lon,
+           preferred_geocoded_at:l.preferred_geocoded_at
+         }).eq('id',l.id);
+       }
+       return p;
+     }
+     return null;
+   }finally{smvGeoLeadBusy=false;}
  }
  async function smvEnsureVenueGeo(v){
    if(!v)return null;const storedLat=smvGeoNumber(v.latitude),storedLon=smvGeoNumber(v.longitude);if(storedLat!==null&&storedLon!==null)return{lat:storedLat,lon:storedLon,source:'venue'};
@@ -922,6 +967,10 @@ let venues=(assignmentVenueRows||[]).filter(v=>{if(!assignmentSearch)return true
   }
 }
 if(!venues.length){list.innerHTML='<div class="venue-assignment-empty">No approved and verified venues are available.</div>';renderAssignmentSummary();return;}list.innerHTML=venues.map(v=>{const id=String(v.id),assigned=already.has(id)||isVenueAlreadyAssigned(v.id),planStatus=norm(v?.plan_status),planExpired=Boolean(v?.plan_expires_at&&new Date(v.plan_expires_at)<new Date(new Date().toDateString())),planInactive=['paused','expired','cancelled'].includes(planStatus)||planExpired,checked=assigned||selectedNow.has(id),match=smartMatch(v,assignmentCurrentLead),rec=recommendation(v,assignmentCurrentLead),tierLabel=(match.specificArea&&!match.areaMatch&&!match.hardFail?(match.reasons.includes('Nearby area')?'Nearby area':match.reasons.includes('Same city · nearby')?'Same city · nearby':match.warnings.includes('Same city · wider area')?'Same city · wider area':match.warnings.includes('Regional alternative')?'Regional alternative':'Location Alternative'):({requirements:'Need requirements',excluded:'Excluded',incomplete:'Venue data incomplete',strong:'Strong Match',possible:'Possible Match',low:'Low Match'})[smvMatchTier(match)]),matchChips=match.reasons.slice(0,4).map(x=>'<span class="smv-match-chip smv-match-ok">✓ '+escapeHTML(x)+'</span>').join('')+match.warnings.slice(0,2).map(x=>'<span class="smv-match-chip smv-match-warn">'+escapeHTML(x)+'</span>').join(''),cap=v.capacity_min||v.capacity_max?`${clean(v.capacity_min)||'—'}–${clean(v.capacity_max)||'—'}`:'Capacity not set',price=v.price_min_per_person||v.price_max_per_person?`₹${clean(v.price_min_per_person)||'—'}–₹${clean(v.price_max_per_person)||'—'}/person`:'Price not set',rooms=v.room_count!==null&&v.room_count!==undefined&&String(v.room_count)!==''?`${clean(v.room_count)} room${Number(v.room_count)===1?'':'s'}`:'Rooms not set',location=[v.area,v.city].filter(Boolean).join(' • ')||'Location not set',distanceLabel=match.distanceKm!==null?(match.distanceMode==='road'?'🚗 '+match.distanceKm.toFixed(1)+' km'+(match.roadMinutes!==null?' · ~'+Math.max(1,Math.round(match.roadMinutes))+' min':''):'🧭 ≈'+match.distanceKm.toFixed(1)+' km straight-line'):(smvLeadPoint(assignmentCurrentLead)?'⏳ Calculating distance…':'');return `<label class="venue-assignment-item ${assigned?'smv-already-assigned-row smv-assigned-disabled':planInactive?'smv-inactive-plan-row':smvMatchTier(match)==='strong'?'smv-premium-match-row':''}" title="${planInactive&&!assigned?'Cannot assign: venue partner plan is '+(planExpired?'expired':planStatus||'inactive')+'. Renew/reactivate the plan before assigning new enquiries.':''}"><input type="checkbox" class="venue-assignment-checkbox" value="${escapeHTML(v.id)}" ${checked?'checked':''} ${assigned||planInactive?'disabled':''}><div class="venue-assignment-item-main"><div class="venue-assignment-item-title"><strong>${escapeHTML(v.venue_name||'Unnamed Venue')}</strong>${assigned?'<span class="smv-assigned-badge">'+match.rawScore+'% · Already Assigned</span>':match.hardFail?'<span class="smv-match-low">'+match.rawScore+'% · Excluded · must-have failed</span>':match.insufficient?'<span class="smv-match-low">Need more requirements</span>':'<span class="'+(smvMatchTier(match)==='strong'?'venue-assignment-recommended':'smv-match-score')+'">'+match.score+'% · '+tierLabel+' · data '+match.dataConfidence+'%</span>'}</div><div class="venue-assignment-item-meta"><span>📍 ${escapeHTML(location)}</span>${distanceLabel?'<span>'+escapeHTML(distanceLabel)+'</span>':''}<span>👥 ${escapeHTML(cap)}</span>${price!=='Price not set'?'<span>'+escapeHTML(price)+'</span>':''}${rooms!=='Rooms not set'&&Number(v.room_count)>0?'<span>🛏️ '+escapeHTML(rooms)+'</span>':''}<span>${escapeHTML(v.venue_type||'Venue')}</span></div><div class="smv-match-reasons">${matchChips}</div><div class="smv-readiness">${smvReadiness(v,assignmentCurrentLead).map(x=>'<span>'+escapeHTML(x)+'</span>').join('')}</div></div><span class="venue-assignment-item-status">${planInactive&&!assigned?'Expired · Cannot assign':assigned?'Verified · Already assigned':'Verified'}</span></label>`;}).join('');
+if(!smvLeadPoint(assignmentCurrentLead)&&smvGeoQueryForLead(assignmentCurrentLead)&&Date.now()-smvGeoKickAt>5000){
+  smvGeoKickAt=Date.now();
+  setTimeout(()=>{try{smvRefreshAssignmentGeo();}catch(_){}},0);
+}
 list.querySelectorAll('.venue-assignment-checkbox').forEach(checkbox=>{
   checkbox.addEventListener('change',()=>{
     if(checkbox.disabled)return;
