@@ -2586,3 +2586,167 @@ body .page-heading{
     white-space:nowrap!important;
   }
 }
+
+
+/* =========================================================
+   VENUE MANAGEMENT — final desktop fit + premium full-screen editor
+   2026-10-04
+   Keep every column, field and action. Only reduce excess width.
+   ========================================================= */
+@media(min-width:1001px){
+  #venueManagementSection .venue-table{
+    min-width:0!important;
+    width:100%!important;
+    table-layout:auto!important;
+  }
+
+  #venueManagementSection .venue-table td{
+    padding:11px 12px!important;
+  }
+  #venueManagementSection .venue-table thead th{
+    padding:0 12px!important;
+  }
+
+  #venueManagementSection .venue-table td:first-child{min-width:220px!important}
+  #venueManagementSection .venue-table td:nth-child(2){min-width:130px!important}
+  #venueManagementSection .venue-table td:nth-child(3){min-width:165px!important}
+  #venueManagementSection .venue-table td:nth-child(4){min-width:110px!important}
+  #venueManagementSection .venue-table td:nth-child(5){min-width:95px!important}
+  #venueManagementSection .venue-table td:nth-child(6){min-width:105px!important}
+  #venueManagementSection .venue-table td:nth-child(7){min-width:110px!important}
+  #venueManagementSection .venue-table td:nth-child(8){min-width:115px!important}
+  #venueManagementSection .venue-table td:nth-child(9){min-width:115px!important}
+  #venueManagementSection .venue-table td:nth-child(10){min-width:90px!important}
+  #venueManagementSection .venue-table td:nth-child(11){min-width:240px!important}
+
+  #venueManagementSection .venue-row-actions{
+    gap:6px!important;
+    min-width:220px!important;
+    flex-wrap:nowrap!important;
+  }
+  #venueManagementSection .venue-row-actions .venue-row-btn{
+    min-height:36px!important;
+    padding:0 11px!important;
+    font-size:11px!important;
+  }
+
+  /* Full-screen premium Add/Edit Venue workspace */
+  #venueModal.modal-overlay{
+    position:fixed!important;
+    inset:0!important;
+    width:100vw!important;
+    height:100vh!important;
+    padding:0!important;
+    background:rgba(3,20,18,.88)!important;
+    backdrop-filter:blur(8px)!important;
+    z-index:99999!important;
+  }
+  #venueModal .venue-modal-card{
+    width:100vw!important;
+    max-width:none!important;
+    height:100vh!important;
+    max-height:none!important;
+    margin:0!important;
+    border:0!important;
+    border-radius:0!important;
+    background:linear-gradient(180deg,#062f2a 0%,#052722 100%)!important;
+    color:#eefaf7!important;
+    box-shadow:none!important;
+    overflow:hidden!important;
+    display:flex!important;
+    flex-direction:column!important;
+  }
+  #venueModal .modal-header{
+    flex:0 0 auto!important;
+    min-height:76px!important;
+    padding:16px 28px!important;
+    background:linear-gradient(135deg,#083d36,#075247)!important;
+    border-bottom:1px solid rgba(151,225,210,.16)!important;
+  }
+  #venueModal .modal-kicker,
+  #venueModal .venue-form-section-title{
+    color:#a9ddd1!important;
+    font-size:11px!important;
+    letter-spacing:.10em!important;
+    font-weight:950!important;
+  }
+  #venueModal .modal-header h2{
+    margin:3px 0 0!important;
+    color:#fff!important;
+    font-size:25px!important;
+    line-height:1.15!important;
+  }
+  #venueModal .close-modal{
+    width:42px!important;
+    height:42px!important;
+    border-radius:11px!important;
+    border:1px solid rgba(255,255,255,.16)!important;
+    background:rgba(255,255,255,.08)!important;
+    color:#fff!important;
+    font-size:27px!important;
+  }
+  #venueModal #venueForm{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    padding:22px 28px 32px!important;
+    background:linear-gradient(180deg,#f5fbf9 0%,#edf7f4 100%)!important;
+    color:#153e37!important;
+  }
+  #venueModal #venueForm .venue-form-section-title{
+    margin:16px 0 10px!important;
+    padding:10px 13px!important;
+    border-radius:10px!important;
+    background:#0a5147!important;
+    color:#d9f3ed!important;
+    box-shadow:0 4px 14px rgba(4,56,48,.12)!important;
+  }
+  #venueModal #venueForm .venue-form-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:14px!important;
+  }
+  #venueModal #venueForm .venue-field label,
+  #venueModal #venueForm legend{
+    font-size:11px!important;
+    font-weight:950!important;
+    letter-spacing:.055em!important;
+    color:#285a51!important;
+  }
+  #venueModal #venueForm input,
+  #venueModal #venueForm select,
+  #venueModal #venueForm textarea{
+    min-height:44px!important;
+    padding:10px 12px!important;
+    border-radius:10px!important;
+    border:1px solid #c7ddd7!important;
+    background:#fff!important;
+    color:#163e37!important;
+    font-size:13px!important;
+    font-weight:650!important;
+  }
+  #venueModal #venueForm textarea{
+    min-height:150px!important;
+    line-height:1.55!important;
+  }
+  #venueModal .smv-rich-editor{
+    min-height:280px!important;
+    padding:16px!important;
+    font-size:14px!important;
+    line-height:1.7!important;
+  }
+  #venueModal .smv-rich-toolbar{
+    padding:9px!important;
+    background:#edf7f4!important;
+  }
+  #venueModal .smv-rich-toolbar button{
+    min-height:34px!important;
+    padding:6px 10px!important;
+    font-size:12px!important;
+  }
+}
+
+@media(max-width:1000px){
+  #venueModal .venue-modal-card{
+    max-height:100vh!important;
+  }
+}
