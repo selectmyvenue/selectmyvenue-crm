@@ -3139,3 +3139,42 @@ body .page-heading{
     z-index:20!important;
   }
 }
+
+
+/* =========================================================
+   2026-10-04 — ASSIGNMENT PLAN WARNING (NON-BLOCKING)
+   Expired / near-expiry venues remain assignable when they are
+   approved + verified. The plan state is shown as a warning only.
+   ========================================================= */
+.venue-assignment-item-side{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  justify-content:center;
+  gap:5px;
+  min-width:170px;
+}
+.venue-assignment-plan-warning{
+  display:inline-flex;
+  align-items:center;
+  justify-content:flex-end;
+  text-align:right;
+  max-width:190px;
+  color:#a85f00;
+  font-size:9px;
+  line-height:1.25;
+  font-weight:800;
+}
+.venue-assignment-plan-warning.expired{
+  color:#b42318;
+}
+@media(max-width:760px){
+  .venue-assignment-item-side{
+    min-width:0;
+    align-items:flex-start;
+  }
+  .venue-assignment-plan-warning{
+    max-width:230px;
+    text-align:left;
+  }
+}
