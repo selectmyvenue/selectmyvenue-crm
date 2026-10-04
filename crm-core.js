@@ -5580,6 +5580,16 @@ function renderVenues() {
                         <button
                             type="button"
                             class="venue-row-btn"
+                            data-venue-action="partner-overview"
+                            data-venue-id="${escapeHTML(venue.id)}"
+                            title="Open the venue's customer-facing partnership summary"
+                        >
+                            Partner Overview
+                        </button>
+
+                        <button
+                            type="button"
+                            class="venue-row-btn"
                             data-venue-action="edit"
                             data-venue-id="${escapeHTML(venue.id)}"
                         >
@@ -7171,6 +7181,15 @@ async function handleVenueTableClick(event) {
         );
 
     if (!venue) {
+        return;
+    }
+
+    if (action === "partner-overview") {
+        const target = "venue-partnership.html?venue=" + encodeURIComponent(String(venue.id));
+        const opened = window.open(target, "_blank", "noopener,noreferrer");
+        if (!opened) {
+            showToast("Please allow pop-ups to open the Partner Overview.", "warning");
+        }
         return;
     }
 
