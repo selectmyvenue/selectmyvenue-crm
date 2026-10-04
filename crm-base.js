@@ -733,7 +733,7 @@
 
   installAssignmentFullscreenPolish();
 
-  loadScript("crm-core.js?v=20261004-partner-overview-1", function () {
+  loadScript("crm-core.js?v=20261004-assignment-plan-warning-2", function () {
     installInternalCommentOnlyBehavior();
     installLeadRenderNormalizer();
     installSaveCustomerCommentPreserver();
