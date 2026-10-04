@@ -53,12 +53,26 @@ function bell(){
  var a=document.querySelector(".crm-header-actions");if(!a||document.getElementById("smvPlanNotificationBell"))return;
  var b=document.createElement("button");b.type="button";b.id="smvPlanNotificationBell";b.className="smv-crm-notification-bell";b.title="Venue plan renewal alerts";b.innerHTML='🔔<span id="smvPlanNotificationBadge" class="smv-crm-notification-badge" hidden>0</span>';a.insertBefore(b,a.firstElementChild);b.onclick=function(){popup(alerts);};
 }
-function popup(list){
- var ov=document.getElementById("smvPlanAlertOverlay");if(!ov){ov=document.createElement("div");ov.id="smvPlanAlertOverlay";ov.className="smv-plan-alert-overlay";ov.hidden=true;ov.innerHTML='<div class="smv-plan-alert-card"><div class="smv-plan-alert-head"><button type="button" class="smv-plan-alert-close" id="smvPlanAlertClose">×</button><div class="kicker">ACTION REQUIRED</div><h2>Venue Plan Renewal</h2><p>These venues are within 3 days of plan expiry. Please call them for renewal.</p></div><div class="smv-plan-alert-body" id="smvPlanAlertBody"></div></div>';document.body.appendChild(ov);ov.onclick=function(e){if(e.target===ov)ov.hidden=true;}; }
- var body=document.getElementById("smvPlanAlertBody");if(!list.length){body.innerHTML='<div class="smv-plan-center-empty">No venue plan is currently due for renewal.</div>';ov.hidden=false;return;}
- body.innerHTML=list.map(function(a,i){var d=a.days,txt=d===0?"Expires today":d+" day"+(d===1?"":"s")+" left",phone=String(a.contact_mobile||"").replace(/\D/g,"");return'<div class="smv-plan-alert-item"><div class="smv-plan-alert-row"><div><div class="smv-plan-alert-name">'+esc(a.venue_name)+'</div><div class="smv-plan-alert-meta">'+esc(plan(a.partner_plan))+' · Expiry: <strong>'+esc(date(a.plan_expires_at))+'</strong></div></div><div class="smv-plan-alert-days">'+esc(txt)+'</div></div><div class="smv-plan-alert-actions">'+(phone?'<a class="primary" href="tel:'+esc(phone)+'">☎ Call Venue</a>':"")+'<button type="button" data-dismiss="'+i+'">Dismiss</button></div></div>';}).join("");
- body.querySelectorAll("[data-dismiss]").forEach(function(x){x.onclick=function(){var a=list[Number(x.dataset.dismiss)];if(a&&a.venue_id)try{sessionStorage.setItem(KEY+a.venue_id+"_"+dOnly(a.plan_expires_at),"1");}catch(e){}refresh(false);ov.hidden=true;};});
+function closePopup(){
+ var ov=document.getElementById("smvPlanAlertOverlay");
+ if(!ov)return;
+ ov.hidden=true;
+ ov.style.display="none";
+ ov.setAttribute("aria-hidden","true");
+}
+function openPopup(ov){
+ if(!ov)return;
  ov.hidden=false;
+ ov.style.display="flex";
+ ov.setAttribute("aria-hidden","false");
+}
+function popup(list){
+ var ov=document.getElementById("smvPlanAlertOverlay");if(!ov){ov=document.createElement("div");ov.id="smvPlanAlertOverlay";ov.className="smv-plan-alert-overlay";ov.hidden=true;ov.innerHTML='<div class="smv-plan-alert-card"><div class="smv-plan-alert-head"><button type="button" class="smv-plan-alert-close" id="smvPlanAlertClose">×</button><div class="kicker">ACTION REQUIRED</div><h2>Venue Plan Renewal</h2><p>These venues are within 3 days of plan expiry. Please call them for renewal.</p></div><div class="smv-plan-alert-body" id="smvPlanAlertBody"></div></div>';document.body.appendChild(ov);ov.setAttribute("aria-hidden","true");
+ ov.onclick=function(e){if(e.target===ov)closePopup();}; }
+ var body=document.getElementById("smvPlanAlertBody");if(!list.length){body.innerHTML='<div class="smv-plan-center-empty">No venue plan is currently due for renewal.</div>';openPopup(ov);return;}
+ body.innerHTML=list.map(function(a,i){var d=a.days,txt=d===0?"Expires today":d+" day"+(d===1?"":"s")+" left",phone=String(a.contact_mobile||"").replace(/\D/g,"");return'<div class="smv-plan-alert-item"><div class="smv-plan-alert-row"><div><div class="smv-plan-alert-name">'+esc(a.venue_name)+'</div><div class="smv-plan-alert-meta">'+esc(plan(a.partner_plan))+' · Expiry: <strong>'+esc(date(a.plan_expires_at))+'</strong></div></div><div class="smv-plan-alert-days">'+esc(txt)+'</div></div><div class="smv-plan-alert-actions">'+(phone?'<a class="primary" href="tel:'+esc(phone)+'">☎ Call Venue</a>':"")+'<button type="button" data-dismiss="'+i+'">Dismiss</button></div></div>';}).join("");
+ body.querySelectorAll("[data-dismiss]").forEach(function(x){x.onclick=function(){var a=list[Number(x.dataset.dismiss)];if(a&&a.venue_id)try{sessionStorage.setItem(KEY+a.venue_id+"_"+dOnly(a.plan_expires_at),"1");}catch(e){}refresh(false);closePopup();};});
+ openPopup(ov);
 }
 function refresh(auto){
  if(!client)return Promise.resolve([]);
@@ -88,7 +102,7 @@ function init(){
    var t=e.target&&e.target.closest?e.target.closest("#smvPlanAlertClose"):null;
    if(!t)return;
    var ov=document.getElementById("smvPlanAlertOverlay");
-   if(ov)ov.hidden=true;
+   if(ov)closePopup();
   },true);
  }
  var tries=0,t=setInterval(function(){tries++;try{client=window.getSupabaseClient&&window.getSupabaseClient();}catch(e){}if(client){clearInterval(t);client.auth.getUser().then(function(r){uid=r.data&&r.data.user?r.data.user.id:"";return refresh(true);});}if(tries>80)clearInterval(t);},100);
