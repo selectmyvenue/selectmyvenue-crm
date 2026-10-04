@@ -4902,6 +4902,9 @@ function setupVenueManagement() {
     const planForm = document.getElementById("venuePlan");
     planForm?.addEventListener("change", event => {
         populateVenuePlanTermOptions(event.target.value, "");
+        if (event.target.value === "launch_trial") {
+            applyDefaultLaunchTrialPlan();
+        }
     });
 
     document.getElementById("venuePlanTerm")?.addEventListener("change", () => {
@@ -5169,22 +5172,29 @@ function populateVenuePlanTermOptions(planCode, selectedTerm) {
         ? String(selectedTerm)
         : String(select.value || "");
 
-    select.innerHTML = rows.length
-        ? '<option value="">Select duration…</option>' +
-          rows.map(row => {
-              const months = Number(row.term_months);
-              const label = months === 12
-                  ? "1 Year (12 Months)"
-                  : months === 1
-                      ? "1 Month"
-                      : months + " Months";
-              return '<option value="' + escapeHTML(String(months)) + '">' +
-                  escapeHTML(label) + '</option>';
-          }).join("")
+    let options = rows.map(row => {
+        const months = Number(row.term_months);
+        const label = months === 12
+            ? "1 Year (12 Months)"
+            : months === 1
+                ? "1 Month"
+                : months + " Months";
+        return '<option value="' + escapeHTML(String(months)) + '">' +
+            escapeHTML(label) + '</option>';
+    });
+
+    if (planCode === "launch_trial") {
+        options.unshift('<option value="10d">10 Days</option>');
+    }
+
+    select.innerHTML = options.length
+        ? '<option value="">Select duration…</option>' + options.join("")
         : '<option value="">Manual / existing dates</option>';
 
-    if (current && rows.some(row => String(row.term_months) === current)) {
+    if (current && Array.from(select.options).some(o => String(o.value) === current)) {
         select.value = current;
+    } else if (planCode === "launch_trial") {
+        select.value = "10d";
     } else if (rows.length === 1) {
         select.value = String(rows[0].term_months);
     } else {
@@ -5195,23 +5205,30 @@ function populateVenuePlanTermOptions(planCode, selectedTerm) {
 }
 
 function updateVenuePlanExpiryFromTerm(force) {
-    const term = Number(document.getElementById("venuePlanTerm")?.value || 0);
+    const planCode = safeValue(document.getElementById("venuePlan")?.value).trim();
+    const termValue = safeValue(document.getElementById("venuePlanTerm")?.value).trim();
     const start = safeValue(document.getElementById("venuePlanStartedAt")?.value).trim();
     const expiry = document.getElementById("venuePlanExpiresAt");
 
-    if (!expiry || !term || !start) return;
-
+    if (!expiry || !start) return;
     if (!force && expiry.value) return;
 
     const date = new Date(start + "T00:00:00");
     if (Number.isNaN(date.getTime())) return;
 
-    const originalDay = date.getDate();
-    date.setDate(1);
-    date.setMonth(date.getMonth() + term);
-    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-    date.setDate(Math.min(originalDay, lastDay));
-    date.setDate(date.getDate() - 1);
+    if (planCode === "launch_trial" && termValue === "10d") {
+        date.setDate(date.getDate() + 10);
+    } else {
+        const term = Number(termValue || 0);
+        if (!term) return;
+
+        const originalDay = date.getDate();
+        date.setDate(1);
+        date.setMonth(date.getMonth() + term);
+        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+        date.setDate(Math.min(originalDay, lastDay));
+        date.setDate(date.getDate() - 1);
+    }
 
     const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
     expiry.value = local.toISOString().slice(0, 10);
@@ -5696,6 +5713,35 @@ function selectedVenueEventTypes() {
     return Array.from(document.querySelectorAll('#venueEventTypes input:checked')).map(input => input.value);
 }
 
+function applyDefaultLaunchTrialPlan() {
+    const plan = document.getElementById("venuePlan");
+    const status = document.getElementById("venuePlanStatus");
+    const term = document.getElementById("venuePlanTerm");
+    const start = document.getElementById("venuePlanStartedAt");
+    const expiry = document.getElementById("venuePlanExpiresAt");
+    const notifications = document.getElementById("venuePlanNotificationsEnabled");
+
+    if (plan) {
+        const option = Array.from(plan.options || []).find(o => o.value === "launch_trial");
+        if (option) plan.value = "launch_trial";
+    }
+    if (status) status.value = "trialing";
+    if (term) {
+        const trialOption = Array.from(term.options || []).find(o => o.value === "10d");
+        if (trialOption) term.value = "10d";
+    }
+    if (start && !start.value) {
+        const d = new Date();
+        start.value = [
+            d.getFullYear(),
+            String(d.getMonth() + 1).padStart(2, "0"),
+            String(d.getDate()).padStart(2, "0")
+        ].join("-");
+    }
+    if (notifications) notifications.checked = true;
+    updateVenuePlanExpiryFromTerm(true);
+}
+
 function forceBlankVenueCreateForm() {
     const form = document.getElementById("venueForm");
     if (!form) return;
@@ -5767,6 +5813,7 @@ function forceBlankVenueCreateForm() {
     setTimeout(clearCreateFields, 50);
     setTimeout(clearCreateFields, 200);
     setTimeout(clearCreateFields, 500);
+    setTimeout(applyDefaultLaunchTrialPlan, 560);
 }
 
 function openVenueModal(venue = null) {
