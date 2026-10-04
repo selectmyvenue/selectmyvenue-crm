@@ -7923,11 +7923,28 @@ async function loadAssignmentVenueOptions() {
         */
         const { data, error } = await client.rpc("smv_assignment_venues");
 
-        if (error) {
-            throw error;
-        }
+        if (!error && Array.isArray(data) && data.length) {
+            assignmentVenueRows = data;
+        } else {
+            /*
+               Safety fallback: assignment visibility must never depend on the
+               plan lifecycle. If the RPC is temporarily unavailable/stale,
+               load every approved + verified venue directly. Expired plans
+               remain visible and assignable; expiry is only a warning.
+            */
+            const fallback = await client
+                .from("venues")
+                .select("*")
+                .eq("venue_status", "approved")
+                .eq("verification_status", "verified")
+                .order("venue_name", { ascending: true });
 
-        assignmentVenueRows = Array.isArray(data) ? data : [];
+            if (fallback.error) {
+                throw error || fallback.error;
+            }
+
+            assignmentVenueRows = Array.isArray(fallback.data) ? fallback.data : [];
+        }
 
         renderAssignmentVenues();
         return;
