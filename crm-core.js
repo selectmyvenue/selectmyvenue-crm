@@ -8022,6 +8022,24 @@ function renderAssignmentVenues() {
             : "Price not set";
         const location = [venue.city, venue.area].filter(Boolean).join(" • ") || "Location not set";
 
+        // Plan expiry is currently a warning only. Expired venues remain
+        // assignable when they are approved + verified.
+        const expiryDate = venue.plan_expires_at ? new Date(String(venue.plan_expires_at).slice(0, 10) + "T00:00:00") : null;
+        const todayDate = new Date();
+        const todayOnly = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate());
+        const expiryDays = expiryDate && !Number.isNaN(expiryDate.getTime())
+            ? Math.round((expiryDate - todayOnly) / 86400000)
+            : null;
+        const planWarning = expiryDays === null
+            ? ""
+            : expiryDays < 0
+                ? `<span class="venue-assignment-plan-warning expired">⚠ Plan expired ${Math.abs(expiryDays)}d ago — assignment allowed</span>`
+                : expiryDays === 0
+                    ? '<span class="venue-assignment-plan-warning">⚠ Plan expires today — assignment allowed</span>'
+                    : expiryDays <= 3
+                        ? `<span class="venue-assignment-plan-warning">⚠ Plan expires in ${expiryDays}d — assignment allowed</span>`
+                        : "";
+
         return `
             <label class="venue-assignment-item">
                 <input
@@ -8042,7 +8060,10 @@ function renderAssignmentVenues() {
                         <span>${escapeHTML(venue.venue_type || "Venue")}</span>
                     </div>
                 </div>
-                <span class="venue-assignment-item-status">Verified</span>
+                <div class="venue-assignment-item-side">
+                    <span class="venue-assignment-item-status">Verified</span>
+                    ${planWarning}
+                </div>
             </label>
         `;
     }).join("");
