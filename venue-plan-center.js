@@ -28,7 +28,7 @@ function styles(){
 }
 
 function rows(venues){return (venues||[]).map(function(v){v=Object.assign({},v,{days:days(v.plan_expires_at)});return v;}).sort(function(a,b){return (a.days==null?99999:a.days)-(b.days==null?99999:b.days);});}
-function venues(){try{return Array.isArray(window.allVenues)?window.allVenues:[]}catch(e){return[];}}
+function venues(){try{if(Array.isArray(window.allVenues))return window.allVenues;if(Array.isArray(window.SMVAllVenues))return window.SMVAllVenues;}catch(e){}return[];}
 function render(){
  var body=document.getElementById("smvPlanCenterBody");if(!body)return;
  var list=rows(venues()),q=(document.getElementById("smvPlanCenterSearch")||{}).value||"",p=(document.getElementById("smvPlanCenterFilter")||{}).value||"all",s=(document.getElementById("smvPlanCenterStatus")||{}).value||"all";q=q.toLowerCase().trim();
