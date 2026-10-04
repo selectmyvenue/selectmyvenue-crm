@@ -5003,6 +5003,7 @@ async function loadVenues() {
     }
 
     allVenues = Array.isArray(data) ? data : [];
+    window.SMVAllVenues = allVenues;
 
     updateVenueStats();
     renderVenues();
