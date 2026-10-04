@@ -323,7 +323,7 @@ async function load(){
       '<div class="hero-copy"><div class="kicker">VENUE PARTNERSHIP</div><h1>'+esc(v.venue_name||"Venue Partner")+'</h1><p class="hero-sub">'+esc(address||"Delhi NCR venue partner")+'</p>'+
         '<div class="chips"><span class="chip">'+esc(v.venue_type||"Venue")+'</span><span class="chip">'+esc(cap)+'</span><span class="chip">'+esc(price)+'</span><span class="chip">'+esc(status(v.verification_status||"Verified"))+'</span></div>'+
       '</div>'+
-      '<div class="hero-image">'+(image?'<img src="'+esc(image)+'" alt="'+esc(v.venue_name||"Venue")+' cover image" onerror="this.style.display=\\'none\\';this.parentElement.querySelector(\\'.hero-fallback\\').style.display=\\'grid\\';">':'')+'<div class="hero-fallback hero-no-image" style="'+(image?'display:none':'')+'">SMV</div></div>'+
+      '<div class="hero-image">'+(image?'<img src="'+esc(image)+'" alt="'+esc(v.venue_name||"Venue")+' cover image" onerror="this.style.display=\'none\';this.parentElement.querySelector(\'.hero-fallback\').style.display=\'grid\';">':'')+'<div class="hero-fallback hero-no-image" style="'+(image?'display:none':'')+'">SMV</div></div>'+
     '</section>'+
 
     '<div class="section-grid">'+
