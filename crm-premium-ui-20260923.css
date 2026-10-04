@@ -3091,3 +3091,51 @@ body .page-heading{
     line-height:1!important;
   }
 }
+
+
+/* =========================================================
+   2026-10-04 — VENUE MANAGEMENT SCROLL UX
+   Use the page as the single vertical scroll surface.
+   No nested vertical scrolling inside the venue list.
+   ========================================================= */
+@media(min-width:761px){
+  #venueManagementSection .venue-table-wrapper{
+    max-height:none!important;
+    height:auto!important;
+    overflow-x:auto!important;
+    overflow-y:visible!important;
+    overscroll-behavior-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    scrollbar-gutter:stable!important;
+  }
+
+  #venueManagementSection .venue-table{
+    margin-bottom:0!important;
+  }
+
+  #venueManagementSection .venue-table thead th{
+    position:sticky!important;
+    top:44px!important;
+    z-index:20!important;
+  }
+
+  #venueManagementSection{
+    scroll-margin-top:58px!important;
+  }
+}
+
+@media(max-width:760px){
+  #venueManagementSection .venue-table-wrapper{
+    max-height:none!important;
+    height:auto!important;
+    overflow-x:auto!important;
+    overflow-y:visible!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  #venueManagementSection .venue-table thead th{
+    position:sticky!important;
+    top:0!important;
+    z-index:20!important;
+  }
+}
