@@ -5,68 +5,398 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="robots" content="noindex,nofollow,noarchive">
 <title>Select My Venue — Venue Partnership</title>
+
 <script>
 window.SUPABASE_URL="https://uajqwyoqbbswkfiwosyw.supabase.co";
 window.SUPABASE_ANON_KEY="sb_publishable_hfiuO4ZRn4VZmEkrN2RV-A_lZX_R3z7";
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f4f8f6;color:#173f38;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-.wrap{max-width:1180px;margin:0 auto;padding:28px 28px 44px}.top{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:22px}
-.brand{display:flex;align-items:center;gap:12px}.mark{width:40px;height:40px;border-radius:12px;background:#087f6c;color:#fff;display:grid;place-items:center;font-weight:900;font-size:17px}.brand b{font-size:16px;letter-spacing:.02em}.brand small{display:block;color:#718b85;font-size:10px;margin-top:2px}
-.print{border:1px solid #cfe3dc;background:#fff;color:#245c52;border-radius:10px;padding:9px 13px;font-size:11px;font-weight:850;cursor:pointer}
-.hero{background:linear-gradient(135deg,#073f37,#0b806b);color:#fff;border-radius:22px;padding:28px 30px;box-shadow:0 18px 50px rgba(0,65,55,.16);display:flex;justify-content:space-between;gap:24px;align-items:flex-end}
-.kicker{font-size:9px;font-weight:900;letter-spacing:.16em;opacity:.72}.hero h1{font-size:30px;line-height:1.1;margin:7px 0 7px}.hero p{margin:0;color:rgba(255,255,255,.78);font-size:13px}.venue-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.chip{padding:7px 10px;border:1px solid rgba(255,255,255,.2);border-radius:999px;background:rgba(255,255,255,.08);font-size:10px;font-weight:800}
-.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-top:16px}.card{background:#fff;border:1px solid #dcebe6;border-radius:18px;box-shadow:0 8px 28px rgba(0,65,55,.06);padding:20px}.card h2{font-size:16px;margin:0 0 4px}.sub{font-size:11px;color:#718b85;margin-bottom:15px}
-.plan{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:#f7fbfa;border:1px solid #e1efeb;border-radius:12px;padding:12px}.metric span{display:block;font-size:8px;font-weight:900;letter-spacing:.1em;color:#78918b}.metric strong{display:block;font-size:14px;margin-top:4px;color:#173f38}
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.kpi{background:#f7fbfa;border:1px solid #e1efeb;border-radius:12px;padding:14px}.kpi strong{display:block;font-size:22px}.kpi span{font-size:9px;color:#78918b;font-weight:800}
-.table-card{margin-top:16px;padding:0;overflow:hidden}.table-head{padding:19px 20px;border-bottom:1px solid #e4efec}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:850px}.table th{background:#f7fbfa;padding:11px 14px;text-align:left;font-size:8px;letter-spacing:.1em;color:#78918b;white-space:nowrap}.table td{padding:13px 14px;border-top:1px solid #edf3f1;font-size:11px;vertical-align:top}.table td strong{font-size:12px;color:#173f38}.muted{color:#718b85}.status{display:inline-flex;border-radius:999px;padding:5px 8px;background:#edf8f4;color:#08745d;font-size:9px;font-weight:900;white-space:nowrap}.empty{padding:42px 20px;text-align:center;color:#718b85;font-size:12px}
-.note{margin-top:16px;padding:14px 16px;border-radius:13px;background:#eef8f5;border:1px solid #d2eae3;color:#48665f;font-size:11px}.note strong{color:#173f38}
-.loading{min-height:55vh;display:grid;place-items:center;color:#718b85;font-size:13px}.error{max-width:560px;margin:80px auto;background:#fff;border:1px solid #f0c7c3;border-radius:18px;padding:24px;text-align:center}.error h2{margin:0 0 8px;color:#8f241b}.error p{font-size:12px;color:#718b85}
-@media(max-width:760px){.wrap{padding:16px}.top{align-items:flex-start}.hero{padding:22px;display:block}.hero h1{font-size:25px}.grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(3,1fr)}.card{padding:16px}}
-@media print{body{background:#fff}.wrap{max-width:none;padding:0}.print{display:none}.hero{box-shadow:none}.card,.table-card{box-shadow:none;break-inside:avoid}}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#173f38;background:#f3f8f6}
+body{-webkit-font-smoothing:antialiased}
+button,input{font:inherit}
+
+.login-page{
+  min-height:100vh;
+  min-height:100dvh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:28px 18px;
+  overflow:auto;
+  background:
+    radial-gradient(circle at 50% 30%,rgba(21,154,140,.14),transparent 34%),
+    radial-gradient(circle at 15% 90%,rgba(21,154,140,.08),transparent 35%),
+    radial-gradient(circle at 85% 10%,rgba(255,190,70,.035),transparent 30%),
+    linear-gradient(135deg,#050b12 0%,#09131d 48%,#050b12 100%);
+  position:relative;
+}
+.login-page:before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.18;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+.login-card{
+  position:relative;z-index:2;width:470px;max-width:100%;padding:34px 42px 28px;
+  border-radius:26px;background:linear-gradient(145deg,rgba(18,30,44,.97),rgba(8,17,27,.98));
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:0 40px 100px rgba(0,0,0,.60),0 0 80px rgba(21,154,140,.08);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+.login-logo-wrap{display:flex;justify-content:center;align-items:center;margin-bottom:20px}
+.login-logo{display:block;width:330px;max-width:100%;height:82px;object-fit:contain;filter:drop-shadow(0 10px 22px rgba(0,0,0,.35))}
+.login-brand{text-align:center;margin-bottom:26px}
+.login-brand h1{margin:0;color:#fff;font-size:25px;line-height:1.2;font-weight:800;letter-spacing:-.45px}
+.login-brand p{margin:8px 0 0;color:rgba(255,255,255,.55);font-size:13px;line-height:1.5}
+.login-form{display:grid;gap:16px}
+.login-field{display:grid;gap:8px}
+.login-field label{font-size:11px;font-weight:800;letter-spacing:.10em;color:rgba(255,255,255,.68)}
+.login-field input{width:100%;height:50px;padding:0 15px;border-radius:12px;border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.045);color:#fff;outline:none;font-size:15px;transition:.2s ease}
+.login-field input::placeholder{color:rgba(255,255,255,.30)}
+.login-field input:focus{border-color:rgba(21,154,140,.85);background:rgba(255,255,255,.06);box-shadow:0 0 0 3px rgba(21,154,140,.10)}
+.login-note{margin-top:-2px;color:rgba(255,255,255,.42);font-size:11px;line-height:1.45;text-align:center}
+.login-btn{width:100%;height:50px;border:0;border-radius:12px;cursor:pointer;font-size:15px;font-weight:800;color:#fff;background:linear-gradient(135deg,#18a997,#087f73);box-shadow:0 10px 28px rgba(8,127,115,.25);transition:.2s ease}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 14px 32px rgba(8,127,115,.34)}
+.login-btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.login-message{min-height:20px;text-align:center;font-size:13px;line-height:1.45}
+.login-message.error{color:#ff8f8f}.login-message.success{color:#63e6be}
+.login-footer{margin-top:21px;padding-top:17px;border-top:1px solid rgba(255,255,255,.06);text-align:center;font-size:10px;color:rgba(255,255,255,.32);letter-spacing:.3px}
+
+.page{max-width:1240px;margin:0 auto;padding:22px 24px 50px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.brand img{width:190px;height:42px;object-fit:contain;object-position:left center}
+.brand-copy{border-left:1px solid #d6e5e0;padding-left:12px}
+.brand-copy b{display:block;font-size:12px;color:#17483f;letter-spacing:.02em}
+.brand-copy small{display:block;margin-top:2px;color:#78918b;font-size:9px}
+.top-actions{display:flex;gap:8px;align-items:center}
+.top-btn{height:36px;padding:0 12px;border:1px solid #cfe1db;border-radius:9px;background:#fff;color:#1f5b50;font-size:10px;font-weight:850;cursor:pointer}
+.top-btn.primary{background:#075d4d;border-color:#075d4d;color:#fff}
+.top-btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(8,90,74,.10)}
+
+.hero{
+  position:relative;overflow:hidden;min-height:230px;border-radius:24px;
+  background:linear-gradient(125deg,#06362f 0%,#07594b 56%,#0b806b 100%);
+  box-shadow:0 22px 60px rgba(0,65,55,.18);color:#fff;
+  display:grid;grid-template-columns:1.35fr .65fr;gap:20px;align-items:stretch;
+}
+.hero:after{content:"";position:absolute;width:330px;height:330px;right:-130px;bottom:-190px;border:1px solid rgba(255,255,255,.14);border-radius:50%;box-shadow:0 0 0 38px rgba(255,255,255,.025),0 0 0 76px rgba(255,255,255,.018);pointer-events:none}
+.hero-copy{position:relative;z-index:1;padding:28px 30px 26px}
+.kicker{font-size:9px;font-weight:950;letter-spacing:.16em;color:#a9ddd1}
+.hero h1{margin:7px 0 7px;font-size:31px;line-height:1.1;letter-spacing:-.7px}
+.hero-sub{margin:0;color:rgba(255,255,255,.78);font-size:12.5px;line-height:1.5}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+.chip{padding:7px 10px;border:1px solid rgba(255,255,255,.20);border-radius:999px;background:rgba(255,255,255,.08);font-size:9.5px;font-weight:850}
+.hero-image{position:relative;min-height:230px;background:rgba(0,0,0,.12)}
+.hero-image img{width:100%;height:100%;min-height:230px;object-fit:cover;display:block}
+.hero-image:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(4,39,33,.50),transparent 48%,rgba(4,39,33,.12))}
+.hero-no-image{height:100%;min-height:230px;display:grid;place-items:center;color:rgba(255,255,255,.35);font-size:42px;font-weight:900}
+
+.section-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:16px;margin-top:16px}
+.card{background:#fff;border:1px solid #dbe9e4;border-radius:18px;box-shadow:0 9px 28px rgba(0,65,55,.055);overflow:hidden}
+.card-pad{padding:19px}
+.card-title{margin:0;color:#173f38;font-size:15px;font-weight:900}
+.card-sub{margin:4px 0 15px;color:#78918b;font-size:10.5px;line-height:1.4}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.metric{min-width:0;padding:11px 10px;border:1px solid #e0ece8;border-radius:11px;background:#f7fbfa}
+.metric span{display:block;color:#78918b;font-size:7.8px;font-weight:950;letter-spacing:.08em}
+.metric strong{display:block;margin-top:5px;color:#173f38;font-size:17px;line-height:1.05}
+.metric small{display:block;margin-top:4px;color:#78918b;font-size:8.5px}
+
+.info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.info{padding:10px 11px;border:1px solid #e1ece8;border-radius:11px;background:#f9fcfb}
+.info span{display:block;color:#78918b;font-size:7.8px;font-weight:950;letter-spacing:.08em}
+.info strong,.info a{display:block;margin-top:4px;color:#214f45;font-size:11px;font-weight:800;line-height:1.35;word-break:break-word}
+.info a{color:#08745d;text-decoration:underline;text-underline-offset:2px}
+
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.feature-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.feature{padding:7px 9px;border-radius:999px;background:#eef8f4;border:1px solid #d4e9e1;color:#246256;font-size:9.5px;font-weight:800}
+.description{color:#48665f;font-size:11.5px;line-height:1.65}
+.description p{margin:0 0 9px}.description p:last-child{margin-bottom:0}
+.link-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.link-btn{display:inline-flex;align-items:center;height:32px;padding:0 10px;border-radius:8px;border:1px solid #cfe2db;background:#fff;color:#1d5b50;font-size:9.5px;font-weight:850}
+.link-btn.primary{background:#0b806b;border-color:#0b806b;color:#fff}
+
+.table-card{margin-top:16px}
+.table-head{display:flex;justify-content:space-between;align-items:flex-end;gap:15px;padding:18px 19px;border-bottom:1px solid #e1ece8}
+.table-head .right-note{font-size:9px;color:#78918b;text-align:right}
+.table-wrap{overflow:auto}
+.table{width:100%;min-width:900px;border-collapse:collapse}
+.table th{padding:10px 12px;background:#f5faf8;color:#78918b;text-align:left;font-size:7.8px;letter-spacing:.10em;white-space:nowrap}
+.table td{padding:12px;border-top:1px solid #edf3f1;color:#35584f;font-size:10.5px;vertical-align:top}
+.table td strong{color:#173f38;font-size:11.5px}
+.muted{color:#78918b}
+.status{display:inline-flex;border-radius:999px;padding:5px 8px;background:#edf8f4;color:#08745d;font-size:8.5px;font-weight:900;white-space:nowrap}
+.empty{padding:40px 18px;text-align:center;color:#78918b;font-size:11px}
+.note{margin-top:16px;padding:13px 15px;border-radius:13px;background:#eef8f5;border:1px solid #d2eae3;color:#48665f;font-size:10px;line-height:1.5}
+.note strong{color:#173f38}
+.loading{min-height:55vh;display:grid;place-items:center;color:#718b85;font-size:13px}
+.error-card{max-width:600px;margin:80px auto;background:#fff;border:1px solid #efc9c4;border-radius:18px;padding:25px;text-align:center;box-shadow:0 15px 45px rgba(0,65,55,.08)}
+.error-card h2{margin:0 0 7px;color:#8f241b;font-size:20px}.error-card p{margin:0;color:#718b85;font-size:12px;line-height:1.55}
+.hidden{display:none!important}
+
+@media(max-width:850px){
+  .page{padding:15px 12px 35px}
+  .topbar{align-items:flex-start}.brand img{width:170px}
+  .brand-copy{display:none}.top-actions{flex-wrap:wrap;justify-content:flex-end}
+  .hero{grid-template-columns:1fr}.hero-image{min-height:180px}.hero-image img{min-height:180px}.hero-no-image{min-height:180px}
+  .section-grid,.profile-grid{grid-template-columns:1fr}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .login-card{padding:30px 24px 26px;border-radius:22px}
+  .login-logo{width:285px;height:72px}
+  .login-brand h1{font-size:23px}
+  .hero-copy{padding:22px}.hero h1{font-size:25px}
+  .topbar{gap:10px}.brand img{width:155px}
+  .top-btn{height:34px;padding:0 9px}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .info-grid{grid-template-columns:1fr}
+}
+@media print{
+  body{background:#fff}.page{max-width:none;padding:0}.topbar .top-actions{display:none}
+  .hero{box-shadow:none}.card{box-shadow:none;break-inside:avoid}
+}
 </style>
 </head>
 <body>
-<div id="app" class="wrap"><div class="loading">Loading partnership summary…</div></div>
+<div id="root"><div class="loading">Loading Select My Venue…</div></div>
+
 <script>
 (function(){
 "use strict";
-const url=new URL(location.href), venueId=url.searchParams.get("venue");
-const supabase=supabaseLib();
-function supabaseLib(){return window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY,{auth:{storageKey:"smv-master-crm-auth",persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}
-const app=document.getElementById("app");
-const esc=v=>String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
-const d=v=>{if(!v)return "—";const x=new Date(v);return isNaN(x)?"—":x.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})};
-const dt=v=>{if(!v)return "—";const x=new Date(v);return isNaN(x)?"—":x.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})};
-const plan=v=>({launch_trial:"Launch Trial",partner:"Partner",growth:"Growth",premium:"Premium"})[v]||"Launch Trial";
-const status=v=>String(v||"New").replace(/[-_]/g," ").replace(/\b\w/g,c=>c.toUpperCase());
-function fail(title,msg){app.innerHTML='<div class="error"><h2>'+esc(title)+'</h2><p>'+esc(msg)+'</p></div>'}
-async function load(){
- if(!venueId){fail("Venue not selected","Please open the partnership summary from the CRM.");return}
- const {data:sessionData}=await supabase.auth.getSession();
- if(!sessionData.session){fail("CRM session required","Please sign in to the Select My Venue CRM and open the venue summary again.");return}
- const {data:staff,error:staffError}=await supabase.rpc("smv_is_active_staff");
- if(staffError||staff!==true){fail("Access restricted","This partnership summary is available only to authorized Select My Venue staff.");return}
- const {data:venue,error:ve}=await supabase.from("venues").select("*").eq("id",venueId).single();
- if(ve||!venue){fail("Venue not found","The selected venue could not be loaded.");return}
- const {data:assignments,error:ae}=await supabase.from("venue_enquiry_assignments").select("id,enquiry_id,assignment_status,assigned_at,first_viewed_at,first_contacted_at,last_activity_at,site_visit_at,follow_up_at,converted_at,partner_note,created_at,customer_enquiries(id,customer_name,mobile,email,location,occasion,event_date,guests,status,created_at)").eq("venue_id",venueId).order("assigned_at",{ascending:false});
- if(ae){fail("Unable to load leads",ae.message);return}
- const rows=assignments||[];
- const active=rows.filter(x=>String(x.assignment_status||"").toLowerCase()!=="cancelled");
- const booked=active.filter(x=>["booked","converted"].includes(String(x.customer_enquiries?.status||"").toLowerCase())).length;
- const site=active.filter(x=>String(x.customer_enquiries?.status||"").toLowerCase()==="site-visit"||x.site_visit_at).length;
- const latest=active[0]?.assigned_at;
- app.innerHTML='<div class="top"><div class="brand"><div class="mark">SMV</div><div><b>Select My Venue</b><small>Venue Partnership</small></div></div><button class="print" onclick="window.print()">Print / Save PDF</button></div>'+
- '<section class="hero"><div><div class="kicker">VENUE PARTNERSHIP</div><h1>'+esc(venue.venue_name)+'</h1><p>'+esc([venue.area,venue.city].filter(Boolean).join(", ")||venue.address||"Venue partner")+'</p><div class="venue-meta"><span class="chip">'+esc(venue.venue_type||"Venue")+'</span><span class="chip">'+esc(venue.capacity_max?("Up to "+venue.capacity_max+" guests"):"Capacity on file")+'</span></div></div><div><div class="kicker">PARTNERSHIP STATUS</div><div style="font-size:18px;font-weight:900;margin-top:5px">'+esc(status(venue.plan_status||"active"))+'</div></div></section>'+
- '<div class="grid"><section class="card"><h2>Current Partnership</h2><div class="sub">Your current plan and validity with Select My Venue.</div><div class="plan"><div class="metric"><span>PLAN</span><strong>'+esc(plan(venue.partner_plan))+'</strong></div><div class="metric"><span>STATUS</span><strong>'+esc(status(venue.plan_status))+'</strong></div><div class="metric"><span>START DATE</span><strong>'+esc(d(venue.plan_started_at))+'</strong></div><div class="metric"><span>VALID UNTIL</span><strong>'+esc(d(venue.plan_expires_at))+'</strong></div></div></section>'+
- '<section class="card"><h2>Lead Performance</h2><div class="sub">Customer enquiries shared with this venue.</div><div class="kpis"><div class="kpi"><strong>'+active.length+'</strong><span>LEADS RECEIVED</span></div><div class="kpi"><strong>'+site+'</strong><span>SITE VISITS</span></div><div class="kpi"><strong>'+booked+'</strong><span>BOOKED / CONVERTED</span></div></div></section></div>'+
- '<section class="card table-card"><div class="table-head"><h2>Customer Enquiries Shared</h2><div class="sub" style="margin:5px 0 0">Only enquiries assigned to this venue are shown.</div></div><div class="table-wrap"><table class="table"><thead><tr><th>CUSTOMER</th><th>EVENT</th><th>EVENT DATE</th><th>GUESTS</th><th>LOCATION</th><th>STATUS</th><th>RECEIVED</th></tr></thead><tbody>'+
- (active.length?active.map(a=>{const e=a.customer_enquiries||{};return '<tr><td><strong>'+esc(e.customer_name||"Customer")+'</strong><br><span class="muted">'+esc(e.mobile||"Contact shared separately")+'</span></td><td>'+esc(e.occasion||"—")+'</td><td>'+esc(d(e.event_date))+'</td><td>'+esc(e.guests||"—")+'</td><td>'+esc(e.location||"—")+'</td><td><span class="status">'+esc(status(e.status||a.assignment_status))+'</span></td><td>'+esc(d(a.assigned_at||a.created_at))+'</td></tr>'}).join(""):'<tr><td colspan="7" class="empty">No customer enquiries have been assigned to this venue yet.</td></tr>')+
- '</tbody></table></div></section>'+
- '<div class="note"><strong>Select My Venue</strong> shares customer enquiries with verified venue partners based on customer requirements. This page shows only information relevant to this venue partnership.</div>';
+
+var root=document.getElementById("root");
+var url=new URL(window.location.href);
+var venueId=url.searchParams.get("venue");
+var supabase=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY,{
+  auth:{storageKey:"smv-master-crm-auth",persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+});
+
+function esc(v){
+  return String(v==null?"":v)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
-load().catch(e=>fail("Unable to open summary","Please return to the CRM and try again."));
+function clean(v){return String(v==null?"":v).trim()}
+function date(v){
+  if(!v)return "—";
+  var x=new Date(v);
+  return isNaN(x)?"—":x.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
+}
+function money(v){
+  if(v===null||v===undefined||v==="")return "";
+  var n=Number(v); if(!isFinite(n))return clean(v);
+  return "₹"+n.toLocaleString("en-IN");
+}
+function plan(v){return ({launch_trial:"Launch Trial",partner:"Partner",growth:"Growth",premium:"Premium"})[v]||"Launch Trial"}
+function status(v){return String(v||"Active").replace(/[-_]/g," ").replace(/\b\w/g,function(c){return c.toUpperCase()})}
+function bool(v,yes,no){return v===true?yes:(v===false?no:"—")}
+function list(v){
+  if(Array.isArray(v))return v.filter(Boolean).map(clean).filter(Boolean);
+  if(typeof v==="string")return v.split(",").map(clean).filter(Boolean);
+  return [];
+}
+function descriptionText(v){
+  var raw=clean(v);
+  if(!raw)return "";
+  var box=document.createElement("div");
+  box.innerHTML=raw;
+  return (box.textContent||box.innerText||"").replace(/\r/g,"").trim();
+}
+function paragraphs(v){
+  var t=descriptionText(v);
+  if(!t)return '<p>Venue description is available on request.</p>';
+  return t.split(/\n{2,}/).map(function(x){return "<p>"+esc(x).replace(/\n/g,"<br>")+"</p>"}).join("");
+}
+function fail(title,msg){
+  root.innerHTML='<div class="page"><div class="error-card"><h2>'+esc(title)+'</h2><p>'+esc(msg)+'</p></div></div>';
+}
+function loginScreen(message,type){
+  root.innerHTML=
+    '<main class="login-page"><section class="login-card">'+
+      '<div class="login-logo-wrap"><img class="login-logo" src="https://selectmyvenue.com/logo.png" alt="Select My Venue"></div>'+
+      '<div class="login-brand"><h1>Venue Partnership</h1><p>Secure Select My Venue access for venue partnership summaries</p></div>'+
+      '<form id="smvPartnershipLogin" class="login-form" autocomplete="on">'+
+        '<div class="login-field"><label for="smvLoginEmail">EMAIL ADDRESS</label><input id="smvLoginEmail" type="email" autocomplete="username" placeholder="Enter your email" required></div>'+
+        '<div class="login-field"><label for="smvLoginPassword">PASSWORD</label><input id="smvLoginPassword" type="password" autocomplete="current-password" placeholder="Enter your password" required></div>'+
+        '<div class="login-note">Use your existing Select My Venue CRM credentials. Only authorised active staff can open this page.</div>'+
+        '<button id="smvLoginBtn" class="login-btn" type="submit">Continue to Venue Partnership</button>'+
+        '<div id="smvLoginMessage" class="login-message '+(type||"")+'">'+esc(message||"")+'</div>'+
+      '</form>'+
+      '<div class="login-footer">Select My Venue · Secure Partnership Portal</div>'+
+    '</section></main>';
+
+  var form=document.getElementById("smvPartnershipLogin");
+  if(!form)return;
+  form.addEventListener("submit",async function(e){
+    e.preventDefault();
+    var btn=document.getElementById("smvLoginBtn");
+    var msg=document.getElementById("smvLoginMessage");
+    var email=clean(document.getElementById("smvLoginEmail").value);
+    var password=document.getElementById("smvLoginPassword").value;
+    btn.disabled=true;btn.textContent="Signing in...";
+    msg.className="login-message";msg.textContent="";
+    try{
+      var auth=await supabase.auth.signInWithPassword({email:email,password:password});
+      if(auth.error)throw auth.error;
+      var staff=await supabase.rpc("smv_is_active_staff");
+      if(staff.error||staff.data!==true){
+        await supabase.auth.signOut();
+        throw new Error("This account is not authorised for Select My Venue staff access.");
+      }
+      msg.className="login-message success";
+      msg.textContent="Access verified. Opening partnership summary...";
+      await load();
+    }catch(err){
+      msg.className="login-message error";
+      msg.textContent=err&&err.message?err.message:"Unable to sign in. Please try again.";
+      btn.disabled=false;btn.textContent="Continue to Venue Partnership";
+    }
+  });
+}
+async function isStaff(){
+  var s=await supabase.auth.getSession();
+  if(!s.data||!s.data.session)return false;
+  var r=await supabase.rpc("smv_is_active_staff");
+  return !r.error&&r.data===true;
+}
+function featureItems(v){
+  var out=[];
+  list(v.facilities).forEach(function(x){out.push(x)});
+  if(v.parking_available===true)out.push("Parking");
+  if(v.rooms_available===true||Number(v.room_count)>0)out.push((Number(v.room_count)>0?Number(v.room_count)+" ":"")+"Guest Rooms");
+  if(v.catering_available===true)out.push("Catering");
+  if(v.decoration_available===true)out.push("Decoration");
+  if(v.outdoor_indoor)out.push(v.outdoor_indoor);
+  if(v.alcohol_allowed===true)out.push("Alcohol Allowed");
+  if(v.outside_catering_allowed===true)out.push("Outside Catering");
+  return Array.from(new Set(out.map(clean).filter(Boolean))).slice(0,24);
+}
+function info(label,value,link){
+  if(!clean(value))return "";
+  return '<div class="info"><span>'+esc(label)+'</span>'+(
+    link?'<a href="'+esc(value)+'" target="_blank" rel="noopener">'+esc(link)+'</a>':
+    '<strong>'+esc(value)+'</strong>'
+  )+'</div>';
+}
+async function load(){
+  if(!venueId){fail("Venue not selected","Please open Partner Overview from Venue Management so a venue is selected.");return}
+  if(!(await isStaff())){loginScreen();return}
+
+  var venueResult=await supabase.from("venues").select("*").eq("id",venueId).single();
+  if(venueResult.error||!venueResult.data){fail("Venue not found","The selected venue could not be loaded.");return}
+  var v=venueResult.data;
+
+  var a=await supabase.from("venue_enquiry_assignments")
+    .select("id,enquiry_id,assignment_status,assigned_at,first_viewed_at,first_contacted_at,last_activity_at,site_visit_at,follow_up_at,converted_at,created_at,customer_enquiries(id,customer_name,mobile,email,location,occasion,event_date,guests,status,created_at)")
+    .eq("venue_id",venueId).order("assigned_at",{ascending:false});
+  if(a.error){fail("Unable to load leads",a.error.message);return}
+
+  var rows=a.data||[];
+  var active=rows.filter(function(x){return String(x.assignment_status||"").toLowerCase()!=="cancelled"});
+  var booked=active.filter(function(x){return ["booked","converted"].includes(String(x.customer_enquiries&&x.customer_enquiries.status||"").toLowerCase())||x.converted_at}).length;
+  var site=active.filter(function(x){return x.site_visit_at||String(x.customer_enquiries&&x.customer_enquiries.status||"").toLowerCase()==="site-visit"}).length;
+  var contacted=active.filter(function(x){return x.first_contacted_at}).length;
+  var latest=active[0]&&active[0].assigned_at;
+  var features=featureItems(v);
+  var address=[v.address,v.area,v.city,v.state,v.pincode].filter(Boolean).join(", ");
+  var price=(v.price_min!=null&&v.price_max!=null)?money(v.price_min)+" – "+money(v.price_max)+" / person":(v.price_min!=null?money(v.price_min)+"+ / person":"On request");
+  var cap=v.capacity_min&&v.capacity_max?(v.capacity_min+" – "+v.capacity_max+" guests"):(v.capacity_max?("Up to "+v.capacity_max+" guests"):(v.capacity_min?("From "+v.capacity_min+" guests"):"On file"));
+  var eventTypes=list(v.event_types);
+  var image=clean(v.cover_image_url);
+  var website=clean(v.website_url);
+  var instagram=clean(v.instagram_url);
+  var map=clean(v.google_maps_url);
+
+  root.innerHTML=
+  '<div class="page">'+
+    '<header class="topbar">'+
+      '<div class="brand"><img src="https://selectmyvenue.com/logo.png" alt="Select My Venue"><div class="brand-copy"><b>Venue Partnership</b><small>Secure partnership summary</small></div></div>'+
+      '<div class="top-actions"><button class="top-btn" type="button" onclick="window.print()">Print / Save PDF</button><button class="top-btn primary" type="button" id="smvLogout">Sign out</button></div>'+
+    '</header>'+
+
+    '<section class="hero">'+
+      '<div class="hero-copy"><div class="kicker">VENUE PARTNERSHIP</div><h1>'+esc(v.venue_name||"Venue Partner")+'</h1><p class="hero-sub">'+esc(address||"Delhi NCR venue partner")+'</p>'+
+        '<div class="chips"><span class="chip">'+esc(v.venue_type||"Venue")+'</span><span class="chip">'+esc(cap)+'</span><span class="chip">'+esc(price)+'</span><span class="chip">'+esc(status(v.verification_status||"Verified"))+'</span></div>'+
+      '</div>'+
+      '<div class="hero-image">'+(image?'<img src="'+esc(image)+'" alt="'+esc(v.venue_name||"Venue")+' cover image" onerror="this.style.display=\\'none\\';this.parentElement.querySelector(\\'.hero-fallback\\').style.display=\\'grid\\';">':'')+'<div class="hero-fallback hero-no-image" style="'+(image?'display:none':'')+'">SMV</div></div>'+
+    '</section>'+
+
+    '<div class="section-grid">'+
+      '<section class="card"><div class="card-pad"><h2 class="card-title">Partnership Snapshot</h2><p class="card-sub">Current Select My Venue partnership and customer enquiry performance.</p>'+
+        '<div class="metrics">'+
+          '<div class="metric"><span>CURRENT PLAN</span><strong>'+esc(plan(v.partner_plan))+'</strong><small>'+esc(status(v.plan_status))+'</small></div>'+
+          '<div class="metric"><span>VALID UNTIL</span><strong>'+esc(date(v.plan_expires_at))+'</strong><small>Start '+esc(date(v.plan_started_at))+'</small></div>'+
+          '<div class="metric"><span>LEADS RECEIVED</span><strong>'+active.length+'</strong><small>Assigned to this venue</small></div>'+
+          '<div class="metric"><span>BOOKED / CONVERTED</span><strong>'+booked+'</strong><small>'+site+' site visit'+(site===1?"":"s")+'</small></div>'+
+        '</div>'+
+      '</div></section>'+
+      '<section class="card"><div class="card-pad"><h2 class="card-title">Lead Journey</h2><p class="card-sub">Simple view of customer enquiries received by this venue.</p>'+
+        '<div class="info-grid">'+
+          info("CUSTOMERS CONTACTED",String(contacted))+
+          info("SITE VISITS",String(site))+
+          info("BOOKED / CONVERTED",String(booked))+
+          info("LATEST ENQUIRY",latest?date(latest):"No enquiries yet")+
+        '</div>'+
+      '</div></section>'+
+    '</div>'+
+
+    '<div class="profile-grid">'+
+      '<section class="card"><div class="card-pad"><h2 class="card-title">Venue Profile</h2><p class="card-sub">Key venue information currently held by Select My Venue.</p>'+
+        '<div class="info-grid">'+
+          info("VENUE TYPE",v.venue_type)+
+          info("CAPACITY",cap)+
+          info("PRICE RANGE",price)+
+          info("AREA / CITY",[v.area,v.city].filter(Boolean).join(", "))+
+          info("ROOMS",Number(v.room_count)>0?String(v.room_count)+" rooms":bool(v.rooms_available,"Available","Not listed"))+
+          info("PARKING",bool(v.parking_available,"Available","Not listed"))+
+          info("VEG FOOD",bool(v.food_veg,"Available","Not listed"))+
+          info("NON-VEG FOOD",bool(v.food_non_veg,"Available","Not listed"))+
+          info("CATERING",bool(v.catering_available,"Available","Not listed"))+
+          info("DECORATION",bool(v.decoration_available,"Available","Not listed"))+
+          info("PUBLIC LISTING",bool(v.public_listing_enabled,"Enabled","Not enabled"))+
+          info("VERIFICATION",status(v.verification_status||"Verified"))+
+        '</div>'+
+        '<div class="link-row">'+
+          (map?'<a class="link-btn primary" href="'+esc(map)+'" target="_blank" rel="noopener">Open Location</a>':"")+
+          (website?'<a class="link-btn" href="'+esc(website)+'" target="_blank" rel="noopener">Website</a>':"")+
+          (instagram?'<a class="link-btn" href="'+esc(instagram)+'" target="_blank" rel="noopener">Instagram</a>':"")+
+        '</div>'+
+      '</div></section>'+
+
+      '<section class="card"><div class="card-pad"><h2 class="card-title">Venue Highlights</h2><p class="card-sub">Facilities and event categories recorded for this venue.</p>'+
+        (eventTypes.length?'<div class="feature-list">'+eventTypes.map(function(x){return '<span class="feature">'+esc(x)+'</span>'}).join("")+'</div>':"")+
+        (features.length?'<div class="feature-list">'+features.map(function(x){return '<span class="feature">'+esc(x)+'</span>'}).join("")+'</div>':'<div class="empty">No additional facilities have been added yet.</div>')+
+        (clean(v.description)?'<div style="height:1px;background:#e5efeb;margin:15px 0"></div><div class="description">'+paragraphs(v.description)+'</div>':"")+
+      '</div></section>'+
+    '</div>'+
+
+    '<section class="card table-card"><div class="table-head"><div><h2 class="card-title">Customer Enquiries Shared</h2><div class="card-sub" style="margin:4px 0 0">Only enquiries assigned to this venue are shown.</div></div><div class="right-note">'+active.length+' enquiry'+(active.length===1?"":"ies")+' received</div></div>'+
+      '<div class="table-wrap"><table class="table"><thead><tr><th>CUSTOMER</th><th>CONTACT</th><th>EVENT</th><th>EVENT DATE</th><th>GUESTS</th><th>LOCATION</th><th>STATUS</th><th>RECEIVED</th></tr></thead><tbody>'+
+      (active.length?active.map(function(item){
+        var e=item.customer_enquiries||{};
+        return '<tr><td><strong>'+esc(e.customer_name||"Customer")+'</strong></td>'+
+          '<td>'+esc(e.mobile||"—")+(e.email?'<br><span class="muted">'+esc(e.email)+'</span>':"")+'</td>'+
+          '<td>'+esc(e.occasion||"—")+'</td><td>'+esc(date(e.event_date))+'</td><td>'+esc(e.guests||"—")+'</td>'+
+          '<td>'+esc(e.location||"—")+'</td><td><span class="status">'+esc(status(e.status||item.assignment_status))+'</span></td>'+
+          '<td>'+esc(date(item.assigned_at||item.created_at))+'</td></tr>';
+      }).join(""):'<tr><td colspan="8" class="empty">No customer enquiries have been assigned to this venue yet.</td></tr>')+
+      '</tbody></table></div>'+
+    '</section>'+
+
+    '<div class="note"><strong>Select My Venue</strong> shares customer enquiries with verified venue partners based on customer requirements. This summary is designed to show the venue partnership, venue profile and enquiries relevant to this venue only. Internal matching scores, employee notes and other venues are not shown.</div>'+
+  '</div>';
+
+  var logout=document.getElementById("smvLogout");
+  if(logout)logout.onclick=async function(){await supabase.auth.signOut();loginScreen("Signed out. Please sign in again.","success")};
+}
+
+if(!venueId){fail("Venue not selected","Please open Partner Overview from Venue Management so a venue is selected.");return;}
+isStaff().then(function(ok){if(ok)load();else loginScreen();}).catch(function(){loginScreen();});
 })();
 </script>
 </body>
