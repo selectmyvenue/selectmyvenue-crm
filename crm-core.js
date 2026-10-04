@@ -7185,7 +7185,7 @@ async function handleVenueTableClick(event) {
     }
 
     if (action === "partner-overview") {
-        const target = "venue-partnership.html?venue=" + encodeURIComponent(String(venue.id));
+        const target = "venue-partnership.html?v=20261004-partnership-2&venue=" + encodeURIComponent(String(venue.id));
         const opened = window.open(target, "_blank", "noopener,noreferrer");
         if (!opened) {
             showToast("Please allow pop-ups to open the Partner Overview.", "warning");
