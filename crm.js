@@ -640,7 +640,7 @@
     window.setTimeout(updateActionBadge, 1200);
   }
 
-  addScript("crm-base.js?v=20261004-trial-defaults-2", function () {
+  addScript("crm-base.js?v=20261007-lead-id-comment-cleanup-1", function () {
     let checks = 0;
     const waitForCore = window.setInterval(function () {
       checks += 1;
