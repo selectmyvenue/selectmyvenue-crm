@@ -814,15 +814,21 @@
               .split(/\r?\n/)
               .some(line => line.trim().toLowerCase() === commentLine.toLowerCase());
 
-            const requirementIds = getLeadIdentifierLines(lead.requirements);
+            if (!hasTaggedComment) {
+              messageControl.value = visibleMessage
+                ? `${visibleMessage}\n${commentLine}`
+                : commentLine;
+            }
+          }
 
+          // Keep system identifiers stored in their original fields, but never
+          // expose them as customer text in the Details or lead-table comment.
+          if (messageControl) {
+            const visibleMessage = cleanLeadIdentifierLines(cleanText(messageControl.value));
+            const requirementIds = getLeadIdentifierLines(lead.requirements);
             const messageParts = visibleMessage
               ? visibleMessage.split(/\r?\n/).map(cleanText).filter(Boolean)
               : [];
-
-            if (!hasTaggedComment) {
-              messageParts.push(commentLine);
-            }
 
             requirementIds.forEach(line => {
               if (!messageParts.some(item => item.toLowerCase() === line.toLowerCase())) {
@@ -834,10 +840,12 @@
           }
 
           const remarksControl = document.getElementById("detailRemarks");
-          if (remarksControl && lead) {
-            const currentComment = cleanText(remarksControl.value);
+          if (remarksControl) {
+            const currentComment = cleanLeadIdentifierLines(cleanText(remarksControl.value));
             const internalIds = getLeadIdentifierLines(lead.internal_notes);
-            const parts = currentComment ? [currentComment] : [];
+            const parts = currentComment
+              ? currentComment.split(/\r?\n/).map(cleanText).filter(Boolean)
+              : [];
 
             internalIds.forEach(line => {
               if (!parts.some(item => item.toLowerCase() === line.toLowerCase())) {
