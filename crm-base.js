@@ -319,6 +319,13 @@
       .smv-customer-comment-block label{display:block!important;margin:0 0 6px!important;color:#08745d!important;font-size:9px!important;font-weight:900!important;letter-spacing:.09em!important;text-transform:uppercase!important}
       .smv-customer-comment-value{min-height:38px;padding:10px 11px;border:1px solid #e1efeb;border-radius:10px;background:#f4faf8;color:#244f47;font-size:12px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
       .smv-customer-comment-help{display:block;margin-top:5px;color:#7a938d;font-size:9.5px;line-height:1.3}
+      .smv-lead-identifier-block{margin-top:12px!important;border:1px solid #d9ebe6!important;border-radius:13px!important;background:#fbfefd!important;padding:12px 14px!important}
+      .smv-lead-identifier-block[hidden]{display:none!important}
+      .smv-lead-identifier-block label{display:block!important;margin:0 0 7px!important;color:#08745d!important;font-size:9px!important;font-weight:900!important;letter-spacing:.09em!important;text-transform:uppercase!important}
+      .smv-lead-identifier-list{display:grid;gap:5px}
+      .smv-lead-identifier-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:6px 8px;border:1px solid #e1efeb;border-radius:8px;background:#f4faf8;color:#46675f;font-size:10px}
+      .smv-lead-identifier-row span{font-weight:700}
+      .smv-lead-identifier-row strong{font-size:10px;color:#123f3a;font-weight:800;word-break:break-all;text-align:right}
 
       @media(max-width:1350px){
         .leads-table th,.leads-table td{font-size:10.3px!important;padding-left:2px!important;padding-right:2px!important}
@@ -474,8 +481,11 @@
     return rows;
   }
 
-  function cleanLeadIdentifierLines(value) {
+  function getLeadIdentifierLines(value) {
     const text = cleanText(value);
+    if (!text) return [];
+
+    const idPatterns = [
     if (!text) return "";
 
     const idPatterns = [
@@ -493,12 +503,32 @@
 
     return text
       .split(/\r?\n/)
-      .filter(line => {
-        const item = cleanText(line);
-        return item && !idPatterns.some(pattern => pattern.test(item));
-      })
-      .join("\n")
-      .trim();
+      .map(line => cleanText(line))
+      .filter(line => line && idPatterns.some(pattern => pattern.test(line)));
+  }
+
+  function cleanLeadIdentifierLines(value) {
+    return cleanText(value)
+      ? cleanText(value)
+          .split(/\r?\n/)
+          .filter(line => {
+            const item = cleanText(line);
+            return item && ![
+              /^meta\s+form\s+id\s*:/i,
+              /^meta\s+campaign\s+id\s*:/i,
+              /^meta\s+ad\s+set\s+id\s*:/i,
+              /^meta\s+ad\s+id\s*:/i,
+              /^meta\s+lead\s+id\s*:/i,
+              /^lead\s+id\s*:/i,
+              /^form\s+id\s*:/i,
+              /^campaign\s+id\s*:/i,
+              /^ad\s+set\s+id\s*:/i,
+              /^ad\s+id\s*:/i
+            ].some(pattern => pattern.test(item));
+          })
+          .join("\n")
+          .trim()
+      : "";
   }
 
   function getCleanInternalOfficeNote(lead) {
@@ -784,11 +814,38 @@
               .split(/\r?\n/)
               .some(line => line.trim().toLowerCase() === commentLine.toLowerCase());
 
+            const requirementIds = getLeadIdentifierLines(lead.requirements);
+
+            const messageParts = visibleMessage
+              ? visibleMessage.split(/\r?\n/).map(cleanText).filter(Boolean)
+              : [];
+
             if (!hasTaggedComment) {
-              messageControl.value = visibleMessage
-                ? `${visibleMessage}\n${commentLine}`
-                : commentLine;
+              messageParts.push(commentLine);
             }
+
+            requirementIds.forEach(line => {
+              if (!messageParts.some(item => item.toLowerCase() === line.toLowerCase())) {
+                messageParts.push(line);
+              }
+            });
+
+            messageControl.value = messageParts.join("\n");
+          }
+
+          const remarksControl = document.getElementById("detailRemarks");
+          if (remarksControl && lead) {
+            const currentComment = cleanText(remarksControl.value);
+            const internalIds = getLeadIdentifierLines(lead.internal_notes);
+            const parts = currentComment ? [currentComment] : [];
+
+            internalIds.forEach(line => {
+              if (!parts.some(item => item.toLowerCase() === line.toLowerCase())) {
+                parts.push(line);
+              }
+            });
+
+            remarksControl.value = parts.join("\n");
           }
         }
 
