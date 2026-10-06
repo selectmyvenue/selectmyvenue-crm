@@ -24,6 +24,53 @@
     console[type === "error" ? "error" : "log"](message);
   }
 
+  function installCompactHeaderButtons() {
+    const old = document.getElementById("smvCompactHeaderButtons");
+    if (old) old.remove();
+
+    const style = document.createElement("style");
+    style.id = "smvCompactHeaderButtons";
+    style.textContent = `
+      /* Small premium header controls — keep navigation readable without crowding. */
+      .crm-header{gap:12px!important;min-height:72px!important;padding:8px 12px!important}
+      .crm-header-title{min-width:0!important;flex:1 1 auto!important}
+      .crm-top-nav{gap:6px!important;align-items:center!important}
+      .crm-nav-item{
+        min-height:48px!important;height:48px!important;
+        padding:0 15px!important;border-radius:14px!important;
+        font-size:12px!important;font-weight:850!important;
+        gap:7px!important;white-space:nowrap!important;
+      }
+      .crm-nav-icon{font-size:12px!important;line-height:1!important}
+      .crm-header-actions{
+        gap:7px!important;align-items:center!important;
+        min-width:0!important;flex:0 0 auto!important;
+      }
+      .staff-name{
+        max-width:118px!important;min-width:0!important;
+        overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+        padding:0 8px!important;font-size:11px!important;
+      }
+      .account-password-btn,.logout-btn{
+        min-height:44px!important;height:44px!important;
+        padding:0 13px!important;border-radius:12px!important;
+        font-size:11px!important;font-weight:850!important;
+        white-space:nowrap!important;
+      }
+      #notificationsBtn,.notifications-btn,.notification-btn{
+        width:44px!important;height:44px!important;min-width:44px!important;
+        padding:0!important;border-radius:12px!important;
+      }
+      @media(max-width:1200px){
+        .crm-header{gap:8px!important;padding:7px 9px!important}
+        .crm-nav-item{padding:0 11px!important;font-size:11px!important}
+        .staff-name{max-width:92px!important}
+        .account-password-btn,.logout-btn{padding:0 10px!important;font-size:10px!important}
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   function installAssignmentFullscreenPolish() {
     if (document.getElementById("smvAssignmentFullscreenPolish")) return;
     const style = document.createElement("style");
@@ -917,6 +964,7 @@
     observer.observe(tbody, { childList: true, subtree: true });
   }
 
+  installCompactHeaderButtons();
   installAssignmentFullscreenPolish();
 
   loadScript("crm-core.js?v=20261004-assignment-plan-warning-2", function () {
