@@ -486,9 +486,6 @@
     if (!text) return [];
 
     const idPatterns = [
-    if (!text) return "";
-
-    const idPatterns = [
       /^meta\s+form\s+id\s*:/i,
       /^meta\s+campaign\s+id\s*:/i,
       /^meta\s+ad\s+set\s+id\s*:/i,
