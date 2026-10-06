@@ -421,6 +421,128 @@
     return { text: "", origin: "" };
   }
 
+  function getLeadIdentifierRows(lead) {
+    if (!lead || typeof lead !== "object") return [];
+
+    const fields = [
+      lead.requirements,
+      lead.internal_notes,
+      lead.contact_remark,
+      lead.source
+    ];
+
+    const labelMap = [
+      ["Meta form ID", /^meta\s+form\s+id\s*:\s*(.+)$/i],
+      ["Meta campaign ID", /^meta\s+campaign\s+id\s*:\s*(.+)$/i],
+      ["Meta ad set ID", /^meta\s+ad\s+set\s+id\s*:\s*(.+)$/i],
+      ["Meta ad ID", /^meta\s+ad\s+id\s*:\s*(.+)$/i],
+      ["Meta lead ID", /^meta\s+lead\s+id\s*:\s*(.+)$/i],
+      ["Lead ID", /^lead\s+id\s*:\s*(.+)$/i],
+      ["Form ID", /^form\s+id\s*:\s*(.+)$/i],
+      ["Campaign ID", /^campaign\s+id\s*:\s*(.+)$/i],
+      ["Ad set ID", /^ad\s+set\s+id\s*:\s*(.+)$/i],
+      ["Ad ID", /^ad\s+id\s*:\s*(.+)$/i]
+    ];
+
+    const rows = [];
+    const seen = new Set();
+
+    fields.forEach(value => {
+      String(value == null ? "" : value)
+        .split(/\r?\n/)
+        .forEach(line => {
+          const text = cleanText(line);
+          if (!text) return;
+
+          for (const [label, pattern] of labelMap) {
+            const match = text.match(pattern);
+            if (!match) continue;
+
+            const idValue = cleanText(match[1]);
+            if (!idValue) break;
+
+            const key = label.toLowerCase() + "|" + idValue.toLowerCase();
+            if (!seen.has(key)) {
+              seen.add(key);
+              rows.push({ label, value: idValue });
+            }
+            break;
+          }
+        });
+    });
+
+    return rows;
+  }
+
+  function cleanLeadIdentifierLines(value) {
+    const text = cleanText(value);
+    if (!text) return "";
+
+    const idPatterns = [
+      /^meta\s+form\s+id\s*:/i,
+      /^meta\s+campaign\s+id\s*:/i,
+      /^meta\s+ad\s+set\s+id\s*:/i,
+      /^meta\s+ad\s+id\s*:/i,
+      /^meta\s+lead\s+id\s*:/i,
+      /^lead\s+id\s*:/i,
+      /^form\s+id\s*:/i,
+      /^campaign\s+id\s*:/i,
+      /^ad\s+set\s+id\s*:/i,
+      /^ad\s+id\s*:/i
+    ];
+
+    return text
+      .split(/\r?\n/)
+      .filter(line => {
+        const item = cleanText(line);
+        return item && !idPatterns.some(pattern => pattern.test(item));
+      })
+      .join("\n")
+      .trim();
+  }
+
+  function getCleanInternalOfficeNote(lead) {
+    return cleanLeadIdentifierLines(lead?.internal_notes);
+  }
+
+  function ensureLeadIdentifierBlock(lead) {
+    const messageControl = document.getElementById("detailMessage");
+    if (!messageControl) return null;
+
+    const messageBlock = messageControl.closest(".detail-block") || messageControl.parentElement;
+    if (!messageBlock) return null;
+
+    let block = document.getElementById("smvLeadIdentifierBlock");
+    if (!block) {
+      block = document.createElement("div");
+      block.id = "smvLeadIdentifierBlock";
+      block.className = "detail-block smv-lead-identifier-block";
+      block.innerHTML = `
+        <label>LEAD / TRACKING IDS</label>
+        <div class="smv-lead-identifier-list"></div>
+        <small class="smv-customer-comment-help">System IDs are kept here for reference and are not shown as customer comments.</small>
+      `;
+      messageBlock.insertAdjacentElement("afterend", block);
+    }
+
+    const rows = getLeadIdentifierRows(lead);
+    const list = block.querySelector(".smv-lead-identifier-list");
+
+    if (list) {
+      list.innerHTML = rows.length
+        ? rows.map(row => `
+            <div class="smv-lead-identifier-row">
+              <span>${escapeHTML(row.label)}</span>
+              <strong>${escapeHTML(row.value)}</strong>
+            </div>
+          `).join("")
+        : "";
+    }
+
+    block.hidden = !rows.length;
+    return block;
+  }
+
   function cleanRequirementsForDetails(lead, meta) {
     const raw = cleanText(lead?.requirements);
     if (!raw) return "";
@@ -428,7 +550,8 @@
     const comment = cleanText(meta?.text);
     let lines = raw
       .split(/\r?\n/)
-      .filter(line => !/^customer\s+comment\s*:/i.test(line.trim()));
+      .filter(line => !/^customer\s+comment\s*:/i.test(line.trim()))
+      .filter(line => !/^(?:meta\s+)?(?:form|campaign|ad\s+set|ad|lead)\s+id\s*:/i.test(line.trim()));
 
     if (comment) {
       const lower = comment.toLowerCase();
@@ -465,7 +588,7 @@
       if (typeof createCommentCell === "function" && !createCommentCell.__smvInternalOnly) {
         const originalCreateCommentCell = createCommentCell;
         createCommentCell = function (lead) {
-          const internalOnly = cleanText(lead?.internal_notes);
+          const internalOnly = getCleanInternalOfficeNote(lead);
           return originalCreateCommentCell.call(this, lead, internalOnly);
         };
         createCommentCell.__smvInternalOnly = true;
@@ -477,7 +600,7 @@
             ? allLeads.find(item => String(item.id) === String(leadId))
             : null;
           if (!lead) return;
-          openCommentEditor(leadId, cleanText(lead.internal_notes), lead.customer_name);
+          openCommentEditor(leadId, getCleanInternalOfficeNote(lead), lead.customer_name);
         };
         editLeadComment.__smvInternalOnly = true;
       }
@@ -626,12 +749,13 @@
     }
 
     if (remarksControl) {
-      setControlValue(remarksControl, cleanText(lead.internal_notes));
+      setControlValue(remarksControl, getCleanInternalOfficeNote(lead));
       const label = remarksControl.closest(".detail-block")?.querySelector("label");
       if (label) label.textContent = "COMMENT — INTERNAL OFFICE NOTE";
     }
 
     ensureCustomerCommentBlock(lead);
+    ensureLeadIdentifierBlock(lead);
   }
 
   function installSaveCustomerCommentPreserver() {
