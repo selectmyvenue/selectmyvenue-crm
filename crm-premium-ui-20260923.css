@@ -3178,3 +3178,77 @@ body .page-heading{
     text-align:left;
   }
 }
+
+
+/* =========================================================
+   HEADER FIT FIX — 20261007
+   At 1201–1500px desktop widths, keep the full header inside
+   the viewport without shrinking the main brand excessively.
+   ========================================================= */
+@media(max-width:1500px) and (min-width:1201px){
+  body .crm-header{
+    grid-template-columns:400px minmax(0,1fr) 450px!important;
+    gap:8px!important;
+    padding:0 8px!important;
+    overflow:hidden!important;
+  }
+
+  body .crm-header-title{
+    min-width:0!important;
+    overflow:hidden!important;
+  }
+
+  body .crm-top-nav{
+    gap:4px!important;
+    padding:3px!important;
+    max-width:100%!important;
+  }
+
+  body .crm-nav-item{
+    min-height:40px!important;
+    height:40px!important;
+    padding:0 10px!important;
+    font-size:10.5px!important;
+    gap:5px!important;
+  }
+
+  body .crm-nav-icon{
+    width:12px!important;
+    flex-basis:12px!important;
+    font-size:9px!important;
+  }
+
+  body .crm-header-actions{
+    max-width:450px!important;
+    width:100%!important;
+    gap:4px!important;
+    overflow:hidden!important;
+  }
+
+  body .crm-header-actions .filter-workspace-note{
+    width:78px!important;
+    max-width:78px!important;
+    font-size:8.5px!important;
+  }
+
+  body .crm-header-actions .staff-name{
+    width:125px!important;
+    max-width:125px!important;
+    font-size:9px!important;
+    padding:0 7px!important;
+  }
+
+  body .crm-header-actions .account-password-btn{
+    width:115px!important;
+    max-width:115px!important;
+    font-size:9px!important;
+    padding:0 7px!important;
+  }
+
+  body .crm-header-actions .logout-btn{
+    width:64px!important;
+    max-width:64px!important;
+    font-size:9px!important;
+    padding:0 6px!important;
+  }
+}
