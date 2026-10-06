@@ -61,6 +61,70 @@
         width:44px!important;height:44px!important;min-width:44px!important;
         padding:0!important;border-radius:12px!important;
       }
+      @media(max-width:1600px) and (min-width:1201px){
+        .crm-header{
+          grid-template-columns:300px minmax(0,500px) minmax(360px,1fr)!important;
+          gap:6px!important;
+          padding:0 8px!important;
+          overflow:hidden!important;
+        }
+        .crm-brand{
+          width:300px!important;
+          max-width:300px!important;
+          overflow:hidden!important;
+        }
+        .crm-header .crm-brand .crm-header-logo{
+          width:250px!important;
+          min-width:250px!important;
+          max-width:250px!important;
+        }
+        .crm-brand-text{max-width:42px!important;flex-basis:42px!important}
+        .crm-brand-text strong{font-size:15px!important}
+        .crm-top-nav{
+          width:100%!important;
+          max-width:500px!important;
+          gap:4px!important;
+          padding:3px!important;
+        }
+        .crm-nav-item{
+          min-height:40px!important;
+          height:40px!important;
+          padding:0 9px!important;
+          font-size:10px!important;
+          gap:5px!important;
+        }
+        .crm-header-actions{
+          max-width:100%!important;
+          gap:4px!important;
+          overflow:hidden!important;
+        }
+        .crm-header-actions .filter-workspace-note{
+          width:68px!important;
+          max-width:68px!important;
+          font-size:8px!important;
+        }
+        .crm-header-actions .staff-name{
+          width:105px!important;
+          max-width:105px!important;
+          font-size:8.5px!important;
+        }
+        .crm-header-actions .account-password-btn{
+          width:102px!important;
+          max-width:102px!important;
+          font-size:8.5px!important;
+        }
+        .crm-header-actions .logout-btn{
+          width:58px!important;
+          max-width:58px!important;
+          font-size:8.5px!important;
+        }
+        #notificationsBtn,.notifications-btn,.notification-btn{
+          width:38px!important;
+          min-width:38px!important;
+          height:38px!important;
+        }
+      }
+
       @media(max-width:1200px){
         .crm-header{gap:8px!important;padding:7px 9px!important}
         .crm-nav-item{padding:0 11px!important;font-size:11px!important}
