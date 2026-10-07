@@ -26,10 +26,31 @@
 
   /* Final header containment: keep the full right control set visible. */
   body .crm-app .crm-header{
-    grid-template-columns:minmax(400px,420px) minmax(520px,1fr) minmax(390px,450px)!important;
+    grid-template-columns:150px minmax(0,1fr) 500px!important;
     gap:8px!important;
-    padding:0 8px!important;
+    padding:0 10px!important;
     overflow:hidden!important;
+  }
+  /* Compact master CRM header: logo removed from the desktop shell; keep only CRM label. */
+  body .crm-app .crm-header .crm-header-logo{
+    display:none!important;
+  }
+  body .crm-app .crm-brand{
+    width:150px!important;
+    max-width:150px!important;
+    min-width:150px!important;
+    overflow:visible!important;
+  }
+  body .crm-app .crm-brand-text{
+    display:block!important;
+    max-width:none!important;
+    flex:0 0 auto!important;
+    overflow:visible!important;
+  }
+  body .crm-app .crm-brand-text strong{
+    font-size:18px!important;
+    color:#f7fffc!important;
+    white-space:nowrap!important;
   }
   body .crm-app .crm-header-actions{
     width:100%!important;
