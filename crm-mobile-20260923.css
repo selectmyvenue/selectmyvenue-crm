@@ -2665,3 +2665,138 @@
     overflow:visible!important;
   }
 }
+
+
+/* =========================================================
+   MASTER CRM — MOBILE ADD LEAD MODAL FIX
+   2026-10-09
+   Keep the entire Add Customer Enquiry form usable on phones.
+   The submit action must remain visible/reachable without
+   changing desktop behaviour.
+   ========================================================= */
+@media(max-width:760px){
+  html.smv-phone-crm body #addEnquiryModal.modal-overlay:not([hidden]){
+    position:fixed!important;
+    inset:0!important;
+    z-index:45000!important;
+    width:100vw!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:stretch!important;
+    justify-content:stretch!important;
+    overflow:hidden!important;
+    background:rgba(10,46,39,.38)!important;
+    overscroll-behavior:contain!important;
+  }
+
+  html.smv-phone-crm body #addEnquiryModal .add-enquiry-card{
+    position:relative!important;
+    display:flex!important;
+    flex-direction:column!important;
+    width:100vw!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    max-height:none!important;
+    margin:0!important;
+    border:0!important;
+    border-radius:0!important;
+    overflow:hidden!important;
+    box-shadow:none!important;
+    background:#fff!important;
+  }
+
+  html.smv-phone-crm body #addEnquiryModal .modal-header{
+    position:relative!important;
+    top:auto!important;
+    flex:0 0 auto!important;
+    min-height:64px!important;
+    padding:12px 14px!important;
+    z-index:20!important;
+  }
+
+  html.smv-phone-crm body #addEnquiryModal .modal-header h2{
+    font-size:18px!important;
+    line-height:1.2!important;
+  }
+
+  html.smv-phone-crm body #addEnquiryModal .close-modal{
+    width:38px!important;
+    height:38px!important;
+    min-width:38px!important;
+    font-size:22px!important;
+  }
+
+  html.smv-phone-crm body #addEnquiryModal .add-enquiry-form{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    height:auto!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    padding:0 0 calc(84px + env(safe-area-inset-bottom,0px))!important;
+    overscroll-behavior:contain!important;
+  }
+
+  html.smv-phone-crm body #addEnquiryModal .form-section-title{
+    margin:0 14px!important;
+    padding:14px 0 8px!important;
+    font-size:9px!important;
+  }
+
+  html.smv-phone-crm body #addEnquiryModal .form-grid{
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+    padding:12px 14px!important;
+  }
+
+  html.smv-phone-crm body #addEnquiryModal .control-group input,
+  html.smv-phone-crm body #addEnquiryModal .control-group select,
+  html.smv-phone-crm body #addEnquiryModal .control-group textarea{
+    width:100%!important;
+    min-width:0!important;
+    min-height:44px!important;
+    font-size:14px!important;
+  }
+
+  html.smv-phone-crm body #addEnquiryModal .control-group textarea{
+    min-height:96px!important;
+    resize:vertical!important;
+  }
+
+  html.smv-phone-crm body #addEnquiryModal .full-width{
+    padding:0 14px!important;
+  }
+
+  html.smv-phone-crm body #addEnquiryModal .form-message{
+    margin:0 14px 10px!important;
+  }
+
+  html.smv-phone-crm body #addEnquiryModal .modal-actions{
+    position:sticky!important;
+    bottom:0!important;
+    z-index:30!important;
+    flex:0 0 auto!important;
+    display:grid!important;
+    grid-template-columns:1fr 1.35fr!important;
+    gap:8px!important;
+    min-height:70px!important;
+    margin:0!important;
+    padding:9px 12px calc(9px + env(safe-area-inset-bottom,0px))!important;
+    border-top:1px solid #dce9e4!important;
+    background:rgba(255,255,255,.98)!important;
+    backdrop-filter:blur(10px)!important;
+  }
+
+  html.smv-phone-crm body #addEnquiryModal .modal-actions button{
+    width:100%!important;
+    min-width:0!important;
+    min-height:46px!important;
+    height:46px!important;
+    margin:0!important;
+    font-size:12px!important;
+  }
+}
