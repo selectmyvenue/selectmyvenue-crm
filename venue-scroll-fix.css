@@ -1,40 +1,48 @@
 /* =========================================================
    SELECT MY VENUE CRM — VENUE LIST SCROLL FIX
    2026-10-10
-   Restore vertical scrolling inside the venue table wrapper so
-   the final venue/action row is reachable without clipping.
-   This stylesheet is deliberately loaded last and changes only
-   the Venue Management list, not the customer-lead table.
+   Use the document as the vertical scroll surface, while the
+   wide table retains horizontal overflow. Avoid a nested,
+   height-constrained table viewport and sticky-header gap.
    ========================================================= */
+
+#venueManagementSection:not([hidden]) {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+  contain: none !important;
+}
 
 #venueManagementSection .venue-table-wrapper {
   position: relative !important;
-  max-height: calc(100vh - 230px) !important;
+  display: block !important;
   height: auto !important;
   min-height: 0 !important;
+  max-height: none !important;
   overflow-x: auto !important;
-  overflow-y: auto !important;
-  overscroll-behavior: contain !important;
+  overflow-y: visible !important;
+  overscroll-behavior: auto !important;
   -webkit-overflow-scrolling: touch !important;
-  scrollbar-gutter: stable !important;
 }
 
 #venueManagementSection .venue-table {
+  max-height: none !important;
   margin-bottom: 0 !important;
 }
 
+#venueManagementSection .venue-table thead,
+#venueManagementSection .venue-table thead tr,
 #venueManagementSection .venue-table thead th {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 30 !important;
+  position: static !important;
+  top: auto !important;
 }
 
-@media (max-width: 760px) {
-  #venueManagementSection .venue-table-wrapper {
-    max-height: calc(100vh - 190px) !important;
-    height: auto !important;
-    min-height: 0 !important;
-    overflow-x: auto !important;
-    overflow-y: auto !important;
-  }
+html,
+body,
+body .crm-app {
+  height: auto !important;
+  min-height: 100vh !important;
+  max-height: none !important;
+  overflow-y: auto !important;
 }
