@@ -603,6 +603,44 @@
         min-width:80px!important;
         max-width:none!important;
       }
+
+      /* VENUE MANAGEMENT SCROLL FIX — 2026-10-10
+         Let the document scroll vertically through every venue row.
+         Keep horizontal overflow for the wide table, but remove the
+         nested/sticky vertical scroll context that leaves the last row clipped. */
+      #venueManagementSection:not([hidden]) {
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow: visible !important;
+        contain: none !important;
+      }
+      #venueManagementSection .venue-table-wrapper {
+        position: relative !important;
+        display: block !important;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+        overscroll-behavior: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+      }
+      #venueManagementSection .venue-table {
+        max-height: none !important;
+      }
+      #venueManagementSection .venue-table thead,
+      #venueManagementSection .venue-table thead tr,
+      #venueManagementSection .venue-table thead th {
+        position: static !important;
+        top: auto !important;
+      }
+      html, body, body .crm-app {
+        height: auto !important;
+        min-height: 100vh !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+      }
     `;
     document.head.appendChild(style);
 
