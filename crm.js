@@ -604,42 +604,52 @@
         max-width:none!important;
       }
 
-      /* VENUE MANAGEMENT SCROLL FIX — 2026-10-10
-         Let the document scroll vertically through every venue row.
-         Keep horizontal overflow for the wide table, but remove the
-         nested/sticky vertical scroll context that leaves the last row clipped. */
-      #venueManagementSection:not([hidden]) {
+      /* VENUE MANAGEMENT SCROLL FIX — INTERNAL SCROLL SURFACE
+         This runtime style loads after the linked stylesheets, so it must
+         explicitly win over older page-scroll rules. Keep the full venue
+         list reachable inside a fixed-height table viewport. */
+      #venueManagementSection#venueManagementSection:not([hidden]) {
         height: auto !important;
         min-height: 0 !important;
         max-height: none !important;
         overflow: visible !important;
         contain: none !important;
       }
-      #venueManagementSection .venue-table-wrapper {
+      #venueManagementSection#venueManagementSection .venue-table-wrapper {
         position: relative !important;
         display: block !important;
-        height: auto !important;
-        min-height: 0 !important;
-        max-height: none !important;
-        overflow-x: auto !important;
-        overflow-y: visible !important;
-        overscroll-behavior: auto !important;
+        box-sizing: border-box !important;
+        height: max(240px, calc(100vh - 275px)) !important;
+        min-height: 240px !important;
+        max-height: calc(100vh - 275px) !important;
+        overflow: auto !important;
+        overscroll-behavior: contain !important;
         -webkit-overflow-scrolling: touch !important;
+        scrollbar-gutter: stable !important;
       }
-      #venueManagementSection .venue-table {
+      #venueManagementSection#venueManagementSection .venue-table {
         max-height: none !important;
+        margin-bottom: 0 !important;
       }
-      #venueManagementSection .venue-table thead,
-      #venueManagementSection .venue-table thead tr,
-      #venueManagementSection .venue-table thead th {
-        position: static !important;
-        top: auto !important;
+      #venueManagementSection#venueManagementSection .venue-table thead th {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 40 !important;
       }
       html, body, body .crm-app {
-        height: auto !important;
         min-height: 100vh !important;
         max-height: none !important;
-        overflow-y: auto !important;
+      }
+      @media (max-width: 760px) {
+        #venueManagementSection#venueManagementSection .venue-table-wrapper {
+          height: max(240px, calc(100dvh - 315px)) !important;
+          min-height: 240px !important;
+          max-height: calc(100dvh - 315px) !important;
+          overflow: auto !important;
+        }
+        #venueManagementSection#venueManagementSection .venue-table thead th {
+          top: 0 !important;
+        }
       }
     `;
     document.head.appendChild(style);
