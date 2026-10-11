@@ -1,5 +1,5 @@
 (function(){
-  const PREMIUM_HREF='crm-premium-ui-20260923.css?v=20261007-header-fit-2';
+  const PREMIUM_HREF='crm-premium-ui-20260923.css?v=20261002-master-v12';
   const MOBILE_QUERY='(max-width:760px)';
   const FINAL_LAYOUT_STYLE_ID='smvLead13ColumnFinalLayout';
   let premiumLink=null;
@@ -26,55 +26,10 @@
 
   /* Final header containment: keep the full right control set visible. */
   body .crm-app .crm-header{
-    grid-template-columns:400px minmax(500px,1fr) minmax(390px,450px)!important;
-    gap:8px!important;padding:0 8px!important;
-    height:70px!important;min-height:70px!important;
-    overflow:visible!important;box-sizing:border-box!important;
-  }
-  body .crm-app .crm-header .crm-brand{
-    width:100%!important;max-width:400px!important;min-width:0!important;
-    display:flex!important;align-items:center!important;gap:8px!important;overflow:visible!important;
-  }
-  body .crm-app .crm-header .crm-brand-home{
-    display:flex!important;flex:0 0 330px!important;width:330px!important;
-    min-width:330px!important;max-width:330px!important;align-items:center!important;overflow:visible!important;
-  }
-  body .crm-app .crm-header .crm-brand .crm-header-logo{
-    display:block!important;width:330px!important;min-width:330px!important;max-width:330px!important;
-    height:auto!important;max-height:58px!important;flex:0 0 330px!important;
-    object-fit:contain!important;object-position:left center!important;margin:0!important;
-  }
-  body .crm-app .crm-header .crm-brand-text{
-    display:block!important;min-width:48px!important;width:48px!important;max-width:48px!important;
-    flex:0 0 48px!important;overflow:visible!important;white-space:nowrap!important;text-overflow:clip!important;
-  }
-  body .crm-app .crm-header .crm-brand-text strong{
-    display:block!important;width:auto!important;max-width:none!important;overflow:visible!important;
-    text-overflow:clip!important;font-size:17px!important;white-space:nowrap!important;letter-spacing:0!important;
-  }
-  body .crm-app .crm-header .crm-header-title{min-width:0!important;overflow:visible!important}
-  body .crm-app .crm-header .crm-top-nav{
-    display:flex!important;max-width:100%!important;min-width:0!important;gap:5px!important;
-    justify-content:flex-start!important;flex-wrap:nowrap!important;
-  }
-  body .crm-app .crm-header .crm-nav-item{
-    flex:0 0 auto!important;padding-left:11px!important;padding-right:11px!important;white-space:nowrap!important;
-  }
-  body .crm-app .crm-header .crm-header-actions{
-    width:100%!important;max-width:450px!important;min-width:0!important;display:flex!important;
-    align-items:center!important;justify-content:flex-end!important;gap:4px!important;overflow:visible!important;
-  }
-  @media (min-width:1201px) and (max-width:1500px){
-    body .crm-app .crm-header{grid-template-columns:360px minmax(440px,1fr) minmax(350px,390px)!important}
-    body .crm-app .crm-header .crm-brand-home,
-    body .crm-app .crm-header .crm-brand .crm-header-logo{
-      width:285px!important;min-width:285px!important;max-width:285px!important;flex-basis:285px!important;
-    }
-    body .crm-app .crm-header .crm-brand-text{
-      width:48px!important;min-width:48px!important;max-width:48px!important;flex-basis:48px!important;
-    }
-    body .crm-app .crm-header .crm-brand-text strong{font-size:15px!important}
-    body .crm-app .crm-header .crm-nav-item{padding-left:8px!important;padding-right:8px!important;font-size:10.5px!important}
+    grid-template-columns:minmax(400px,420px) minmax(520px,1fr) minmax(390px,450px)!important;
+    gap:8px!important;
+    padding:0 8px!important;
+    overflow:hidden!important;
   }
   body .crm-app .crm-header-actions{
     width:100%!important;
@@ -293,13 +248,14 @@
     }
   }
 
-  /*
-   * Preserve the established desktop appearance: premium CSS is appended last
-   * on desktop, followed by the final lead-table layout override. On phones,
-   * keep stylesheet order static to avoid the repeated mobile refresh flash.
-   */
-  function ensureDesktopOrder(){
+  function getMobileLink(){
+    return [...document.head.querySelectorAll('link[rel="stylesheet"]')]
+      .find(link => /crm-mobile-20260923\.css/i.test(link.getAttribute('href') || '')) || null;
+  }
+
+  function ensureOrder(){
     if(!document.head)return;
+
     if(!premiumLink){
       premiumLink=document.getElementById('smvPremiumUiRuntime');
       if(!premiumLink){
@@ -307,25 +263,38 @@
         premiumLink.rel='stylesheet';
         premiumLink.id='smvPremiumUiRuntime';
         premiumLink.href=PREMIUM_HREF;
+        document.head.appendChild(premiumLink);
       }
     }
-    if(document.head.lastElementChild!==premiumLink){
-      document.head.appendChild(premiumLink);
+
+    const isPhone=window.matchMedia(MOBILE_QUERY).matches;
+    const mobileLink=getMobileLink();
+
+    if(isPhone && mobileLink){
+      if(premiumLink.nextElementSibling!==mobileLink || document.head.lastElementChild!==mobileLink){
+        document.head.appendChild(premiumLink);
+        document.head.appendChild(mobileLink);
+      }
+    }else{
+      if(document.head.lastElementChild!==premiumLink){
+        document.head.appendChild(premiumLink);
+      }
     }
+
+    /* Desktop layout override must stay after premium CSS, because premium CSS is re-appended at runtime. */
     ensureFinalLeadLayout();
   }
 
   function boot(){
-    if(window.matchMedia(MOBILE_QUERY).matches){
-      ensureFinalLeadLayout();
-    }else{
-      ensureDesktopOrder();
-    }
+    ensureOrder();
+    [150,400,900,1800].forEach(ms=>setTimeout(ensureOrder,ms));
+
+    const observer=new MutationObserver(()=>setTimeout(ensureOrder,0));
+    observer.observe(document.head,{childList:true});
+    setTimeout(()=>observer.disconnect(),12000);
+
     const mq=window.matchMedia(MOBILE_QUERY);
-    const sync=()=>{
-      if(mq.matches) ensureFinalLeadLayout();
-      else ensureDesktopOrder();
-    };
+    const sync=()=>setTimeout(ensureOrder,0);
     if(mq.addEventListener)mq.addEventListener('change',sync);
     else mq.addListener(sync);
   }
