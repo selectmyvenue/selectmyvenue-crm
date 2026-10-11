@@ -248,55 +248,15 @@
     }
   }
 
-  function getMobileLink(){
-    return [...document.head.querySelectorAll('link[rel="stylesheet"]')]
-      .find(link => /crm-mobile-20260923\.css/i.test(link.getAttribute('href') || '')) || null;
-  }
-
-  function ensureOrder(){
-    if(!document.head)return;
-
-    if(!premiumLink){
-      premiumLink=document.getElementById('smvPremiumUiRuntime');
-      if(!premiumLink){
-        premiumLink=document.createElement('link');
-        premiumLink.rel='stylesheet';
-        premiumLink.id='smvPremiumUiRuntime';
-        premiumLink.href=PREMIUM_HREF;
-        document.head.appendChild(premiumLink);
-      }
-    }
-
-    const isPhone=window.matchMedia(MOBILE_QUERY).matches;
-    const mobileLink=getMobileLink();
-
-    if(isPhone && mobileLink){
-      if(premiumLink.nextElementSibling!==mobileLink || document.head.lastElementChild!==mobileLink){
-        document.head.appendChild(premiumLink);
-        document.head.appendChild(mobileLink);
-      }
-    }else{
-      if(document.head.lastElementChild!==premiumLink){
-        document.head.appendChild(premiumLink);
-      }
-    }
-
-    /* Desktop layout override must stay after premium CSS, because premium CSS is re-appended at runtime. */
-    ensureFinalLeadLayout();
-  }
-
+  /*
+   * Keep stylesheet order static. The previous runtime duplicated the premium
+   * stylesheet, moved both CSS links repeatedly, and watched <head> mutations.
+   * That reloaded CSS after first paint and caused visible mobile layout flashes.
+   * dashboard.html already declares premium CSS before mobile CSS, so do not
+   * dynamically append/reorder those stylesheets.
+   */
   function boot(){
-    ensureOrder();
-    [150,400,900,1800].forEach(ms=>setTimeout(ensureOrder,ms));
-
-    const observer=new MutationObserver(()=>setTimeout(ensureOrder,0));
-    observer.observe(document.head,{childList:true});
-    setTimeout(()=>observer.disconnect(),12000);
-
-    const mq=window.matchMedia(MOBILE_QUERY);
-    const sync=()=>setTimeout(ensureOrder,0);
-    if(mq.addEventListener)mq.addEventListener('change',sync);
-    else mq.addListener(sync);
+    ensureFinalLeadLayout();
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
