@@ -249,14 +249,40 @@
   }
 
   /*
-   * Keep stylesheet order static. The previous runtime duplicated the premium
-   * stylesheet, moved both CSS links repeatedly, and watched <head> mutations.
-   * That reloaded CSS after first paint and caused visible mobile layout flashes.
-   * dashboard.html already declares premium CSS before mobile CSS, so do not
-   * dynamically append/reorder those stylesheets.
+   * Preserve the established desktop appearance: premium CSS is appended last
+   * on desktop, followed by the final lead-table layout override. On phones,
+   * keep stylesheet order static to avoid the repeated mobile refresh flash.
    */
-  function boot(){
+  function ensureDesktopOrder(){
+    if(!document.head)return;
+    if(!premiumLink){
+      premiumLink=document.getElementById('smvPremiumUiRuntime');
+      if(!premiumLink){
+        premiumLink=document.createElement('link');
+        premiumLink.rel='stylesheet';
+        premiumLink.id='smvPremiumUiRuntime';
+        premiumLink.href=PREMIUM_HREF;
+      }
+    }
+    if(document.head.lastElementChild!==premiumLink){
+      document.head.appendChild(premiumLink);
+    }
     ensureFinalLeadLayout();
+  }
+
+  function boot(){
+    if(window.matchMedia(MOBILE_QUERY).matches){
+      ensureFinalLeadLayout();
+    }else{
+      ensureDesktopOrder();
+    }
+    const mq=window.matchMedia(MOBILE_QUERY);
+    const sync=()=>{
+      if(mq.matches) ensureFinalLeadLayout();
+      else ensureDesktopOrder();
+    };
+    if(mq.addEventListener)mq.addEventListener('change',sync);
+    else mq.addListener(sync);
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
