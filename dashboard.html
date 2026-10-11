@@ -65,6 +65,97 @@
 #venueForm #venueEventTypes input{width:18px!important;height:18px!important;min-height:18px!important;flex:0 0 18px!important;margin:0!important;accent-color:#078568}
 </style><link rel="stylesheet" href="crm-mobile-20260923.css?v=20261009-add-lead-mobile-submit-1">
     <link rel="stylesheet" href="venue-scroll-fix.css?v=20261010-venue-scroll-3">
+    <!-- Final desktop header containment: overrides conflicting historical header rules only. -->
+    <style id="smv-final-desktop-header-fix">
+    @media (min-width:1201px) {
+      body .crm-app .crm-header {
+        grid-template-columns:400px minmax(500px,1fr) minmax(390px,450px)!important;
+        gap:8px!important;
+        padding:0 8px!important;
+        height:70px!important;
+        min-height:70px!important;
+        overflow:visible!important;
+        box-sizing:border-box!important;
+      }
+      body .crm-app .crm-header .crm-brand {
+        width:100%!important;
+        max-width:400px!important;
+        min-width:0!important;
+        display:flex!important;
+        align-items:center!important;
+        gap:8px!important;
+        overflow:hidden!important;
+      }
+      body .crm-app .crm-header .crm-brand .crm-header-logo {
+        display:block!important;
+        width:330px!important;
+        min-width:330px!important;
+        max-width:330px!important;
+        height:auto!important;
+        max-height:58px!important;
+        flex:0 0 330px!important;
+        object-fit:contain!important;
+        object-position:left center!important;
+        margin:0!important;
+      }
+      body .crm-app .crm-header .crm-brand-text {
+        display:block!important;
+        min-width:0!important;
+        width:54px!important;
+        max-width:54px!important;
+        flex:0 0 54px!important;
+        overflow:hidden!important;
+        white-space:nowrap!important;
+      }
+      body .crm-app .crm-header .crm-brand-text strong {
+        display:block!important;
+        font-size:17px!important;
+        white-space:nowrap!important;
+      }
+      body .crm-app .crm-header .crm-header-title {
+        min-width:0!important;
+        overflow:hidden!important;
+      }
+      body .crm-app .crm-header .crm-top-nav {
+        max-width:100%!important;
+        min-width:0!important;
+        gap:5px!important;
+        justify-content:flex-start!important;
+      }
+      body .crm-app .crm-header .crm-nav-item {
+        padding-left:11px!important;
+        padding-right:11px!important;
+        white-space:nowrap!important;
+      }
+      body .crm-app .crm-header .crm-header-actions {
+        width:100%!important;
+        max-width:450px!important;
+        min-width:0!important;
+        display:flex!important;
+        align-items:center!important;
+        justify-content:flex-end!important;
+        gap:4px!important;
+      }
+    }
+    @media (min-width:1201px) and (max-width:1500px) {
+      body .crm-app .crm-header {
+        grid-template-columns:360px minmax(440px,1fr) minmax(350px,390px)!important;
+      }
+      body .crm-app .crm-header .crm-brand .crm-header-logo {
+        width:285px!important;
+        min-width:285px!important;
+        max-width:285px!important;
+        flex-basis:285px!important;
+      }
+      body .crm-app .crm-header .crm-brand-text {
+        width:48px!important;
+        max-width:48px!important;
+        flex-basis:48px!important;
+      }
+      body .crm-app .crm-header .crm-brand-text strong {font-size:15px!important}
+      body .crm-app .crm-header .crm-nav-item {padding-left:8px!important;padding-right:8px!important;font-size:10.5px!important}
+    }
+    </style>
 
 <style id="smv-crm-home-logo-style">
   .crm-header .crm-brand-home{display:flex;align-items:center;justify-content:flex-start;min-width:0;max-width:100%;flex:0 0 auto;text-decoration:none!important;color:inherit!important;cursor:pointer;-webkit-tap-highlight-color:transparent}
