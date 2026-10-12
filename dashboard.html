@@ -47,7 +47,7 @@
         src="crm.js?v=20261010-venue-scroll-runtime-2"
         defer
     ></script>
-    <script defer src="venue-plan-center.js?v=20261013-plan-center-click-fix-2"></script>
+    <script defer src="venue-plan-center.js?v=20261013-plan-center-static-button-3"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.16/dist/purify.min.js"></script>
     <script defer src="venue-description-editor.js?v=20261004-rich-description-1"></script>
 
@@ -209,6 +209,9 @@
                 </button>
                 <button type="button" id="refreshVenuesBtn" class="secondary-btn">
                     <span>↻</span> Refresh
+                </button>
+                <button type="button" id="venuePlanCenterBtn" class="secondary-btn smv-plan-center-btn" onclick="if(window.SMVPlanCenter){window.SMVPlanCenter.open();}">
+                    📋 Plan Center
                 </button>
                 <a href="billing/?v=20261002-renewal-term-8" class="secondary-btn" target="_blank" rel="noopener">
                     💳 Billing Center
