@@ -47,7 +47,7 @@
         src="crm.js?v=20261010-venue-scroll-runtime-2"
         defer
     ></script>
-    <script defer src="venue-plan-center.js?v=20261013-plan-center-static-button-3"></script>
+    <script defer src="venue-plan-center.js?v=20261013-plan-center-hard-open-4"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.16/dist/purify.min.js"></script>
     <script defer src="venue-description-editor.js?v=20261004-rich-description-1"></script>
 
@@ -210,7 +210,7 @@
                 <button type="button" id="refreshVenuesBtn" class="secondary-btn">
                     <span>↻</span> Refresh
                 </button>
-                <button type="button" id="venuePlanCenterBtn" class="secondary-btn smv-plan-center-btn" onclick="if(window.SMVPlanCenter){window.SMVPlanCenter.open();}">
+                <button type="button" id="venuePlanCenterBtn" class="secondary-btn smv-plan-center-btn" style="position:relative!important;z-index:99999!important;pointer-events:auto!important" onclick="event.preventDefault();event.stopPropagation();try{if(window.SMVPlanCenter&&typeof window.SMVPlanCenter.open==='function'){window.SMVPlanCenter.open();}var s=document.getElementById('venueManagementSection');var p=document.getElementById('smvPlanCenterPanel');if(s&&p){p.hidden=false;p.style.display='block';['.venue-primary-stats','.venue-toolbar','.venue-table-wrapper','#venueEmptyState','.venue-secondary-insights'].forEach(function(q){s.querySelectorAll(q).forEach(function(el){el.hidden=true;});});}}catch(e){console.error('Plan Center open failed',e);}">
                     📋 Plan Center
                 </button>
                 <a href="billing/?v=20261002-renewal-term-8" class="secondary-btn" target="_blank" rel="noopener">
