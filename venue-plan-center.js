@@ -87,6 +87,16 @@ function refresh(auto){
  }).catch(function(){return[];});
 }
 function init(){
+ if(!window.__smvPlanCenterClickDelegation){
+  window.__smvPlanCenterClickDelegation=true;
+  document.addEventListener("click",function(e){
+   var target=e.target&&e.target.closest?e.target.closest("#venuePlanCenterBtn"):null;
+   if(!target)return;
+   e.preventDefault();e.stopPropagation();
+   build();
+   toggle(true);
+  },true);
+ }
  styles();bell();build();
  if(!window.__smvPlanAlertCloseDelegation){
   window.__smvPlanAlertCloseDelegation=true;
