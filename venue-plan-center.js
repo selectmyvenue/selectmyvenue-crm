@@ -161,7 +161,7 @@ function init() {
  el("smvPlanCenterPlan")?.addEventListener("change",renderPlanNote);
  el("smvPlanCenterForm")?.addEventListener("submit",savePlan);
  el("smvPlanCenterCancel")?.addEventListener("click",function(){fillEditor(selectedVenue());});
- document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("#venuePlanCenterBtn");if(b){e.preventDefault();openCenter();}},true);
+ // The static button uses a direct inline handler so opening does not depend on delegated click order.
  addBell();
 }
 function addBell() {
