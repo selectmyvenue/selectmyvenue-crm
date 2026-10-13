@@ -47,7 +47,7 @@
         src="crm.js?v=20261010-venue-scroll-runtime-2"
         defer
     ></script>
-    <script defer src="venue-plan-center.js?v=20261013-plan-center-hard-open-4"></script>
+    <script defer src="venue-plan-center.js?v=20261013-plan-center-rebuild-5"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.16/dist/purify.min.js"></script>
     <script defer src="venue-description-editor.js?v=20261004-rich-description-1"></script>
 
@@ -210,14 +210,50 @@
                 <button type="button" id="refreshVenuesBtn" class="secondary-btn">
                     <span>↻</span> Refresh
                 </button>
-                <button type="button" id="venuePlanCenterBtn" class="secondary-btn smv-plan-center-btn" style="position:relative!important;z-index:99999!important;pointer-events:auto!important" onclick="event.preventDefault();event.stopPropagation();try{if(window.SMVPlanCenter&&typeof window.SMVPlanCenter.open==='function'){window.SMVPlanCenter.open();}var s=document.getElementById('venueManagementSection');var p=document.getElementById('smvPlanCenterPanel');if(s&&p){p.hidden=false;p.style.display='block';['.venue-primary-stats','.venue-toolbar','.venue-table-wrapper','#venueEmptyState','.venue-secondary-insights'].forEach(function(q){s.querySelectorAll(q).forEach(function(el){el.hidden=true;});});}}catch(e){console.error('Plan Center open failed',e);}">
-                    📋 Plan Center
-                </button>
+                <button type="button" id="venuePlanCenterBtn" class="secondary-btn smv-plan-center-btn" onclick="var p=document.getElementById('smvPlanCenterPanel');if(p){p.hidden=false;p.style.display='block';['.venue-primary-stats','.venue-toolbar','.venue-table-wrapper','#venueEmptyState','.venue-secondary-insights'].forEach(function(q){document.querySelectorAll('#venueManagementSection '+q).forEach(function(el){el.hidden=true;});});}if(window.SMVPlanCenter){window.SMVPlanCenter.open();}">
+                    <span aria-hidden="true">▤</span> Plan Center
+                </button>       </button>
                 <a href="billing/?v=20261002-renewal-term-8" class="secondary-btn" target="_blank" rel="noopener">
                     💳 Billing Center
                 </a>
             </div>
         </div>
+
+        <section id="smvPlanCenterPanel" class="smv-plan-center-panel" hidden aria-label="Venue Plan Management Center">
+            <div class="smv-pc-topbar">
+                <div><div class="smv-pc-kicker">SELECT MY VENUE · MASTER CRM</div><h2>Venue Plan Management</h2><p>Manage partner plans, dates, status, pricing reference and renewal settings in one place.</p></div>
+                <button type="button" id="smvPlanCenterBack" class="secondary-btn">← Venue Management</button>
+            </div>
+            <div class="smv-pc-kpis" id="smvPlanCenterSummary">
+                <div class="smv-pc-kpi"><span>Total partner venues</span><strong>—</strong></div><div class="smv-pc-kpi"><span>Active / trialing</span><strong>—</strong></div><div class="smv-pc-kpi"><span>Expiring in 7 days</span><strong>—</strong></div><div class="smv-pc-kpi"><span>Expired</span><strong>—</strong></div>
+            </div>
+            <div class="smv-pc-layout">
+                <div class="smv-pc-list-card">
+                    <div class="smv-pc-list-head"><div><h3>Partner plans</h3><p>Choose a venue to review or change its plan.</p></div><button type="button" id="smvPlanCenterRefresh" class="secondary-btn">↻ Refresh</button></div>
+                    <div class="smv-pc-filters"><input id="smvPlanCenterSearch" type="search" placeholder="Search venue, city or plan…" autocomplete="off"><select id="smvPlanCenterFilter" aria-label="Filter by plan"><option value="all">All plans</option><option value="launch_trial">Launch Trial</option><option value="partner">Partner</option><option value="growth">Growth</option><option value="premium">Premium</option></select><select id="smvPlanCenterStatusFilter" aria-label="Filter by plan status"><option value="all">All plan statuses</option><option value="trialing">Trialing</option><option value="active">Active</option><option value="expired">Expired</option><option value="paused">Paused</option></select></div>
+                    <div class="smv-pc-venue-list" id="smvPlanCenterVenueList"><div class="smv-pc-empty">Loading venue plans…</div></div>
+                </div>
+                <div class="smv-pc-editor-card">
+                    <div class="smv-pc-editor-heading"><div><div class="smv-pc-kicker">PLAN CONTROL</div><h3 id="smvPlanCenterEditorTitle">Select a venue</h3><p id="smvPlanCenterEditorSubtitle">Plan settings will appear here.</p></div><span id="smvPlanCenterCurrentStatus" class="smv-pc-status">No selection</span></div>
+                    <form id="smvPlanCenterForm">
+                        <input type="hidden" id="smvPlanCenterVenueId">
+                        <div class="smv-pc-current-plan" id="smvPlanCenterCurrentPlan"><span>Current plan</span><strong>—</strong><small>Select a venue from the list.</small></div>
+                        <div class="smv-pc-form-grid">
+                            <label>Partner plan<select id="smvPlanCenterPlan" required><option value="launch_trial">Launch Trial</option><option value="partner">Partner</option><option value="growth">Growth</option><option value="premium">Premium</option></select></label>
+                            <label>Plan status<select id="smvPlanCenterPlanStatus" required><option value="trialing">Trialing</option><option value="active">Active</option><option value="expired">Expired</option><option value="paused">Paused</option></select></label>
+                            <label>Plan start date<input id="smvPlanCenterStart" type="date" required></label><label>Plan expiry date<input id="smvPlanCenterExpiry" type="date" required></label>
+                            <label>Term (months)<input id="smvPlanCenterTerm" type="number" min="1" max="120" placeholder="Optional"></label>
+                            <label class="smv-pc-toggle-label">Renewal notifications<span><input id="smvPlanCenterNotifications" type="checkbox" checked> Enabled</span></label>
+                            <label class="smv-pc-toggle-label">Public venue listing<span><input id="smvPlanCenterListing" type="checkbox"> Visible on website</span></label>
+                        </div>
+                        <div class="smv-pc-plan-note" id="smvPlanCenterPlanNote">Choose a plan to view its current plan details and available terms.</div>
+                        <div class="smv-pc-form-actions"><button type="button" id="smvPlanCenterCancel" class="secondary-btn">Reset changes</button><button type="submit" id="smvPlanCenterSave" class="primary-btn">Save plan changes</button></div>
+                        <p id="smvPlanCenterMessage" class="smv-pc-message" role="status" aria-live="polite"></p>
+                    </form>
+                </div>
+            </div>
+            <div class="smv-pc-catalog-card"><div><h3>Plan catalogue & pricing reference</h3><p>Pricing/terms are read from the existing plan setup; this screen changes a venue’s assigned plan, not global plan prices.</p></div><div id="smvPlanCenterCatalog" class="smv-pc-catalog-grid"><div class="smv-pc-empty">Loading plan catalogue…</div></div></div>
+        </section>
 
         <div class="venue-stats-grid stage8-venue-stats venue-primary-stats">
             <div class="venue-stat-card">
