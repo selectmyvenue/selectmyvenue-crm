@@ -3252,3 +3252,194 @@ body .page-heading{
     padding:0 6px!important;
   }
 }
+
+
+/* =========================================================
+   SMV CORPORATE ACTION BUTTONS — VENUE MANAGEMENT
+   Presentation only: preserves existing button IDs and actions.
+   ========================================================= */
+.crm-top-nav{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  padding:5px!important;
+  border:1px solid rgba(255,255,255,.18)!important;
+  border-radius:15px!important;
+  background:rgba(255,255,255,.075)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06)!important;
+}
+.crm-top-nav .crm-nav-item{
+  appearance:none!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  min-height:42px!important;
+  padding:0 17px!important;
+  border:1px solid transparent!important;
+  border-radius:11px!important;
+  background:transparent!important;
+  color:#e7f5f0!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+  box-shadow:none!important;
+  transition:background .16s ease,border-color .16s ease,color .16s ease,transform .16s ease!important;
+}
+.crm-top-nav .crm-nav-item:hover{
+  background:rgba(255,255,255,.12)!important;
+  border-color:rgba(255,255,255,.12)!important;
+  color:#fff!important;
+  transform:translateY(-1px)!important;
+}
+.crm-top-nav .crm-nav-item.active,
+.crm-top-nav .crm-nav-item[aria-current="page"]{
+  background:#f4fbf8!important;
+  border-color:#e3f3ec!important;
+  color:#075b4b!important;
+  box-shadow:0 3px 10px rgba(0,0,0,.08)!important;
+}
+.crm-top-nav .crm-nav-icon{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:18px!important;
+  height:18px!important;
+  font-size:14px!important;
+  line-height:1!important;
+  opacity:.9!important;
+}
+.crm-header-actions .staff-name{
+  max-width:170px!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+.crm-header-actions .account-password-btn,
+.crm-header-actions .logout-btn{
+  min-height:38px!important;
+  padding:0 13px!important;
+  border-radius:10px!important;
+  font-size:11px!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+  transition:background .16s ease,border-color .16s ease!important;
+}
+.crm-header-actions .logout-btn{
+  background:rgba(255,255,255,.15)!important;
+  border-color:rgba(255,255,255,.28)!important;
+}
+.crm-header-actions #logoutBtn:hover{
+  background:#fff!important;
+  color:#075b4b!important;
+}
+.venue-page-heading{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:22px!important;
+  padding:20px 22px!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  border-radius:16px!important;
+  background:linear-gradient(112deg,#073f36 0%,#08735f 72%,#0a8068 100%)!important;
+  box-shadow:0 10px 26px rgba(7,69,56,.12)!important;
+}
+.venue-page-heading .venue-kicker{
+  color:#b9e7da!important;
+  font-size:9px!important;
+  font-weight:900!important;
+  letter-spacing:.15em!important;
+}
+.venue-page-heading h1,
+.venue-page-heading h1 span{
+  color:#fff!important;
+}
+.venue-page-heading p{
+  color:#d8eee7!important;
+}
+.venue-heading-actions{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:8px!important;
+  flex-wrap:wrap!important;
+}
+.venue-heading-actions .primary-btn,
+.venue-heading-actions .secondary-btn,
+.venue-heading-actions a.secondary-btn{
+  appearance:none!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  min-height:40px!important;
+  padding:0 14px!important;
+  margin:0!important;
+  border:1px solid rgba(255,255,255,.23)!important;
+  border-radius:10px!important;
+  background:rgba(255,255,255,.085)!important;
+  color:#f6fffb!important;
+  font-family:inherit!important;
+  font-size:11px!important;
+  font-weight:800!important;
+  line-height:1!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+  box-shadow:none!important;
+  cursor:pointer!important;
+  transition:transform .16s ease,background .16s ease,border-color .16s ease,box-shadow .16s ease!important;
+}
+.venue-heading-actions .primary-btn{
+  background:#f5fbf8!important;
+  color:#075d4d!important;
+  border-color:#f5fbf8!important;
+  box-shadow:0 4px 12px rgba(0,0,0,.08)!important;
+}
+.venue-heading-actions #venuePlanCenterBtn{
+  background:rgba(255,255,255,.13)!important;
+  border-color:rgba(255,255,255,.31)!important;
+}
+.venue-heading-actions a[href*="billing/"]{
+  background:#fff!important;
+  border-color:#fff!important;
+  color:#075d4d!important;
+  box-shadow:0 4px 12px rgba(0,0,0,.08)!important;
+}
+.venue-heading-actions .primary-btn:hover,
+.venue-heading-actions .secondary-btn:hover,
+.venue-heading-actions a.secondary-btn:hover{
+  transform:translateY(-1px)!important;
+  background:#fff!important;
+  border-color:#fff!important;
+  color:#075d4d!important;
+  box-shadow:0 5px 14px rgba(0,0,0,.10)!important;
+}
+.venue-heading-actions button:focus-visible,
+.venue-heading-actions a:focus-visible,
+.crm-top-nav .crm-nav-item:focus-visible{
+  outline:3px solid rgba(164,235,213,.7)!important;
+  outline-offset:2px!important;
+}
+@media(max-width:1200px){
+  .crm-header{gap:12px!important}
+  .crm-top-nav .crm-nav-item{padding:0 12px!important;font-size:11px!important}
+  .venue-page-heading{align-items:flex-start!important}
+  .venue-heading-actions{max-width:62%}
+}
+@media(max-width:900px){
+  .crm-top-nav{flex-wrap:wrap!important;justify-content:center!important}
+  .venue-page-heading{flex-direction:column!important;align-items:stretch!important}
+  .venue-heading-actions{max-width:none!important;justify-content:flex-start!important}
+}
+@media(max-width:560px){
+  .crm-top-nav{width:100%!important;justify-content:stretch!important}
+  .crm-top-nav .crm-nav-item{flex:1 1 auto!important;min-height:40px!important;padding:0 8px!important;font-size:10px!important}
+  .crm-top-nav .crm-nav-icon{display:none!important}
+  .venue-page-heading{padding:16px!important;gap:14px!important}
+  .venue-heading-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+  .venue-heading-actions .primary-btn,
+  .venue-heading-actions .secondary-btn,
+  .venue-heading-actions a.secondary-btn{width:100%!important;min-width:0!important;padding:0 8px!important;font-size:10px!important}
+}
