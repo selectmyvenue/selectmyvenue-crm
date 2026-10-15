@@ -30,7 +30,8 @@ function parseGuestCount(value: string): number | null {
   const trimmed = value.trim();
   if (!/^\d+$/.test(trimmed)) return null;
   const parsed = Number(trimmed);
-  return Number.isSafeInteger(parsed) ? parsed : null;
+  // customer_enquiries.guests is an integer column; reject overflow before the RPC cast.
+  return Number.isSafeInteger(parsed) && parsed <= 2147483647 ? parsed : null;
 }
 
 async function verifyMetaSignature(rawBody: string, signatureHeader: string | null, secret: string) {
