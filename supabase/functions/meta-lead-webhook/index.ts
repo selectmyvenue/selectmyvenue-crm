@@ -1,6 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const GRAPH_VERSION = "v26.0";
+const MAX_BODY_BYTES = 1_000_000;
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -35,6 +36,7 @@ function parseGuestCount(value: string): number | null {
 async function verifyMetaSignature(rawBody: string, signatureHeader: string | null, secret: string) {
   if (!signatureHeader?.startsWith("sha256=")) return false;
   const expectedHex = signatureHeader.slice(7).toLowerCase();
+  if (!/^[a-f0-9]{64}$/.test(expectedHex)) return false;
   const key = await crypto.subtle.importKey(
     "raw",
     new TextEncoder().encode(secret),
@@ -79,11 +81,15 @@ Deno.serve(async (req) => {
   }
 
   if (!verifyToken || !pageAccessToken || !appSecret || !supabaseUrl || !serviceRoleKey) {
-    console.error("Missing required environment secrets");
+    console.error("Meta webhook is missing required environment secrets");
     return json({ error: "Webhook is not configured" }, 500);
   }
 
   const rawBody = await req.text();
+  if (new TextEncoder().encode(rawBody).byteLength > MAX_BODY_BYTES) {
+    return json({ error: "Payload too large" }, 413);
+  }
+
   const validSignature = await verifyMetaSignature(
     rawBody,
     req.headers.get("x-hub-signature-256"),
@@ -104,30 +110,27 @@ Deno.serve(async (req) => {
   if (payload?.object !== "page") {
     return json({ received: true, ignored: true });
   }
+  if (!Array.isArray(payload.entry)) {
+    return json({ error: "Invalid page webhook payload" }, 400);
+  }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
   try {
-    for (const entry of payload.entry ?? []) {
-      for (const change of entry.changes ?? []) {
+    for (const entry of payload.entry) {
+      if (!Array.isArray(entry?.changes)) {
+        return json({ error: "Invalid page webhook entry" }, 400);
+      }
+
+      for (const change of entry.changes) {
         if (change?.field !== "leadgen") continue;
 
         const value = change?.value ?? {};
         const leadgenId = String(value.leadgen_id ?? "").trim();
-        if (!leadgenId) continue;
-
-        const dedupeNote = `Meta lead ID: ${leadgenId}`;
-        const { data: existing, error: existingError } = await supabase
-          .from("customer_enquiries")
-          .select("id")
-          .eq("internal_notes", dedupeNote)
-          .limit(1);
-
-        if (existingError) throw existingError;
-        if (existing?.length) {
-          console.log("Duplicate Meta lead ignored", leadgenId);
+        if (!leadgenId) {
+          console.warn("Ignored Meta leadgen change without a lead ID");
           continue;
         }
 
@@ -139,10 +142,18 @@ Deno.serve(async (req) => {
         leadUrl.searchParams.set("access_token", pageAccessToken);
 
         const leadResponse = await fetch(leadUrl.toString());
-        const leadJson = await leadResponse.json();
         if (!leadResponse.ok) {
-          console.error("Meta lead retrieval failed", leadJson);
-          throw new Error(`Meta lead retrieval failed for ${leadgenId}`);
+          // Do not log the response body: it is external input and may contain sensitive data.
+          console.error("Meta lead retrieval failed", { leadId: leadgenId, status: leadResponse.status });
+          throw new Error("Meta lead retrieval failed");
+        }
+
+        let leadJson: any;
+        try {
+          leadJson = await leadResponse.json();
+        } catch {
+          console.error("Meta lead retrieval returned invalid JSON", { leadId: leadgenId });
+          throw new Error("Meta lead response was invalid");
         }
 
         const fields: Record<string, string> = {};
@@ -185,6 +196,13 @@ Deno.serve(async (req) => {
         ]);
         const guests = parseGuestCount(guestAnswer);
 
+        // A lead without a usable name or phone cannot be actioned by the calling team.
+        // Acknowledge-and-skip it rather than retrying a permanently incomplete Meta record.
+        if (!customerName.trim() || !mobile.trim()) {
+          console.warn("Skipped Meta lead with missing required contact fields", { leadId: leadgenId });
+          continue;
+        }
+
         const requirementParts = [
           timing ? `Event timing: ${timing}` : "",
           guestAnswer && guests === null ? `Guest count: ${guestAnswer}` : "",
@@ -195,25 +213,36 @@ Deno.serve(async (req) => {
         ].filter(Boolean);
 
         const row: Record<string, unknown> = {
-          customer_name: customerName || null,
-          mobile: mobile || null,
+          customer_name: customerName.trim(),
+          mobile: mobile.trim(),
           email: email || null,
           location: location || null,
           occasion: occasion || null,
           requirements: requirementParts.join("\n") || null,
           source: "Meta Ads - Instant Form",
           status: "new",
-          internal_notes: dedupeNote,
         };
         if (guests !== null) row.guests = guests;
 
-        const { error: insertError } = await supabase
-          .from("customer_enquiries")
-          .insert(row);
+        // The database RPC claims the Meta lead ID and inserts the CRM row in one
+        // transaction. A unique key on the event table makes concurrent retries safe.
+        const { data: rpcData, error: rpcError } = await supabase.rpc(
+          "insert_meta_lead_enquiry",
+          { p_meta_lead_id: leadgenId, p_enquiry: row },
+        );
 
-        if (insertError) {
-          console.error("Supabase insert failed", insertError, row);
-          throw insertError;
+        if (rpcError) {
+          console.error("Atomic Meta lead insert failed", {
+            leadId: leadgenId,
+            code: rpcError.code ?? "unknown",
+          });
+          throw new Error("Atomic Meta lead insert failed");
+        }
+
+        const result = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+        if (!result?.inserted) {
+          console.log("Duplicate Meta lead ignored", leadgenId);
+          continue;
         }
 
         console.log("Meta lead inserted", leadgenId);
@@ -222,7 +251,8 @@ Deno.serve(async (req) => {
 
     return json({ received: true });
   } catch (error) {
-    console.error("Meta webhook processing error", error);
+    // Never log the full error object, request payload, or mapped customer row.
+    console.error("Meta webhook processing failed", error instanceof Error ? error.name : "unknown error");
     return json({ error: "Processing failed" }, 500);
   }
 });
