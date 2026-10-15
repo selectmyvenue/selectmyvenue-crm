@@ -589,7 +589,7 @@ if(effectiveBudget>0){criteria++;relevantWeight+=15;if(!pmin)warnings.push("Pric
      .map(v=>({v,m:smartMatch(v,lead)}))
      .filter(x=>!x.m.hardFail&&!x.m.warnings.some(w=>/budget exceeds|Event type unknown/i.test(w)))
      .filter(x=>!spec.rooms||!x.m.warnings.some(w=>/^Rooms unknown/i.test(w)))
-     .filter(x=>x.m.locationMatch||x.m.sameRegion)
+     .filter(x=>clean(lead.preferred_area)&&!smvIsBroadLocation(clean(lead.preferred_area)) ? (x.m.locationMatch||x.m.areaMatch) : (x.m.locationMatch||x.m.sameRegion))
      .sort(smvCompareMatches);
    const reliable=rows.filter(x=>['strong','possible'].includes(smvMatchTier(x.m)));
    /*
