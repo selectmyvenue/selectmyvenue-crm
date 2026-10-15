@@ -28,11 +28,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Run Master CRM and employee regression tests
+        run: npm test
       - name: Install Playwright
         run: |
           npm install --no-save playwright jsdom@26.1.0
           npx playwright install --with-deps chromium
-      - name: Run Master CRM and employee regression tests
-        run: npm test
       - name: Test live CRM login pages on mobile and desktop
         run: node tests/browser-smoke.mjs
