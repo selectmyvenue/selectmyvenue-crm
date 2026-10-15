@@ -611,7 +611,13 @@ if(effectiveBudget>0){criteria++;relevantWeight+=15;if(!pmin)warnings.push("Pric
    smvPreparedKey=key;
    if(!smvSelectionTouched){
      selectedNow.clear();
-     smvShortlist(lead,venues,assigned).forEach(id=>selectedNow.add(id));
+     const shortlist=smvShortlist(lead,venues,assigned);
+     shortlist.forEach(id=>selectedNow.add(id));
+     const includesPossible=shortlist.some(id=>{const venue=venues.find(v=>String(v.id)===String(id));return venue&&smvMatchTier(smartMatch(venue,lead))==='possible';});
+     if(includesPossible){
+       const controls=document.getElementById('smvMatchTierControls');
+       if(controls){controls.dataset.tier='all';controls.querySelectorAll('[data-tier]').forEach(button=>button.classList.toggle('active',button.dataset.tier==='all'));}
+     }
    }
    document.getElementById('smvPreparationStatus')?.remove();
  }
