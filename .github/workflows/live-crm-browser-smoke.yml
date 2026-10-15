@@ -1,0 +1,33 @@
+name: Live CRM browser smoke tests
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 3 * * 1'
+  pull_request:
+    paths:
+      - 'tests/browser-smoke.mjs'
+      - '.github/workflows/live-crm-browser-smoke.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-crm-browser-smoke
+  cancel-in-progress: true
+
+jobs:
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Test live CRM login pages on mobile and desktop
+        run: node tests/browser-smoke.mjs
