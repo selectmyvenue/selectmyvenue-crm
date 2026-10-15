@@ -1,0 +1,44 @@
+name: Live CRM browser smoke tests
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 3 * * 1'
+  pull_request:
+    paths:
+      - 'tests/browser-smoke.mjs'
+      - 'tests/employee-ui.cjs'
+      - 'tests/master-workspace.cjs'
+      - 'tests/automation-audit.cjs'
+      - 'tests/meta-webhook-contract.cjs'
+      - 'supabase/functions/meta-lead-webhook/**'
+      - 'supabase/migrations/**'
+      - 'package.json'
+      - '.github/workflows/live-crm-browser-smoke.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-crm-browser-smoke
+  cancel-in-progress: true
+
+jobs:
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install regression test dependency
+        run: npm install --no-save jsdom@26.1.0
+      - name: Run Master CRM, employee, automation, and Meta webhook contract tests
+        run: npm test
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright jsdom@26.1.0
+          npx playwright install --with-deps chromium
+      - name: Test live CRM login pages on mobile and desktop
+        run: node tests/browser-smoke.mjs
