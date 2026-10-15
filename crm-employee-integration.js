@@ -504,7 +504,9 @@ window.startEmployeeIntegration=async function(client){
  const specificArea=explicitArea||locationOptions.length>0;
  const matchedLocationOption=locationOptions.find(x=>smvLocationMatch(x.text,venueLocation));
  const locationMatch=!!matchedLocationOption;
- const areaMatch=locationOptions.some(x=>smvLocationTokens(x.text).some(w=>venueLocationTokens.has(w)));
+ const areaMatch=explicitArea
+   ?smvLocationTokens(clean(l?.preferred_area)).filter(w=>!['delhi','new','ncr','gurgaon','gurugram','manesar','noida','faridabad','ghaziabad','greater'].includes(w)).some(w=>venueLocationTokens.has(w))
+   :locationOptions.some(x=>smvLocationTokens(x.text).some(w=>venueLocationTokens.has(w)));
  const venueNameMatch=!!clean(l?.preferred_area)&&smvText(v.venue_name).includes(smvText(l.preferred_area));
  const leadPoint=smvLeadPoint(l),venuePoint=smvVenuePoint(v),road=smvRoadFor(v,l),directKm=smvDistanceKm(leadPoint,venuePoint);
  const optionPoints=Object.entries(l?.__smvLocationOptionPoints||{}).map(([key,p])=>({key,...p})).filter(x=>x&&Number.isFinite(Number(x.lat))&&Number.isFinite(Number(x.lon)));
