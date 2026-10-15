@@ -3,7 +3,7 @@
   "phone_number": "mobile",
   "city_location": "location",
   "event_type": "occasion",
-  "event_timing": "event_date",
-  "guest_count": "guests",
+  "event_timing": "requirements (Event timing: ...; not event_date unless an exact date is supplied)",
+  "guest_count": "guests when numeric; otherwise requirements",
   "source": "Meta Ads - Instant Form"
 }
