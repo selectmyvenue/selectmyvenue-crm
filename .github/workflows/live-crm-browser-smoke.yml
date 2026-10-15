@@ -7,6 +7,9 @@ on:
   pull_request:
     paths:
       - 'tests/browser-smoke.mjs'
+      - 'tests/employee-ui.cjs'
+      - 'tests/master-workspace.cjs'
+      - 'tests/automation-audit.cjs'
       - '.github/workflows/live-crm-browser-smoke.yml'
 
 permissions:
