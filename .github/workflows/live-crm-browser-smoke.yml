@@ -29,6 +29,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install regression test dependency
+        run: npm install --no-save jsdom@26.1.0
       - name: Run Master CRM and employee regression tests
         run: npm test
       - name: Install Playwright
