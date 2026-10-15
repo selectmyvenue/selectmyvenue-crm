@@ -11,6 +11,7 @@ on:
       - 'tests/master-workspace.cjs'
       - 'tests/automation-audit.cjs'
       - '.github/workflows/live-crm-browser-smoke.yml'
+      - '.github/workflows/live-crm-browser-smoke.yml'
 
 permissions:
   contents: read
