@@ -1,13 +1,14 @@
-Target table: customer_enquiries
-Recommended mapped fields for Meta Instant Form leads:
+Target table: `customer_enquiries`. The webhook writes only existing fields:
 - customer_name
 - mobile
 - email (optional)
 - location
 - occasion
-- guests
+- guests (only when numeric)
 - requirements
 - source = Meta Ads - Instant Form
 - status = new
 
-Event timing answers such as "Within 30 days" should be stored in requirements rather than event_date because they are not exact dates.
+Event timing answers such as "Within 30 days" belong in `requirements`, not `event_date`, unless Meta supplies an exact date that is parsed and validated separately.
+
+Atomic deduplication is handled by the separate `meta_lead_webhook_events` table and the `insert_meta_lead_enquiry(text, jsonb)` database function. Do not add Meta-specific columns to `customer_enquiries`. The migration is proposed and must be reviewed and tested in a non-production project before any production application.
