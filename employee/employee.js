@@ -22,12 +22,17 @@
  ];
  let rows=[],page=0,total=0,selected=null,profile=null,channel=null,sequence=0,timer,reconnectTimer=null,activeQuickFilter='all',assignedLeadIds=new Set();
  const indiaLocal=s=>{if(!s)return '';const d=new Date(new Date(s).getTime()+330*60000);return d.toISOString().slice(0,16);};
+ const indiaDateString=(value=new Date())=>{const p=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(value);const part=k=>p.find(x=>x.type===k)?.value||'';return part('year')+'-'+part('month')+'-'+part('day');};
+ const indiaTodayRange=()=>{const today=indiaDateString();const startDate=new Date(today+'T00:00:00+05:30');const endDate=new Date(startDate.getTime()+86400000);return {start:today+'T00:00:00+05:30',end:indiaDateString(endDate)+'T00:00:00+05:30'};};
  statuses.forEach(s=>el('filterStatus').add(new Option(label(s),s)));
  el('leadFields').innerHTML=fields.map(([key,title,type])=>`<label class="${type==='textarea'||type==='boolean'?'wide':''}">${esc(title)}${Array.isArray(type)?`<select id="field_${key}">${type.map(v=>`<option value="${esc(String(v))}">${esc(label(String(v)))}</option>`).join('')}</select>`:type==='textarea'?`<textarea id="field_${key}" maxlength="10000" rows="3"></textarea>`:type==='boolean'?`<select id="field_${key}"><option value="false">No</option><option value="true">Yes</option></select>`:`<input id="field_${key}" type="${type}" ${type==='number'?'min="0" step="1"':''} ${key==='customer_name'?'required minlength="2" maxlength="120"':''}>`}</label>`).join('');
  function query(count=false){
   let q=client.from('customer_enquiries').select('*',count?{count:'exact',head:true}:{count:'exact'});
   if(el('filterStatus').value)q=q.eq('status',el('filterStatus').value);
   if(activeQuickFilter==='new'||activeQuickFilter==='interested'||activeQuickFilter==='follow-up'||activeQuickFilter==='not-pick')q=q.eq('status',activeQuickFilter);
+  if(activeQuickFilter==='due-today'){const range=indiaTodayRange();q=q.gte('follow_up_at',range.start).lt('follow_up_at',range.end);}
+  if(activeQuickFilter==='overdue'){q=q.lt('follow_up_at',new Date().toISOString()).not('status','in','("booked","converted","closed","lost","not-interested")');}
+  if(activeQuickFilter==='untouched')q=q.eq('status','new').is('last_contacted_at',null).eq('contact_count',0);
   if(activeQuickFilter==='call-back')q=q.or('call_outcome.eq.Call Back,status.eq.converted');
   if(activeQuickFilter==='assigned')q=assignedLeadIds.size?q.in('id',[...assignedLeadIds]):q.eq('id','00000000-0000-0000-0000-000000000000');
   const search=el('search').value.trim().replace(/[^\\p{L}\\p{N}\\s+@.-]/gu,'');
@@ -67,11 +72,13 @@
   finally{if(seq===sequence)el('refresh').disabled=false;}
  }
  async function stats(){
-  const q=()=>client.from('customer_enquiries').select('id,status,call_outcome,assigned_to');
+  const q=()=>client.from('customer_enquiries').select('id,status,call_outcome,assigned_to,follow_up_at,last_contacted_at,contact_count,created_at');
   const [{data,error},{data:assignments}]=await Promise.all([q(),client.from('venue_enquiry_assignments').select('enquiry_id,assignment_status').neq('assignment_status','cancelled')]); const list=error?[]:(data||[]);
   assignedLeadIds=new Set((assignments||[]).map(a=>String(a.enquiry_id)).filter(Boolean));
-  const counts={all:list.length,new:list.filter(r=>r.status==='new').length,interested:list.filter(r=>r.status==='interested').length,'call-back':list.filter(r=>r.call_outcome==='Call Back'||r.status==='converted').length,'follow-up':list.filter(r=>r.status==='follow-up').length,'not-pick':list.filter(r=>r.status==='not-pick'||r.call_outcome==='Not Picked').length,assigned:list.filter(r=>r.status!=='closed'&&r.status!=='not-interested'&&r.status!=='lost'&&r.status!=='booked'&&assignedLeadIds.has(String(r.id))).length};
-  const ids={all:'totalCount',new:'newCount',interested:'interestedCount','call-back':'callBackCount','follow-up':'followUpCount','not-pick':'notPickCount',assigned:'assignedCount'};
+  const now=Date.now(),todayRange=indiaTodayRange(),todayStart=Date.parse(todayRange.start),todayEnd=Date.parse(todayRange.end);
+  const active=r=>!['booked','converted','closed','lost','not-interested'].includes(String(r.status||'').toLowerCase());
+  const counts={all:list.length,new:list.filter(r=>r.status==='new').length,'due-today':list.filter(r=>r.follow_up_at&&Date.parse(r.follow_up_at)>=todayStart&&Date.parse(r.follow_up_at)<todayEnd&&active(r)).length,overdue:list.filter(r=>r.follow_up_at&&Date.parse(r.follow_up_at)<now&&active(r)).length,untouched:list.filter(r=>r.status==='new'&&!r.last_contacted_at&&Number(r.contact_count||0)===0).length,interested:list.filter(r=>r.status==='interested').length,'call-back':list.filter(r=>r.call_outcome==='Call Back'||r.status==='converted').length,'follow-up':list.filter(r=>r.status==='follow-up').length,'not-pick':list.filter(r=>r.status==='not-pick'||r.call_outcome==='Not Picked').length,assigned:list.filter(r=>r.status!=='closed'&&r.status!=='not-interested'&&r.status!=='lost'&&r.status!=='booked'&&assignedLeadIds.has(String(r.id))).length};
+  const ids={all:'totalCount',new:'newCount','due-today':'dueTodayCount',overdue:'overdueCount',untouched:'untouchedCount',interested:'interestedCount','call-back':'callBackCount','follow-up':'followUpCount','not-pick':'notPickCount',assigned:'assignedCount'};
   Object.entries(ids).forEach(([key,id])=>el(id).textContent=counts[key]);
   document.querySelectorAll('#employeeFilterCards [data-quick-filter]').forEach(c=>c.classList.toggle('active',c.dataset.quickFilter===activeQuickFilter));
  }
