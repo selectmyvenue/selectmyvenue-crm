@@ -424,7 +424,14 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
   .confirm-notes strong{font-size:13px!important}
   .print-note{font-size:10.5px!important}
 }
-</style></head>
+</style>
+<style id="proforma-number-inline-fix">
+/* Keep the proforma/invoice label and its number on one line. */
+.confirm-title>span{display:flex;justify-content:flex-end;align-items:baseline;gap:6px;white-space:nowrap}
+.confirm-title>span>span{display:inline!important;margin:0!important}
+@media(max-width:620px){.confirm-title>span{gap:4px;font-size:9px}}
+</style>
+</head>
 <body>
 <div class="shell">
 <header class="topbar">
