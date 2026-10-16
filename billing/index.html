@@ -505,6 +505,70 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
   .invoice-company-address .invoice-website{justify-self:start!important}
 }
 </style>
+
+<style id="invoice-letterhead-centered-brand-v4">
+/* Brand centered on top; business details balanced below at the far edges. */
+.invoice-company-top{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ gap:12px!important;
+}
+.invoice-company-left{
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:center!important;
+ justify-content:center!important;
+ text-align:center!important;
+ gap:5px!important;
+ width:100%!important;
+}
+.invoice-company-logo{
+ display:block!important;
+ width:180px!important;
+ height:48px!important;
+ flex:0 0 auto!important;
+ object-position:center!important;
+}
+.invoice-company-left>div{text-align:center!important}
+.invoice-company-name{font-size:22px!important;line-height:1.1!important;white-space:nowrap!important}
+.invoice-company-tag{font-size:10px!important;line-height:1.3!important}
+.invoice-company-details{
+ width:100%!important;
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+ grid-template-rows:auto auto!important;
+ column-gap:20px!important;
+ row-gap:6px!important;
+ text-align:left!important;
+ font-size:9px!important;
+ line-height:1.35!important;
+ white-space:nowrap!important;
+}
+.invoice-company-details>div{min-width:0!important;white-space:nowrap!important;overflow-wrap:normal!important;word-break:normal!important}
+.invoice-company-details>div:nth-child(1){grid-column:1;grid-row:1}
+.invoice-company-details>div:nth-child(3){grid-column:1;grid-row:2}
+.invoice-company-details>div:nth-child(2){grid-column:2;grid-row:1;justify-self:end}
+.invoice-company-details>div:nth-child(4){grid-column:2;grid-row:2;justify-self:end}
+.invoice-company-address{margin-top:10px!important}
+@media print{
+ .invoice-company-top{grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+ .invoice-company-left{flex-direction:column!important;align-items:center!important;text-align:center!important}
+ .invoice-company-logo{width:180px!important;height:48px!important;object-position:center!important}
+ .invoice-company-name{font-size:22px!important;white-space:nowrap!important}
+ .invoice-company-details{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;column-gap:20px!important;row-gap:6px!important;font-size:9px!important;white-space:nowrap!important}
+ .invoice-company-details>div:nth-child(1){grid-column:1!important;grid-row:1!important;justify-self:start!important}
+ .invoice-company-details>div:nth-child(3){grid-column:1!important;grid-row:2!important;justify-self:start!important}
+ .invoice-company-details>div:nth-child(2){grid-column:2!important;grid-row:1!important;justify-self:end!important}
+ .invoice-company-details>div:nth-child(4){grid-column:2!important;grid-row:2!important;justify-self:end!important}
+}
+@media(max-width:620px){
+ .invoice-company-logo{width:155px!important;height:44px!important}
+ .invoice-company-name{font-size:19px!important;white-space:normal!important}
+ .invoice-company-details{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;column-gap:10px!important;font-size:8px!important;white-space:normal!important}
+ .invoice-company-details>div{white-space:normal!important;overflow-wrap:anywhere!important}
+ .invoice-company-details>div:nth-child(2),.invoice-company-details>div:nth-child(4){justify-self:start!important}
+}
+</style>
 </head>
 <body>
 <div class="shell">
