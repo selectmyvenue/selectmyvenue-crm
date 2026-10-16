@@ -693,6 +693,73 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
  .invoice-company-details>div:nth-child(2),.invoice-company-details>div:nth-child(4){justify-self:end!important;text-align:right!important}
 }
 </style>
+
+<style id="brand-between-business-details-v8">
+/* Put the centered brand in the same horizontal band as the four business details. */
+.invoice-company-top{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+ grid-template-rows:auto auto!important;
+ column-gap:22px!important;
+ row-gap:5px!important;
+ align-items:center!important;
+}
+.invoice-company-left{
+ grid-column:2!important;
+ grid-row:1 / 3!important;
+ align-self:center!important;
+ justify-self:center!important;
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:center!important;
+ justify-content:center!important;
+ text-align:center!important;
+ padding:0!important;
+ margin:0!important;
+ gap:3px!important;
+ min-width:190px!important;
+}
+.invoice-company-logo{width:180px!important;height:38px!important;object-position:center!important}
+.invoice-company-name{font-size:20px!important;line-height:1.05!important;white-space:nowrap!important}
+.invoice-company-tag{font-size:9px!important;line-height:1.2!important;margin-top:1px!important}
+.invoice-company-details{display:contents!important}
+.invoice-company-details>div{
+ min-width:0!important;
+ font-size:9.5px!important;
+ line-height:1.3!important;
+ white-space:nowrap!important;
+ overflow-wrap:normal!important;
+}
+.invoice-company-details>div:nth-child(1){grid-column:1!important;grid-row:1!important;justify-self:start!important;align-self:end!important}
+.invoice-company-details>div:nth-child(3){grid-column:1!important;grid-row:2!important;justify-self:start!important;align-self:start!important}
+.invoice-company-details>div:nth-child(2){grid-column:3!important;grid-row:1!important;justify-self:end!important;align-self:end!important}
+.invoice-company-details>div:nth-child(4){grid-column:3!important;grid-row:2!important;justify-self:end!important;align-self:start!important}
+.invoice-company-address{margin-top:9px!important;padding-top:7px!important}
+@media print{
+ .invoice-company-top{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;grid-template-rows:auto auto!important;column-gap:22px!important;row-gap:5px!important}
+ .invoice-company-left{grid-column:2!important;grid-row:1 / 3!important;min-width:190px!important;gap:3px!important}
+ .invoice-company-logo{width:180px!important;height:38px!important}
+ .invoice-company-name{font-size:20px!important;white-space:nowrap!important}
+ .invoice-company-details{display:contents!important}
+ .invoice-company-details>div{font-size:9.5px!important;white-space:nowrap!important}
+ .invoice-company-details>div:nth-child(1){grid-column:1!important;grid-row:1!important;justify-self:start!important;align-self:end!important}
+ .invoice-company-details>div:nth-child(3){grid-column:1!important;grid-row:2!important;justify-self:start!important;align-self:start!important}
+ .invoice-company-details>div:nth-child(2){grid-column:3!important;grid-row:1!important;justify-self:end!important;align-self:end!important}
+ .invoice-company-details>div:nth-child(4){grid-column:3!important;grid-row:2!important;justify-self:end!important;align-self:start!important}
+}
+@media(max-width:620px){
+ .invoice-company-top{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;grid-template-rows:auto auto auto!important;column-gap:8px!important;row-gap:7px!important}
+ .invoice-company-left{grid-column:1 / 3!important;grid-row:1!important;min-width:0!important}
+ .invoice-company-logo{width:155px!important;height:34px!important}
+ .invoice-company-name{font-size:18px!important;white-space:normal!important}
+ .invoice-company-details{display:contents!important}
+ .invoice-company-details>div{font-size:8px!important;white-space:normal!important;overflow-wrap:anywhere!important}
+ .invoice-company-details>div:nth-child(1){grid-column:1!important;grid-row:2!important;justify-self:start!important}
+ .invoice-company-details>div:nth-child(3){grid-column:1!important;grid-row:3!important;justify-self:start!important}
+ .invoice-company-details>div:nth-child(2){grid-column:2!important;grid-row:2!important;justify-self:end!important}
+ .invoice-company-details>div:nth-child(4){grid-column:2!important;grid-row:3!important;justify-self:end!important}
+}
+</style>
 </head>
 <body>
 <div class="shell">
