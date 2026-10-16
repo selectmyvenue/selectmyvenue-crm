@@ -589,7 +589,7 @@ function addDay(dateString){if(!dateString)return"";const d=new Date(dateString+
 function methodLabel(v){return({cash:"Cash",cheque:"Cheque",upi:"UPI",bank_transfer:"Bank Transfer",other:"Other"})[v]||"—";}
 function toast(msg,error=false){const t=$("toast");t.textContent=msg;t.className="toast show"+(error?" error":"");clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.className="toast",2700);}
 function venue(){return venues.find(v=>String(v.id)===String(selectedVenueId))||null;}
-function venueAddress(v){return [v?.address,v?.area,v?.city,v?.state,v?.pincode].filter(x=>String(x||"").trim()).map(x=>String(x).trim()).join(", ")||"Address not provided";}
+function venueAddress(v){const fullAddress=String(v?.address||"").trim();if(fullAddress)return fullAddress;return [v?.area,v?.city,v?.state,v?.pincode].filter(x=>String(x||"").trim()).map(x=>String(x).trim()).join(", ")||"Address not provided";}
 function plan(){return plans.find(p=>p.plan_code===$("planCode").value)||null;}
 function pricesForPlan(code){return planPrices.filter(x=>x.plan_code===code&&x.is_active);}
 function selectedPrice(){return planPrices.find(x=>x.plan_code===$("planCode").value&&Number(x.term_months)===Number($("termMonths").value)&&x.is_active)||null;}
