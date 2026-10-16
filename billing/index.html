@@ -602,6 +602,33 @@ h1{margin:25px 0 5px;font-size:29px;letter-spacing:-.55px}.subtitle{color:var(--
  .invoice-company-details{font-size:9px!important}
 }
 </style>
+
+<style id="compact-centered-letterhead-v6">
+/* Move the centered brand into the existing vertical whitespace to reduce letterhead height. */
+.invoice-company{padding-bottom:9px!important;margin-bottom:11px!important}
+.invoice-company-top{gap:5px!important}
+.invoice-company-left{gap:4px!important;padding-top:14px!important;padding-bottom:0!important}
+.invoice-company-logo{height:42px!important;width:180px!important}
+.invoice-company-name{font-size:21px!important;line-height:1.05!important}
+.invoice-company-tag{margin-top:2px!important;font-size:9.5px!important}
+.invoice-company-details{row-gap:5px!important;align-content:center!important;font-size:10px!important;line-height:1.35!important}
+.invoice-company-address{margin-top:7px!important;padding-top:6px!important}
+@media print{
+ .invoice-company{padding-bottom:9px!important;margin-bottom:11px!important}
+ .invoice-company-top{gap:5px!important}
+ .invoice-company-left{gap:4px!important;padding-top:14px!important}
+ .invoice-company-logo{height:42px!important;width:180px!important}
+ .invoice-company-name{font-size:21px!important;line-height:1.05!important}
+ .invoice-company-tag{font-size:9.5px!important}
+ .invoice-company-details{row-gap:5px!important;font-size:10px!important;line-height:1.35!important}
+ .invoice-company-address{margin-top:7px!important;padding-top:6px!important}
+}
+@media(max-width:620px){
+ .invoice-company-left{padding-top:8px!important}
+ .invoice-company-logo{height:38px!important;width:155px!important}
+ .invoice-company-name{font-size:19px!important}
+}
+</style>
 </head>
 <body>
 <div class="shell">
