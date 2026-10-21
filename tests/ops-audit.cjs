@@ -11,6 +11,7 @@ w.allVenues=[];
 w.indiaDay=value=>{const date=new Date(value);return Number.isNaN(date.getTime())?'':new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'}).format(date);};
 w.getSupabaseClient=()=>null;
 // The real dashboard heading/actions are present in the HTML fixture; only lead records below are synthetic.
+// Follow-up alerts cover in-progress stages, including site visits and no-answer outcomes.
 w.eval(fs.readFileSync(path.join(root,'crm-enhancements.js'),'utf8'));
 const old=new Date(Date.now()-45*60*1000).toISOString();
 w.allLeads=[
