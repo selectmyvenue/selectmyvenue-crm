@@ -10,7 +10,7 @@ const tick=()=>new Promise(r=>setTimeout(r,25));
 (async()=>{
  const dom=new JSDOM(html,{url:'https://crm.selectmyvenue.com/dashboard.html',runScripts:'outside-only',pretendToBeVisual:true});
  const w=dom.window,d=w.document;
- w.eval(core+`\nwindow.testCRM={setLeads(rows){allLeads=rows;applyFilters()},matchesWorkView,loadEnquiries,loadVenueAssignments,setClient(client){supabaseClient=client},setAssignments(fn){loadVenueAssignments=fn},setAssignmentSnapshot(rows,details){allVenueAssignments=rows;assignedVenueDetails=details;venueAssignmentsLoadState='loaded';venueAssignmentsLoadError='';venueAssignmentsLastLoadedAt=Date.now()},getAssignmentSnapshot(){return {rows:allVenueAssignments,details:assignedVenueDetails,state:venueAssignmentsLoadState}},setView(view){currentWorkView=view;applyFilters()},getLeads(){return allLeads},loadStaffOptions,setControl};`);
+ w.eval(core+`\nwindow.testCRM={setLeads(rows){allLeads=rows;applyFilters()},matchesWorkView,loadEnquiries,loadVenueAssignments,setClient(client){supabaseClient=client},setAssignments(fn){loadVenueAssignments=fn},setAssignmentSnapshot(rows,details){allVenueAssignments=rows;assignedVenueDetails=details;venueAssignmentsLoadState='loaded';venueAssignmentsLoadError='';venueAssignmentsLastLoadedAt=Date.now()},getAssignmentSnapshot(){return {rows:allVenueAssignments,details:assignedVenueDetails,state:venueAssignmentsLoadState}},scoreVenueMatch:getVenueMatchAssessment,setView(view){currentWorkView=view;applyFilters()},getLeads(){return allLeads},loadStaffOptions,setControl};`);
  const api=w.testCRM;
  const rows=Array.from({length:125},(_,i)=>({id:i+1,customer_name:'Customer '+i,mobile:'9999999999',status:'new',source:'Website - Home',created_at:'2026-09-17T00:00:00Z',updated_at:'2026-09-17T00:00:00Z'}));
  rows[0].customer_name='<img src=x onerror=alert(1)>';
@@ -67,6 +67,23 @@ const tick=()=>new Promise(r=>setTimeout(r,25));
  assert.equal(await api.loadVenueAssignments(),false);
  assert.equal(api.getAssignmentSnapshot().state,'stale','A successfully loaded empty snapshot must still be marked stale after a failed refresh');
  console.log('PASS empty-but-successful assignment snapshots remain distinguishable from never-loaded state');
+ // Explainable, deterministic venue matching: unknown data is a warning, not an availability promise.
+ const scoreMatch=api.scoreVenueMatch;
+ const strongMatch=scoreMatch(
+  {city:'Gurugram',area:'Sector 29',venue_type:'Banquet Hall',capacity_min:50,capacity_max:300,price_min_per_person:1000,price_max_per_person:2000},
+  {location:'Gurugram',preferred_area:'Sector 29',occasion:'Wedding',guests:150,budget_per_person:1500,event_date:'2026-12-20'}
+ );
+ assert.equal(strongMatch.score,100);
+ assert(strongMatch.recommended);
+ assert(strongMatch.reasons.length>=3);
+ assert(strongMatch.warnings.some(w=>w.includes('not been confirmed')),'Date availability must never be inferred from a match score');
+ const unknownMatch=scoreMatch({city:'',area:'',venue_type:'',capacity_min:null,capacity_max:null,price_min_per_person:null,price_max_per_person:null},{location:'',preferred_area:'',occasion:'',guests:null,budget_per_person:null,event_date:''});
+ assert.equal(unknownMatch.score,0);
+ assert(!unknownMatch.recommended);
+ assert(unknownMatch.warnings.some(w=>w.includes('Customer location is missing')));
+ assert(unknownMatch.warnings.some(w=>w.includes('Guest count is missing')));
+ assert(unknownMatch.warnings.some(w=>w.includes('Event date is missing')));
+ console.log('PASS explainable venue matching separates score, reasons, missing data and unconfirmed date availability');
  // Run both source decorators under the real MutationObserver; they must settle.
  const base=fs.readFileSync(path.join(root,'crm-base.js'),'utf8');
  const decorator=base.slice(base.indexOf('  function decorateLeadSources()'),base.indexOf('  function getControlValue('));
