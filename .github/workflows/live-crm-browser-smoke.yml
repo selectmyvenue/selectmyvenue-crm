@@ -13,6 +13,7 @@ on:
       - 'crm-enhancements.js'
       - 'crm-employee-integration.js'
       - 'tests/employee-ui.cjs'
+      - 'tests/auth-gates.cjs'
       - 'tests/master-workspace.cjs'
       - 'tests/automation-audit.cjs'
       - 'tests/ops-audit.cjs'
