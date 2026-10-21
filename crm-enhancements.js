@@ -209,7 +209,7 @@
     // handled by the separate first-response SLA, not this missing-follow-up queue.
     const followUpExpectedStatuses = new Set([
       "contacted", "follow-up", "interested", "qualified", "detail-shared",
-      "negotiation", "converted"
+      "site-visit", "not-pick", "negotiation", "converted"
     ]);
     const missingFollowUp = active.filter(lead =>
       followUpExpectedStatuses.has(statusOf(lead)) && !dateValue(lead.follow_up_at)
