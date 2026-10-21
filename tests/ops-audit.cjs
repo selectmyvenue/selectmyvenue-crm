@@ -21,6 +21,8 @@ w.allLeads=[
  {id:'missing-followup',customer_name:'Lead missing next action',mobile:'9876543212',status:'interested',created_at:old,assigned_to:'staff-1',follow_up_at:null},
  {id:'terminal',customer_name:'Closed lead',status:'closed',created_at:old,assigned_to:null}
 ];
+// JSDOM starts in "loading" mode, so explicitly fire the lifecycle event that installs the Action Center.
+d.dispatchEvent(new w.Event('DOMContentLoaded'));
 d.getElementById('smvActionCenterBtn').click();
 const body=d.getElementById('smvOpsBody');
 assert(body,'Action Center body should render');
