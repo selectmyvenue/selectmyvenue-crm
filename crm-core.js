@@ -7390,7 +7390,7 @@ async function loadVenueAssignments() {
     const client = getSupabaseClient();
 
     if (!client) {
-        venueAssignmentsLoadState = allVenueAssignments.length ? "stale" : "unknown";
+        venueAssignmentsLoadState = venueAssignmentsLastLoadedAt !== null ? "stale" : "unknown";
         venueAssignmentsLoadError = "CRM database connection is unavailable.";
         return false;
     }
