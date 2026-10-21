@@ -10,7 +10,7 @@ const tick=()=>new Promise(r=>setTimeout(r,25));
 (async()=>{
  const dom=new JSDOM(html,{url:'https://crm.selectmyvenue.com/dashboard.html',runScripts:'outside-only',pretendToBeVisual:true});
  const w=dom.window,d=w.document;
- w.eval(core+`\nwindow.testCRM={setLeads(rows){allLeads=rows;applyFilters()},matchesWorkView,loadEnquiries,loadVenueAssignments,setClient(client){supabaseClient=client},setAssignments(fn){loadVenueAssignments=fn},setAssignmentSnapshot(rows,details){allVenueAssignments=rows;assignedVenueDetails=details;venueAssignmentsLoadState='loaded';venueAssignmentsLastLoadedAt=Date.now()},getAssignmentSnapshot(){return {rows:allVenueAssignments,details:assignedVenueDetails,state:venueAssignmentsLoadState}},setView(view){currentWorkView=view;applyFilters()},getLeads(){return allLeads},loadStaffOptions,setControl};`);
+ w.eval(core+`\nwindow.testCRM={setLeads(rows){allLeads=rows;applyFilters()},matchesWorkView,loadEnquiries,loadVenueAssignments,setClient(client){supabaseClient=client},setAssignments(fn){loadVenueAssignments=fn},setAssignmentSnapshot(rows,details){allVenueAssignments=rows;assignedVenueDetails=details;venueAssignmentsLoadState='loaded';venueAssignmentsLoadError='';venueAssignmentsLastLoadedAt=Date.now()},getAssignmentSnapshot(){return {rows:allVenueAssignments,details:assignedVenueDetails,state:venueAssignmentsLoadState}},setView(view){currentWorkView=view;applyFilters()},getLeads(){return allLeads},loadStaffOptions,setControl};`);
  const api=w.testCRM;
  const rows=Array.from({length:125},(_,i)=>({id:i+1,customer_name:'Customer '+i,mobile:'9999999999',status:'new',source:'Website - Home',created_at:'2026-09-17T00:00:00Z',updated_at:'2026-09-17T00:00:00Z'}));
  rows[0].customer_name='<img src=x onerror=alert(1)>';
