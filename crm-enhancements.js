@@ -215,6 +215,10 @@
       !assignedLeadIds.has(String(lead.id))
     );
 
+    // Staff ownership is separate from venue assignment. Surface active leads
+    // with no owner so managers can distribute work before response SLAs slip.
+    const unownedStaff = active.filter(lead => !safeText(lead.assigned_to));
+
     const noPartnerResponse = leadAssignments.filter(item => {
       const status = safeText(item.assignment_status || item.status || "assigned").toLowerCase();
       if (TERMINAL_ASSIGNMENT_STATUSES.has(status)) return false;
@@ -247,6 +251,7 @@
       addPriority(lead, "warning", "Partner no response 24h+");
     });
     unassigned.forEach(lead => addPriority(lead, "warning", "No active venue assignment"));
+    unownedStaff.forEach(lead => addPriority(lead, "warning", "No staff owner"));
     followToday.forEach(lead => addPriority(lead, "info", "Follow-up due today"));
     siteVisitsToday.forEach(lead => addPriority(lead, "info", "Site visit today"));
 
@@ -261,6 +266,7 @@
       overdue,
       siteVisitsToday,
       unassigned,
+      unownedStaff,
       noPartnerResponse,
       duplicates: dups,
       duplicateLeadIds,
@@ -402,6 +408,7 @@
         ${kpi("Overdue", snap.overdue.length, "critical", "Follow-ups")}
         ${kpi("Due Today", snap.followToday.length, "", "Follow-ups")}
         ${kpi("No Venue", snap.unassigned.length, "warning", "Active leads")}
+        ${kpi("No Staff Owner", snap.unownedStaff.length, "warning", "Active leads")}
         ${kpi("Partner >24h", snap.noPartnerResponse.length, "warning", "No response")}
         ${kpi("Duplicates", snap.duplicates.length, "", "Potential groups")}
       </div>
