@@ -10,6 +10,8 @@ w.allVenueAssignments=[];
 w.allVenues=[];
 w.indiaDay=value=>{const date=new Date(value);return Number.isNaN(date.getTime())?'':new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'}).format(date);};
 w.getSupabaseClient=()=>null;
+// Supply the heading slot the Action Center mounts into; this test focuses on its behaviour, not the dashboard's page layout.
+const heading=d.createElement('div');heading.className='page-heading';heading.innerHTML='<div class="heading-actions"></div>';d.body.prepend(heading);
 w.eval(fs.readFileSync(path.join(root,'crm-enhancements.js'),'utf8'));
 const old=new Date(Date.now()-45*60*1000).toISOString();
 w.allLeads=[
