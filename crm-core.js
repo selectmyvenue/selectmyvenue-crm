@@ -7403,7 +7403,7 @@ async function loadVenueAssignments() {
 
         if (error) {
             console.warn("Venue assignments are not available:", error.message);
-            venueAssignmentsLoadState = allVenueAssignments.length ? "stale" : "unknown";
+            venueAssignmentsLoadState = venueAssignmentsLastLoadedAt !== null ? "stale" : "unknown";
             venueAssignmentsLoadError = error.message || "Unable to load venue assignments.";
             if (currentLead) renderLeadVenueAssignments(currentLead.id);
             return false;
@@ -7469,7 +7469,7 @@ async function loadVenueAssignments() {
         return true;
     } catch (error) {
         console.warn("Venue assignment load error:", error);
-        venueAssignmentsLoadState = allVenueAssignments.length ? "stale" : "unknown";
+        venueAssignmentsLoadState = venueAssignmentsLastLoadedAt !== null ? "stale" : "unknown";
         venueAssignmentsLoadError = error?.message || "Unable to load venue assignments.";
         if (currentLead) renderLeadVenueAssignments(currentLead.id);
         return false;
