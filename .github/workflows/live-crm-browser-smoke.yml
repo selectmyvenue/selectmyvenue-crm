@@ -11,6 +11,7 @@ on:
       - 'tests/master-workspace.cjs'
       - 'tests/automation-audit.cjs'
       - 'tests/ops-audit.cjs'
+      - 'docs/AI_CRM_OPERATIONS_REQUIREMENTS_AUDIT.md'
       - 'package.json'
       - '.github/workflows/live-crm-browser-smoke.yml'
 
