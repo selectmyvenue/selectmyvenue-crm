@@ -8009,17 +8009,22 @@ function getVenueMatchAssessment(venue, lead) {
     const maxPrice = Number(venue.price_max_per_person);
     const hasBudget = safeValue(lead.budget_per_person) !== "" && Number.isFinite(budget) && budget > 0;
     const hasPrice = safeValue(venue.price_min_per_person) !== "" || safeValue(venue.price_max_per_person) !== "";
-    if (hasBudget && hasPrice &&
-        (!Number.isFinite(minPrice) || minPrice <= 0 || minPrice <= budget) &&
-        (!Number.isFinite(maxPrice) || maxPrice <= 0 || maxPrice >= budget)) {
+    const hasValidMinPrice = Number.isFinite(minPrice) && minPrice > 0 && safeValue(venue.price_min_per_person) !== "";
+    const hasValidMaxPrice = Number.isFinite(maxPrice) && maxPrice > 0 && safeValue(venue.price_max_per_person) !== "";
+    const budgetCouldFit = hasBudget && hasPrice &&
+        (!hasValidMinPrice || minPrice <= budget);
+    if (budgetCouldFit) {
         score += 15;
-        reasons.push("Listed per-person price range aligns with the customer's budget");
+        reasons.push("Venue's listed starting price is within the customer's per-person budget");
+        if (hasValidMaxPrice && maxPrice > budget) {
+            warnings.push("Some venue packages may exceed the customer's budget; confirm package pricing");
+        }
     } else if (!hasBudget) {
         warnings.push("Customer budget is missing");
     } else if (!hasPrice) {
         warnings.push("Venue price range is not listed");
     } else {
-        warnings.push("Listed venue price may not fit the customer's budget");
+        warnings.push("Venue's listed starting price is above the customer's budget");
     }
 
     if (!safeValue(lead.event_date)) {
