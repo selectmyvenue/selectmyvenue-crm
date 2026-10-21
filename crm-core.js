@@ -7945,30 +7945,99 @@ function isVenueAlreadyAssigned(venueId) {
     );
 }
 
-function isRecommendedAssignmentVenue(venue, lead) {
+function getVenueMatchAssessment(venue, lead) {
     const venueCity = safeValue(venue.city).toLowerCase();
+    const venueArea = safeValue(venue.area).toLowerCase();
     const leadLocation = safeValue(lead.location).toLowerCase();
+    const leadArea = safeValue(lead.preferred_area).toLowerCase();
     const venueType = safeValue(venue.venue_type).toLowerCase();
     const occasion = safeValue(lead.occasion).toLowerCase();
+    const reasons = [];
+    const warnings = [];
+    let score = 0;
 
-    const locationMatch = venueCity && leadLocation && (
-        leadLocation.includes(venueCity) ||
-        venueCity.includes(leadLocation)
+    const locationMatch = Boolean(
+        (leadArea && venueArea && (leadArea.includes(venueArea) || venueArea.includes(leadArea))) ||
+        (leadLocation && venueCity && (leadLocation.includes(venueCity) || venueCity.includes(leadLocation)))
     );
+    if (locationMatch) {
+        score += 35;
+        reasons.push("Location matches the customer's requested area/city");
+    } else if (leadArea || leadLocation) {
+        warnings.push("Requested location does not match the venue's listed area/city");
+    } else {
+        warnings.push("Customer location is missing");
+    }
 
     const guests = Number(lead.guests);
+    const minCapacity = Number(venue.capacity_min);
     const maxCapacity = Number(venue.capacity_max);
-    const capacityMatch = Number.isFinite(guests) && Number.isFinite(maxCapacity)
-        ? maxCapacity >= guests
-        : false;
+    const hasGuests = safeValue(lead.guests) !== "" && Number.isFinite(guests) && guests > 0;
+    const hasCapacity = safeValue(venue.capacity_min) !== "" || safeValue(venue.capacity_max) !== "";
+    const capacityMatch = hasGuests && hasCapacity &&
+        (!Number.isFinite(minCapacity) || minCapacity <= 0 || guests >= minCapacity) &&
+        (!Number.isFinite(maxCapacity) || maxCapacity <= 0 || guests <= maxCapacity);
+    if (capacityMatch) {
+        score += 30;
+        reasons.push("Guest count fits the venue's listed capacity");
+    } else if (!hasGuests) {
+        warnings.push("Guest count is missing or unclear");
+    } else if (!hasCapacity) {
+        warnings.push("Venue capacity is not listed");
+    } else {
+        warnings.push("Guest count may fall outside the listed venue capacity");
+    }
 
     const typeMatch = (
-        occasion.includes("wedding") && venueType.includes("banquet")
-    ) || (
-        occasion.includes("party") && venueType.includes("party")
+        (occasion.includes("wedding") && /banquet|wedding|farm|resort|hotel/.test(venueType)) ||
+        (occasion.includes("engagement") && /banquet|wedding|farm|resort|hotel/.test(venueType)) ||
+        (occasion.includes("party") && /party|banquet|restaurant|cafe|lounge/.test(venueType)) ||
+        (occasion.includes("birthday") && /party|banquet|restaurant|cafe|lounge/.test(venueType)) ||
+        (occasion.includes("corporate") && /hotel|conference|banquet|business/.test(venueType))
     );
+    if (typeMatch) {
+        score += 20;
+        reasons.push("Venue type appears suitable for the occasion");
+    } else if (!occasion) {
+        warnings.push("Event occasion is missing");
+    } else {
+        warnings.push("Venue type needs staff confirmation for this occasion");
+    }
 
-    return Boolean(locationMatch || capacityMatch || typeMatch);
+    const budget = Number(lead.budget_per_person);
+    const minPrice = Number(venue.price_min_per_person);
+    const maxPrice = Number(venue.price_max_per_person);
+    const hasBudget = safeValue(lead.budget_per_person) !== "" && Number.isFinite(budget) && budget > 0;
+    const hasPrice = safeValue(venue.price_min_per_person) !== "" || safeValue(venue.price_max_per_person) !== "";
+    if (hasBudget && hasPrice &&
+        (!Number.isFinite(minPrice) || minPrice <= 0 || minPrice <= budget) &&
+        (!Number.isFinite(maxPrice) || maxPrice <= 0 || maxPrice >= budget)) {
+        score += 15;
+        reasons.push("Listed per-person price range aligns with the customer's budget");
+    } else if (!hasBudget) {
+        warnings.push("Customer budget is missing");
+    } else if (!hasPrice) {
+        warnings.push("Venue price range is not listed");
+    } else {
+        warnings.push("Listed venue price may not fit the customer's budget");
+    }
+
+    if (!safeValue(lead.event_date)) {
+        warnings.push("Event date is missing");
+    } else {
+        warnings.push("Date availability has not been confirmed by the venue");
+    }
+
+    return {
+        score,
+        reasons,
+        warnings,
+        recommended: score >= 35
+    };
+}
+
+function isRecommendedAssignmentVenue(venue, lead) {
+    return getVenueMatchAssessment(venue, lead).recommended;
 }
 
 function renderAssignmentVenues() {
@@ -8008,7 +8077,12 @@ function renderAssignmentVenues() {
 
     list.innerHTML = venues.map(venue => {
         const assigned = isVenueAlreadyAssigned(venue.id);
-        const recommended = isRecommendedAssignmentVenue(venue, assignmentCurrentLead);
+        const match = getVenueMatchAssessment(venue, assignmentCurrentLead);
+        const recommended = match.recommended;
+        const matchExplanation = match.reasons.length
+            ? match.reasons.slice(0, 2).join(" • ")
+            : "No strong match signal yet; review venue details manually";
+        const matchWarnings = match.warnings.slice(0, 2).join(" • ");
         const capacity = venue.capacity_min || venue.capacity_max
             ? `${safeValue(venue.capacity_min) || "—"}–${safeValue(venue.capacity_max) || "—"}`
             : "Capacity not set";
@@ -8053,6 +8127,11 @@ function renderAssignmentVenues() {
                         <span>👥 ${escapeHTML(capacity)}</span>
                         <span>₹ ${escapeHTML(price.replace(/^₹\s*/, ""))}</span>
                         <span>${escapeHTML(venue.venue_type || "Venue")}</span>
+                    </div>
+                    <div class="venue-assignment-match" aria-label="Venue match assessment">
+                        <strong>Match score: ${match.score}/100</strong>
+                        <span>${escapeHTML(matchExplanation)}</span>
+                        <small>${escapeHTML(matchWarnings)}</small>
                     </div>
                 </div>
                 <div class="venue-assignment-item-side">
