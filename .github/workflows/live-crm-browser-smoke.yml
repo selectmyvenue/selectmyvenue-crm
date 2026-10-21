@@ -7,6 +7,11 @@ on:
   pull_request:
     paths:
       - 'tests/browser-smoke.mjs'
+      - 'dashboard.html'
+      - 'crm-core.js'
+      - 'crm-base.js'
+      - 'crm-enhancements.js'
+      - 'crm-employee-integration.js'
       - 'tests/employee-ui.cjs'
       - 'tests/master-workspace.cjs'
       - 'tests/automation-audit.cjs'
