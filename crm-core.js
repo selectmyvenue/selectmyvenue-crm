@@ -4796,6 +4796,10 @@ function resetVenueSaveState() {
    ========================================================= */
 let allVenueAssignments = [];
 let assignedVenueDetails = {};
+// Keep the last successful snapshot when assignment history temporarily cannot refresh.
+let venueAssignmentsLoadState = "unknown"; // unknown | loaded | stale
+let venueAssignmentsLoadError = "";
+let venueAssignmentsLastLoadedAt = null;
 
 /* Stage 7A — Master CRM Partner Progress Visibility */
 let assignedVenuePartnerProfiles = {};
@@ -7386,9 +7390,9 @@ async function loadVenueAssignments() {
     const client = getSupabaseClient();
 
     if (!client) {
-        allVenueAssignments = [];
-        assignedVenueDetails = {};
-        return;
+        venueAssignmentsLoadState = allVenueAssignments.length ? "stale" : "unknown";
+        venueAssignmentsLoadError = "CRM database connection is unavailable.";
+        return false;
     }
 
     try {
@@ -7398,64 +7402,45 @@ async function loadVenueAssignments() {
             .order("assigned_at", { ascending: false });
 
         if (error) {
-            console.warn(
-                "Venue assignments are not available yet:",
-                error.message
-            );
-            allVenueAssignments = [];
-            assignedVenueDetails = {};
-            return;
+            console.warn("Venue assignments are not available:", error.message);
+            venueAssignmentsLoadState = allVenueAssignments.length ? "stale" : "unknown";
+            venueAssignmentsLoadError = error.message || "Unable to load venue assignments.";
+            if (currentLead) renderLeadVenueAssignments(currentLead.id);
+            return false;
         }
 
+        // Replace the assignment snapshot only after the primary query succeeds.
         allVenueAssignments = Array.isArray(data) ? data : [];
         assignedVenueDetails = {};
+        venueAssignmentsLoadState = "loaded";
+        venueAssignmentsLoadError = "";
+        venueAssignmentsLastLoadedAt = Date.now();
 
-        const venueIds = [
-            ...new Set(
-                allVenueAssignments
-                    .map(item => item.venue_id)
-                    .filter(Boolean)
-                    .map(String)
-            )
-        ];
+        const venueIds = [...new Set(allVenueAssignments.map(item => item.venue_id).filter(Boolean).map(String))];
 
         if (venueIds.length) {
             const { data: venues, error: venueError } = await client
-                .from("venues")
-                .select("id, venue_name, city, area, venue_type")
-                .in("id", venueIds);
-
+                .from("venues").select("id, venue_name, city, area, venue_type").in("id", venueIds);
             if (venueError) {
-                console.warn(
-                    "Assigned venue details could not be loaded:",
-                    venueError.message
-                );
+                console.warn("Assigned venue details could not be loaded:", venueError.message);
             } else {
-                (venues || []).forEach(venue => {
-                    assignedVenueDetails[String(venue.id)] = venue;
-                });
+                (venues || []).forEach(venue => { assignedVenueDetails[String(venue.id)] = venue; });
             }
         }
 
         /* Stage 7A — load partner identities for assigned venues */
         assignedVenuePartnerProfiles = {};
-
         if (venueIds.length) {
             const { data: partnerProfiles, error: partnerProfileError } = await client
                 .from("venue_partner_profiles")
                 .select("id,venue_id,user_id,full_name,designation,email,mobile,is_primary,is_active")
-                .in("venue_id", venueIds)
-                .eq("is_active", true)
-                .order("is_primary", { ascending: false });
-
+                .in("venue_id", venueIds).eq("is_active", true).order("is_primary", { ascending: false });
             if (partnerProfileError) {
                 console.warn("Partner profiles could not be loaded:", partnerProfileError.message);
             } else {
                 (partnerProfiles || []).forEach(profile => {
                     const key = String(profile.venue_id);
-                    if (!assignedVenuePartnerProfiles[key] || profile.is_primary) {
-                        assignedVenuePartnerProfiles[key] = profile;
-                    }
+                    if (!assignedVenuePartnerProfiles[key] || profile.is_primary) assignedVenuePartnerProfiles[key] = profile;
                 });
             }
         }
@@ -7463,42 +7448,33 @@ async function loadVenueAssignments() {
         /* Stage 7A — load partner activity for the assignment cards/journey */
         assignmentActivityHistory = {};
         const assignmentIds = allVenueAssignments.map(item => item.id).filter(Boolean);
-
         if (assignmentIds.length) {
             const { data: activities, error: activityError } = await client
                 .from("venue_activity_log")
                 .select("id,assignment_id,venue_id,user_id,activity_type,description,created_at")
-                .in("assignment_id", assignmentIds)
-                .order("created_at", { ascending: false });
-
+                .in("assignment_id", assignmentIds).order("created_at", { ascending: false });
             if (activityError) {
                 console.warn("Partner activity could not be loaded:", activityError.message);
             } else {
                 (activities || []).forEach(activity => {
                     const key = String(activity.assignment_id);
-                    if (!assignmentActivityHistory[key]) {
-                        assignmentActivityHistory[key] = [];
-                    }
+                    if (!assignmentActivityHistory[key]) assignmentActivityHistory[key] = [];
                     assignmentActivityHistory[key].push(activity);
                 });
             }
         }
 
-        if (currentLead) {
-            renderLeadVenueAssignments(currentLead.id);
-        }
+        if (currentLead) renderLeadVenueAssignments(currentLead.id);
         await loadStage8Analytics();
-    }
-    catch (error) {
-        console.warn(
-            "Venue assignment load error:",
-            error
-        );
-        allVenueAssignments = [];
-        assignedVenueDetails = {};
+        return true;
+    } catch (error) {
+        console.warn("Venue assignment load error:", error);
+        venueAssignmentsLoadState = allVenueAssignments.length ? "stale" : "unknown";
+        venueAssignmentsLoadError = error?.message || "Unable to load venue assignments.";
+        if (currentLead) renderLeadVenueAssignments(currentLead.id);
+        return false;
     }
 }
-
 function getAssignmentStatusLabel(status) {
     const labels = {
         assigned: "Assigned",
@@ -7629,17 +7605,19 @@ function renderLeadVenueAssignments(enquiryId) {
         assignButton.onclick = () => openVenueAssignmentModal(enquiryId);
     }
 
+    const staleNotice = venueAssignmentsLoadState === "stale"
+        ? `<div class="lead-venue-load-warning" role="status" style="margin:0 0 10px;padding:10px 12px;border:1px solid #e7c777;border-radius:10px;background:#fff8e7;color:#805b12;font-size:12px;">Could not refresh venue assignment history. Showing the last successfully loaded information. ${escapeHTML(venueAssignmentsLoadError || "Please retry refresh.")}</div>`
+        : "";
+
     if (!assignments.length) {
-        container.innerHTML = `
-            <div class="lead-venue-empty">
-                No venues assigned to this enquiry yet.
-                Use <strong>Assign Venue</strong> to send this enquiry to a verified partner.
-            </div>
-        `;
+        const emptyMessage = venueAssignmentsLoadState === "unknown"
+            ? "Venue assignment history has not loaded yet. Refresh before concluding that no venue is assigned."
+            : "No venues assigned to this enquiry yet. Use Assign Venue to send this enquiry to a verified partner.";
+        container.innerHTML = staleNotice + `<div class="lead-venue-empty">${escapeHTML(emptyMessage)}</div>`;
         return;
     }
 
-    container.innerHTML = assignments.map(assignment => {
+    container.innerHTML = staleNotice + assignments.map(assignment => {
         const venue = assignedVenueDetails[String(assignment.venue_id)] || {};
         const status = safeValue(assignment.assignment_status) || "assigned";
         const location = [venue.city, venue.area].filter(Boolean).join(" • ") || "Location not set";
