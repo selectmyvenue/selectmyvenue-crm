@@ -3,7 +3,7 @@
 Date: 2026-10-21
 Branch: `feature/ai-crm-operations-control`
 Scope: Master CRM, employee lead workflow, venue management, venue assignment, operational automation and attribution.
-Status: Audit baseline and acceptance criteria only. This document does not authorize production deployment.
+Status: Audit baseline plus first additive operations-control change in PR #30. This document does not authorize production deployment.
 
 ## Safety constraints
 
@@ -21,10 +21,17 @@ Status: Audit baseline and acceptance criteria only. This document does not auth
 - Employee CRM documentation describes the `agent` role, restricted save RPC `smv_employee_save_lead`, optimistic concurrency checks, activity attribution, and no direct employee lead INSERT/UPDATE/DELETE policy.
 - Existing operations enhancement code includes a priority/action centre, follow-up overdue and due-today queues, uncontacted leads, unassigned-lead checks, duplicate hints, venue profile completeness, and stale-profile review.
 - Existing venue-assignment integration has requirement parsing, venue readiness checks, a match score/shortlist, hard exclusions for known conflicts, match explanations, and WhatsApp handoff controls.
-- Existing test suite scripts are `tests/master-workspace.cjs`, `tests/employee-ui.cjs`, and `tests/automation-audit.cjs`; `npm test` runs these three scripts.
+- Existing test suite scripts are `tests/master-workspace.cjs`, `tests/employee-ui.cjs`, and `tests/automation-audit.cjs`. This branch adds `tests/ops-audit.cjs` and includes it in `npm test`.
 - Existing database documentation explicitly treats the 2026 security migration as production-critical and warns against rerunning older security SQL after it.
 
 This baseline is source-code evidence only. It does not prove that every control works in the authenticated production deployment.
+
+## Implemented on this branch (pending CI and review)
+
+- Action Center now distinguishes leads without an internal staff owner (`assigned_to`) from leads without an active venue assignment.
+- Ownerless active leads appear in the priority work queue with a `No staff owner` reason and a dedicated KPI. Terminal leads remain excluded from the active ownerless count.
+- Added a synthetic-DOM regression test and wired it into `npm test` and the pull-request workflow.
+- This is an alert/visibility feature only: it does not automatically reassign staff, write to production, or change database/security contracts.
 
 ## Prioritized requirements
 
