@@ -83,7 +83,17 @@ const tick=()=>new Promise(r=>setTimeout(r,25));
  assert(unknownMatch.warnings.some(w=>w.includes('Customer location is missing')));
  assert(unknownMatch.warnings.some(w=>w.includes('Guest count is missing')));
  assert(unknownMatch.warnings.some(w=>w.includes('Event date is missing')));
- console.log('PASS explainable venue matching separates score, reasons, missing data and unconfirmed date availability');
+ const cheaperVenue=scoreMatch(
+  {city:'Gurugram',area:'Sector 29',venue_type:'Banquet Hall',capacity_min:50,capacity_max:300,price_min_per_person:800,price_max_per_person:1400},
+  {location:'Gurugram',preferred_area:'Sector 29',occasion:'Wedding',guests:150,budget_per_person:1500,event_date:'2026-12-20'}
+ );
+ assert(cheaperVenue.reasons.some(r=>r.includes('starting price is within')),'A venue priced below the customer budget should count as a fit');
+ const overBudgetVenue=scoreMatch(
+  {city:'Gurugram',area:'Sector 29',venue_type:'Banquet Hall',capacity_min:50,capacity_max:300,price_min_per_person:2200,price_max_per_person:3500},
+  {location:'Gurugram',preferred_area:'Sector 29',occasion:'Wedding',guests:150,budget_per_person:1500,event_date:'2026-12-20'}
+ );
+ assert(overBudgetVenue.warnings.some(w=>w.includes('starting price is above')),'A venue starting above budget must warn rather than receive budget-fit points');
+ console.log('PASS explainable venue matching separates score, reasons, missing data, budget boundaries and unconfirmed date availability');
  // Run both source decorators under the real MutationObserver; they must settle.
  const base=fs.readFileSync(path.join(root,'crm-base.js'),'utf8');
  const decorator=base.slice(base.indexOf('  function decorateLeadSources()'),base.indexOf('  function getControlValue('));
