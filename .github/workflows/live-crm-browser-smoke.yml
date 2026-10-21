@@ -10,6 +10,8 @@ on:
       - 'tests/employee-ui.cjs'
       - 'tests/master-workspace.cjs'
       - 'tests/automation-audit.cjs'
+      - 'tests/ops-audit.cjs'
+      - 'package.json'
       - '.github/workflows/live-crm-browser-smoke.yml'
       - '.github/workflows/live-crm-browser-smoke.yml'
 
