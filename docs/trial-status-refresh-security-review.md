@@ -3,62 +3,61 @@
 ## Finding
 
 The live `public.smv_refresh_trial_statuses()` function was `SECURITY DEFINER`
-and executable by `anon` and `authenticated`. Its body updated expired
-`launch_trial` venue records across the project and checked only that
-`auth.uid()` was non-null. Any signed-in account could therefore invoke a
-project-wide lifecycle update.
+and checked only that `auth.uid()` was non-null before updating expired
+`launch_trial` venue records across the project. This allowed any signed-in
+account to attempt a project-wide lifecycle update.
 
-## Proposed fix
+## Fix applied
 
-Migration `20261021200000_restrict_trial_status_refresh_to_admin.sql` adds an
-active-administrator authorization check using
-`public.smv_is_active_staff()`, revokes execution from `PUBLIC` and `anon`,
-and retains authenticated execution for the existing CRM caller. The existing
-trial-expiry criteria and update behavior are unchanged. The service-role
-grant is left unchanged.
+Migration version `20261021184341` (`restrict_trial_status_refresh_to_admin`)
+was applied to the live Supabase project on 2026-10-21. The function now checks
+`public.smv_is_active_staff()` and raises SQLSTATE `42501` unless the caller
+is an active administrator. The existing trial-expiry criteria are unchanged.
+The function ACL now explicitly lists `postgres`, `authenticated`, and
+`service_role`; it does not list `anon` or `PUBLIC`.
 
-## Other Supabase advisor findings reviewed
+## Verification completed
 
-- `public.smv_block_inactive_venue_assignment()`: trigger-returning function;
-  execution exposure is unnecessary for ordinary clients and should be removed
-  in a separate reviewed change only after confirming trigger wiring. This
-  function must still remain executable by the role that runs the trigger.
-- `public.smv_is_venue_assignment_eligible(uuid)`: returns only whether a venue
-  is approved and verified. Public execution may be intentional, but should be
-  confirmed against callers before restricting it.
-- `public.smv_partner_sync_plan_expiry()`: partner-scoped lifecycle function;
-  its body selects the caller's active venue and rejects callers without one.
-  Anonymous execution is unnecessary and should be revoked after confirming
-  the frontend uses only authenticated sessions.
-- `public.smv_public_venues()`: returns a deliberate safe-column public venue
-  directory and filters to approved, verified, public-enabled venues. Public
-  execution appears intentional.
-- `public.smv_sync_venue_plan_expiry(uuid)`: body checks
-  `smv_is_active_staff()` before updating and therefore has an admin guard;
-  its broad execute grant is not, by itself, evidence of an authorization bypass.
-- `public.smv_admin_analytics()`, `public.smv_assignment_venues()`,
-  `public.smv_is_active_staff()`, and notification/follow-up RPCs should be
-  judged by their in-function authorization checks and expected client usage,
-  not blanket-revoked based only on the advisor warning.
-- Supabase also flagged `geocode_cache` and `route_distance_cache` for RLS
-  enabled with no policies, `pg_net` installed in `public`, and leaked-password
-  protection disabled. These need separate exposure/configuration review; this
-  PR does not alter them.
+- Read back the live function definition and confirmed the administrator guard,
+  SQLSTATE `42501`, `SECURITY DEFINER`, and empty `search_path`.
+- Read back the function ACL and confirmed no explicit `anon` or `PUBLIC`
+  execution grant.
+- Invoked the RPC from the SQL execution context without an authenticated user;
+  it was rejected with SQLSTATE `42501` and `Administrator access required`.
+- Checked the Supabase migration list and confirmed version
+  `20261021184341` is recorded.
 
-## Verification plan
+## Verification still pending
 
-1. Apply the migration only after review/approval; this branch does not change
-   the live database.
-2. Confirm the function definition contains the administrator guard and its
-   ACL no longer permits `anon` / `PUBLIC`.
-3. With an authorized admin session, call the RPC and confirm it completes.
-4. With a partner or ordinary authenticated non-admin session, call the RPC
-   and confirm SQLSTATE `42501` is returned and no venue plan status changes.
-5. Re-run Supabase security advisors.
-6. Complete the separate two-partner isolation test when a second authorized
-   partner login is available.
+- Call the RPC from a real active-admin browser session and confirm success.
+- Call from a real partner/non-admin session and confirm rejection. The SQL
+  context denial proves the guard rejects a caller without an admin identity,
+  but does not replace this authenticated test.
+- Re-run advisors after their findings refresh.
+- Complete the separate two-partner data-isolation test when a second authorized
+  partner login is available.
+
+## Other Supabase advisor findings
+
+These remain separate from this narrowly scoped fix:
+
+- `public.smv_block_inactive_venue_assignment()`: advisor flags anon and
+  authenticated execution. Confirm trigger wiring before adjusting privileges.
+- `public.smv_is_venue_assignment_eligible(uuid)`: returns venue eligibility;
+  confirm whether public execution is required by callers.
+- `public.smv_partner_sync_plan_expiry()`: partner-scoped function whose body
+  checks active venue context; anonymous execution should be reviewed.
+- `public.smv_public_venues()`: public, safe-column directory filtered to
+  approved, verified, public-enabled venues; public execution appears intended.
+- `public.smv_sync_venue_plan_expiry(uuid)`: function body checks active-admin
+  authorization before updating.
+- Supabase flagged `geocode_cache` and `route_distance_cache` for RLS enabled
+  with no policies, `pg_net` installed in `public`, and leaked-password
+  protection disabled. These need separate review and are not changed here.
 
 ## Safety boundary
 
-No production SQL was executed by this change. No venue plan statuses, customer
-enquiries, RLS policies, or production deployments were modified.
+Only the trial-status refresh function definition and its execute grants were
+changed. No customer enquiry data, `customer_enquiries` schema, table RLS
+policies, or website deployment was changed. Partner isolation testing remains
+pending.
