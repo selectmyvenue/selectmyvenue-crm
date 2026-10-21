@@ -30,7 +30,8 @@ This baseline is source-code evidence only. It does not prove that every control
 
 - Action Center now distinguishes leads without an internal staff owner (`assigned_to`) from leads without an active venue assignment.
 - Ownerless active leads appear in the priority work queue with a `No staff owner` reason and a dedicated KPI. Terminal leads remain excluded from the active ownerless count.
-- Added a synthetic-DOM regression test and wired it into `npm test` and the pull-request workflow.
+- Active in-progress leads without a scheduled next follow-up now appear in the priority queue and a dedicated `Missing Follow-up` KPI. New leads remain covered by the separate first-response SLA, and terminal leads are excluded.
+- Added synthetic-DOM regression coverage for both controls and wired it into `npm test` and the pull-request workflow.
 - This is an alert/visibility feature only: it does not automatically reassign staff, write to production, or change database/security contracts.
 
 ## Prioritized requirements
