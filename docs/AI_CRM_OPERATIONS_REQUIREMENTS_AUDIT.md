@@ -66,6 +66,50 @@ This baseline is source-code evidence only. It does not prove that every control
 4. Enforce tenant isolation: a venue partner may only access that venue's authorised assignments and permitted fields.
 5. Keep partner plan and billing operations separate from lead assignment logic.
 
+
+## Recommended business-growth roadmap
+
+### Phase A — Recover more leads already being paid for (highest priority)
+1. **Speed-to-lead SLA:** record first human contact time, alert the owner at 5 minutes, escalate to the manager at 15 minutes, and report median / 90th-percentile response time by source and employee. Thresholds should be configurable and evaluated against actual lead volume.
+2. **Next-action enforcement:** every active lead after first contact should have a dated next step; overdue and missing-next-action alerts already begin in this branch. Add bulk manager reassignment only after the audit trail and authorization path are verified.
+3. **Lead-quality feedback:** require a structured outcome when a lead is lost or marked not-interested (unreachable, invalid number, budget mismatch, date unavailable, location mismatch, duplicate, booked elsewhere, other). Report quality by source/campaign without overwriting the original source.
+4. **Follow-up workbench:** one daily queue per employee for first calls, callbacks, follow-ups, site visits and stale leads; managers see unworked and overdue queues without opening every lead.
+5. **Human-approved messaging:** generate concise call openers and WhatsApp drafts from the customer's actual requirements, with one suggested next question. Keep send actions explicit; do not auto-send through the existing WhatsApp Business app.
+
+### Phase B — Make venue assignment a conversion engine
+1. **Explainable match score:** separate hard eligibility, match confidence, data completeness and venue quality. Show why a venue matches, what is unknown, and what must be confirmed. Never present unknown date availability as confirmed.
+2. **Venue response SLA:** track assignment sent/viewed/responded/declined and response time. Escalate a non-responsive partner and let authorised staff reassign with a reason.
+3. **Demand-versus-supply map:** report enquiry volume by locality, occasion, budget and guest count against verified, active, public venues that can serve those needs. Prioritise venue acquisition where genuine demand is underserved.
+4. **Partner growth cockpit:** show profile completeness, enquiry response rate, venue views/leads where available, site visits, outcomes and plan renewal date. Keep private customer information restricted to the partner's own authorised assignments.
+5. **Availability confirmation:** add a venue confirmation workflow for requested date and time. This should be a recorded partner response, not inferred from static venue data.
+
+### Phase C — Measure marketing and revenue, not just activity
+1. **Attribution integrity:** preserve the original source and capture available campaign identifiers (UTM/source/campaign/ad/form) at intake. Do not guess campaign attribution from customer names or notes.
+2. **Funnel dashboard:** report enquiry → contacted → qualified → venue shared → site visit → booked/lost, with clear stage definitions and conversion denominators.
+3. **Source ROI:** connect spend from available ad connectors to qualified leads, site visits and booked outcomes. Treat cost-per-lead as a diagnostic, not the final success metric.
+4. **SEO demand loop:** combine Search Console landing-page/query performance with CRM enquiry location and occasion. Create or improve location pages only where venue supply and customer intent support useful, accurate content.
+5. **Venue-owner acquisition pipeline:** prospect → contacted → demo/onboarding → profile complete → verified/public → first qualified lead → renewal. Measure time to first value and renewal, not only number of venues listed.
+
+### Phase D — Automate safely once the data is reliable
+1. Daily manager digest: unworked leads, overdue callbacks, pending venue responses, site visits today, expiring plans and high-intent enquiries.
+2. Event-triggered notifications: new lead, ownership change, follow-up due, venue response overdue, site-visit reminder and plan expiry. Use existing notification infrastructure where possible.
+3. AI call summaries / quality coaching only after call-recording/transcription consent, access controls, retention rules and provider cost are reviewed.
+4. Predictive scoring only after enough reliable outcome data exists. Start with transparent rules; validate precision and conversion lift before using machine-learning scores for routing.
+
+## Success scorecard
+
+Establish a 2–4 week baseline before setting targets. Review weekly:
+- Median and 90th-percentile time to first human contact.
+- Share of active leads with an owner and a dated next action.
+- Follow-ups completed on time.
+- Venue assignment response rate and median response time.
+- Enquiry-to-qualified, qualified-to-site-visit and site-visit-to-booked conversion.
+- Invalid/duplicate lead rate by source.
+- Cost per qualified lead and cost per booked event where spend and outcomes are available.
+- Venue profile completeness, time to first qualified enquiry and partner renewal rate.
+
+Do not promise a percentage increase in bookings before this baseline exists. Use staged experiments and compare cohorts to verify which changes actually improve outcomes.
+
 ## Acceptance test checklist
 
 - [ ] `npm test` passes on this branch.
