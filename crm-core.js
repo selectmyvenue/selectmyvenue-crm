@@ -4796,6 +4796,10 @@ function resetVenueSaveState() {
    ========================================================= */
 let allVenueAssignments = [];
 let assignedVenueDetails = {};
+// Keep the last successful snapshot when assignment history temporarily cannot refresh.
+let venueAssignmentsLoadState = "unknown"; // unknown | loaded | stale
+let venueAssignmentsLoadError = "";
+let venueAssignmentsLastLoadedAt = null;
 
 /* Stage 7A — Master CRM Partner Progress Visibility */
 let assignedVenuePartnerProfiles = {};
@@ -7386,9 +7390,9 @@ async function loadVenueAssignments() {
     const client = getSupabaseClient();
 
     if (!client) {
-        allVenueAssignments = [];
-        assignedVenueDetails = {};
-        return;
+        venueAssignmentsLoadState = venueAssignmentsLastLoadedAt !== null ? "stale" : "unknown";
+        venueAssignmentsLoadError = "CRM database connection is unavailable.";
+        return false;
     }
 
     try {
@@ -7398,64 +7402,45 @@ async function loadVenueAssignments() {
             .order("assigned_at", { ascending: false });
 
         if (error) {
-            console.warn(
-                "Venue assignments are not available yet:",
-                error.message
-            );
-            allVenueAssignments = [];
-            assignedVenueDetails = {};
-            return;
+            console.warn("Venue assignments are not available:", error.message);
+            venueAssignmentsLoadState = venueAssignmentsLastLoadedAt !== null ? "stale" : "unknown";
+            venueAssignmentsLoadError = error.message || "Unable to load venue assignments.";
+            if (currentLead) renderLeadVenueAssignments(currentLead.id);
+            return false;
         }
 
+        // Replace the assignment snapshot only after the primary query succeeds.
         allVenueAssignments = Array.isArray(data) ? data : [];
         assignedVenueDetails = {};
+        venueAssignmentsLoadState = "loaded";
+        venueAssignmentsLoadError = "";
+        venueAssignmentsLastLoadedAt = Date.now();
 
-        const venueIds = [
-            ...new Set(
-                allVenueAssignments
-                    .map(item => item.venue_id)
-                    .filter(Boolean)
-                    .map(String)
-            )
-        ];
+        const venueIds = [...new Set(allVenueAssignments.map(item => item.venue_id).filter(Boolean).map(String))];
 
         if (venueIds.length) {
             const { data: venues, error: venueError } = await client
-                .from("venues")
-                .select("id, venue_name, city, area, venue_type")
-                .in("id", venueIds);
-
+                .from("venues").select("id, venue_name, city, area, venue_type").in("id", venueIds);
             if (venueError) {
-                console.warn(
-                    "Assigned venue details could not be loaded:",
-                    venueError.message
-                );
+                console.warn("Assigned venue details could not be loaded:", venueError.message);
             } else {
-                (venues || []).forEach(venue => {
-                    assignedVenueDetails[String(venue.id)] = venue;
-                });
+                (venues || []).forEach(venue => { assignedVenueDetails[String(venue.id)] = venue; });
             }
         }
 
         /* Stage 7A — load partner identities for assigned venues */
         assignedVenuePartnerProfiles = {};
-
         if (venueIds.length) {
             const { data: partnerProfiles, error: partnerProfileError } = await client
                 .from("venue_partner_profiles")
                 .select("id,venue_id,user_id,full_name,designation,email,mobile,is_primary,is_active")
-                .in("venue_id", venueIds)
-                .eq("is_active", true)
-                .order("is_primary", { ascending: false });
-
+                .in("venue_id", venueIds).eq("is_active", true).order("is_primary", { ascending: false });
             if (partnerProfileError) {
                 console.warn("Partner profiles could not be loaded:", partnerProfileError.message);
             } else {
                 (partnerProfiles || []).forEach(profile => {
                     const key = String(profile.venue_id);
-                    if (!assignedVenuePartnerProfiles[key] || profile.is_primary) {
-                        assignedVenuePartnerProfiles[key] = profile;
-                    }
+                    if (!assignedVenuePartnerProfiles[key] || profile.is_primary) assignedVenuePartnerProfiles[key] = profile;
                 });
             }
         }
@@ -7463,42 +7448,33 @@ async function loadVenueAssignments() {
         /* Stage 7A — load partner activity for the assignment cards/journey */
         assignmentActivityHistory = {};
         const assignmentIds = allVenueAssignments.map(item => item.id).filter(Boolean);
-
         if (assignmentIds.length) {
             const { data: activities, error: activityError } = await client
                 .from("venue_activity_log")
                 .select("id,assignment_id,venue_id,user_id,activity_type,description,created_at")
-                .in("assignment_id", assignmentIds)
-                .order("created_at", { ascending: false });
-
+                .in("assignment_id", assignmentIds).order("created_at", { ascending: false });
             if (activityError) {
                 console.warn("Partner activity could not be loaded:", activityError.message);
             } else {
                 (activities || []).forEach(activity => {
                     const key = String(activity.assignment_id);
-                    if (!assignmentActivityHistory[key]) {
-                        assignmentActivityHistory[key] = [];
-                    }
+                    if (!assignmentActivityHistory[key]) assignmentActivityHistory[key] = [];
                     assignmentActivityHistory[key].push(activity);
                 });
             }
         }
 
-        if (currentLead) {
-            renderLeadVenueAssignments(currentLead.id);
-        }
+        if (currentLead) renderLeadVenueAssignments(currentLead.id);
         await loadStage8Analytics();
-    }
-    catch (error) {
-        console.warn(
-            "Venue assignment load error:",
-            error
-        );
-        allVenueAssignments = [];
-        assignedVenueDetails = {};
+        return true;
+    } catch (error) {
+        console.warn("Venue assignment load error:", error);
+        venueAssignmentsLoadState = venueAssignmentsLastLoadedAt !== null ? "stale" : "unknown";
+        venueAssignmentsLoadError = error?.message || "Unable to load venue assignments.";
+        if (currentLead) renderLeadVenueAssignments(currentLead.id);
+        return false;
     }
 }
-
 function getAssignmentStatusLabel(status) {
     const labels = {
         assigned: "Assigned",
@@ -7629,17 +7605,19 @@ function renderLeadVenueAssignments(enquiryId) {
         assignButton.onclick = () => openVenueAssignmentModal(enquiryId);
     }
 
+    const staleNotice = venueAssignmentsLoadState === "stale"
+        ? `<div class="lead-venue-load-warning" role="status" style="margin:0 0 10px;padding:10px 12px;border:1px solid #e7c777;border-radius:10px;background:#fff8e7;color:#805b12;font-size:12px;">Could not refresh venue assignment history. Showing the last successfully loaded information. ${escapeHTML(venueAssignmentsLoadError || "Please retry refresh.")}</div>`
+        : "";
+
     if (!assignments.length) {
-        container.innerHTML = `
-            <div class="lead-venue-empty">
-                No venues assigned to this enquiry yet.
-                Use <strong>Assign Venue</strong> to send this enquiry to a verified partner.
-            </div>
-        `;
+        const emptyMessage = venueAssignmentsLoadState === "unknown"
+            ? "Venue assignment history has not loaded yet. Refresh before concluding that no venue is assigned."
+            : "No venues assigned to this enquiry yet. Use Assign Venue to send this enquiry to a verified partner.";
+        container.innerHTML = staleNotice + `<div class="lead-venue-empty">${escapeHTML(emptyMessage)}</div>`;
         return;
     }
 
-    container.innerHTML = assignments.map(assignment => {
+    container.innerHTML = staleNotice + assignments.map(assignment => {
         const venue = assignedVenueDetails[String(assignment.venue_id)] || {};
         const status = safeValue(assignment.assignment_status) || "assigned";
         const location = [venue.city, venue.area].filter(Boolean).join(" • ") || "Location not set";
@@ -7967,30 +7945,104 @@ function isVenueAlreadyAssigned(venueId) {
     );
 }
 
-function isRecommendedAssignmentVenue(venue, lead) {
+function getVenueMatchAssessment(venue, lead) {
     const venueCity = safeValue(venue.city).toLowerCase();
+    const venueArea = safeValue(venue.area).toLowerCase();
     const leadLocation = safeValue(lead.location).toLowerCase();
+    const leadArea = safeValue(lead.preferred_area).toLowerCase();
     const venueType = safeValue(venue.venue_type).toLowerCase();
     const occasion = safeValue(lead.occasion).toLowerCase();
+    const reasons = [];
+    const warnings = [];
+    let score = 0;
 
-    const locationMatch = venueCity && leadLocation && (
-        leadLocation.includes(venueCity) ||
-        venueCity.includes(leadLocation)
+    const locationMatch = Boolean(
+        (leadArea && venueArea && (leadArea.includes(venueArea) || venueArea.includes(leadArea))) ||
+        (leadLocation && venueCity && (leadLocation.includes(venueCity) || venueCity.includes(leadLocation)))
     );
+    if (locationMatch) {
+        score += 35;
+        reasons.push("Location matches the customer's requested area/city");
+    } else if (leadArea || leadLocation) {
+        warnings.push("Requested location does not match the venue's listed area/city");
+    } else {
+        warnings.push("Customer location is missing");
+    }
 
     const guests = Number(lead.guests);
+    const minCapacity = Number(venue.capacity_min);
     const maxCapacity = Number(venue.capacity_max);
-    const capacityMatch = Number.isFinite(guests) && Number.isFinite(maxCapacity)
-        ? maxCapacity >= guests
-        : false;
+    const hasGuests = safeValue(lead.guests) !== "" && Number.isFinite(guests) && guests > 0;
+    const hasCapacity = safeValue(venue.capacity_min) !== "" || safeValue(venue.capacity_max) !== "";
+    const capacityMatch = hasGuests && hasCapacity &&
+        (!Number.isFinite(minCapacity) || minCapacity <= 0 || guests >= minCapacity) &&
+        (!Number.isFinite(maxCapacity) || maxCapacity <= 0 || guests <= maxCapacity);
+    if (capacityMatch) {
+        score += 30;
+        reasons.push("Guest count fits the venue's listed capacity");
+    } else if (!hasGuests) {
+        warnings.push("Guest count is missing or unclear");
+    } else if (!hasCapacity) {
+        warnings.push("Venue capacity is not listed");
+    } else {
+        warnings.push("Guest count may fall outside the listed venue capacity");
+    }
 
     const typeMatch = (
-        occasion.includes("wedding") && venueType.includes("banquet")
-    ) || (
-        occasion.includes("party") && venueType.includes("party")
+        (occasion.includes("wedding") && /banquet|wedding|farm|resort|hotel/.test(venueType)) ||
+        (occasion.includes("engagement") && /banquet|wedding|farm|resort|hotel/.test(venueType)) ||
+        (occasion.includes("party") && /party|banquet|restaurant|cafe|lounge/.test(venueType)) ||
+        (occasion.includes("birthday") && /party|banquet|restaurant|cafe|lounge/.test(venueType)) ||
+        (occasion.includes("corporate") && /hotel|conference|banquet|business/.test(venueType))
     );
+    if (typeMatch) {
+        score += 20;
+        reasons.push("Venue type appears suitable for the occasion");
+    } else if (!occasion) {
+        warnings.push("Event occasion is missing");
+    } else {
+        warnings.push("Venue type needs staff confirmation for this occasion");
+    }
 
-    return Boolean(locationMatch || capacityMatch || typeMatch);
+    const budget = Number(lead.budget_per_person);
+    const minPrice = Number(venue.price_min_per_person);
+    const maxPrice = Number(venue.price_max_per_person);
+    const hasBudget = safeValue(lead.budget_per_person) !== "" && Number.isFinite(budget) && budget > 0;
+    const hasPrice = safeValue(venue.price_min_per_person) !== "" || safeValue(venue.price_max_per_person) !== "";
+    const hasValidMinPrice = Number.isFinite(minPrice) && minPrice > 0 && safeValue(venue.price_min_per_person) !== "";
+    const hasValidMaxPrice = Number.isFinite(maxPrice) && maxPrice > 0 && safeValue(venue.price_max_per_person) !== "";
+    const budgetCouldFit = hasBudget && hasPrice &&
+        (!hasValidMinPrice || minPrice <= budget);
+    if (budgetCouldFit) {
+        score += 15;
+        reasons.push("Venue's listed starting price is within the customer's per-person budget");
+        if (hasValidMaxPrice && maxPrice > budget) {
+            warnings.push("Some venue packages may exceed the customer's budget; confirm package pricing");
+        }
+    } else if (!hasBudget) {
+        warnings.push("Customer budget is missing");
+    } else if (!hasPrice) {
+        warnings.push("Venue price range is not listed");
+    } else {
+        warnings.push("Venue's listed starting price is above the customer's budget");
+    }
+
+    if (!safeValue(lead.event_date)) {
+        warnings.push("Event date is missing");
+    } else {
+        warnings.push("Date availability has not been confirmed by the venue");
+    }
+
+    return {
+        score,
+        reasons,
+        warnings,
+        recommended: score >= 35
+    };
+}
+
+function isRecommendedAssignmentVenue(venue, lead) {
+    return getVenueMatchAssessment(venue, lead).recommended;
 }
 
 function renderAssignmentVenues() {
@@ -8030,7 +8082,12 @@ function renderAssignmentVenues() {
 
     list.innerHTML = venues.map(venue => {
         const assigned = isVenueAlreadyAssigned(venue.id);
-        const recommended = isRecommendedAssignmentVenue(venue, assignmentCurrentLead);
+        const match = getVenueMatchAssessment(venue, assignmentCurrentLead);
+        const recommended = match.recommended;
+        const matchExplanation = match.reasons.length
+            ? match.reasons.slice(0, 2).join(" • ")
+            : "No strong match signal yet; review venue details manually";
+        const matchWarnings = match.warnings.slice(0, 2).join(" • ");
         const capacity = venue.capacity_min || venue.capacity_max
             ? `${safeValue(venue.capacity_min) || "—"}–${safeValue(venue.capacity_max) || "—"}`
             : "Capacity not set";
@@ -8075,6 +8132,11 @@ function renderAssignmentVenues() {
                         <span>👥 ${escapeHTML(capacity)}</span>
                         <span>₹ ${escapeHTML(price.replace(/^₹\s*/, ""))}</span>
                         <span>${escapeHTML(venue.venue_type || "Venue")}</span>
+                    </div>
+                    <div class="venue-assignment-match" aria-label="Venue match assessment">
+                        <strong>Match score: ${match.score}/100</strong>
+                        <span>${escapeHTML(matchExplanation)}</span>
+                        <small>${escapeHTML(matchWarnings)}</small>
                     </div>
                 </div>
                 <div class="venue-assignment-item-side">

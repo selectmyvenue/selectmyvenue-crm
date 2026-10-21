@@ -205,6 +205,16 @@
       return due && due.getTime() < now.getTime();
     });
 
+    // A contacted/qualified lead needs an explicit next action. A new lead is
+    // handled by the separate first-response SLA, not this missing-follow-up queue.
+    const followUpExpectedStatuses = new Set([
+      "contacted", "follow-up", "interested", "qualified", "detail-shared",
+      "site-visit", "not-pick", "negotiation", "converted"
+    ]);
+    const missingFollowUp = active.filter(lead =>
+      followUpExpectedStatuses.has(statusOf(lead)) && !dateValue(lead.follow_up_at)
+    );
+
     const siteVisitsToday = active.filter(lead => {
       const visit = dateValue(lead.site_visit_at);
       return visit && isSameLocalDay(visit, now);
@@ -214,6 +224,10 @@
       ["new", "contacted", "interested", "qualified"].includes(statusOf(lead)) &&
       !assignedLeadIds.has(String(lead.id))
     );
+
+    // Staff ownership is separate from venue assignment. Surface active leads
+    // with no owner so managers can distribute work before response SLAs slip.
+    const unownedStaff = active.filter(lead => !safeText(lead.assigned_to));
 
     const noPartnerResponse = leadAssignments.filter(item => {
       const status = safeText(item.assignment_status || item.status || "assigned").toLowerCase();
@@ -242,11 +256,13 @@
 
     overdue.forEach(lead => addPriority(lead, "critical", "Follow-up overdue"));
     newUncontacted.forEach(lead => addPriority(lead, "critical", `New ${formatAge(minutesSince(lead.created_at))} · not contacted`));
+    missingFollowUp.forEach(lead => addPriority(lead, "warning", "No next follow-up scheduled"));
     noPartnerResponse.forEach(item => {
       const lead = all.find(l => String(l.id) === String(item.enquiry_id));
       addPriority(lead, "warning", "Partner no response 24h+");
     });
     unassigned.forEach(lead => addPriority(lead, "warning", "No active venue assignment"));
+    unownedStaff.forEach(lead => addPriority(lead, "warning", "No staff owner"));
     followToday.forEach(lead => addPriority(lead, "info", "Follow-up due today"));
     siteVisitsToday.forEach(lead => addPriority(lead, "info", "Site visit today"));
 
@@ -259,8 +275,10 @@
       newUncontacted,
       followToday,
       overdue,
+      missingFollowUp,
       siteVisitsToday,
       unassigned,
+      unownedStaff,
       noPartnerResponse,
       duplicates: dups,
       duplicateLeadIds,
@@ -401,7 +419,9 @@
         ${kpi("New >15 min", snap.newUncontacted.length, "critical", "Not contacted")}
         ${kpi("Overdue", snap.overdue.length, "critical", "Follow-ups")}
         ${kpi("Due Today", snap.followToday.length, "", "Follow-ups")}
+        ${kpi("Missing Follow-up", snap.missingFollowUp.length, "warning", "Next action not scheduled")}
         ${kpi("No Venue", snap.unassigned.length, "warning", "Active leads")}
+        ${kpi("No Staff Owner", snap.unownedStaff.length, "warning", "Active leads")}
         ${kpi("Partner >24h", snap.noPartnerResponse.length, "warning", "No response")}
         ${kpi("Duplicates", snap.duplicates.length, "", "Potential groups")}
       </div>

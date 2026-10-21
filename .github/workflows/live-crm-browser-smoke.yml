@@ -7,10 +7,18 @@ on:
   pull_request:
     paths:
       - 'tests/browser-smoke.mjs'
+      - 'dashboard.html'
+      - 'crm-core.js'
+      - 'crm-base.js'
+      - 'crm-enhancements.js'
+      - 'crm-employee-integration.js'
       - 'tests/employee-ui.cjs'
+      - 'tests/auth-gates.cjs'
       - 'tests/master-workspace.cjs'
       - 'tests/automation-audit.cjs'
-      - '.github/workflows/live-crm-browser-smoke.yml'
+      - 'tests/ops-audit.cjs'
+      - 'docs/AI_CRM_OPERATIONS_REQUIREMENTS_AUDIT.md'
+      - 'package.json'
       - '.github/workflows/live-crm-browser-smoke.yml'
 
 permissions:
