@@ -13,7 +13,6 @@ on:
       - 'tests/ops-audit.cjs'
       - 'package.json'
       - '.github/workflows/live-crm-browser-smoke.yml'
-      - '.github/workflows/live-crm-browser-smoke.yml'
 
 permissions:
   contents: read
