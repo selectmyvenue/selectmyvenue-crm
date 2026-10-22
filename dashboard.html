@@ -16,7 +16,7 @@
 
     <link rel="stylesheet" href="crm.css?v=20261023-venue-layout-fix-3">
 
-    <link rel="stylesheet" href="venue-area-capacity.css?v=20261023-layout-fix-9">
+    <link rel="stylesheet" href="venue-area-capacity.css?v=20261023-layout-fix-10">
 <script>
 /* Remove the legacy Venue Profile Health card even when a UI enhancer injects it later. */
 (function () {
@@ -180,53 +180,45 @@
   #venueManagementSection .venue-row-actions { min-width:410px!important; gap:8px!important; }
 }
 
-/* Final alignment pass: fixed column tracks keep headings above their own values */
+/* Final venue table grid: explicit colgroup and identical header/body tracks */
 @media (min-width:761px) {
-  #venueManagementSection .venue-table {
-    min-width:1840px!important;
-    table-layout:fixed!important;
+  #venueManagementSection .venue-table-wrapper {
+    width:100%!important; max-width:100%!important;
+    overflow-x:auto!important; overflow-y:auto!important;
+    max-height:calc(100vh - 340px)!important;
+    scrollbar-gutter:stable!important;
   }
+  #venueManagementSection .venue-table {
+    width:2050px!important; min-width:2050px!important; max-width:none!important;
+    table-layout:fixed!important; border-collapse:separate!important; border-spacing:0!important;
+  }
+  #venueManagementSection .venue-table colgroup col { box-sizing:border-box!important; }
   #venueManagementSection .venue-table th,
   #venueManagementSection .venue-table td {
-    box-sizing:border-box!important;
-    vertical-align:middle!important;
+    box-sizing:border-box!important; vertical-align:middle!important;
+    overflow:visible!important;
   }
-  #venueManagementSection .venue-table th:nth-child(1), #venueManagementSection .venue-table td:nth-child(1) { width:230px!important; min-width:230px!important; }
-  #venueManagementSection .venue-table th:nth-child(2), #venueManagementSection .venue-table td:nth-child(2) { width:120px!important; min-width:120px!important; }
-  #venueManagementSection .venue-table th:nth-child(3), #venueManagementSection .venue-table td:nth-child(3) { width:150px!important; min-width:150px!important; }
-  #venueManagementSection .venue-table th:nth-child(4), #venueManagementSection .venue-table td:nth-child(4) { width:110px!important; min-width:110px!important; }
-  #venueManagementSection .venue-table th:nth-child(5), #venueManagementSection .venue-table td:nth-child(5) { width:90px!important; min-width:90px!important; }
-  #venueManagementSection .venue-table th:nth-child(6), #venueManagementSection .venue-table td:nth-child(6) { width:90px!important; min-width:90px!important; }
-  #venueManagementSection .venue-table th:nth-child(7), #venueManagementSection .venue-table td:nth-child(7) { width:160px!important; min-width:160px!important; }
-  #venueManagementSection .venue-table th:nth-child(8), #venueManagementSection .venue-table td:nth-child(8) { width:110px!important; min-width:110px!important; }
-  #venueManagementSection .venue-table th:nth-child(9), #venueManagementSection .venue-table td:nth-child(9) { width:130px!important; min-width:130px!important; }
-  #venueManagementSection .venue-table th:nth-child(10), #venueManagementSection .venue-table td:nth-child(10) { width:140px!important; min-width:140px!important; }
-  #venueManagementSection .venue-table th:nth-child(11), #venueManagementSection .venue-table td:nth-child(11) { width:170px!important; min-width:170px!important; }
-  #venueManagementSection .venue-table th:nth-child(12), #venueManagementSection .venue-table td:nth-child(12) { width:120px!important; min-width:120px!important; }
-  #venueManagementSection .venue-table th:nth-child(13), #venueManagementSection .venue-table td:nth-child(13) { width:430px!important; min-width:430px!important; }
-  #venueManagementSection .venue-table th:nth-child(n+9):nth-child(-n+12),
-  #venueManagementSection .venue-table td:nth-child(n+9):nth-child(-n+12) { padding-left:12px!important; padding-right:12px!important; }
+  #venueManagementSection .venue-table th { white-space:nowrap!important; }
+  #venueManagementSection .venue-table td:nth-child(9),
+  #venueManagementSection .venue-table td:nth-child(10),
+  #venueManagementSection .venue-table td:nth-child(11),
+  #venueManagementSection .venue-table td:nth-child(12) { padding-left:12px!important; padding-right:12px!important; }
   #venueManagementSection .venue-table td:nth-child(9) .venue-pill,
   #venueManagementSection .venue-table td:nth-child(10) .venue-pill,
   #venueManagementSection .venue-table td:nth-child(11) .venue-plan-pill,
   #venueManagementSection .venue-table td:nth-child(12) .venue-public-pill {
-    display:inline-flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    margin:0!important;
-    max-width:100%!important;
+    display:inline-flex!important; align-items:center!important; justify-content:center!important; margin:0!important;
   }
   #venueManagementSection .venue-row-actions {
-    display:flex!important;
-    flex-wrap:wrap!important;
-    align-items:center!important;
-    justify-content:flex-start!important;
-    width:100%!important;
-    min-width:0!important;
-    max-width:none!important;
-    gap:7px!important;
+    display:flex!important; flex-wrap:wrap!important; align-items:center!important;
+    justify-content:flex-start!important; width:100%!important; min-width:0!important;
+    max-width:none!important; gap:7px!important; overflow:visible!important;
   }
   #venueManagementSection .venue-row-actions .venue-row-btn { flex:0 0 auto!important; white-space:nowrap!important; }
+}
+@media (max-width:760px) {
+  #venueManagementSection .venue-table { width:2050px!important; min-width:2050px!important; table-layout:fixed!important; }
+  #venueManagementSection .venue-table-wrapper { overflow-x:auto!important; }
 }
 </style>
 </head>
@@ -292,11 +284,9 @@
       if (btn.id === 'crmLeadManagementBtn') btn.setAttribute('aria-current', 'page');
       else btn.removeAttribute('aria-current');
     });
-    window.setTimeout(function () {
-      var url = new URL(window.location.href);
-      url.searchParams.set('homeRefresh', String(Date.now()));
-      window.location.replace(url.toString());
-    }, 80);
+    /* Switch views in-place; avoid a slow full-page reload. */
+    var leadSection = document.getElementById('leadManagementSection');
+    if (leadSection) leadSection.scrollIntoView({behavior:'auto', block:'start'});
   }
   document.addEventListener('click', function (event) {
     var link = event.target && event.target.closest ? event.target.closest('#crmHomeLogoLink') : null;
@@ -503,6 +493,13 @@
 
         <div class="venue-table-wrapper">
             <table class="venue-table">
+                <colgroup>
+                    <col style="width:230px"><col style="width:120px"><col style="width:150px">
+                    <col style="width:110px"><col style="width:90px"><col style="width:90px">
+                    <col style="width:160px"><col style="width:110px"><col style="width:130px">
+                    <col style="width:140px"><col style="width:170px"><col style="width:120px">
+                    <col style="width:430px">
+                </colgroup>
                 <thead>
                     <tr>
                         <th>VENUE</th>
