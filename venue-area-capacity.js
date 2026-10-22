@@ -142,19 +142,21 @@
 
   function patchTable() {
     const table = document.querySelector("#venueManagementSection .venue-table");
-    if (!table || table.dataset.smvAreaCapacityHeaders === "1") return;
-    const headerRow = table.querySelector("thead tr");
-    if (!headerRow) return;
-    const capacityHeader = Array.from(headerRow.cells).find(cell => /capacity/i.test(cell.textContent));
-    const priceHeader = Array.from(headerRow.cells).find(cell => /price/i.test(cell.textContent));
-    if (!capacityHeader || !priceHeader) return;
-    const roomHeader = document.createElement("th");
-    roomHeader.textContent = "ROOMS";
-    const areaHeader = document.createElement("th");
-    areaHeader.textContent = "LAWN / OPEN AREA";
-    capacityHeader.insertAdjacentElement("afterend", roomHeader);
-    roomHeader.insertAdjacentElement("afterend", areaHeader);
-    table.dataset.smvAreaCapacityHeaders = "1";
+    if (!table) return;
+    if (table.dataset.smvAreaCapacityHeaders !== "1") {
+      const headerRow = table.querySelector("thead tr");
+      if (!headerRow) return;
+      const capacityHeader = Array.from(headerRow.cells).find(cell => /capacity/i.test(cell.textContent));
+      const priceHeader = Array.from(headerRow.cells).find(cell => /price/i.test(cell.textContent));
+      if (!capacityHeader || !priceHeader) return;
+      const roomHeader = document.createElement("th");
+      roomHeader.textContent = "ROOMS";
+      const areaHeader = document.createElement("th");
+      areaHeader.textContent = "LAWN / OPEN AREA";
+      capacityHeader.insertAdjacentElement("afterend", roomHeader);
+      roomHeader.insertAdjacentElement("afterend", areaHeader);
+      table.dataset.smvAreaCapacityHeaders = "1";
+    }
     if (typeof window.renderVenues === "function" && !window.renderVenues.__smvAreaCapacityWrapped) {
       const original = window.renderVenues;
       window.renderVenues = function () {
