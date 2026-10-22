@@ -16,7 +16,7 @@
 
     <link rel="stylesheet" href="crm.css?v=20261023-venue-layout-fix-3">
 
-    <link rel="stylesheet" href="venue-area-capacity.css?v=20261023-layout-fix-5">
+    <link rel="stylesheet" href="venue-area-capacity.css?v=20261023-layout-fix-6">
 <script>
 /* Remove the legacy Venue Profile Health card even when a UI enhancer injects it later. */
 (function () {
@@ -76,7 +76,7 @@
     ====================================================== -->
 
     <script
-        src="crm.js?v=20261023-venue-layout-fix-4"
+        src="crm.js?v=20261023-venue-layout-fix-5"
         defer
     ></script>
 
@@ -118,6 +118,12 @@
   #venueManagementSection .venue-table td { overflow:visible!important; }
   #venueManagementSection .venue-table th:nth-child(7),
   #venueManagementSection .venue-table td:nth-child(7) { min-width:160px!important; }
+  #venueManagementSection .venue-table th:nth-child(10),
+  #venueManagementSection .venue-table td:nth-child(10) { min-width:120px!important; width:120px!important; }
+  #venueManagementSection .venue-table th:nth-child(11),
+  #venueManagementSection .venue-table td:nth-child(11) { min-width:150px!important; width:150px!important; }
+  #venueManagementSection .venue-table th:nth-child(12),
+  #venueManagementSection .venue-table td:nth-child(12) { min-width:110px!important; width:110px!important; }
   #venueManagementSection .venue-table th:nth-child(13),
   #venueManagementSection .venue-table td:nth-child(13) { min-width:430px!important; width:430px!important; }
   #venueManagementSection .venue-row-actions {
@@ -142,6 +148,8 @@
 @media (max-width:760px) {
   #venueManagementSection .venue-table-wrapper { overflow-x:auto!important; overflow-y:visible!important; max-height:none!important; }
   #venueManagementSection .venue-table { width:max-content!important; min-width:1500px!important; table-layout:auto!important; }
+  #venueManagementSection .venue-table th:nth-child(12),
+  #venueManagementSection .venue-table td:nth-child(12) { min-width:110px!important; }
   #venueManagementSection .venue-table th:nth-child(13),
   #venueManagementSection .venue-table td:nth-child(13) { min-width:330px!important; }
 }
