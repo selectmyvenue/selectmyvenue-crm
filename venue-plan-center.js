@@ -103,12 +103,17 @@ function injectStyles() {
  document.head.appendChild(s);
 }
 function updateKpis() {
- var all=venues, active=all.filter(function(v){return ["active","trialing"].indexOf(String(v.plan_status||"").toLowerCase())>=0;}).length;
- var expiring=all.filter(function(v){var d=dayDiff(v.plan_expires_at);return d!==null&&d>=0&&d<=7&&["active","trialing"].indexOf(String(v.plan_status||"").toLowerCase())>=0;}).length;
- var expired=all.filter(function(v){return String(v.plan_status||"").toLowerCase()==="expired"||(dayDiff(v.plan_expires_at)!==null&&dayDiff(v.plan_expires_at)<0);}).length;
+ var all=venues;
+ function isExpired(v) {
+  var status=String(v.plan_status||"").toLowerCase(),d=dayDiff(v.plan_expires_at);
+  return status==="expired"||(d!==null&&d<0);
+ }
+ var active=all.filter(function(v){return !isExpired(v)&&["active","trialing"].indexOf(String(v.plan_status||"").toLowerCase())>=0;}).length;
+ var expiring=all.filter(function(v){var d=dayDiff(v.plan_expires_at);return !isExpired(v)&&d!==null&&d>=0&&d<=7&&["active","trialing"].indexOf(String(v.plan_status||"").toLowerCase())>=0;}).length;
+ var expired=all.filter(isExpired).length;
  var s=el("smvPlanCenterSummary");if(s)s.innerHTML='<div class="smv-pc-kpi"><span>Total partner venues</span><strong>'+all.length+'</strong></div><div class="smv-pc-kpi"><span>Active / trialing</span><strong>'+active+'</strong></div><div class="smv-pc-kpi"><span>Expiring in 7 days</span><strong>'+expiring+'</strong></div><div class="smv-pc-kpi"><span>Expired</span><strong>'+expired+'</strong></div>';
-}
-function filteredVenues() {
+ }
+ function filteredVenues() {
  var q=(el("smvPlanCenterSearch")?.value||"").trim().toLowerCase(),p=el("smvPlanCenterFilter")?.value||"all",s=el("smvPlanCenterStatusFilter")?.value||"all";
  return currentVenueList().filter(function(v){
   var hay=[v.venue_name,v.city,v.area,planName(v.partner_plan)].join(" ").toLowerCase();
@@ -165,6 +170,26 @@ function renderCatalog() {
   return '<article class="smv-pc-plan-card"><h4>'+esc(p.plan_name||planName(code))+'</h4><p>'+esc(p.description||"Plan description not configured.")+'</p><div class="smv-pc-price">'+(pp.length?esc(money(pp[0].standard_amount,pp[0].currency)):"Price not configured")+'</div><div class="smv-pc-terms">'+(pp.length?pp.map(function(x){return esc(x.term_months+" month"+(Number(x.term_months)===1?"":"s")+": "+money(x.standard_amount,x.currency));}).join("<br>"):"No active terms configured")+'</div>'+(features.length?'<ul class="smv-pc-feature-list">'+features.slice(0,5).map(function(x){return "<li>"+esc(typeof x==="string"?x:x.label||x.name||JSON.stringify(x))+"</li>";}).join("")+'</ul>':"")+'</article>';
  }).join("");
 }
+async function refreshPlanStatuses() {
+  if(busy)return;
+  client=getClient();
+  if(!client){setMessage("CRM database connection is not ready. Refresh and try again.","error");return;}
+  var btn=el("smvPlanCenterRefresh");
+  if(btn){btn.disabled=true;btn.textContent="Refreshing…";}
+  setMessage("Checking expired trial plans…","");
+  try {
+   var result=await client.rpc("smv_refresh_trial_statuses");
+   if(result.error)throw result.error;
+   await loadData();
+   var changed=Number(result.data)||0;
+   setMessage(changed+" expired trial status"+(changed===1?" was":"es were")+" updated. Plan data refreshed.","success");
+  } catch(err) {
+   setMessage("Could not refresh trial statuses: "+(err&&err.message?err.message:"Unknown error"),"error");
+   await loadData();
+  } finally {
+   if(btn){btn.disabled=false;btn.textContent="↻ Refresh";}
+  }
+ }
 async function loadData() {
  client=getClient();
  var host=el("smvPlanCenterVenueList");if(host)host.innerHTML='<div class="smv-pc-empty">Loading venue plans…</div>';
@@ -225,7 +250,7 @@ function openCenter() {
 function init() {
  injectStyles();
  el("smvPlanCenterBack")?.addEventListener("click",closeCenter);
- el("smvPlanCenterRefresh")?.addEventListener("click",function(){loadData();});
+ el("smvPlanCenterRefresh")?.addEventListener("click",function(){refreshPlanStatuses();});
  el("smvPlanCenterSearch")?.addEventListener("input",renderList);
  el("smvPlanCenterFilter")?.addEventListener("change",renderList);
  el("smvPlanCenterStatusFilter")?.addEventListener("change",renderList);
