@@ -225,11 +225,31 @@
 
         <div class="crm-brand">
 
- <img
+ <a href="#" id="crmHomeLogoLink" class="crm-home-logo-link" aria-label="Refresh CRM and return to Lead Management" title="Home — refresh CRM" style="display:inline-flex;align-items:center;flex:0 0 auto;cursor:pointer">
+<img
     src="https://selectmyvenue.com/logo.png"
     alt="Select My Venue"
     class="crm-header-logo"
 >
+</a>
+<script>
+(function () {
+  function goCrmHome(event) {
+    event.preventDefault();
+    var leadBtn = document.getElementById('crmLeadManagementBtn');
+    var venueBtn = document.getElementById('venueManagementBtn');
+    var billingBtn = document.getElementById('billingCenterBtn');
+    if (leadBtn) leadBtn.click();
+    if (venueBtn) venueBtn.classList.remove('active');
+    if (billingBtn) billingBtn.classList.remove('active');
+    window.location.reload();
+  }
+  document.addEventListener('click', function (event) {
+    var link = event.target && event.target.closest ? event.target.closest('#crmHomeLogoLink') : null;
+    if (link) goCrmHome(event);
+  });
+})();
+</script>
 
             <div class="crm-brand-text">
                 <strong>CRM</strong>
