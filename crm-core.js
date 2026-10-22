@@ -5570,6 +5570,16 @@ function renderVenues() {
                 </td>
 
                 <td>
+                    <span class="venue-pill ${escapeHTML(
+                        safeValue(venue.verification_status) || "pending"
+                    )}">
+                        ${escapeHTML(
+                            formatVenueLabel(venue.verification_status)
+                        )}
+                    </span>
+                </td>
+
+                <td>
                     <span class="venue-plan-pill">
                         ${escapeHTML(formatVenuePlan(venue.partner_plan))}
                     </span>
@@ -5578,16 +5588,6 @@ function renderVenues() {
                 <td>
                     <span class="venue-public-pill ${venue.public_listing_enabled === true ? "live" : "hidden"}">
                         ${venue.public_listing_enabled === true ? "Live" : "Hidden"}
-                    </span>
-                </td>
-
-                <td>
-                    <span class="venue-pill ${escapeHTML(
-                        safeValue(venue.verification_status) || "pending"
-                    )}">
-                        ${escapeHTML(
-                            formatVenueLabel(venue.verification_status)
-                        )}
                     </span>
                 </td>
 
