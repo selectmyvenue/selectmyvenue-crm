@@ -83,7 +83,14 @@ button,input{font:inherit}
   display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);gap:0;align-items:stretch;
 }
 .hero:after{content:"";position:absolute;width:330px;height:330px;right:-130px;bottom:-190px;border:1px solid rgba(255,255,255,.14);border-radius:50%;box-shadow:0 0 0 38px rgba(255,255,255,.025),0 0 0 76px rgba(255,255,255,.018);pointer-events:none}
-.hero-copy{position:relative;z-index:1;padding:28px 30px 26px}
+.hero-copy{position:relative;z-index:1;padding:30px 34px 28px;display:flex;flex-direction:column;align-items:flex-start;min-width:0}
+.hero-detail-label{margin:25px 0 9px;color:#b4e4d9;font-size:9px;font-weight:900;letter-spacing:.14em}
+.hero-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;width:min(100%,620px)}
+.hero-detail{display:flex;align-items:flex-start;gap:9px;min-width:0;padding:10px 12px;border:1px solid rgba(255,255,255,.15);border-radius:12px;background:rgba(255,255,255,.065);backdrop-filter:blur(4px)}
+.hero-detail-icon{display:grid;place-items:center;flex:0 0 26px;width:26px;height:26px;border-radius:8px;background:rgba(199,237,224,.12);color:#c7efe3;font-size:13px;font-weight:900}
+.hero-detail strong{display:block;color:#fff;font-size:10.5px;line-height:1.35;font-weight:850}
+.hero-detail small{display:block;margin-top:3px;color:rgba(255,255,255,.66);font-size:9px;line-height:1.35}
+.hero-footnote{margin-top:auto;padding-top:20px;color:rgba(255,255,255,.64);font-size:9px;line-height:1.45;letter-spacing:.02em}
 .kicker{font-size:9px;font-weight:950;letter-spacing:.16em;color:#a9ddd1}
 .hero h1{margin:7px 0 7px;font-size:31px;line-height:1.1;letter-spacing:-.7px}
 .hero-sub{margin:0;color:rgba(255,255,255,.78);font-size:12.5px;line-height:1.5}
@@ -142,7 +149,7 @@ button,input{font:inherit}
   .page{width:calc(100% - 24px);padding:15px 0 35px}
   .topbar{align-items:center}.brand img{width:175px;max-width:175px;flex-basis:175px}
   .brand-copy{display:none}.top-actions{flex-wrap:wrap;justify-content:flex-end}
-  .hero{height:auto;min-height:0;grid-template-columns:1fr;gap:0}.hero-copy{min-height:190px}.hero-image{height:260px;min-height:260px}.hero-image img{height:100%;min-height:0}.hero-no-image{height:100%;min-height:0}
+  .hero{height:auto;min-height:0;grid-template-columns:1fr;gap:0}.hero-copy{min-height:300px}.hero-detail-label{margin-top:22px}.hero-footnote{margin-top:18px}.hero-image{height:260px;min-height:260px}.hero-image img{height:100%;min-height:0}.hero-no-image{height:100%;min-height:0}
   .section-grid,.profile-grid{grid-template-columns:1fr}
   .metrics{grid-template-columns:repeat(2,1fr)}
 }
@@ -150,7 +157,7 @@ button,input{font:inherit}
   .login-card{padding:30px 24px 26px;border-radius:22px}
   .login-logo{width:285px;height:72px}
   .login-brand h1{font-size:23px}
-  .hero-copy{padding:22px}.hero h1{font-size:25px}
+  .hero-copy{padding:22px;min-height:0}.hero h1{font-size:25px}.hero-detail-grid{grid-template-columns:1fr}.hero-detail-label{margin-top:20px}.hero-footnote{margin-top:18px}
   .topbar{gap:10px}.brand img{width:155px;max-width:155px;flex-basis:155px}
   .top-btn{height:34px;padding:0 9px}
   .metrics{grid-template-columns:repeat(2,1fr)}
@@ -322,6 +329,12 @@ async function load(){
     '<section class="hero">'+
       '<div class="hero-copy"><div class="kicker">VENUE PARTNERSHIP</div><h1>'+esc(v.venue_name||"Venue Partner")+'</h1><p class="hero-sub">'+esc(address||"Delhi NCR venue partner")+'</p>'+
         '<div class="chips"><span class="chip">'+esc(v.venue_type||"Venue")+'</span><span class="chip">'+esc(cap)+'</span><span class="chip">'+esc(price)+'</span><span class="chip">'+esc(status(v.verification_status||"Verified"))+'</span></div>'+
+        '<div class="hero-detail-label">VENUE AT A GLANCE</div><div class="hero-detail-grid">'+
+          '<div class="hero-detail"><span class="hero-detail-icon">✦</span><div><strong>'+esc(eventTypes.length?eventTypes.slice(0,2).join(" · "):"Events & celebrations")+'</strong><small>Event types listed</small></div></div>'+
+          '<div class="hero-detail"><span class="hero-detail-icon">⌂</span><div><strong>'+esc(features.length?features.slice(0,3).join(" · "):"Venue facilities")+'</strong><small>Facilities on profile</small></div></div>'+
+          '<div class="hero-detail"><span class="hero-detail-icon">♧</span><div><strong>'+esc(Number(v.room_count)>0?Number(v.room_count)+" guest rooms":(v.parking_available===true?"Parking available":"Guest comfort"))+'</strong><small>Stay & convenience</small></div></div>'+
+          '<div class="hero-detail"><span class="hero-detail-icon">✓</span><div><strong>'+esc(plan(v.partner_plan))+' partnership</strong><small>'+esc(status(v.plan_status||"Active"))+' · Select My Venue</small></div></div>'+
+        '</div><div class="hero-footnote">A quick overview of your venue profile and partnership with Select My Venue.</div>'+
       '</div>'+
       '<div class="hero-image">'+(image?'<img src="'+esc(image)+'" alt="'+esc(v.venue_name||"Venue")+' cover image" onerror="this.style.display=\'none\';this.parentElement.querySelector(\'.hero-fallback\').style.display=\'grid\';">':'')+'<div class="hero-fallback hero-no-image" style="'+(image?'display:none':'')+'">SMV</div></div>'+
     '</section>'+
