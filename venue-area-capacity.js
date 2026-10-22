@@ -163,7 +163,7 @@
         rows.forEach(row => {
           if (row.dataset.smvAreaCapacityRendered === "1") return;
           const id = row.dataset.venueId;
-          const venue = (typeof window.venues === "function" ? window.venues() : [])
+          const venue = (typeof window.getFilteredVenues === "function" ? window.getFilteredVenues() : [])
             .find(item => String(item.id) === String(id));
           if (!venue) return;
           const cells = Array.from(row.cells);
