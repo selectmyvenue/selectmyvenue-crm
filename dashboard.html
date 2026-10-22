@@ -14,36 +14,37 @@
 
     <title>Select My Venue CRM — Lead Management</title>
 
-    <link rel="stylesheet" href="crm.css?v=20261023-venue-layout-fix-1">
+    <link rel="stylesheet" href="crm.css?v=20261023-venue-layout-fix-2">
 
-    <link rel="stylesheet" href="venue-area-capacity.css?v=20261023-layout-fix-2">
+    <link rel="stylesheet" href="venue-area-capacity.css?v=20261023-layout-fix-3">
 <script>
-/* Remove the legacy Venue Profile Health card if a CRM enhancer injects it at runtime. */
+/* Remove the legacy Venue Profile Health card even when a UI enhancer injects it later. */
 (function () {
   function removeLegacyVenueHealth() {
-    const root = document.getElementById('venueManagementSection');
-    if (!root) return;
-    root.querySelectorAll('*').forEach(function (el) {
-      if (el.children.length > 8) return;
-      const text = (el.innerText || el.textContent || '').trim();
-      if (!/^Venue Profile Health(?:\\s|$)/i.test(text)) return;
-      let card = el;
-      for (let i = 0; i < 5 && card.parentElement && card.parentElement !== root; i++) {
-        const parent = card.parentElement;
-        const parentText = (parent.innerText || '').trim();
-        if (/Venue Profile Health/i.test(parentText) && /Average Completeness/i.test(parentText)) {
-          card = parent;
-        } else if (i > 0) break;
-        else card = parent;
-      }
-      if (card && card !== root && /Venue Profile Health/i.test(card.innerText || '')) card.remove();
+    const root = document.getElementById('venueManagementSection') || document;
+    const candidates = Array.from(root.querySelectorAll('section, article, div'));
+    const matches = candidates.filter(function (el) {
+      const text = (el.innerText || '').replace(/\\s+/g, ' ').trim();
+      return /Venue Profile Health/i.test(text) &&
+        /Average Completeness/i.test(text) &&
+        /Below 80%/i.test(text) &&
+        /Public but Incomplete/i.test(text);
+    }).sort(function (a, b) {
+      return (a.innerText || '').length - (b.innerText || '').length;
     });
+    if (matches.length) {
+      const card = matches[0];
+      if (card !== root && card.parentElement) card.remove();
+    }
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', removeLegacyVenueHealth);
-  else removeLegacyVenueHealth();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', removeLegacyVenueHealth);
+  } else {
+    removeLegacyVenueHealth();
+  }
   const observer = new MutationObserver(removeLegacyVenueHealth);
-  observer.observe(document.documentElement, {childList:true, subtree:true});
-  window.setTimeout(function(){ observer.disconnect(); }, 15000);
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+  window.setTimeout(function () { observer.disconnect(); }, 60000);
 })();
 </script>
 
@@ -75,7 +76,7 @@
     ====================================================== -->
 
     <script
-        src="crm.js?v=20261023-venue-layout-fix-2"
+        src="crm.js?v=20261023-venue-layout-fix-3"
         defer
     ></script>
 
