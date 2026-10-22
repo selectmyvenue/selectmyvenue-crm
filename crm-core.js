@@ -5496,6 +5496,18 @@ function renderVenues() {
                 )}`
                 : "—";
 
+        const rooms = Number(venue.room_count) > 0
+            ? `${escapeHTML(venue.room_count)} rooms`
+            : venue.rooms_available === true ? "Available" : "—";
+        const areaFeatures = venue.area_features && typeof venue.area_features === "object" ? venue.area_features : {};
+        const areaLabels = [["lawn", "Lawn"], ["open_area", "Open area"], ["outdoor_space", "Outdoor space"]];
+        const areas = areaLabels.filter(([key]) => areaFeatures[key]?.available === true).map(([key, label]) => {
+            const cap = Number(areaFeatures[key]?.capacity);
+            return `${label}${Number.isFinite(cap) && cap > 0 ? ` · ${escapeHTML(cap)} guests` : ""}`;
+        });
+        if (!areas.length && venue.outdoor_available === true) areas.push("Outdoor / lawn");
+        const areaDisplay = areas.length ? areas.map(label => `<span class="smv-area-pill">${label}</span>`).join(" ") : "—";
+
         return `
             <tr data-venue-id="${escapeHTML(venue.id)}">
 
@@ -5540,6 +5552,10 @@ function renderVenues() {
                 )}</td>
 
                 <td>${capacity}</td>
+
+                <td class="smv-room-list-cell">${rooms}</td>
+
+                <td class="smv-area-list-cell">${areaDisplay}</td>
 
                 <td>${price}</td>
 
@@ -5902,6 +5918,14 @@ function openVenueModal(venue = null) {
     setVenueChecked("venueCatering", venue.catering_available === true);
     setVenueChecked("venueDecoration", venue.decoration_available === true);
     setVenueField("venueRoomCount", venue.room_count);
+    const areaFeatures = venue.area_features && typeof venue.area_features === "object" ? venue.area_features : {};
+    [["lawn", "smvAreaLawn", "smvAreaLawnCapacity"], ["open_area", "smvAreaOpen", "smvAreaOpenCapacity"], ["outdoor_space", "smvAreaOutdoor", "smvAreaOutdoorCapacity"]].forEach(([key, checkboxId, capacityId]) => {
+        const item = areaFeatures[key] || {};
+        const checkbox = document.getElementById(checkboxId);
+        const capacityInput = document.getElementById(capacityId);
+        if (checkbox) checkbox.checked = item.available === true;
+        if (capacityInput) capacityInput.value = item.capacity == null ? "" : String(item.capacity);
+    });
     setVenueField("venueParkingCapacity", venue.parking_capacity);
     renderVenueEventTypes(venue.event_types);
     setVenueField(
@@ -6595,6 +6619,15 @@ function getVenueFormData() {
             checked("venueDecoration"),
 
         room_count: numberOrNull("venueRoomCount"),
+        area_features: (() => {
+            const selected = id => Boolean(document.getElementById(id)?.checked);
+            const capacity = id => numberOrNull(id);
+            return {
+                lawn: { available: selected("smvAreaLawn"), capacity: selected("smvAreaLawn") ? capacity("smvAreaLawnCapacity") : null },
+                open_area: { available: selected("smvAreaOpen"), capacity: selected("smvAreaOpen") ? capacity("smvAreaOpenCapacity") : null },
+                outdoor_space: { available: selected("smvAreaOutdoor"), capacity: selected("smvAreaOutdoor") ? capacity("smvAreaOutdoorCapacity") : null }
+            };
+        })(),
         parking_capacity: numberOrNull("venueParkingCapacity"),
         event_types: selectedVenueEventTypes(),
         facilities: (() => {
