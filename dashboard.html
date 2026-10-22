@@ -16,7 +16,7 @@
 
     <link rel="stylesheet" href="crm.css?v=20261023-venue-layout-fix-3">
 
-    <link rel="stylesheet" href="venue-area-capacity.css?v=20261023-layout-fix-4">
+    <link rel="stylesheet" href="venue-area-capacity.css?v=20261023-layout-fix-5">
 <script>
 /* Remove the legacy Venue Profile Health card even when a UI enhancer injects it later. */
 (function () {
@@ -94,6 +94,58 @@
 #venueForm #venueEventTypes input{width:18px!important;height:18px!important;min-height:18px!important;flex:0 0 18px!important;margin:0!important;accent-color:#078568}
 </style><link rel="stylesheet" href="crm-mobile-20260923.css?v=20261009-add-lead-mobile-submit-1">
     <link rel="stylesheet" href="venue-scroll-fix.css?v=20261010-venue-scroll-3">
+<style id="smv-venue-table-final-overrides">
+/* Final overrides must load after the CRM premium stylesheet. */
+@media (min-width: 761px) {
+  #venueManagementSection .venue-table-wrapper {
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    max-height:calc(100vh - 340px)!important;
+    overflow-x:scroll!important;
+    overflow-y:auto!important;
+    scrollbar-gutter:stable both-edges!important;
+    overscroll-behavior-x:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  #venueManagementSection .venue-table {
+    width:max-content!important;
+    min-width:1760px!important;
+    table-layout:auto!important;
+  }
+  #venueManagementSection .venue-table th,
+  #venueManagementSection .venue-table td { overflow:visible!important; }
+  #venueManagementSection .venue-table th:nth-child(7),
+  #venueManagementSection .venue-table td:nth-child(7) { min-width:160px!important; }
+  #venueManagementSection .venue-table th:nth-child(13),
+  #venueManagementSection .venue-table td:nth-child(13) { min-width:430px!important; width:430px!important; }
+  #venueManagementSection .venue-row-actions {
+    display:flex!important;
+    flex-wrap:wrap!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    min-width:410px!important;
+    width:max-content!important;
+    max-width:none!important;
+    gap:7px!important;
+    overflow:visible!important;
+  }
+  #venueManagementSection .venue-row-actions .venue-row-btn {
+    flex:0 0 auto!important;
+    white-space:nowrap!important;
+  }
+  #venueManagementSection .venue-table-wrapper::-webkit-scrollbar { height:14px!important; width:12px!important; }
+  #venueManagementSection .venue-table-wrapper::-webkit-scrollbar-thumb { background:#91b8ac!important; border:3px solid #edf6f2!important; border-radius:999px!important; }
+  #venueManagementSection .venue-table-wrapper::-webkit-scrollbar-track { background:#edf6f2!important; border-radius:999px!important; }
+}
+@media (max-width:760px) {
+  #venueManagementSection .venue-table-wrapper { overflow-x:auto!important; overflow-y:visible!important; max-height:none!important; }
+  #venueManagementSection .venue-table { width:max-content!important; min-width:1500px!important; table-layout:auto!important; }
+  #venueManagementSection .venue-table th:nth-child(13),
+  #venueManagementSection .venue-table td:nth-child(13) { min-width:330px!important; }
+}
+</style>
 </head>
 
 
