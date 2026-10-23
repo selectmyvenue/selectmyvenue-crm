@@ -3791,3 +3791,16 @@ html body .crm-account-menu-floating .logout-btn:hover{background:#ffebe7!import
   to{opacity:1;transform:translateY(0) scale(1)}
 }
 @media(prefers-reduced-motion:reduce){html body .crm-account-menu-floating{animation:none!important}}
+
+
+/* FINAL ACCOUNT MENU INTERACTION / VISIBILITY SAFETY */
+html body #crmAccountMenuToggle{position:relative!important;z-index:2147482000!important;pointer-events:auto!important;cursor:pointer!important}
+html body .crm-account-menu-floating{
+  position:fixed!important;z-index:2147483000!important;pointer-events:auto!important;
+  display:flex!important;visibility:visible!important;opacity:1!important;
+  background:#ffffff!important;color:#173d35!important;
+}
+html body .crm-account-menu-floating[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}
+html body .crm-account-menu-floating::before{color:#526f66!important}
+html body .crm-account-menu-floating .account-password-btn,
+html body .crm-account-menu-floating .logout-btn{pointer-events:auto!important;position:relative!important;z-index:1!important}
