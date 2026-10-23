@@ -3603,3 +3603,46 @@ body .page-heading{
   body .crm-header .crm-header-actions .staff-name{max-width:220px!important}
   body .crm-header .crm-header-actions .account-password-btn{width:auto!important;min-width:132px!important}
 }
+
+
+/* Compact account dropdown — saves header width for status and navigation */
+.crm-header-actions{min-width:0!important;overflow:visible!important}
+.crm-account-menu{position:relative!important;display:inline-flex!important;align-items:center!important;flex:0 0 auto!important;z-index:50!important}
+.crm-account-menu-toggle{
+  min-height:38px!important;max-width:185px!important;min-width:0!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;
+  padding:0 11px!important;border:1px solid rgba(177,238,221,.32)!important;border-radius:11px!important;
+  background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.055))!important;
+  color:#f1fff9!important;font-size:11px!important;font-weight:800!important;cursor:pointer!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12)!important;
+}
+.crm-account-menu-toggle .staff-name{
+  display:block!important;min-width:0!important;max-width:145px!important;width:auto!important;
+  overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+  padding:0!important;border:0!important;background:transparent!important;
+}
+.crm-account-menu-caret{font-size:13px!important;flex:0 0 auto!important;color:#a9f0dc!important}
+.crm-account-menu-toggle:hover{background:rgba(255,255,255,.19)!important}
+.crm-account-menu-panel{
+  position:absolute!important;top:calc(100% + 8px)!important;right:0!important;z-index:9999!important;
+  width:180px!important;display:flex!important;flex-direction:column!important;gap:5px!important;
+  padding:8px!important;border:1px solid #cfe4dc!important;border-radius:13px!important;
+  background:#fff!important;box-shadow:0 14px 34px rgba(0,35,29,.24)!important;
+}
+.crm-account-menu-panel[hidden]{display:none!important}
+.crm-account-menu-panel .account-password-btn,
+.crm-account-menu-panel .logout-btn{
+  width:100%!important;min-width:0!important;max-width:none!important;min-height:40px!important;
+  display:flex!important;align-items:center!important;justify-content:flex-start!important;
+  padding:0 12px!important;border:1px solid #e0ece7!important;border-radius:9px!important;
+  background:#f8fcfa!important;color:#164f42!important;text-decoration:none!important;
+  font-size:12px!important;font-weight:800!important;white-space:nowrap!important;cursor:pointer!important;
+}
+.crm-account-menu-panel .logout-btn{background:#fff5f3!important;color:#9a332b!important;border-color:#f0d9d5!important}
+.crm-account-menu-panel .account-password-btn:hover{background:#eaf7f1!important}
+.crm-account-menu-panel .logout-btn:hover{background:#ffebe8!important}
+@media(max-width:760px){
+  .crm-account-menu-toggle{max-width:min(185px,48vw)!important}
+  .crm-account-menu-toggle .staff-name{max-width:calc(48vw - 45px)!important}
+  .crm-account-menu-panel{right:0!important}
+}
