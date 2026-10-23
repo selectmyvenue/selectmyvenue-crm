@@ -3707,3 +3707,87 @@ html body .crm-account-menu-panel .logout-btn{
   html body .crm-account-label{display:inline-block!important}
   html body .crm-account-menu-panel{position:absolute!important;right:0!important;z-index:10000!important}
 }
+
+
+/* CORPORATE ACCOUNT MENU — floating overlay, never clipped by header/content */
+html body .crm-account-menu-toggle{
+  min-width:190px!important;
+  max-width:270px!important;
+  min-height:44px!important;
+  border:1px solid rgba(164,224,207,.45)!important;
+  background:linear-gradient(135deg,#0c6b59,#075344)!important;
+  color:#fff!important;
+  box-shadow:0 4px 12px rgba(0,38,31,.16),inset 0 1px 0 rgba(255,255,255,.14)!important;
+}
+html body .crm-account-menu-toggle .crm-account-label{color:#d8fff1!important}
+html body .crm-account-menu-toggle .staff-name{color:#fff!important;max-width:145px!important}
+html body .crm-account-menu-toggle.is-open{
+  border-color:#8ed9c2!important;
+  box-shadow:0 0 0 3px rgba(120,218,190,.19),0 5px 14px rgba(0,38,31,.2)!important;
+}
+html body .crm-account-menu-floating{
+  position:fixed!important;
+  z-index:2147483000!important;
+  width:224px!important;
+  max-width:calc(100vw - 24px)!important;
+  min-height:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:7px!important;
+  padding:10px!important;
+  border:1px solid #c6e1d7!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  color:#153e35!important;
+  box-shadow:0 18px 48px rgba(0,34,28,.3),0 3px 10px rgba(0,34,28,.12)!important;
+  overflow:auto!important;
+  box-sizing:border-box!important;
+  animation:smvAccountMenuIn .14s ease-out!important;
+}
+html body .crm-account-menu-floating[hidden]{display:none!important}
+html body .crm-account-menu-floating::before{
+  content:"ACCOUNT OPTIONS";
+  display:block!important;
+  padding:3px 7px 8px!important;
+  border-bottom:1px solid #e5efeb!important;
+  color:#638078!important;
+  font-size:10px!important;
+  font-weight:900!important;
+  letter-spacing:.11em!important;
+}
+html body .crm-account-menu-floating .account-password-btn,
+html body .crm-account-menu-floating .logout-btn{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:44px!important;
+  padding:0 13px!important;
+  border:1px solid #dcebe5!important;
+  border-radius:10px!important;
+  background:#f7fbf9!important;
+  color:#174c40!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  line-height:1.25!important;
+  text-align:left!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+  box-sizing:border-box!important;
+  cursor:pointer!important;
+}
+html body .crm-account-menu-floating .account-password-btn::before{content:"▣";margin-right:10px;color:#0b8569!important}
+html body .crm-account-menu-floating .logout-btn{
+  background:#fff7f5!important;
+  color:#9b3028!important;
+  border-color:#f0d9d4!important;
+}
+html body .crm-account-menu-floating .logout-btn::before{content:"↪";margin-right:10px;font-size:16px!important}
+html body .crm-account-menu-floating .account-password-btn:hover{background:#eaf7f1!important;border-color:#a9d8c8!important}
+html body .crm-account-menu-floating .logout-btn:hover{background:#ffebe7!important;border-color:#e8b8af!important}
+@keyframes smvAccountMenuIn{
+  from{opacity:0;transform:translateY(-4px) scale(.985)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@media(prefers-reduced-motion:reduce){html body .crm-account-menu-floating{animation:none!important}}
