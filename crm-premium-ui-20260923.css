@@ -3531,3 +3531,75 @@ body .page-heading{
 }
 
 
+
+
+/* FINAL MASTER CRM HEADER FIX — 2026-10-23
+   Keep existing premium nav styling; give the account controls their own
+   right-aligned column and prevent text from being clipped.
+*/
+@media (min-width:1501px){
+  body .crm-header{
+    display:grid!important;
+    grid-template-columns:minmax(370px,420px) minmax(540px,1fr) minmax(555px,600px)!important;
+    align-items:center!important;
+    gap:10px!important;
+    padding:8px 12px!important;
+    min-height:86px!important;
+    height:auto!important;
+    overflow:visible!important;
+  }
+  body .crm-header .crm-brand{grid-column:1!important;min-width:0!important}
+  body .crm-header .crm-header-title{grid-column:2!important;min-width:0!important;justify-content:center!important;margin:0!important}
+  body .crm-header .crm-top-nav{width:100%!important;max-width:780px!important;min-width:0!important}
+  body .crm-header .crm-header-actions{
+    grid-column:3!important;
+    position:static!important;
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    justify-content:flex-end!important;
+    align-items:center!important;
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+    gap:5px!important;
+    overflow:visible!important;
+  }
+  body .crm-header .crm-header-actions .filter-workspace-note{
+    flex:0 0 66px!important;width:66px!important;min-width:66px!important;max-width:66px!important;
+    font-size:9px!important;line-height:1.15!important;text-align:center!important;
+  }
+  body .crm-header .crm-header-actions .staff-name{
+    flex:0 1 142px!important;width:142px!important;min-width:125px!important;max-width:142px!important;
+    overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+  }
+  body .crm-header .crm-header-actions .account-password-btn{
+    flex:0 0 132px!important;width:132px!important;min-width:132px!important;max-width:132px!important;
+    padding-left:7px!important;padding-right:7px!important;white-space:nowrap!important;
+    font-size:10.5px!important;
+  }
+  body .crm-header .crm-header-actions .logout-btn{
+    flex:0 0 76px!important;width:76px!important;min-width:76px!important;max-width:76px!important;
+    padding-left:8px!important;padding-right:8px!important;
+  }
+}
+@media (min-width:1201px) and (max-width:1500px){
+  body .crm-header{
+    display:flex!important;flex-wrap:wrap!important;align-items:center!important;
+    justify-content:space-between!important;gap:8px!important;padding:8px 12px!important;
+    min-height:100px!important;height:auto!important;overflow:visible!important;
+  }
+  body .crm-header .crm-brand{flex:1 1 350px!important;min-width:300px!important}
+  body .crm-header .crm-header-actions{
+    order:2!important;flex:0 1 auto!important;display:flex!important;flex-flow:row wrap!important;
+    justify-content:flex-end!important;gap:5px!important;max-width:100%!important;min-width:0!important;
+  }
+  body .crm-header .crm-header-title{order:3!important;flex:1 0 100%!important;justify-content:center!important}
+  body .crm-header .crm-header-actions .filter-workspace-note{display:none!important}
+  body .crm-header .crm-header-actions .staff-name{min-width:125px!important;max-width:160px!important}
+  body .crm-header .crm-header-actions .account-password-btn{min-width:132px!important;width:132px!important}
+}
+@media (max-width:1200px){
+  body .crm-header .crm-header-actions{position:static!important;max-width:100%!important;width:100%!important;flex-wrap:wrap!important}
+  body .crm-header .crm-header-actions .staff-name{max-width:220px!important}
+  body .crm-header .crm-header-actions .account-password-btn{width:auto!important;min-width:132px!important}
+}
