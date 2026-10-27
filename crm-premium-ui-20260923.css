@@ -4074,3 +4074,142 @@ html body #crmAccountMenuPanel .logout-btn:hover{background:#ffebe7!important;bo
   .crm-top-nav .crm-nav-icon{font-size:14px!important;width:16px!important;min-width:16px!important;flex-basis:16px!important}
   .crm-account-menu{width:100%!important}
 }
+
+
+/* CRM header fix v2 — higher-specificity cascade correction, 2026-10-27
+   Fix the live header layout without changing CRM workflows or data. */
+html body .crm-header{
+  display:grid!important;
+  grid-template-columns:minmax(330px,1fr) minmax(600px,1.5fr) minmax(450px,1.15fr)!important;
+  align-items:center!important;
+  gap:10px!important;
+  min-height:78px!important;
+  height:auto!important;
+  padding:8px 10px!important;
+  box-sizing:border-box!important;
+}
+html body .crm-header .crm-brand{
+  display:flex!important;
+  align-items:center!important;
+  min-width:0!important;
+  gap:8px!important;
+}
+html body .crm-header .crm-brand img,
+html body .crm-header .crm-header-logo{
+  width:90px!important;
+  min-width:90px!important;
+  max-width:90px!important;
+  height:46px!important;
+  object-fit:contain!important;
+}
+html body .crm-header .crm-brand-text,
+html body .crm-header .crm-header-title{
+  min-width:0!important;
+}
+html body .crm-header .crm-brand-text strong{font-size:18px!important;line-height:1.1!important}
+html body .crm-header .crm-top-nav{
+  display:flex!important;
+  min-width:0!important;
+  width:100%!important;
+  align-items:center!important;
+  justify-content:stretch!important;
+  gap:6px!important;
+  padding:4px!important;
+  box-sizing:border-box!important;
+}
+html body .crm-header .crm-top-nav .crm-nav-item{
+  display:flex!important;
+  flex:1 1 0!important;
+  min-width:0!important;
+  min-height:42px!important;
+  height:auto!important;
+  padding:7px 9px!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  font-size:11px!important;
+  line-height:1.15!important;
+  white-space:nowrap!important;
+  box-sizing:border-box!important;
+}
+html body .crm-header .crm-top-nav .crm-nav-icon{
+  display:inline-flex!important;
+  flex:0 0 16px!important;
+  width:16px!important;
+  min-width:16px!important;
+  height:16px!important;
+  align-items:center!important;
+  justify-content:center!important;
+  font-size:14px!important;
+  line-height:1!important;
+}
+html body .crm-header .crm-header-actions{
+  display:flex!important;
+  min-width:0!important;
+  width:100%!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:6px!important;
+}
+html body .crm-header .crm-header-actions > *{min-width:0!important}
+html body .crm-header .crm-account-menu{
+  display:block!important;
+  flex:1 1 190px!important;
+  width:auto!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+html body .crm-header summary.crm-account-menu-toggle,
+html body .crm-header .crm-account-menu-toggle{
+  display:grid!important;
+  grid-template-columns:max-content minmax(0,1fr) 10px!important;
+  align-items:center!important;
+  gap:8px!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  min-height:42px!important;
+  height:auto!important;
+  padding:6px 10px!important;
+  box-sizing:border-box!important;
+}
+html body .crm-header .crm-account-label{font-size:11px!important;white-space:nowrap!important}
+html body .crm-header summary.crm-account-menu-toggle .staff-name,
+html body .crm-header .crm-account-menu-toggle .staff-name{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  min-height:0!important;
+  padding:0!important;
+  margin:0!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  font-size:10px!important;
+  line-height:1.25!important;
+}
+html body .crm-header .crm-account-menu-caret{justify-self:end!important}
+@media(max-width:1450px){
+  html body .crm-header{
+    grid-template-columns:minmax(240px,.85fr) minmax(480px,1.4fr) minmax(360px,1fr)!important;
+    gap:7px!important;
+    padding:7px 8px!important;
+  }
+  html body .crm-header .crm-brand img,
+  html body .crm-header .crm-header-logo{width:78px!important;min-width:78px!important;max-width:78px!important}
+  html body .crm-header .crm-top-nav .crm-nav-item{padding:7px 6px!important;font-size:10px!important}
+  html body .crm-header .crm-header-actions{gap:4px!important}
+}
+@media(max-width:1100px){
+  html body .crm-header{grid-template-columns:minmax(0,1fr)!important;gap:8px!important}
+  html body .crm-header .crm-top-nav{order:2!important}
+  html body .crm-header .crm-header-actions{order:3!important;flex-wrap:wrap!important}
+  html body .crm-header .crm-account-menu{flex:1 1 220px!important}
+}
+@media(max-width:600px){
+  html body .crm-header .crm-top-nav .crm-nav-item{white-space:normal!important;font-size:9px!important;padding:7px 4px!important}
+  html body .crm-header .crm-header-actions{justify-content:space-between!important}
+  html body .crm-header .crm-account-menu{flex:1 1 100%!important;width:100%!important}
+}
