@@ -25,8 +25,8 @@ async function run() {
   check(migration.includes('alter table public.hr_documents enable row level security'), 'enables RLS on HR documents');
   check(migration.includes('alter table public.hr_onboarding_tasks enable row level security'), 'enables RLS on onboarding tasks');
   check(migration.includes("s.role='admin' and s.is_active=true"), 'RLS limits HR records to active admins');
-  check(!/alter\\s+table\\s+public\\.customer_enquiries/i.test(migration), 'does not alter customer_enquiries');
-  check(!/alter\\s+policy|drop\\s+policy.*customer_enquiries/i.test(migration), 'does not change customer_enquiries policies');
+  check(!/alter\s+table\s+public\.customer_enquiries/i.test(migration), 'does not alter customer_enquiries');
+  check(!/alter\s+policy|drop\s+policy.*customer_enquiries/i.test(migration), 'does not change customer_enquiries policies');
   check(migration.includes('drop policy if exists'), 'HR policies can be recreated during a controlled rerun');
   check(html.includes('DRAFT — REVIEW BEFORE ISSUE') && html.includes('not a final issued agreement'), 'document generator marks letters as drafts');
   check(html.includes('applicable law') && html.includes('No commission rate is pre-filled or assumed.'), 'does not invent commission terms');
