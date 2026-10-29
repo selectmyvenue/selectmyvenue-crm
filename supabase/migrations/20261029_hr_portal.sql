@@ -35,6 +35,11 @@ alter table public.hr_people enable row level security;
 alter table public.hr_documents enable row level security;
 alter table public.hr_onboarding_tasks enable row level security;
 alter table public.hr_activity_log enable row level security;
+drop policy if exists "hr_people_admin_all" on public.hr_people;
+drop policy if exists "hr_documents_admin_all" on public.hr_documents;
+drop policy if exists "hr_onboarding_admin_all" on public.hr_onboarding_tasks;
+drop policy if exists "hr_activity_admin_select" on public.hr_activity_log;
+drop policy if exists "hr_activity_admin_insert" on public.hr_activity_log;
 create policy "hr_people_admin_all" on public.hr_people for all to authenticated
 using (exists (select 1 from public.staff_profiles s where s.user_id=auth.uid() and s.role='admin' and s.is_active=true))
 with check (exists (select 1 from public.staff_profiles s where s.user_id=auth.uid() and s.role='admin' and s.is_active=true));
@@ -48,6 +53,18 @@ create policy "hr_activity_admin_select" on public.hr_activity_log for select to
 using (exists (select 1 from public.staff_profiles s where s.user_id=auth.uid() and s.role='admin' and s.is_active=true));
 create policy "hr_activity_admin_insert" on public.hr_activity_log for insert to authenticated
 with check (auth.uid()=actor_id and exists (select 1 from public.staff_profiles s where s.user_id=auth.uid() and s.role='admin' and s.is_active=true));
+-- Keep timestamps current on updates without changing existing CRM tables.
+create or replace function public.hr_set_updated_at()
+returns trigger language plpgsql as $
+begin
+  new.updated_at = now();
+  return new;
+end;
+$;
+drop trigger if exists hr_people_set_updated_at on public.hr_people;
+create trigger hr_people_set_updated_at before update on public.hr_people
+for each row execute function public.hr_set_updated_at();
+
 create index if not exists hr_people_status_idx on public.hr_people(employment_status);
 create index if not exists hr_people_type_idx on public.hr_people(job_type);
 create index if not exists hr_documents_person_idx on public.hr_documents(person_id);
