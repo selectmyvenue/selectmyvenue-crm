@@ -55,12 +55,12 @@ create policy "hr_activity_admin_insert" on public.hr_activity_log for insert to
 with check (auth.uid()=actor_id and exists (select 1 from public.staff_profiles s where s.user_id=auth.uid() and s.role='admin' and s.is_active=true));
 -- Keep timestamps current on updates without changing existing CRM tables.
 create or replace function public.hr_set_updated_at()
-returns trigger language plpgsql as $
+returns trigger language plpgsql as $$
 begin
   new.updated_at = now();
   return new;
 end;
-$;
+$$;
 drop trigger if exists hr_people_set_updated_at on public.hr_people;
 create trigger hr_people_set_updated_at before update on public.hr_people
 for each row execute function public.hr_set_updated_at();
