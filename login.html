@@ -843,6 +843,13 @@
             return "./billing/?v=20260926-billing-receipt-2";
         }
 
+        if (
+            returnParam === "hr/" ||
+            returnParam === "hr/index.html"
+        ) {
+            return "./hr/?v=20261029-hr-login-return-fix-1";
+        }
+
         return "./dashboard.html";
     }
 
