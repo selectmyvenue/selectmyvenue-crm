@@ -127,18 +127,17 @@ async function savePerson(){const p={};fields.forEach(k=>{p[k]=$(k).value||null}
 function chooseDoc(id){$('docPerson').value=id;$('uploadPerson').value=id;document.querySelector('[data-view="docs"]').click();$('generate').click()}
 function makeHrTemplate(p,type,date){
 const name=p.full_name,role=p.job_title||'To be confirmed',work=String(p.job_type||'to be agreed').replaceAll('_',' ');
-const comp=p.job_type==='commission_only'?'Commission-only; no fixed salary. Commission type: '+(p.commission_type||'to be agreed')+'; rate/amount: '+(p.commission_amount??'to be agreed')+'. Define qualifying listing, attribution, renewals, payout cycle and refund/cancellation treatment in signed policy.':'Work type: '+work+'. Fixed pay ₹'+(p.fixed_pay??'to be agreed')+' / '+(p.pay_frequency||'frequency to be agreed')+'. Commission: '+(p.commission_type||'none')+' '+(p.commission_amount??'')+'.';
+const commissionRate=p.commission_amount==null?'to be agreed':(p.commission_type==='percentage'?String(p.commission_amount)+'%':String(p.commission_amount));
+const comp=p.job_type==='commission_only'?'Commission-only; no fixed salary or retainer. Commission rate: '+commissionRate+'. Payable only on qualifying paid venue listings and eligible renewals attributed to the participant, calculated on cleared amounts actually received and retained by the Company, excluding separately collected GST / statutory taxes, refunds and chargebacks. Free trials, complimentary listings and unpaid invoices do not qualify. See the signed Commission Plan for attribution, calculation and payout terms.':'Work type: '+work+'. Fixed pay ₹'+(p.fixed_pay??'to be agreed')+' / '+(p.pay_frequency||'frequency to be agreed')+'. Commission: '+(p.commission_type||'none')+' '+(p.commission_amount??'')+'.';
 const base='Date: '+date+'\nCandidate: '+name+'\nRole: '+role+'\nLocation: '+(p.city||'Delhi NCR')+'\n\n';
 const bodies={
 offer_letter:'OFFER OF EMPLOYMENT\n\nTo,\n'+name+'\n\nSubject: Offer of employment — '+role+'\n\nDear '+name+',\n\nWe are pleased to offer you employment with [LEGAL NAME OF EMPLOYER] (operating under the brand Select My Venue) as '+role+'. This offer is subject to the terms below and completion of the joining formalities.\n\n1. Employer and place of work: Legal employer name, registered office and principal work location: [complete]. Work arrangement: [office / remote / hybrid / field-based].\n2. Appointment: Proposed joining date: '+(p.start_date||'[date]')+'. Employment category: '+work+'. Reporting manager: [name/designation]. This offer is not an appointment confirmation until accepted and the appointment letter is issued where applicable.\n3. Duties: Venue prospecting, explaining listing plans, follow-up, supporting venue onboarding and maintaining accurate CRM records, plus reasonable related duties.\n4. Compensation: '+comp+'\n5. Working arrangements: Working days/hours, weekly rest, attendance, leave, travel and approved expense reimbursement: [complete in line with applicable law and policy].\n6. Probation / review: [state duration and review process, or write not applicable].\n7. Confidentiality and data security: You must protect customer, venue-partner and company information and use CRM access only for authorised work. A separate confidentiality agreement may apply.\n8. Policies and compliance: Applicable workplace policies and statutory rights will apply. Nothing in this offer waives a non-excludable legal entitlement.\n9. Acceptance: Please sign and return this offer by [deadline]. Any change must be recorded in writing by both parties.\n\nFor [LEGAL NAME OF EMPLOYER]\nAuthorised signatory: __________________  Name/designation: __________  Date: ______\n\nAccepted by candidate: __________________  Name: '+name+'  Date: ______',
-engagement_letter:`ENGAGEMENT LETTER
-
-This letter records the proposed engagement between [LEGAL NAME OF EMPLOYER], operating under the brand Select My Venue (the “Company”), and ${name} (the “Engaged Person”) for the role of ${role}.
+engagement_letter:`This letter records the proposed engagement between [LEGAL NAME OF EMPLOYER], operating under the brand Select My Venue (the “Company”), and ${name} (the “Engaged Person”) for the role of ${role}.
 
 1. ENGAGEMENT DETAILS
 Start date: ${p.start_date||'[date to be confirmed]'}.
 Primary work location: ${p.city||'Delhi NCR'}.
-Reporting contact: [name / designation / contact].
+Reporting contact: [complete name, designation and official contact before issue].
 The detailed scope, working arrangement and any agreed targets must be confirmed in writing before commencement.
 
 2. NATURE OF RELATIONSHIP
@@ -149,10 +148,10 @@ The role may include identifying and contacting prospective venues, explaining a
 
 4. COMPENSATION
 Agreed structure: ${comp}
-The applicable rate, calculation basis, qualifying activity and payment conditions must be completed in the candidate-specific compensation fields and the attached commission schedule. No verbal promise changes the written terms. If the arrangement is commission-only, no fixed salary or retainer is payable unless separately agreed in writing; this does not override any minimum wage or other mandatory legal entitlement that may apply.
+For a commission-only venue-listing role, the agreed rate shown above applies to each qualifying paid venue listing personally sourced and recorded against the participant in the Company CRM, and to eligible paid renewals of that same venue, subject to the signed Commission Plan. Commission is calculated on the net amount actually received and retained by the Company for the relevant transaction, excluding separately collected GST or other statutory taxes, refunds and chargebacks. Free trials, complimentary listings and unpaid invoices do not qualify. No fixed salary or retainer is agreed for a commission-only structure, subject always to any mandatory legal entitlement. No verbal promise changes these written terms.
 
 5. COMMISSION ELIGIBILITY AND RECORDS
-Commission is payable only on transactions expressly defined as qualifying in the signed commission schedule. The schedule must state the rate, eligible listing plans, treatment of renewals, attribution rules, split or shared leads, calculation base, earning trigger, statement process and payout date. Unless the signed schedule expressly provides otherwise, free trials, complimentary listings, unpaid invoices and amounts not actually received by the Company do not qualify. Refunds, cancellations and chargebacks will be treated transparently and only in a manner permitted by applicable law. The Company will maintain reasonable transaction and attribution records and provide a commission statement for the relevant payout period.
+The signed Commission Plan must confirm eligible plans, renewal eligibility, attribution rules (including pre-existing, inbound, duplicate and shared leads), calculation examples, when commission is earned, statement frequency, payout date and treatment of refunds / chargebacks. The Company will maintain reasonable CRM and transaction records and provide a transaction-level commission statement. Commission is payable only after the qualifying customer payment has cleared and is retained by the Company, subject to the signed plan and applicable law.
 
 6. EXPENSES, TAX AND PAYMENT DETAILS
 Business expenses require prior written approval and valid supporting records; unapproved expenses are not reimbursable unless required by law. Payments will be made through the approved payment method after reasonable verification. Applicable tax deduction, reporting and invoicing requirements will be handled according to law. The Engaged Person must provide accurate payment and tax details through the Company's approved secure process when required.
@@ -174,16 +173,17 @@ Work records, prospect lists, reports, CRM updates and materials created specifi
 
 10. TERM, NOTICE AND EXIT
 Term / review date: [complete if applicable].
-Notice period and any applicable pay in lieu: [complete consistently with the correct legal classification and applicable law].
+Notice period and any applicable pay in lieu: [HR / legal reviewer to complete after confirming the actual relationship classification and applicable Central / State law; do not issue with this field blank].
 The Company may take appropriate action for fraud, deliberate data misuse, unauthorised collection or diversion of funds, serious misconduct or material confidentiality breach, following the procedure required by law. On exit, the Engaged Person must complete a documented handover and return Company property and access. All earned commission, wages, fees, approved expenses and other lawful dues will be reconciled and paid as required by the signed terms and applicable law. No earned or statutory entitlement is waived by this letter.
 
 11. CHANGES, DISPUTES AND GOVERNING LAW
-Any change to compensation, duties or other material terms must be recorded in writing and acknowledged by both parties. The parties will first attempt to resolve disputes through a documented discussion. Governing law, dispute forum and jurisdiction: [complete after legal review; do not leave blank in the signed version]. Mandatory rights and remedies under applicable Indian law remain unaffected.
+Any change to compensation, duties or other material terms must be recorded in writing and acknowledged by both parties. The parties will first attempt to resolve disputes through a documented discussion. Governing law, dispute forum and jurisdiction: [HR / legal reviewer to complete based on the correct legal entity, registered / establishment address and applicable law; do not issue with this field blank]. Mandatory rights and remedies under applicable Indian law remain unaffected.
 
 12. ACCEPTANCE
 Please read this letter and the attached commission schedule carefully. Any blank, bracketed item or inconsistency must be resolved before signing. Each party should retain a signed copy.
 
-For [LEGAL NAME OF EMPLOYER] (Select My Venue)
+For [FULL LEGAL NAME OF EMPLOYER — must match registration / tax records] (operating as Select My Venue)
+Registered / establishment address: [complete]
 Authorised signatory: __________________________
 Name / designation: ___________________________
 Date: __________________
