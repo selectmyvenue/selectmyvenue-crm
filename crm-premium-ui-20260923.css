@@ -4162,3 +4162,31 @@ html body #crmAccountMenuPanel .logout-btn:hover{background:#ffebe7!important;bo
   .crm-header .crm-header-actions{flex-wrap:wrap!important}
   .crm-header .crm-account-menu{flex:1 1 100%!important;width:100%!important;max-width:none!important}
 }
+
+
+/* 2026-10-30: prevent desktop master header columns from squeezing brand/actions */
+@media(min-width:1601px){
+  .crm-header{
+    grid-template-columns:minmax(390px,430px) minmax(0,1fr) minmax(500px,560px)!important;
+    gap:10px!important;
+    padding-left:14px!important;
+    padding-right:14px!important;
+  }
+  .crm-header>.crm-brand,
+  .crm-header>.crm-header-title,
+  .crm-header>.crm-header-actions{
+    min-width:0!important;
+  }
+  .crm-header .crm-header-actions{
+    width:100%!important;
+    max-width:560px!important;
+    min-width:0!important;
+    gap:6px!important;
+  }
+  .crm-header .crm-account-menu{
+    min-width:0!important;
+    flex:1 1 205px!important;
+    max-width:235px!important;
+  }
+  .crm-header .crm-top-nav{min-width:0!important}
+}
