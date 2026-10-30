@@ -131,13 +131,13 @@ const comp=p.job_type==='commission_only'?'Commission-only; no fixed salary. Com
 const base='Date: '+date+'\nCandidate: '+name+'\nRole: '+role+'\nLocation: '+(p.city||'Delhi NCR')+'\n\n';
 const bodies={
 offer_letter:'OFFER OF EMPLOYMENT\n\nTo,\n'+name+'\n\nSubject: Offer of employment — '+role+'\n\nDear '+name+',\n\nWe are pleased to offer you employment with [LEGAL NAME OF EMPLOYER] (operating under the brand Select My Venue) as '+role+'. This offer is subject to the terms below and completion of the joining formalities.\n\n1. Employer and place of work: Legal employer name, registered office and principal work location: [complete]. Work arrangement: [office / remote / hybrid / field-based].\n2. Appointment: Proposed joining date: '+(p.start_date||'[date]')+'. Employment category: '+work+'. Reporting manager: [name/designation]. This offer is not an appointment confirmation until accepted and the appointment letter is issued where applicable.\n3. Duties: Venue prospecting, explaining listing plans, follow-up, supporting venue onboarding and maintaining accurate CRM records, plus reasonable related duties.\n4. Compensation: '+comp+'\n5. Working arrangements: Working days/hours, weekly rest, attendance, leave, travel and approved expense reimbursement: [complete in line with applicable law and policy].\n6. Probation / review: [state duration and review process, or write not applicable].\n7. Confidentiality and data security: You must protect customer, venue-partner and company information and use CRM access only for authorised work. A separate confidentiality agreement may apply.\n8. Policies and compliance: Applicable workplace policies and statutory rights will apply. Nothing in this offer waives a non-excludable legal entitlement.\n9. Acceptance: Please sign and return this offer by [deadline]. Any change must be recorded in writing by both parties.\n\nFor [LEGAL NAME OF EMPLOYER]\nAuthorised signatory: __________________  Name/designation: __________  Date: ______\n\nAccepted by candidate: __________________  Name: '+name+'  Date: ______',
-engagement_letter:\`ENGAGEMENT LETTER
+engagement_letter:`ENGAGEMENT LETTER
 
-This letter records the proposed engagement between [LEGAL NAME OF EMPLOYER], operating under the brand Select My Venue (the “Company”), and \${name} (the “Engaged Person”) for the role of \${role}.
+This letter records the proposed engagement between [LEGAL NAME OF EMPLOYER], operating under the brand Select My Venue (the “Company”), and ${name} (the “Engaged Person”) for the role of ${role}.
 
 1. ENGAGEMENT DETAILS
-Start date: \${p.start_date||'[date to be confirmed]'}.
-Primary work location: \${p.city||'Delhi NCR'}.
+Start date: ${p.start_date||'[date to be confirmed]'}.
+Primary work location: ${p.city||'Delhi NCR'}.
 Reporting contact: [name / designation / contact].
 The detailed scope, working arrangement and any agreed targets must be confirmed in writing before commencement.
 
@@ -148,7 +148,7 @@ The legal nature of this arrangement will be determined by the actual working re
 The role may include identifying and contacting prospective venues, explaining approved Select My Venue listing plans, arranging follow-ups, supporting venue onboarding, maintaining accurate records in the authorised CRM and performing related duties reasonably assigned for this role. Only accurate and approved information may be shared with venue owners or customers.
 
 4. COMPENSATION
-Agreed structure: \${comp}
+Agreed structure: ${comp}
 The applicable rate, calculation basis, qualifying activity and payment conditions must be completed in the candidate-specific compensation fields and the attached commission schedule. No verbal promise changes the written terms. If the arrangement is commission-only, no fixed salary or retainer is payable unless separately agreed in writing; this does not override any minimum wage or other mandatory legal entitlement that may apply.
 
 5. COMMISSION ELIGIBILITY AND RECORDS
@@ -188,18 +188,18 @@ Authorised signatory: __________________________
 Name / designation: ___________________________
 Date: __________________
 
-Accepted by \${name}
+Accepted by ${name}
 Signature: _________________________________
 Date: _____________________________________
 
-HR / LEGAL CONTROL: This is a draft template, not a legal opinion. Confirm the correct legal entity, actual relationship classification, applicable state / central requirements, all commercial terms and every bracketed field with qualified HR / legal / tax advisers before issue.\`,
+HR / LEGAL CONTROL: This is a draft template, not a legal opinion. Confirm the correct legal entity, actual relationship classification, applicable state / central requirements, all commercial terms and every bracketed field with qualified HR / legal / tax advisers before issue.`,
 appointment_letter:'APPOINTMENT LETTER\n\nTo: '+name+'\n\nDear '+name+',\n\nWe confirm your appointment with [LEGAL NAME OF EMPLOYER] (operating as Select My Venue) as '+role+', effective '+(p.start_date||'[joining date]')+'. This letter records the principal particulars and must be completed against the applicable prescribed Central / State format before issue.\n\nEMPLOYER PARTICULARS\nLegal name and establishment address: [complete]\nEstablishment / Labour Identification Number (LIN), if applicable: [complete]\n\nEMPLOYEE PARTICULARS\nFull name: '+name+'\nDate of birth: [complete]\nParent / guardian name, where required: [complete]\nAadhaar: [only if legally required and after informed consent; do not place full number in an unsecured draft]\nUAN / ESI insurance number, if available: [complete / not yet allotted]\nDesignation: '+role+'\nEmployment type: [regular / fixed-term / contractual / part-time, as legally applicable]\nSkill category: [complete]\nDate of joining: '+(p.start_date||'[complete]')+'\n\nTERMS OF SERVICE\nWages / basic pay / DA and allowances: '+comp+'\nWorking hours, weekly rest and work location: [complete]\nBroad nature of duties: Venue prospecting, venue-owner communication, listing-plan explanation, follow-up, onboarding support and CRM record maintenance.\nProbation / review (if applicable): [complete]\nLeave, holidays and applicable benefits: [complete by applicable law and policy]\nEPF / ESI / other social-security applicability: [state accurately; do not mark exempt without verification]\nMaternity benefits and other statutory benefits: As applicable under law; provide required particulars through HR.\nNotice / termination and handover: [complete consistently with applicable law]\nOther agreed terms: [complete]\n\nPlease acknowledge receipt and acceptance. Statutory rights prevail over any inconsistent term.\n\nFor [LEGAL NAME OF EMPLOYER]: __________________  Date: ______\nEmployee signature: __________________  Date: ______',
-commission_policy:\`COMMISSION PLAN — TERMS AND ACKNOWLEDGEMENT
+commission_policy:`COMMISSION PLAN — TERMS AND ACKNOWLEDGEMENT
 
-Participant: \${name}
-Role: \${role}
-Commission structure: \${p.commission_type||'[select agreed structure]'}
-Rate / amount: \${p.commission_amount??'[enter mutually agreed rate / amount]'}
+Participant: ${name}
+Role: ${role}
+Commission structure: ${p.commission_type||'[select agreed structure]'}
+Rate / amount: ${p.commission_amount??'[enter mutually agreed rate / amount]'}
 
 This schedule becomes binding only when completed, attached to the applicable agreement and signed by both parties. Complete every applicable field before work begins.
 
@@ -246,9 +246,9 @@ Changes must be prospective, written and signed by both parties. Nothing in this
 
 For [LEGAL NAME OF EMPLOYER] (Select My Venue)
 Authorised signatory: __________________  Date: ______
-Participant: \${name}  Signature: __________________  Date: ______
+Participant: ${name}  Signature: __________________  Date: ______
 
-HR / LEGAL CONTROL: Complete the commercial blanks, confirm legal classification and obtain HR / legal / tax review before issue.\`,
+HR / LEGAL CONTROL: Complete the commercial blanks, confirm legal classification and obtain HR / legal / tax review before issue.`,
 nda:'CONFIDENTIALITY AND DATA-SECURITY UNDERTAKING\n\nThis undertaking is between [LEGAL NAME OF EMPLOYER] (Company) and '+name+' (Recipient), in connection with the role / engagement of '+role+'.\n\n1. Confidential information includes non-public customer and venue-owner details, enquiries, contact data, pricing, commercial terms, CRM records, credentials, business plans, financial information and internal processes.\n2. Purpose limitation: Use confidential information only to perform authorised duties. Access only records necessary for the task and follow Company security instructions.\n3. Prohibited acts: Do not disclose, sell, scrape, copy to personal storage, export, photograph, publish or share Company/customer data without written authorisation. Do not share passwords or OTPs.\n4. Safeguards: Use approved devices/accounts, lock devices, report suspected loss or unauthorised access promptly and cooperate with incident response.\n5. Exceptions: Information lawfully public, already lawfully known, independently developed or required to be disclosed by law is excluded to the extent demonstrable; give notice where legally permitted.\n6. Return / deletion: On request or exit, return Company property and securely delete copies, subject to lawful retention and a written retention instruction.\n7. Duration and remedies: Confidentiality continues for [period / while information remains confidential], subject to applicable law. Nothing restricts lawful reporting, protected disclosures or statutory rights.\n8. No transfer of personal rights: This undertaking does not create an unlawful restraint on future employment or trade. Any IP / work-product assignment must be separately and clearly documented.\n9. Governing law and dispute process: [complete after legal review].\n\nFor the Company: __________________  Date: ______\nRecipient: '+name+'  Signature: __________________  Date: ______',
 joining_form:'JOINING / ENGAGEMENT DETAILS FORM\n\nFull name: '+name+'\nRole: '+role+'\nPhone: '+(p.phone||'[provide]')+'\nEmail: '+(p.email||'[provide]')+'\nCity: '+(p.city||'[provide]')+'\nEmployment / engagement type: '+work+'\nJoining date: '+(p.start_date||'[confirm]')+'\nReporting manager: [name / contact]\nWork location / mode and agreed hours: [complete]\nEmergency contact (name / relationship / phone): [provide if required]\nCurrent address: [collect only if required for employment records]\nPayment details: [collect securely only when required for payment]\n\nDOCUMENT CHECKLIST — mark received / not applicable\nCV / application [ ]  Signed offer / appointment / engagement agreement [ ]\nSigned commission schedule (if applicable) [ ]  Confidentiality undertaking [ ]\nEmergency contact [ ]  Identity / address proof (only where required) [ ]\nTax / payroll / bank details (only through approved secure process, where applicable) [ ]\nUAN / ESI details, if available [ ]  Other role-specific qualification [ ]\n\nDeclaration: I confirm that the information supplied is accurate to the best of my knowledge and consent to its use for stated HR / engagement purposes in accordance with applicable law and Company privacy controls.\n\nPerson signature: __________________  Date: ______\nHR verification: __________________  Date: ______',
 experience_letter:'EXPERIENCE CERTIFICATE\n\nTo Whom It May Concern,\n\nThis is to certify that '+name+' was associated with [LEGAL NAME OF EMPLOYER] (Select My Venue) as '+role+' from [verified start date] to [verified last working date].\n\nDuring this period, the recorded responsibilities included: [insert only duties supported by company records]. The association ended on [date / state if still engaged, as applicable].\n\nThis certificate is issued at the request of the individual based on the records available to the Company. It does not certify information that has not been independently verified.\n\nFor [LEGAL NAME OF EMPLOYER]\nAuthorised signatory: __________________  Name / designation: __________\nDate: ______  Place: ______',
