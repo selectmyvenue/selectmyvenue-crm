@@ -129,77 +129,51 @@ function makeHrTemplate(p,type,date){
 const name=p.full_name,role=p.job_title||'To be confirmed',work=String(p.job_type||'to be agreed').replaceAll('_',' ');
 const commissionRate=p.commission_amount==null?'to be agreed':(p.commission_type==='percentage'?String(p.commission_amount)+'%':String(p.commission_amount));
 const comp=p.job_type==='commission_only'?'Commission-only; no fixed salary or retainer. Commission rate: '+commissionRate+'. Payable only on qualifying paid venue listings and eligible renewals attributed to the participant, calculated on cleared amounts actually received and retained by the Company, excluding separately collected GST / statutory taxes, refunds and chargebacks. Free trials, complimentary listings and unpaid invoices do not qualify. See the signed Commission Plan for attribution, calculation and payout terms.':'Work type: '+work+'. Fixed pay ₹'+(p.fixed_pay??'to be agreed')+' / '+(p.pay_frequency||'frequency to be agreed')+'. Commission: '+(p.commission_type||'none')+' '+(p.commission_amount??'')+'.';
-const base='Date: '+date+'\nCandidate: '+name+'\nRole: '+role+'\nLocation: '+(p.city||'Delhi NCR')+'\n\n';
+const base='';
 const bodies={
 offer_letter:'OFFER OF EMPLOYMENT\n\nTo,\n'+name+'\n\nSubject: Offer of employment — '+role+'\n\nDear '+name+',\n\nWe are pleased to offer you employment with [LEGAL NAME OF EMPLOYER] (operating under the brand Select My Venue) as '+role+'. This offer is subject to the terms below and completion of the joining formalities.\n\n1. Employer and place of work: Legal employer name, registered office and principal work location: [complete]. Work arrangement: [office / remote / hybrid / field-based].\n2. Appointment: Proposed joining date: '+(p.start_date||'[date]')+'. Employment category: '+work+'. Reporting manager: [name/designation]. This offer is not an appointment confirmation until accepted and the appointment letter is issued where applicable.\n3. Duties: Venue prospecting, explaining listing plans, follow-up, supporting venue onboarding and maintaining accurate CRM records, plus reasonable related duties.\n4. Compensation: '+comp+'\n5. Working arrangements: Working days/hours, weekly rest, attendance, leave, travel and approved expense reimbursement: [complete in line with applicable law and policy].\n6. Probation / review: [state duration and review process, or write not applicable].\n7. Confidentiality and data security: You must protect customer, venue-partner and company information and use CRM access only for authorised work. A separate confidentiality agreement may apply.\n8. Policies and compliance: Applicable workplace policies and statutory rights will apply. Nothing in this offer waives a non-excludable legal entitlement.\n9. Acceptance: Please sign and return this offer by [deadline]. Any change must be recorded in writing by both parties.\n\nFor [LEGAL NAME OF EMPLOYER]\nAuthorised signatory: __________________  Name/designation: __________  Date: ______\n\nAccepted by candidate: __________________  Name: '+name+'  Date: ______',
-engagement_letter:`This letter records the proposed engagement between [LEGAL NAME OF EMPLOYER], operating under the brand Select My Venue (the “Company”), and ${name} (the “Engaged Person”) for the role of ${role}.
+engagement_letter:`This letter confirms the proposed engagement of ${name} (the “Engaged Person”) with [FULL LEGAL NAME OF EMPLOYER], operating as Select My Venue (the “Company”), for the role of ${role}.
 
-1. ENGAGEMENT DETAILS
-Start date: ${p.start_date||'[date to be confirmed]'}.
-Primary work location: ${p.city||'Delhi NCR'}.
-Reporting contact: [complete name, designation and official contact before issue].
-The detailed scope, working arrangement and any agreed targets must be confirmed in writing before commencement.
+Start date: ${p.start_date||'[complete]'} | Location: ${p.city||'Delhi NCR'} | Reporting to: [name / designation].
 
-2. NATURE OF RELATIONSHIP
-The legal nature of this arrangement will be determined by the actual working relationship and applicable law, not merely by the title used in this letter. The Company must select and document the correct employment / service arrangement after HR or legal review. Nothing in this letter excludes any mandatory statutory right, wage protection or benefit that applies.
+Dear ${name},
 
-3. ROLE AND RESPONSIBILITIES
-The role may include identifying and contacting prospective venues, explaining approved Select My Venue listing plans, arranging follow-ups, supporting venue onboarding, maintaining accurate records in the authorised CRM and performing related duties reasonably assigned for this role. Only accurate and approved information may be shared with venue owners or customers.
+We are pleased to confirm the proposed engagement of ${name} as ${role} with Select My Venue, subject to the terms below.
 
-4. COMPENSATION
-Agreed structure: ${comp}
-For a commission-only venue-listing role, the agreed rate shown above applies to each qualifying paid venue listing personally sourced and recorded against the participant in the Company CRM, and to eligible paid renewals of that same venue, subject to the signed Commission Plan. Commission is calculated on the net amount actually received and retained by the Company for the relevant transaction, excluding separately collected GST or other statutory taxes, refunds and chargebacks. Free trials, complimentary listings and unpaid invoices do not qualify. No fixed salary or retainer is agreed for a commission-only structure, subject always to any mandatory legal entitlement. No verbal promise changes these written terms.
+1. ROLE
+Venue prospecting, explaining approved listing plans, following up with venue owners, supporting venue onboarding and keeping accurate records in the Company CRM.
 
-5. COMMISSION ELIGIBILITY AND RECORDS
-The signed Commission Plan must confirm eligible plans, renewal eligibility, attribution rules (including pre-existing, inbound, duplicate and shared leads), calculation examples, when commission is earned, statement frequency, payout date and treatment of refunds / chargebacks. The Company will maintain reasonable CRM and transaction records and provide a transaction-level commission statement. Commission is payable only after the qualifying customer payment has cleared and is retained by the Company, subject to the signed plan and applicable law.
+2. ENGAGEMENT AND WORKING ARRANGEMENT
+The actual relationship (employment or service engagement), work arrangement and applicable statutory requirements must be confirmed by HR before signing. The legal classification depends on the real working arrangement, not only the title of this letter.
 
-6. EXPENSES, TAX AND PAYMENT DETAILS
-Business expenses require prior written approval and valid supporting records; unapproved expenses are not reimbursable unless required by law. Payments will be made through the approved payment method after reasonable verification. Applicable tax deduction, reporting and invoicing requirements will be handled according to law. The Engaged Person must provide accurate payment and tax details through the Company's approved secure process when required.
+3. COMMISSION
+${comp}
+The rate applies to qualifying paid venue listings sourced by the participant and recorded in the Company CRM, and eligible paid renewals of those same venues. Commission is calculated on cleared amounts actually received and retained by the Company, excluding separately collected GST / statutory taxes, refunds and chargebacks. Free trials, complimentary listings and unpaid invoices are not eligible. Attribution, eligible plans and payout date must be recorded in the attached signed Commission Plan.
 
-7. CUSTOMER, VENUE AND COMPANY DATA
-All customer enquiries, venue-owner information, contact details, lead histories, pricing information, CRM records, login credentials and other non-public Company information must be kept confidential and used only for authorised work. The Engaged Person must:
-(a) access only records needed for assigned work;
-(b) use only Company-approved accounts, devices and systems;
-(c) never sell, share, export, copy to personal storage or independently use customer or venue data;
-(d) never share passwords or OTPs; and
-(e) promptly report suspected loss, unauthorised access or disclosure.
-On request or when the engagement ends, Company records and property must be returned and unauthorised copies securely deleted, subject to lawful retention requirements.
+4. CONFIDENTIALITY AND AUTHORITY
+Customer, venue-owner and Company information must be kept confidential and used only for authorised work. The participant must use approved systems, protect passwords / OTPs, and must not collect customer payments personally, issue receipts, change prices, offer discounts or make commitments on behalf of the Company without written authorisation.
 
-8. AUTHORITY AND CUSTOMER COMMUNICATION
-The Engaged Person may not collect money into a personal account, issue receipts, offer discounts, change listing prices or commercial terms, promise leads or results, sign contracts, make refunds, or otherwise bind the Company unless specifically authorised in writing. All customer and venue-owner communications must be professional, truthful and consistent with current Company-approved plans and policies.
+5. TERM, NOTICE AND EXIT
+Start date is stated above. Notice period / termination terms: [HR / legal reviewer to complete after confirming the actual relationship and applicable law]. On exit, Company property and records must be returned, access closed and earned commission / other lawful dues reconciled and paid as required by the signed terms and law.
 
-9. WORK PRODUCT AND CONFLICTS
-Work records, prospect lists, reports, CRM updates and materials created specifically for the Company in the course of authorised duties must be handed over to the Company. Any ownership or licence of other intellectual property will be governed by applicable law and a separate written agreement where needed. Actual or potential conflicts of interest, competing commitments or misuse of Company opportunities must be disclosed promptly.
+6. GENERAL
+Any change to these terms must be in writing and acknowledged by both parties. Mandatory rights under applicable law remain unaffected. Governing law / dispute jurisdiction: [complete after legal review].
 
-10. TERM, NOTICE AND EXIT
-Term / review date: [complete if applicable].
-Notice period and any applicable pay in lieu: [HR / legal reviewer to complete after confirming the actual relationship classification and applicable Central / State law; do not issue with this field blank].
-The Company may take appropriate action for fraud, deliberate data misuse, unauthorised collection or diversion of funds, serious misconduct or material confidentiality breach, following the procedure required by law. On exit, the Engaged Person must complete a documented handover and return Company property and access. All earned commission, wages, fees, approved expenses and other lawful dues will be reconciled and paid as required by the signed terms and applicable law. No earned or statutory entitlement is waived by this letter.
-
-11. CHANGES, DISPUTES AND GOVERNING LAW
-Any change to compensation, duties or other material terms must be recorded in writing and acknowledged by both parties. The parties will first attempt to resolve disputes through a documented discussion. Governing law, dispute forum and jurisdiction: [HR / legal reviewer to complete based on the correct legal entity, registered / establishment address and applicable law; do not issue with this field blank]. Mandatory rights and remedies under applicable Indian law remain unaffected.
-
-12. ACCEPTANCE
-Please read this letter and the attached commission schedule carefully. Any blank, bracketed item or inconsistency must be resolved before signing. Each party should retain a signed copy.
-
-For [FULL LEGAL NAME OF EMPLOYER — must match registration / tax records] (operating as Select My Venue)
-Registered / establishment address: [complete]
-Authorised signatory: __________________________
-Name / designation: ___________________________
-Date: __________________
+For [FULL LEGAL NAME OF EMPLOYER], operating as Select My Venue
+Registered address: [complete]
+Authorised signatory: __________________  Date: __________
 
 Accepted by ${name}
-Signature: _________________________________
-Date: _____________________________________
+Signature: _____________________________  Date: __________
 
-HR / LEGAL CONTROL: This is a draft template, not a legal opinion. Confirm the correct legal entity, actual relationship classification, applicable state / central requirements, all commercial terms and every bracketed field with qualified HR / legal / tax advisers before issue.`,
+HR NOTE: Complete bracketed fields and attach the signed Commission Plan before issue. This draft requires HR / legal review.`,
 appointment_letter:'APPOINTMENT LETTER\n\nTo: '+name+'\n\nDear '+name+',\n\nWe confirm your appointment with [LEGAL NAME OF EMPLOYER] (operating as Select My Venue) as '+role+', effective '+(p.start_date||'[joining date]')+'. This letter records the principal particulars and must be completed against the applicable prescribed Central / State format before issue.\n\nEMPLOYER PARTICULARS\nLegal name and establishment address: [complete]\nEstablishment / Labour Identification Number (LIN), if applicable: [complete]\n\nEMPLOYEE PARTICULARS\nFull name: '+name+'\nDate of birth: [complete]\nParent / guardian name, where required: [complete]\nAadhaar: [only if legally required and after informed consent; do not place full number in an unsecured draft]\nUAN / ESI insurance number, if available: [complete / not yet allotted]\nDesignation: '+role+'\nEmployment type: [regular / fixed-term / contractual / part-time, as legally applicable]\nSkill category: [complete]\nDate of joining: '+(p.start_date||'[complete]')+'\n\nTERMS OF SERVICE\nWages / basic pay / DA and allowances: '+comp+'\nWorking hours, weekly rest and work location: [complete]\nBroad nature of duties: Venue prospecting, venue-owner communication, listing-plan explanation, follow-up, onboarding support and CRM record maintenance.\nProbation / review (if applicable): [complete]\nLeave, holidays and applicable benefits: [complete by applicable law and policy]\nEPF / ESI / other social-security applicability: [state accurately; do not mark exempt without verification]\nMaternity benefits and other statutory benefits: As applicable under law; provide required particulars through HR.\nNotice / termination and handover: [complete consistently with applicable law]\nOther agreed terms: [complete]\n\nPlease acknowledge receipt and acceptance. Statutory rights prevail over any inconsistent term.\n\nFor [LEGAL NAME OF EMPLOYER]: __________________  Date: ______\nEmployee signature: __________________  Date: ______',
 commission_policy:`COMMISSION PLAN — TERMS AND ACKNOWLEDGEMENT
 
 Participant: ${name}
 Role: ${role}
 Commission structure: ${p.commission_type||'[select agreed structure]'}
-Rate / amount: ${p.commission_amount??'[enter mutually agreed rate / amount]'}
+Rate / amount: ${p.commission_amount==null?'[enter agreed rate]':(p.commission_type==='percentage'?String(p.commission_amount)+'%':String(p.commission_amount))}
 
 This schedule becomes binding only when completed, attached to the applicable agreement and signed by both parties. Complete every applicable field before work begins.
 
@@ -208,7 +182,7 @@ A qualifying listing must be a paid venue listing sold by the participant, corre
 
 2. ELIGIBLE PLANS AND COMMISSION RATE
 Eligible plan(s): [list plans / packages].
-Commission rate or fixed amount: [complete].
+Commission rate or fixed amount: As stated above, unless a different rate is expressly agreed here.
 Calculation base: [state whether calculated on the amount actually received and retained by the Company, excluding separately collected GST / other statutory taxes, discounts, refunds and chargebacks].
 Illustrative calculation: [add a worked example using the agreed rate and base].
 No amount or rate should be inferred from a verbal discussion or an unsigned draft.
@@ -217,7 +191,7 @@ No amount or rate should be inferred from a verbal discussion or an unsigned dra
 A lead must be entered in the CRM with the participant, source, date and relevant follow-up history recorded. Define how pre-existing leads, duplicate prospects, inbound enquiries, shared leads, team support, reassignment and manager-approved exceptions are treated: [complete]. Disputes will be checked against CRM history and supporting records, not verbal claims alone.
 
 4. RENEWALS AND UPSELLS
-Renewal commission: [eligible / not eligible; rate].
+Renewal commission: Eligible renewals of the same venue at the agreed rate above, unless a different rate is recorded here.
 Eligible renewal period and attribution window: [complete].
 Upsells, plan upgrades and additional venues: [complete].
 Do not assume a renewal is commissionable unless this section is completed.
