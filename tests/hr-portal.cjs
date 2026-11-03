@@ -30,6 +30,10 @@ async function run() {
   check(migration.includes('drop policy if exists'), 'HR policies can be recreated during a controlled rerun');
   check(html.includes('DRAFT — REVIEW BEFORE ISSUE') && html.includes('not a final issued agreement'), 'document generator marks letters as drafts');
   check(html.includes('applicable law') && html.includes('No commission rate is pre-filled or assumed.'), 'does not invent commission terms');
+  check(html.includes('<option value="sales_terms">Sales Executive — Terms &amp; Conditions / Business Protection Agreement</option>'), 'sales protection agreement is available in document generator');
+  check(html.includes('<option value="sales_terms">Sales Executive — Terms &amp; Conditions / Business Protection Agreement</option>') && html.includes('id="uploadType"'), 'sales protection agreement is available in signed-document upload selector');
+  check(html.includes('id="requiredDocSlots"') && html.includes("type:'sales_terms',label:'Signed Sales Terms & Business Protection Agreement'"), 'sales roles receive a named mandatory signed-document upload slot');
+  check(html.includes("d.status==='signed'&&d.file_path") && html.includes('Cannot activate yet. Upload signed mandatory documents first:'), 'activation is blocked until required signed files are uploaded');
   console.log('HR portal static checks passed.');
 }
 
