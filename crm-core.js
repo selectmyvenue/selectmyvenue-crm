@@ -764,6 +764,36 @@ function getEventOptions() {
         },
 
         {
+            value: "Roka Ceremony",
+            label: "Roka Ceremony"
+        },
+
+        {
+            value: "Pre-Wedding",
+            label: "Pre-Wedding"
+        },
+
+        {
+            value: "Sagai / Ring Ceremony",
+            label: "Sagai / Ring Ceremony"
+        },
+
+        {
+            value: "Mehndi / Haldi",
+            label: "Mehndi / Haldi"
+        },
+
+        {
+            value: "Cocktail",
+            label: "Cocktail"
+        },
+
+        {
+            value: "Baby Shower",
+            label: "Baby Shower"
+        },
+
+        {
             value: "Party",
             label: "Party"
         },
@@ -4968,7 +4998,7 @@ async function loadVenues() {
     if (tbody) {
         tbody.innerHTML = `
             <tr>
-                        <td colspan="11" class="venue-loading-cell">
+                        <td colspan="14" class="venue-loading-cell">
                     Loading venues...
                 </td>
             </tr>
@@ -4987,7 +5017,7 @@ async function loadVenues() {
         if (tbody) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="11" class="venue-loading-cell">
+                    <td colspan="14" class="venue-loading-cell">
                         Unable to load venues.
                     </td>
                 </tr>
@@ -5559,6 +5589,23 @@ function renderVenues() {
 
                 <td>${price}</td>
 
+                <td class="venue-edit-cell">
+                    <button
+                        type="button"
+                        class="venue-row-btn"
+                        data-venue-action="edit"
+                        data-venue-id="${escapeHTML(venue.id)}"
+                    >
+                        Edit
+                    </button>
+                </td>
+
+                <td>
+                    <span class="venue-plan-pill">
+                        ${escapeHTML(formatVenuePlan(venue.partner_plan))}
+                    </span>
+                </td>
+
                 <td>
                     <span class="venue-pill ${escapeHTML(
                         safeValue(venue.venue_status) || "pending"
@@ -5580,12 +5627,6 @@ function renderVenues() {
                 </td>
 
                 <td>
-                    <span class="venue-plan-pill">
-                        ${escapeHTML(formatVenuePlan(venue.partner_plan))}
-                    </span>
-                </td>
-
-                <td>
                     <span class="venue-public-pill ${venue.public_listing_enabled === true ? "live" : "hidden"}">
                         ${venue.public_listing_enabled === true ? "Live" : "Hidden"}
                     </span>
@@ -5601,15 +5642,6 @@ function renderVenues() {
                             title="Open the venue's customer-facing partnership summary"
                         >
                             Partner Overview
-                        </button>
-
-                        <button
-                            type="button"
-                            class="venue-row-btn"
-                            data-venue-action="edit"
-                            data-venue-id="${escapeHTML(venue.id)}"
-                        >
-                            Edit
                         </button>
 
                         ${
