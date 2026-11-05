@@ -6,6 +6,18 @@ const root=path.join(__dirname,'..');
 const source=fs.readFileSync(path.join(root,'crm-core.js'),'utf8');
 const core=source.slice(0,source.indexOf('/* =========================================================\n   START'));
 const html=fs.readFileSync(path.join(root,'dashboard.html'),'utf8');
+const exclusionSql=fs.readFileSync(path.join(root,'supabase/migrations/20261106090000_venue_assignment_exclusions.sql'),'utf8');
+const employeeUi=fs.readFileSync(path.join(root,'crm-employee-integration.js'),'utf8');
+assert(source.includes('smv_assignment_hidden_venue_ids'),'assignment loader must retrieve exclusion IDs');
+assert(source.includes('hiddenVenueIds.has(String(venue.id))'),'assignment RPC results must filter hidden venues');
+assert(source.includes('hiddenVenueIds.has(String(venue.id))') && source.includes('smv_assignment_hidden_venue_ids'),'fallback and primary assignment sources must share exclusion filter');
+assert(source.includes('smv_set_venue_assignment_exclusion'),'CRM must use the controlled hide/restore RPC');
+assert(html.includes('smvHiddenVenuePanel') && html.includes('smvToggleHiddenVenues'),'assignment modal must expose hidden venue recovery');
+assert(employeeUi.includes('data-hide-venue-id'),'smart match renderer must expose hide controls');
+assert(exclusionSql.includes('on delete restrict'),'venue exclusion must not cascade-delete venue records');
+assert(exclusionSql.includes('smv_guard_hidden_venue_assignment'),'database must guard future assignments');
+assert(exclusionSql.includes('old.assignment_status = \'cancelled\''),'existing active assignment updates must remain allowed');
+assert(exclusionSql.includes('smv_get_venue_assignment_exclusions'),'hidden venues must be recoverable through admin list RPC');
 const tick=()=>new Promise(r=>setTimeout(r,25));
 (async()=>{
  const dom=new JSDOM(html,{url:'https://crm.selectmyvenue.com/dashboard.html',runScripts:'outside-only',pretendToBeVisual:true});

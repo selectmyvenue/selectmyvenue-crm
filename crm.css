@@ -6069,3 +6069,31 @@ body{
 .venue-assignment-item.smv-assigned-disabled .venue-assignment-item-status{color:#6d7c77!important;}
 .venue-assignment-item.smv-assigned-disabled input[type="checkbox"]{accent-color:#7b8c86!important;cursor:not-allowed!important;}
 .venue-assignment-item.smv-assigned-disabled .smv-assigned-badge{background:#dce5e1!important;color:#62726d!important;}
+
+
+/* Reversible venue assignment exclusions */
+.smv-hidden-toggle,.smv-assignment-hide,.smv-hidden-venue-row button{
+  border:1px solid #cfe2dc;background:#f5faf8;color:#17675d;border-radius:9px;
+  padding:7px 10px;font-family:inherit;font-size:11px;font-weight:700;line-height:1.2;cursor:pointer;white-space:nowrap;
+}
+.smv-hidden-toggle{display:inline-flex;align-items:center;gap:7px}
+.smv-hidden-toggle span{display:inline-grid;place-items:center;min-width:19px;height:19px;border-radius:99px;background:#e2f1ec;color:#155d54}
+.smv-assignment-hide{margin-top:6px;background:#fff9f4;border-color:#f0dfd1;color:#8b542b}
+.smv-hidden-toggle:hover,.smv-hidden-venue-row button:hover{background:#eaf5f1}
+.smv-assignment-hide:hover{background:#fff0e4}
+.smv-hidden-panel{margin:0 20px 12px;padding:12px;border:1px solid #dcebe6;border-radius:12px;background:#f8fbfa}
+.smv-hidden-panel[hidden]{display:none!important}
+.smv-hidden-panel-heading{display:flex;flex-direction:column;gap:3px;margin-bottom:8px;color:#25463f}
+.smv-hidden-panel-heading span,.smv-hidden-venue-row small{font-size:11px;color:#788984}
+.smv-hidden-venue-list{max-height:190px;overflow:auto}
+.smv-hidden-venue-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 2px;border-top:1px solid #e5eeeb}
+.smv-hidden-venue-row>div{min-width:0;display:flex;flex-direction:column;gap:3px}
+.smv-hidden-venue-row strong{font-size:12px;color:#294a43}
+.smv-hidden-venue-row small{overflow-wrap:anywhere}
+.smv-hidden-venue-row button{flex:0 0 auto}
+@media(max-width:600px){
+ .venue-assignment-toolbar{flex-wrap:wrap}
+ .venue-assignment-toolbar input{flex-basis:100%}
+ .smv-hidden-toggle{margin-left:auto}
+ .smv-assignment-hide{padding:6px 8px}
+}
