@@ -6074,7 +6074,7 @@ body{
 /* Reversible venue assignment exclusions */
 .smv-hidden-toggle,.smv-assignment-hide,.smv-hidden-venue-row button{
   border:1px solid #cfe2dc;background:#f5faf8;color:#17675d;border-radius:9px;
-  padding:7px 10px;font:700 11px/1.2 inherit;cursor:pointer;white-space:nowrap;
+  padding:7px 10px;font-family:inherit;font-size:11px;font-weight:700;line-height:1.2;cursor:pointer;white-space:nowrap;
 }
 .smv-hidden-toggle{display:inline-flex;align-items:center;gap:7px}
 .smv-hidden-toggle span{display:inline-grid;place-items:center;min-width:19px;height:19px;border-radius:99px;background:#e2f1ec;color:#155d54}
