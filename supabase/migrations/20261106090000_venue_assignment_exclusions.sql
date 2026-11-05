@@ -104,6 +104,7 @@ begin
   return new;
 end;
 $$;
+revoke all on function public.smv_guard_hidden_venue_assignment() from public, anon, authenticated;
 drop trigger if exists smv_guard_hidden_venue_assignment on public.venue_enquiry_assignments;
 create trigger smv_guard_hidden_venue_assignment
   before insert or update of venue_id, assignment_status on public.venue_enquiry_assignments
