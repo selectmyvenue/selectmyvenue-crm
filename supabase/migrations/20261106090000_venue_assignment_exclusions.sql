@@ -87,7 +87,7 @@ grant execute on function public.smv_set_venue_assignment_exclusion(uuid,boolean
 -- Database-level guard: even stale clients or alternate assignment entry points cannot
 -- create/reactivate a future assignment for a hidden venue. Existing active rows remain.
 create or replace function public.smv_guard_hidden_venue_assignment()
-returns trigger language plpgsql security invoker set search_path = ''
+returns trigger language plpgsql security definer set search_path = ''
 as $$
 begin
   -- Do not disrupt lifecycle updates on assignments that already existed when
