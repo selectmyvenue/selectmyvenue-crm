@@ -7852,6 +7852,14 @@ function setupVenueAssignment() {
     close?.addEventListener("click", closeVenueAssignmentModal);
     cancel?.addEventListener("click", closeVenueAssignmentModal);
     save?.addEventListener("click", saveVenueAssignments);
+    const hiddenToggle = document.getElementById("smvToggleHiddenVenues");
+    hiddenToggle?.addEventListener("click", async () => {
+        const panel = document.getElementById("smvHiddenVenuePanel");
+        if (!panel) return;
+        panel.hidden = !panel.hidden;
+        hiddenToggle.setAttribute("aria-expanded", String(!panel.hidden));
+        if (!panel.hidden) await loadHiddenAssignmentVenues();
+    });
 
     search?.addEventListener("input", event => {
         assignmentSearch = safeValue(event.target.value).trim().toLowerCase();
