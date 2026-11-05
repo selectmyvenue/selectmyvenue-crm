@@ -1079,6 +1079,7 @@ renderAssignmentSummary();};}catch(e){console.warn('Assignment renderer could no
 `;document.head.appendChild(s);}
  window.smvGetAssignmentSelection=()=>[...selectedNow];
  window.smvAssignmentSelectionTouched=()=>smvSelectionTouched;
+ window.smvRemoveAssignmentSelection=id=>{selectedNow.delete(String(id));smvSelectionTouched=true;try{renderAssignmentSummary();}catch(_){}};
 
 
 
