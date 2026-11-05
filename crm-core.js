@@ -7888,6 +7888,7 @@ function setupVenueAssignment() {
                 const { error } = await getSupabaseClient().rpc("smv_set_venue_assignment_exclusion", {p_venue_id:venueId,p_hidden:true,p_reason:"not_interested",p_note:null});
                 if (error) throw error;
                 assignmentVenueRows = assignmentVenueRows.filter(v => String(v.id) !== String(venueId));
+                window.smvRemoveAssignmentSelection?.(venueId);
                 renderAssignmentVenues();
                 showAssignmentMessage("Venue hidden from future assignments. Public listing and existing history are unchanged.", "success");
                 await loadHiddenAssignmentVenues();
