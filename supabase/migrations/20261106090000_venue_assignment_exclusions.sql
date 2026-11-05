@@ -90,7 +90,12 @@ create or replace function public.smv_guard_hidden_venue_assignment()
 returns trigger language plpgsql security invoker set search_path = ''
 as $$
 begin
-  if new.assignment_status <> 'cancelled'
+  -- Do not disrupt lifecycle updates on assignments that already existed when
+  -- the venue was hidden. Block only new rows, venue swaps, and reactivation.
+  if (tg_op = 'INSERT'
+      or new.venue_id is distinct from old.venue_id
+      or (old.assignment_status = 'cancelled' and new.assignment_status <> 'cancelled'))
+     and new.assignment_status <> 'cancelled'
      and exists(select 1 from public.venue_assignment_exclusions e
        where e.venue_id=new.venue_id and e.restored_at is null) then
     raise exception 'This venue is hidden from new assignments. Restore it first.'
