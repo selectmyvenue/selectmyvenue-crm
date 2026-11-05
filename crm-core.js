@@ -7867,9 +7867,36 @@ function setupVenueAssignment() {
         renderAssignmentVenues();
     });
 
-    modal.addEventListener("click", event => {
-        if (event.target === modal) {
-            closeVenueAssignmentModal();
+    modal.addEventListener("click", async event => {
+        if (event.target === modal) { closeVenueAssignmentModal(); return; }
+        const hideButton = event.target.closest("[data-hide-venue-id]");
+        if (hideButton) {
+            event.preventDefault(); event.stopPropagation();
+            const venueId = hideButton.dataset.hideVenueId;
+            const venueName = hideButton.dataset.hideVenueName || "this venue";
+            if (!window.confirm(`Hide "${venueName}" from all future venue assignments? Its public website listing and existing enquiry history will remain unchanged.`)) return;
+            hideButton.disabled = true;
+            try {
+                const { error } = await getSupabaseClient().rpc("smv_set_venue_assignment_exclusion", {p_venue_id:venueId,p_hidden:true,p_reason:"not_interested",p_note:null});
+                if (error) throw error;
+                assignmentVenueRows = assignmentVenueRows.filter(v => String(v.id) !== String(venueId));
+                renderAssignmentVenues();
+                showAssignmentMessage("Venue hidden from future assignments. Public listing and existing history are unchanged.", "success");
+                await loadHiddenAssignmentVenues();
+            } catch (err) { hideButton.disabled=false; showAssignmentMessage(err.message || "Unable to hide this venue.", "error"); }
+            return;
+        }
+        const restoreButton = event.target.closest("[data-restore-venue-id]");
+        if (restoreButton) {
+            const venueId = restoreButton.dataset.restoreVenueId;
+            if (!window.confirm("Restore this venue to the active assignment list?")) return;
+            restoreButton.disabled = true;
+            try {
+                const { error } = await getSupabaseClient().rpc("smv_set_venue_assignment_exclusion", {p_venue_id:venueId,p_hidden:false,p_reason:"restored",p_note:null});
+                if (error) throw error;
+                await loadHiddenAssignmentVenues();
+                await loadAssignmentVenueOptions();
+            } catch (err) { restoreButton.disabled=false; showToast(err.message || "Unable to restore venue.", "error"); }
         }
     });
 
@@ -7898,6 +7925,23 @@ function setupVenueAssignment() {
         }
     });
 }
+
+async function loadHiddenAssignmentVenues() {
+    const list = document.getElementById("smvHiddenVenueList");
+    const count = document.getElementById("smvHiddenVenueCount");
+    if (!list) return;
+    const client = getSupabaseClient();
+    if (!client) return;
+    list.innerHTML = '<div class="venue-assignment-loading">Loading hidden venues...</div>';
+    const { data, error } = await client.rpc("smv_get_venue_assignment_exclusions");
+    if (error) { list.innerHTML = '<div class="venue-assignment-empty">Unable to load hidden venues. Check administrator access.</div>'; return; }
+    const rows = Array.isArray(data) ? data : [];
+    if (count) count.textContent = String(rows.length);
+    list.innerHTML = rows.length ? rows.map(row => `
+        <div class="smv-hidden-venue-row"><div><strong>${escapeHTML(row.venue_name || "Unnamed Venue")}</strong><small>${escapeHTML([row.area,row.city].filter(Boolean).join(" • "))} · Hidden ${row.hidden_at ? new Date(row.hidden_at).toLocaleDateString() : ""}</small></div>
+        <button type="button" data-restore-venue-id="${escapeHTML(row.venue_id)}">Restore</button></div>`).join("") : '<div class="venue-assignment-empty">No hidden venues. All eligible venues are available for assignment.</div>';
+}
+window.loadHiddenAssignmentVenues = loadHiddenAssignmentVenues;
 
 async function openVenueAssignmentModal(enquiryId) {
     resetVenueAssignmentSaveState();
@@ -7986,10 +8030,15 @@ async function loadAssignmentVenueOptions() {
            never offer a venue whose approval, verification, or partner plan
            makes it ineligible for a NEW assignment.
         */
+        const { data: hiddenIdsData, error: hiddenIdsError } = await client.rpc("smv_assignment_hidden_venue_ids");
+        if (hiddenIdsError || !Array.isArray(hiddenIdsData)) {
+            throw hiddenIdsError || new Error("Unable to verify venue assignment exclusions. Please retry.");
+        }
+        const hiddenVenueIds = new Set(hiddenIdsData.map(String));
         const { data, error } = await client.rpc("smv_assignment_venues");
 
-        if (!error && Array.isArray(data) && data.length) {
-            assignmentVenueRows = data;
+        if (!error && Array.isArray(data)) {
+            assignmentVenueRows = data.filter(venue => !hiddenVenueIds.has(String(venue.id)));
         } else {
             /*
                Safety fallback: assignment visibility must never depend on the
@@ -8008,7 +8057,7 @@ async function loadAssignmentVenueOptions() {
                 throw error || fallback.error;
             }
 
-            assignmentVenueRows = Array.isArray(fallback.data) ? fallback.data : [];
+            assignmentVenueRows = Array.isArray(fallback.data) ? fallback.data.filter(venue => !hiddenVenueIds.has(String(venue.id))) : [];
         }
 
         renderAssignmentVenues();
@@ -8145,6 +8194,7 @@ function renderAssignmentVenues() {
                 <div class="venue-assignment-item-side">
                     <span class="venue-assignment-item-status">Verified</span>
                     ${planWarning}
+                    <button type="button" class="smv-assignment-hide" data-hide-venue-id="${escapeHTML(venue.id)}" data-hide-venue-name="${escapeHTML(venue.venue_name || "Unnamed Venue")}">Hide</button>
                 </div>
             </label>
         `;
