@@ -12,7 +12,7 @@ function score(v,c,loc,radius){let points=0,total=0,reasons=[],exact=loc.some(a=
 function add(ok,w,yes,no){total+=w;if(ok){points+=w;reasons.push(yes);}else reasons.push(no);}
 if(loc.length)add(exact||near,35,exact?"Exact area match":near?"Nearby location match":"","Location not confirmed");
 if(c.guests){let cap=+v.capacity_max;add(cap>=c.guests&&cap>0,20,"Capacity fits",cap?"Capacity below requirement":"Capacity not listed");}
-if(c.budget){let max=+v.price_max_per_person,pp=c.guests?c.budget/c.guests:c.budget;add(max>0&&max<=pp,15,"Indicative price fits",max?"Price may exceed budget":"Price not listed");}
+if(c.budget&&c.guests){let max=+v.price_max_per_person,pp=c.budget/c.guests;add(max>0&&max<=pp,15,"Indicative price fits",max?"Price may exceed budget":"Price not listed");}else if(c.budget&&!c.guests){reasons.push("Add guest count to assess total budget");}
 if(c.venueType)add(norm(v.venue_type).includes(norm(c.venueType)),10,"Venue type fits","Venue type differs");
 if(c.rooms)add(+(v.room_count||0)>=c.rooms,5,"Rooms fit","Rooms not confirmed");
 if(c.outdoor){let ok=v.outdoor_available===true||!!(v.area_features&&(v.area_features.lawn||v.area_features.open_area));add(ok,10,"Outdoor/lawn data listed","Outdoor feature not confirmed");}
