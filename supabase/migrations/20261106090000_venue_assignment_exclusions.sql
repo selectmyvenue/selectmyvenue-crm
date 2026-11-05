@@ -36,6 +36,10 @@ drop policy if exists smv_admin_read_assignment_exclusion_log on public.venue_as
 create policy smv_admin_read_assignment_exclusion_log
   on public.venue_assignment_exclusion_log for select to authenticated
   using ((select public.smv_is_active_staff()));
+drop policy if exists smv_admin_insert_assignment_exclusion_log on public.venue_assignment_exclusion_log;
+create policy smv_admin_insert_assignment_exclusion_log
+  on public.venue_assignment_exclusion_log for insert to authenticated
+  with check ((select public.smv_is_active_staff()) and actor_id=(select auth.uid()));
 
 revoke all on public.venue_assignment_exclusions, public.venue_assignment_exclusion_log from anon;
 grant select, insert, update on public.venue_assignment_exclusions to authenticated;
@@ -99,3 +103,34 @@ drop trigger if exists smv_guard_hidden_venue_assignment on public.venue_enquiry
 create trigger smv_guard_hidden_venue_assignment
   before insert or update of venue_id, assignment_status on public.venue_enquiry_assignments
   for each row execute function public.smv_guard_hidden_venue_assignment();
+
+-- Assignment UI needs exclusion IDs for staff matching/assignment; hidden venue details
+-- remain restricted to active admins through the separate management RPC.
+create or replace function public.smv_assignment_hidden_venue_ids()
+returns setof uuid language sql stable security definer set search_path = ''
+as $$
+  select e.venue_id from public.venue_assignment_exclusions e
+  where e.restored_at is null and public.is_crm_staff()
+$$;
+revoke all on function public.smv_assignment_hidden_venue_ids() from public, anon;
+grant execute on function public.smv_assignment_hidden_venue_ids() to authenticated;
+
+create or replace function public.smv_get_venue_assignment_exclusions()
+returns table(venue_id uuid, venue_name text, city text, area text, reason text, note text, hidden_at timestamptz)
+language plpgsql stable security definer set search_path = ''
+as $$
+begin
+  if not public.smv_is_active_staff() then
+    raise exception 'Administrator access required' using errcode='42501';
+  end if;
+  return query
+    select e.venue_id, v.venue_name::text, v.city::text, v.area::text,
+           e.reason, e.note, e.hidden_at
+    from public.venue_assignment_exclusions e
+    join public.venues v on v.id=e.venue_id
+    where e.restored_at is null
+    order by e.hidden_at desc;
+end;
+$$;
+revoke all on function public.smv_get_venue_assignment_exclusions() from public, anon;
+grant execute on function public.smv_get_venue_assignment_exclusions() to authenticated;
