@@ -1,0 +1,19 @@
+/* SMV Business OS feature launcher — keeps the lead page uncluttered. */
+#smvBusinessOS[hidden],#smvBusinessOSHub[hidden]{display:none!important}
+#smvBusinessOSHub{max-width:1600px;margin:18px auto 36px;padding:24px;border:1px solid #dce9e4;border-radius:20px;background:linear-gradient(145deg,#fbfdfc,#f2f8f5);color:#173f37}
+.smv-hub-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:20px}
+.smv-hub-kicker{font-size:10px;font-weight:900;letter-spacing:.16em;color:#a27b3d}
+.smv-hub-head h1{margin:7px 0 5px;font-size:clamp(25px,3vw,36px);line-height:1.1;color:#123f39}
+.smv-hub-head h1 span{color:#0b8a70}
+.smv-hub-head p{margin:0;color:#6b837b;font-size:13px;line-height:1.5}
+.smv-hub-home{flex:0 0 auto;border:1px solid #d1e3db;background:#fff;color:#20594b;border-radius:10px;padding:10px 13px;font-size:11px;font-weight:850;cursor:pointer;min-height:40px}
+.smv-hub-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.smv-hub-card{display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-width:0;min-height:156px;padding:17px;border:1px solid #dce9e3;border-radius:14px;background:#fff;color:#17463d;text-align:left;cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.smv-hub-card:hover,.smv-hub-card:focus-visible{transform:translateY(-2px);border-color:#9bcbbb;box-shadow:0 8px 22px rgba(17,75,60,.08);outline:none}
+.smv-hub-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#eaf6f1;color:#08765e;font-size:19px;font-weight:900}
+.smv-hub-card strong{font-size:14px;font-weight:900}
+.smv-hub-card small{color:#71867f;font-size:11px;line-height:1.45}
+.smv-hub-card em{margin-top:auto;color:#08765e;font-size:10px;font-style:normal;font-weight:900}
+.smv-hub-foot{margin:16px 0 0;color:#82948d;font-size:10px;line-height:1.5}
+@media(max-width:900px){.smv-hub-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){#smvBusinessOSHub{margin:8px;padding:14px;border-radius:14px}.smv-hub-head{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}.smv-hub-head p{font-size:12px}.smv-hub-home{width:100%;min-height:44px}.smv-hub-grid{grid-template-columns:1fr;gap:9px}.smv-hub-card{min-height:126px;padding:14px;gap:6px}.smv-hub-card strong{font-size:14px}.smv-hub-card small{font-size:11px}.smv-hub-foot{font-size:10px}}
