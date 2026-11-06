@@ -22,6 +22,7 @@ d.getElementById('addEnquiryBtn').addEventListener('click',()=>newClicked++);
 d.getElementById('venueManagementBtn').addEventListener('click',()=>venueClicked++);
 d.querySelector('[data-work-view="overdue"]').addEventListener('click',()=>overdueClicked++);
 w.eval(script);
+d.dispatchEvent(new w.Event('DOMContentLoaded'));
 const os=d.getElementById('smvBusinessOS');
 assert(os,'Business OS panel should mount');
 assert.equal(d.getElementById('smvOsLeads').textContent,'125');
