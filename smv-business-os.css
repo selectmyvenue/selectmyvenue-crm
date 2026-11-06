@@ -26,3 +26,24 @@
 .smv-os-foot{margin-top:12px;color:#82938c;font-size:10px;line-height:1.5}
 @media(max-width:900px){.smv-os-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.smv-os-bottom{grid-template-columns:1fr}}
 @media(max-width:560px){#smvBusinessOS{padding:14px;border-radius:16px}.smv-os-head{display:block}.smv-os-live{margin-top:10px}.smv-os-grid{gap:8px}.smv-os-kpi{padding:12px}.smv-os-kpi-value{font-size:23px}.smv-os-focus-list{grid-template-columns:repeat(3,minmax(0,1fr))}.smv-os-focus-item{padding:8px 6px}.smv-os-focus-item strong{font-size:17px}}
+
+/* Compact command-centre header: keep lead workspace immediately visible. */
+#smvBusinessOS{margin:0 0 12px;padding:12px 18px;border-radius:15px;box-shadow:0 5px 18px rgba(20,65,55,.045)}
+.smv-os-head{align-items:center;gap:12px;margin:0 0 10px}
+.smv-os-brand{min-width:0}
+.smv-os-eyebrow{font-size:9px;letter-spacing:.15em}
+.smv-os-title{font-size:clamp(17px,1.8vw,22px);line-height:1.12;margin:3px 0}
+.smv-os-subtitle{font-size:11px;line-height:1.35;max-width:none}
+.smv-os-head-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.smv-os-live{padding:6px 9px;font-size:9px}
+.smv-os-toggle{border:1px solid #d4e5dd;background:#fff;color:#20594b;border-radius:9px;padding:7px 10px;font-size:10px;font-weight:850;cursor:pointer;white-space:nowrap}
+.smv-os-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.smv-os-kpi{padding:8px 12px;border-radius:11px}
+.smv-os-kpi-label{font-size:8px;letter-spacing:.1em}
+.smv-os-kpi-value{font-size:21px;line-height:1.05;margin:4px 0 2px}
+.smv-os-kpi-note{font-size:9px}
+.smv-os-bottom[hidden]{display:none!important}
+.smv-os-bottom{margin-top:10px}
+.smv-os-foot{display:none}
+@media(max-width:700px){#smvBusinessOS{padding:11px;margin-bottom:10px}.smv-os-head{align-items:flex-start}.smv-os-subtitle{display:none}.smv-os-head-actions{flex-direction:column;align-items:flex-end}.smv-os-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.smv-os-kpi{padding:8px 10px}}
+@media(max-width:420px){.smv-os-title{font-size:16px}.smv-os-eyebrow{font-size:8px}.smv-os-live{font-size:8px}.smv-os-toggle{font-size:9px;padding:6px 8px}}
