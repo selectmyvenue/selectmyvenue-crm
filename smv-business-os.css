@@ -1,0 +1,28 @@
+/* SMV Business OS — additive command-centre foundation */
+#smvBusinessOS{margin:0 0 22px;padding:22px;border:1px solid #dbe8e3;border-radius:22px;background:linear-gradient(135deg,#fbfdfc 0%,#f0f7f4 58%,#f8f5ed 100%);box-shadow:0 16px 42px rgba(20,65,55,.08);color:#173d36}
+#smvBusinessOS[hidden]{display:none!important}
+.smv-os-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px}
+.smv-os-eyebrow{font-size:10px;letter-spacing:.18em;font-weight:900;color:#a27c3d}
+.smv-os-title{font-size:clamp(22px,2.5vw,30px);line-height:1.15;margin:6px 0;color:#143f37;font-weight:850}
+.smv-os-subtitle{margin:0;color:#678078;font-size:13px;max-width:620px;line-height:1.55}
+.smv-os-live{display:inline-flex;align-items:center;gap:7px;border:1px solid #d6e7df;background:#fff;border-radius:999px;padding:8px 11px;color:#477267;font-size:10px;font-weight:800;white-space:nowrap}
+.smv-os-live:before{content:"";width:7px;height:7px;border-radius:50%;background:#20a477;box-shadow:0 0 0 3px #e0f4eb}
+.smv-os-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.smv-os-kpi{padding:15px 16px;border:1px solid #e0ebe6;border-radius:15px;background:rgba(255,255,255,.9);min-width:0}
+.smv-os-kpi-label{font-size:9px;letter-spacing:.12em;font-weight:900;color:#789087}
+.smv-os-kpi-value{display:block;font-size:27px;line-height:1.2;font-weight:850;color:#16483e;margin:7px 0 3px;font-variant-numeric:tabular-nums}
+.smv-os-kpi-note{font-size:10px;color:#84958e;line-height:1.4}
+.smv-os-bottom{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(250px,.85fr);gap:12px;margin-top:12px}
+.smv-os-focus,.smv-os-actions{padding:15px;border:1px solid #e0ebe6;border-radius:15px;background:rgba(255,255,255,.86)}
+.smv-os-block-title{font-size:12px;font-weight:900;color:#214c42;margin:0 0 10px}
+.smv-os-focus-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.smv-os-focus-item{padding:10px;border-radius:11px;background:#f5f9f7}
+.smv-os-focus-item strong{display:block;font-size:19px;color:#1a5145}
+.smv-os-focus-item span{font-size:10px;color:#71877e}
+.smv-os-action-list{display:flex;flex-wrap:wrap;gap:8px}
+.smv-os-action{border:1px solid #d4e5dd;background:#fff;color:#20594b;border-radius:10px;padding:9px 12px;font-size:11px;font-weight:850;cursor:pointer}
+.smv-os-action.primary{background:#174d42;border-color:#174d42;color:#fff}
+.smv-os-action:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(20,65,55,.10)}
+.smv-os-foot{margin-top:12px;color:#82938c;font-size:10px;line-height:1.5}
+@media(max-width:900px){.smv-os-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.smv-os-bottom{grid-template-columns:1fr}}
+@media(max-width:560px){#smvBusinessOS{padding:14px;border-radius:16px}.smv-os-head{display:block}.smv-os-live{margin-top:10px}.smv-os-grid{gap:8px}.smv-os-kpi{padding:12px}.smv-os-kpi-value{font-size:23px}.smv-os-focus-list{grid-template-columns:repeat(3,minmax(0,1fr))}.smv-os-focus-item{padding:8px 6px}.smv-os-focus-item strong{font-size:17px}}
