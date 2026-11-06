@@ -615,6 +615,23 @@
     const db = client();
     if (db) {
       try {
+        const { data: followups, error: followupError } = await db
+          .from("lead_followups")
+          .select("id,follow_up_at,note,created_at,staff_user_id")
+          .eq("enquiry_id", lead.id)
+          .order("created_at", { ascending: false })
+          .limit(20);
+        if (!followupError && Array.isArray(followups)) {
+          followups.forEach(row => events.push({
+            at: row.created_at || row.follow_up_at,
+            title: "Follow-up scheduled / updated",
+            detail: [row.follow_up_at ? "Due " + formatDateTime(row.follow_up_at) : "", safeText(row.note)].filter(Boolean).join(" · ")
+          }));
+        }
+      } catch (error) {
+        console.warn("SMV customer 360 follow-up timeline warning:", error);
+      }
+      try {
         const { data, error } = await db
           .from("crm_activity_log")
           .select("id,activity_type,description,old_value,new_value,created_at")
