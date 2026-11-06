@@ -9,7 +9,7 @@ assert(html.includes('id="smvAiDiscovery"'),'discovery workspace must be embedde
 assert(html.includes('id="smvAiOpen"'),'assignment modal must expose the discovery launcher');
 assert(html.includes('id="smvAiStrictCapacity"'),'capacity strictness control must be present');
 assert(html.includes('id="smvAiCompare"'),'venue comparison panel must be present');
-assert(source.includes('Data confidence'),'match cards must expose data confidence');
+assert(source.includes('Data confidence'),'match cards must expose data confidence');assert(source.includes('startLiveVenueUpdates'),'venue changes subscribe to Supabase Realtime');assert(source.includes('SpeechRecognition'),'call notes support speech input');assert(source.includes('availabilityStatus'),'event date requires partner confirmation');
 assert(html.includes('ai-venue-discovery.css'),'premium discovery stylesheet must be linked');
 assert(html.includes('ai-venue-discovery.js'),'discovery script must be linked');
 assert(source.includes('smv_assignment_hidden_venue_ids')===false,'discovery must reuse the filtered assignment venue collection, not make its own unfiltered query');
@@ -29,14 +29,14 @@ const location={alias_key:'gurugram|sohna road',canonical_label:'Sohna Road, Gur
 const scored=w.smvScoreVenueMatch(venue,parsed,[location],15);
 assert.equal(scored.exact,true);
 assert.equal(scored.confidence,100);
-assert.equal(scored.capacityFit,true);
+assert.equal(scored.capacityFit,true);assert.equal(scored.availabilityStatus,'date_not_provided');
 assert(scored.score>=90);
 const tooSmall=w.smvScoreVenueMatch({...venue,capacity_max:150},parsed,[location],15);
 assert(tooSmall.score<scored.score);
 assert.equal(tooSmall.capacityFit,false);
 const far=w.smvScoreVenueMatch({...venue,area:'Dwarka',address:'Dwarka, Delhi',latitude:28.59,longitude:77.04},parsed,[location],5);
 assert.equal(far.near,false);
-const noGuests=w.smvParseVenueRequirements('₹5 lakh total budget');
+const outdoorFalse=w.smvScoreVenueMatch({...venue,outdoor_available:false,area_features:{lawn:{available:false},open_area:{available:false}}},w.smvParseVenueRequirements('lawn preferred'),[location],15);const outdoorTrue=w.smvScoreVenueMatch({...venue,outdoor_available:true,area_features:{lawn:{available:true}}},w.smvParseVenueRequirements('lawn preferred'),[location],15);assert(outdoorFalse.score<outdoorTrue.score,'explicitly unavailable outdoor feature must score below available outdoor feature');const noGuests=w.smvParseVenueRequirements('₹5 lakh total budget');
 assert.equal(noGuests.guests,null);
 assert.equal(noGuests.budget,500000);
 console.log('PASS AI Venue Discovery: natural-language extraction, total-budget parsing, exact/nearby distance, and explainable ranking');
