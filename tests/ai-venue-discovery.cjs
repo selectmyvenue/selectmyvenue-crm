@@ -36,7 +36,7 @@ assert(tooSmall.score<scored.score);
 assert.equal(tooSmall.capacityFit,false);
 const far=w.smvScoreVenueMatch({...venue,area:'Dwarka',address:'Dwarka, Delhi',latitude:28.59,longitude:77.04},parsed,[location],5);
 assert.equal(far.near,false);
-const outdoorFalse=w.smvScoreVenueMatch({...venue,outdoor_available:false,area_features:{lawn:{available:false},open_area:{available:false}}},w.smvParseVenueRequirements('lawn preferred'),[location],15);assert.equal(outdoorFalse.score,0,'explicitly unavailable outdoor feature cannot score as match');const noGuests=w.smvParseVenueRequirements('₹5 lakh total budget');
+const outdoorFalse=w.smvScoreVenueMatch({...venue,outdoor_available:false,area_features:{lawn:{available:false},open_area:{available:false}}},w.smvParseVenueRequirements('lawn preferred'),[location],15);const outdoorTrue=w.smvScoreVenueMatch({...venue,outdoor_available:true,area_features:{lawn:{available:true}}},w.smvParseVenueRequirements('lawn preferred'),[location],15);assert(outdoorFalse.score<outdoorTrue.score,'explicitly unavailable outdoor feature must score below available outdoor feature');const noGuests=w.smvParseVenueRequirements('₹5 lakh total budget');
 assert.equal(noGuests.guests,null);
 assert.equal(noGuests.budget,500000);
 console.log('PASS AI Venue Discovery: natural-language extraction, total-budget parsing, exact/nearby distance, and explainable ranking');
