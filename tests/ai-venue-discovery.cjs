@@ -17,11 +17,11 @@ const dom=new JSDOM('<!doctype html><html><body><button id="smvAiOpen"></button>
 const w=dom.window;
 w.eval('let assignmentVenueRows=[];let assignmentCurrentLead=null;function getSupabaseClient(){return {from(){return {select(){return this},limit:async()=>({data:[{alias_key:"gurugram|sohna road",canonical_label:"Sohna Road, Gurugram",latitude:28.44,longitude:77.04}],error:null})}}}};function isVenueAlreadyAssigned(){return false}');
 w.eval(source);
-const parsed=w.smvParseVenueRequirements('Wedding, 300 guests, ₹5 lakh total budget, lawn preferred');
+const parsed=w.smvParseVenueRequirements('Wedding, 300 guests, ₹5 lakh total budget, lawn preferred, parking required, veg');
 assert.equal(parsed.guests,300);
 assert.equal(parsed.budget,500000);
 assert.equal(parsed.event,'wedding');
-assert.equal(parsed.outdoor,true);
+assert.equal(parsed.outdoor,true);\nassert.equal(parsed.parking,true);\nassert.equal(parsed.veg,true);
 const noCurrency=w.smvParseVenueRequirements('300 guests, 5 lakh total budget');
 assert.equal(noCurrency.budget,500000);
 const venue={area:'Sohna Road',address:'Sector 49, Gurugram',city:'Gurugram',latitude:28.44,longitude:77.04,capacity_max:350,price_max_per_person:1500,venue_type:'banquet',outdoor_available:true,event_types:['wedding']};
@@ -35,7 +35,7 @@ const tooSmall=w.smvScoreVenueMatch({...venue,capacity_max:150},parsed,[location
 assert(tooSmall.score<scored.score);
 assert.equal(tooSmall.capacityFit,false);
 const far=w.smvScoreVenueMatch({...venue,area:'Dwarka',address:'Dwarka, Delhi',latitude:28.59,longitude:77.04},parsed,[location],5);
-assert.equal(far.near,false);
+assert.equal(far.near,false);\nassert.equal(far.withinRadius,false,'a venue outside the selected radius must not pass location eligibility');\nconst kundli=w.smvScoreVenueMatch({...venue,area:'Kundli',address:'Kundli, Sonipat',city:'Sonipat',latitude:29.13,longitude:77.0},w.smvParseVenueRequirements('Wedding, 400 guests'),[{alias_key:'delhi|dwarka sector 23',canonical_label:'Dwarka Sector 23, Delhi',latitude:28.56,longitude:77.05}],15);\nassert.equal(kundli.exact,false,'a different locality must not be promoted to an exact area match');\nassert.equal(kundli.withinRadius,false,'a distant venue must be excluded by the selected radius');\nconst cityOnly=w.smvScoreVenueMatch({...venue,area:'Kundli',city:'Delhi',latitude:null,longitude:null},w.smvParseVenueRequirements('Wedding'),[{alias_key:'manual|delhi',canonical_label:'Delhi',latitude:null,longitude:null}],15);\nassert.equal(cityOnly.exact,false,'city-only match must not be labelled exact locality');\nassert.equal(cityOnly.cityMatch,true);\nconst overBudget=w.smvScoreVenueMatch({...venue,price_max_per_person:1800},parsed,[location],15);\nassert(overBudget.score<scored.score,'total package estimate above total budget must reduce match score');
 const outdoorFalse=w.smvScoreVenueMatch({...venue,outdoor_available:false,area_features:{lawn:{available:false},open_area:{available:false}}},w.smvParseVenueRequirements('lawn preferred'),[location],15);const outdoorTrue=w.smvScoreVenueMatch({...venue,outdoor_available:true,area_features:{lawn:{available:true}}},w.smvParseVenueRequirements('lawn preferred'),[location],15);assert(outdoorFalse.score<outdoorTrue.score,'explicitly unavailable outdoor feature must score below available outdoor feature');const noGuests=w.smvParseVenueRequirements('₹5 lakh total budget');
 assert.equal(noGuests.guests,null);
 assert.equal(noGuests.budget,500000);
