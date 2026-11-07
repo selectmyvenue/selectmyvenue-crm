@@ -102,5 +102,5 @@ document.addEventListener("click",e=>{if(e.target.closest("#smvAiOpen")){e.preve
 document.addEventListener("input",e=>{if(e.target.closest("#smvAiDiscovery")){clearTimeout(timer);timer=setTimeout(render,180);}});
 document.addEventListener("change",e=>{if(e.target.closest("#smvAiDiscovery"))render();});
 const assignmentList=$("#venueAssignmentList");if(assignmentList&&typeof MutationObserver!=="undefined"){new MutationObserver(()=>{if($("#smvAiDiscovery")&&!$("#smvAiDiscovery").hidden)render();}).observe(assignmentList,{childList:true,subtree:true});}
-window.smvParseVenueRequirements=parse;window.smvScoreVenueMatch=score;window.smvRenderAiVenueDiscovery=render;window.smvRefreshVenueDiscovery=render;
+window.smvParseVenueRequirements=parse;window.smvScoreVenueMatch=score;window.smvPopulateLeadRequirements=populateLeadRequirements;window.smvRenderAiVenueDiscovery=render;window.smvRefreshVenueDiscovery=render;
 })();
