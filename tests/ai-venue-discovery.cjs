@@ -24,6 +24,9 @@ const dom=new JSDOM('<!doctype html><html><body><button id="smvAiOpen"></button>
 const w=dom.window;
 w.eval('let assignmentVenueRows=[];let assignmentCurrentLead=null;function getSupabaseClient(){return {from(){return {select(){return this},limit:async()=>({data:[{alias_key:"gurugram|sohna road",canonical_label:"Sohna Road, Gurugram",latitude:28.44,longitude:77.04}],error:null})}}}};function isVenueAlreadyAssigned(){return false}');
 w.eval(source);
+assert.equal(w.smvExtractEventDate('Wedding on 15 Feb 2027'),'2027-02-15');
+assert.equal(w.smvExtractEventDate('Event date 15/02/2027'),'2027-02-15');
+assert.equal(w.smvExtractEventDate('2027-02-30'),null,'invalid calendar dates must not be accepted');
 const parsed=w.smvParseVenueRequirements('Wedding, 300 guests, ₹5 lakh total budget, lawn preferred, parking required, veg');
 assert.equal(parsed.guests,300);
 assert.equal(parsed.budget,500000);
