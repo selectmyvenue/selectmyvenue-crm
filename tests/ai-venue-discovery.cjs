@@ -49,7 +49,7 @@ assert.equal(far.withinRadius,false,'a venue outside the selected radius must no
 const kundli=w.smvScoreVenueMatch({...venue,area:'Kundli',address:'Kundli, Sonipat',city:'Sonipat',latitude:29.13,longitude:77.0},w.smvParseVenueRequirements('Wedding, 400 guests'),[{alias_key:'delhi|dwarka sector 23',canonical_label:'Dwarka Sector 23, Delhi',latitude:28.56,longitude:77.05}],15);
 assert.equal(kundli.exact,false,'a different locality must not be promoted to an exact area match');
 assert.equal(kundli.withinRadius,false,'a distant venue must be excluded by the selected radius');
-const cityOnly=w.smvScoreVenueMatch({...venue,area:'Kundli',city:'Delhi',latitude:null,longitude:null},w.smvParseVenueRequirements('Wedding'),[{alias_key:'manual|delhi',canonical_label:'Delhi',latitude:null,longitude:null}],15);
+const cityOnly=w.smvScoreVenueMatch({...venue,area:'Kundli',city:'Delhi',latitude:null,longitude:null},w.smvParseVenueRequirements('Wedding'),[{alias_key:'delhi',canonical_label:'Delhi',latitude:null,longitude:null}],15);
 assert.equal(cityOnly.exact,false,'city-only match must not be labelled exact locality');
 assert.equal(cityOnly.cityMatch,true);
 assert.equal(cityOnly.withinRadius,false,'city-only text without geocoded coordinates cannot prove a 15 km radius');
