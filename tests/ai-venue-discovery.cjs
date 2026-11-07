@@ -37,7 +37,7 @@ const venue={area:'Sohna Road',address:'Sector 49, Gurugram',city:'Gurugram',lat
 const location={alias_key:'gurugram|sohna road',canonical_label:'Sohna Road, Gurugram',latitude:28.44,longitude:77.04};
 const scored=w.smvScoreVenueMatch(venue,parsed,[location],15);
 assert.equal(scored.exact,true);
-assert.equal(scored.confidence,100);
+assert.equal(scored.confidence,90,'unverified parking and catering data must reduce data confidence');
 assert.equal(scored.capacityFit,true);assert.equal(scored.availabilityStatus,'date_not_provided');
 assert(scored.score>=90);
 const tooSmall=w.smvScoreVenueMatch({...venue,capacity_max:150},parsed,[location],15);
