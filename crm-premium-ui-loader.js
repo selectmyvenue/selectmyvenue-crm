@@ -283,6 +283,16 @@
 
     /* Desktop layout override must stay after premium CSS, because premium CSS is re-appended at runtime. */
     ensureFinalLeadLayout();
+
+    /* Keep the premium header + assignment polish last in the cascade. */
+    let polishLink=document.getElementById('smvPremiumPolishV3');
+    if(!polishLink){
+      polishLink=document.createElement('link');
+      polishLink.rel='stylesheet';
+      polishLink.id='smvPremiumPolishV3';
+      polishLink.href='crm-premium-polish-v3.css?v=20261107-premium-header-assignment-1';
+    }
+    if(document.head.lastElementChild!==polishLink)document.head.appendChild(polishLink);
   }
 
   function boot(){
