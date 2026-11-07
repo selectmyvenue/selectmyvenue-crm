@@ -1,6 +1,7 @@
 -- Disposable PostgreSQL fixtures approximating the Supabase auth/RLS surface.
 create extension if not exists pgcrypto;
 create schema if not exists auth;
+create table if not exists auth.users (id uuid primary key);
 do $$ begin
   if not exists (select 1 from pg_roles where rolname='anon') then create role anon nologin; end if;
   if not exists (select 1 from pg_roles where rolname='authenticated') then create role authenticated nologin; end if;
@@ -39,6 +40,10 @@ insert into public.venues(id) values
 insert into public.venue_enquiry_assignments(id,enquiry_id,venue_id) values
   ('11111111-1111-4111-8111-111111111111',101,'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'),
   ('22222222-2222-4222-8222-222222222222',102,'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb');
+insert into auth.users(id) values
+  ('aaaaaaaa-0000-4000-8000-000000000001'),
+  ('bbbbbbbb-0000-4000-8000-000000000002'),
+  ('cccccccc-0000-4000-8000-000000000003');
 insert into public.venue_partner_profiles(user_id,venue_id,is_active) values
   ('aaaaaaaa-0000-4000-8000-000000000001','aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',true),
   ('bbbbbbbb-0000-4000-8000-000000000002','bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',true);
