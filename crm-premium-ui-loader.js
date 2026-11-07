@@ -284,35 +284,7 @@
     /* Desktop layout override must stay after premium CSS, because premium CSS is re-appended at runtime. */
     ensureFinalLeadLayout();
 
-    /* Compact one-row desktop header correction (v4). */
-    let compactHeaderLink=document.getElementById('smvCompactHeaderV4');
-    if(!compactHeaderLink){
-      compactHeaderLink=document.createElement('link');
-      compactHeaderLink.rel='stylesheet';
-      compactHeaderLink.id='smvCompactHeaderV4';
-      compactHeaderLink.href='crm-header-compact-v4.css?v=20261108-compact-header-1';
-    }
-    if(document.head.lastElementChild!==compactHeaderLink)document.head.appendChild(compactHeaderLink);
 
-    /* Slim original-height header and compact Customer Enquiries banner. */
-    let slimHeaderLink=document.getElementById('smvSlimHeaderEnquiriesV5');
-    if(!slimHeaderLink){
-      slimHeaderLink=document.createElement('link');
-      slimHeaderLink.rel='stylesheet';
-      slimHeaderLink.id='smvSlimHeaderEnquiriesV5';
-      slimHeaderLink.href='crm-slim-header-enquiries-banner-v5.css?v=20261108-slim-header-5';
-    }
-    if(document.head.lastElementChild!==slimHeaderLink)document.head.appendChild(slimHeaderLink);
-
-    /* Final header collision + Customer Enquiries contrast correction (v6). */
-    let headerFixLink=document.getElementById('smvHeaderHardFixV6');
-    if(!headerFixLink){
-      headerFixLink=document.createElement('link');
-      headerFixLink.rel='stylesheet';
-      headerFixLink.id='smvHeaderHardFixV6';
-      headerFixLink.href='crm-header-hard-fix-v6.css?v=20261108-header-fix-6';
-    }
-    if(document.head.lastElementChild!==headerFixLink)document.head.appendChild(headerFixLink);
   }
 
   function boot(){
