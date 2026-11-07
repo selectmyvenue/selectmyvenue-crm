@@ -13,7 +13,7 @@ function locationEvidence(v,loc,radius){
  const ds=[];if(v.latitude!==null&&v.longitude!==null&&Number.isFinite(Number(v.latitude))&&Number.isFinite(Number(v.longitude)))loc.forEach(a=>{if(a.latitude!==null&&a.longitude!==null&&Number.isFinite(Number(a.latitude))&&Number.isFinite(Number(a.longitude)))ds.push(dist(+a.latitude,+a.longitude,+v.latitude,+v.longitude));});
  const d=ds.length?Math.min(...ds):null;
  const exact=loc.some(a=>{const p=String(a.alias_key||"").split("|"),area=norm(p.slice(1).join(" "));return area&&phraseMatch([v.area,v.address].filter(Boolean).join(" "),area);});
- const cityMatch=loc.some(a=>{const p=String(a.alias_key||"").split("|"),city=norm(p[0]);return city&&phraseMatch(v.city,city);});
+ const cityMatch=loc.some(a=>{const p=String(a.alias_key||"").split("|"),city=norm(p[0]),hasArea=!!norm(p.slice(1).join(" "));return !hasArea&&city&&phraseMatch(v.city,city);});
  const near=d!==null&&d<=radius,withinRadius=d!==null?near:(exact||cityMatch);
  return {exact,cityMatch,near,d,withinRadius,outsideRadius:d!==null&&d>radius};
 }
