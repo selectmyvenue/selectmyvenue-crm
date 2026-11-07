@@ -1,0 +1,41 @@
+name: SMV AI Matching V2 PostgreSQL security tests
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [feat/smv-ai-matching-v2]
+jobs:
+  postgres-migrations-and-rls:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: smv_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d smv_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Build isolated Supabase-compatible test fixtures
+        env:
+          PGPASSWORD: postgres
+        run: psql -h localhost -U postgres -d smv_test -v ON_ERROR_STOP=1 -f tests/sql/matching-v2-fixtures.sql
+      - name: Apply V2 migrations to disposable PostgreSQL
+        env:
+          PGPASSWORD: postgres
+        run: |
+          psql -h localhost -U postgres -d smv_test -v ON_ERROR_STOP=1 -f supabase/migrations/20261107100000_partner_venue_availability_responses.sql
+          psql -h localhost -U postgres -d smv_test -v ON_ERROR_STOP=1 -f supabase/migrations/20261107113000_venue_match_feedback.sql
+      - name: Verify partner isolation, assignment/date integrity and staff-only feedback
+        env:
+          PGPASSWORD: postgres
+        run: psql -h localhost -U postgres -d smv_test -v ON_ERROR_STOP=1 -f tests/sql/matching-v2-rls-assertions.sql

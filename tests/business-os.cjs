@@ -1,4 +1,6 @@
 const {JSDOM}=require('jsdom');
+// jsdom does not implement browser scrolling; keep navigation assertions deterministic.
+
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
@@ -9,6 +11,7 @@ const css=fs.readFileSync(path.join(root,'smv-business-os.css'),'utf8');
 assert(html.includes('smv-business-os.css')&&html.includes('smv-business-os.js'),'dashboard loads Business OS assets');
 assert(css.includes('@media(max-width:600px)'),'hub has a narrow-phone layout');
 const dom=new JSDOM(html,{url:'https://crm.selectmyvenue.com/dashboard.html',runScripts:'outside-only',pretendToBeVisual:true});
+dom.window.HTMLElement.prototype.scrollIntoView=function(){};
 const w=dom.window,d=w.document;
 w.eval(script);d.dispatchEvent(new w.Event('DOMContentLoaded'));
 assert.equal(d.querySelectorAll('#smvBusinessOS').length,0,'no oversized Business OS dashboard on the lead homepage');

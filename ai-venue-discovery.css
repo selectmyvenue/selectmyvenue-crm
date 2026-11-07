@@ -3,3 +3,17 @@
 .smv-ai-controls{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0;padding:11px 13px;border:1px solid #dcebe6;border-radius:11px;background:#f7fbf9;color:#54766d;font-size:11px}.smv-ai-controls label{display:flex;align-items:center;gap:8px;font-weight:800;color:#285c50}.smv-ai-confidence{display:flex;justify-content:space-between;gap:8px;margin:9px 0;color:#52786d;font-size:10px;font-weight:800}.smv-ai-missing{display:block;margin:7px 0;color:#98713b;line-height:1.45}.smv-ai-card-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px}.smv-ai-card-actions label{display:flex;align-items:center;gap:6px;font-size:11px;color:#42685e;font-weight:800}.smv-ai-compare{margin:14px 0;padding:15px;border:1px solid #d6e7df;border-radius:14px;background:#f8fbf9;overflow-x:auto}.smv-ai-compare[hidden]{display:none}.smv-ai-compare-head{display:flex;justify-content:space-between;gap:10px;margin-bottom:12px;color:#24594e;font-size:12px}.smv-ai-compare-grid{display:grid;grid-template-columns:110px repeat(3,minmax(130px,1fr));gap:0;min-width:520px}.smv-ai-compare-grid>div{display:grid;grid-template-rows:repeat(8,minmax(36px,auto));align-items:center}.smv-ai-compare-grid strong,.smv-ai-compare-grid span,.smv-ai-compare-col b{padding:8px;border-bottom:1px solid #e3ede8;font-size:10px;color:#486a60}.smv-ai-compare-col b{color:#174e42;font-size:11px}.smv-ai-compare-labels strong{font-weight:900;color:#71887f}@media(max-width:600px){.smv-ai-controls{align-items:flex-start;flex-direction:column}.smv-ai-compare-grid{grid-template-columns:90px repeat(3,minmax(125px,1fr))}}
 
 .smv-ai-mic{display:inline-flex;align-items:center;gap:6px;margin-top:7px;padding:8px 12px;border:1px solid #cfe3dc;border-radius:9px;background:#f4faf7;color:#126451;font-size:12px;font-weight:800;cursor:pointer}.smv-ai-mic:disabled{opacity:.5;cursor:not-allowed}@media(max-width:600px){.smv-ai-mic{min-height:42px;width:100%;justify-content:center}}
+/* V2 responsive controls: readable, touch-first matching on compact phones. */
+@media(max-width:520px){
+ #smvAiDiscovery{padding:11px;border-radius:13px}
+ #smvAiDiscovery .smv-ai-inputs{grid-template-columns:minmax(0,1fr);gap:9px}
+ #smvAiDiscovery .smv-ai-wide{grid-column:auto}
+ #smvAiDiscovery .smv-ai-field label{font-size:11px}
+ #smvAiDiscovery .smv-ai-field input,#smvAiDiscovery .smv-ai-field select,#smvAiDiscovery .smv-ai-field textarea{min-height:44px;font-size:14px}
+ #smvAiDiscovery .smv-ai-field textarea{min-height:100px}
+ #smvAiDiscovery .smv-ai-status{align-items:flex-start;flex-direction:column}
+ #smvAiDiscovery .smv-ai-card-actions{align-items:stretch;flex-direction:column}
+ #smvAiDiscovery .smv-ai-card-actions button{min-height:44px;width:100%}
+ #smvAiDiscovery .smv-ai-card-actions label{min-height:38px}
+ #smvAiDiscovery .smv-ai-compare{margin-inline:-2px;padding:10px}
+}
