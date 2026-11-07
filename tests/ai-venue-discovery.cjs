@@ -12,6 +12,13 @@ assert(html.includes('id="smvAiCompare"'),'venue comparison panel must be presen
 assert(source.includes('Data confidence'),'match cards must expose data confidence');assert(source.includes('startLiveVenueUpdates'),'venue changes subscribe to Supabase Realtime');assert(source.includes('SpeechRecognition'),'call notes support speech input');assert(source.includes('availabilityStatus'),'event date requires partner confirmation');
 assert(html.includes('ai-venue-discovery.css'),'premium discovery stylesheet must be linked');
 assert(html.includes('ai-venue-discovery.js'),'discovery script must be linked');
+const migration=fs.readFileSync(path.join(root,'supabase/migrations/20261107100000_partner_venue_availability_responses.sql'),'utf8');
+assert(migration.includes('enable row level security'),'availability responses must have RLS enabled');
+assert(migration.includes('smv_partner_read_own_availability_responses'),'partner read policy must be venue scoped');
+assert(migration.includes('smv_partner_insert_own_availability_response'),'partner insert policy must be venue scoped');
+assert(migration.includes('smv_partner_update_own_availability_response'),'partner update policy must be venue scoped');
+assert(migration.includes('ce.event_date = new.event_date'),'availability response must match the assigned enquiry event date');
+assert(!/alter\s+table\s+public\.customer_enquiries/i.test(migration),'V2 must not alter the existing customer enquiry table');
 assert(source.includes('smv_assignment_hidden_venue_ids')===false,'discovery must reuse the filtered assignment venue collection, not make its own unfiltered query');
 const dom=new JSDOM('<!doctype html><html><body><button id="smvAiOpen"></button><button id="smvAiClose"></button><section id="smvAiDiscovery" hidden><textarea id="smvAiRequirement"></textarea><input id="smvAiLocations"><input id="smvAiGuests"><input id="smvAiBudget"><input id="smvAiEventDate" type="date"><input id="smvAiRooms"><input id="smvAiParking" type="checkbox"><input id="smvAiVeg" type="checkbox"><input id="smvAiNonVeg" type="checkbox"><select id="smvAiType"><option value=""></option></select><select id="smvAiRadius"><option value="15" selected>15</option></select><strong id="smvAiResultCount"></strong><span id="smvAiExactCount"></span><span id="smvAiNearbyCount"></span><div id="smvAiExact"></div><div id="smvAiNearby"></div></section><div id="venueAssignmentList"></div></body></html>',{runScripts:'outside-only',pretendToBeVisual:true});
 const w=dom.window;
