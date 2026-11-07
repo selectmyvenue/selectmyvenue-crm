@@ -14,7 +14,7 @@ function locationEvidence(v,loc,radius){
  const d=ds.length?Math.min(...ds):null;
  const exact=loc.some(a=>{const p=String(a.alias_key||"").split("|"),area=norm(p.slice(1).join(" "));return area&&phraseMatch([v.area,v.address].filter(Boolean).join(" "),area);});
  const cityMatch=loc.some(a=>{const p=String(a.alias_key||"").split("|"),city=norm(p[0]),hasArea=!!norm(p.slice(1).join(" "));return !hasArea&&city&&phraseMatch(v.city,city);});
- const near=d!==null&&d<=radius,withinRadius=d!==null?near:(exact||cityMatch);
+ const near=d!==null&&d<=radius,withinRadius=d!==null?near:exact;
  return {exact,cityMatch,near,d,withinRadius,outsideRadius:d!==null&&d>radius};
 }
 function score(v,c,loc,radius){
