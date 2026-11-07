@@ -303,6 +303,16 @@
       slimHeaderLink.href='crm-slim-header-enquiries-banner-v5.css?v=20261108-slim-header-5';
     }
     if(document.head.lastElementChild!==slimHeaderLink)document.head.appendChild(slimHeaderLink);
+
+    /* Final header collision + Customer Enquiries contrast correction (v6). */
+    let headerFixLink=document.getElementById('smvHeaderHardFixV6');
+    if(!headerFixLink){
+      headerFixLink=document.createElement('link');
+      headerFixLink.rel='stylesheet';
+      headerFixLink.id='smvHeaderHardFixV6';
+      headerFixLink.href='crm-header-hard-fix-v6.css?v=20261108-header-fix-6';
+    }
+    if(document.head.lastElementChild!==headerFixLink)document.head.appendChild(headerFixLink);
   }
 
   function boot(){
