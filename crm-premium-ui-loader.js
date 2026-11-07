@@ -293,6 +293,16 @@
       polishLink.href='crm-premium-polish-v3.css?v=20261107-premium-header-assignment-1';
     }
     if(document.head.lastElementChild!==polishLink)document.head.appendChild(polishLink);
+
+    /* Compact one-row desktop header correction (v4). */
+    let compactHeaderLink=document.getElementById('smvCompactHeaderV4');
+    if(!compactHeaderLink){
+      compactHeaderLink=document.createElement('link');
+      compactHeaderLink.rel='stylesheet';
+      compactHeaderLink.id='smvCompactHeaderV4';
+      compactHeaderLink.href='crm-header-compact-v4.css?v=20261108-compact-header-1';
+    }
+    if(document.head.lastElementChild!==compactHeaderLink)document.head.appendChild(compactHeaderLink);
   }
 
   function boot(){
