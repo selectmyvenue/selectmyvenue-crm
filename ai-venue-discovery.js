@@ -7,11 +7,11 @@ const dist=(a,b,c,d)=>{const r=n=>n*Math.PI/180,h=Math.sin(r(c-a)/2)**2+Math.cos
 let aliases=[],loaded=false,timer,realtimeChannel=null,realtimeRefreshTimer=null,speechRecognition=null,availabilityByVenue=new Map(),availabilityChannel=null,feedbackByVenue=new Map(),outcomeByVenue=new Map();
 function extractEventDate(text){
  const s=String(text||"");
- let m=s.match(/\\b(20\\d{2})-(0[1-9]|1[0-2])-([0-2]\\d|3[01])\\b/);
+ let m=s.match(/\b(20\d{2})-(0[1-9]|1[0-2])-([0-2]\d|3[01])\b/);
  if(m){const d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));if(d.getFullYear()===+m[1]&&d.getMonth()===+m[2]-1&&d.getDate()===+m[3])return m[0];}
- m=s.match(/\\b([0-3]?\\d)[/.-]([01]?\\d)[/.-](20\\d{2})\\b/);
+ m=s.match(/\b([0-3]?\d)[/.-]([01]?\d)[/.-](20\d{2})\b/);
  if(m){const d=new Date(Number(m[3]),Number(m[2])-1,Number(m[1]));if(d.getFullYear()===+m[3]&&d.getMonth()===+m[2]-1&&d.getDate()===+m[1])return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
- const month=s.match(/\\b([0-3]?\\d)\\s+(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\\s+(20\\d{2})\\b/i);
+ const month=s.match(/\b([0-3]?\d)\s+(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+(20\d{2})\b/i);
  if(month){const d=new Date(Date.parse(month[1]+" "+month[2]+" "+month[3]));if(!Number.isNaN(d.getTime())&&d.getFullYear()===+month[3]&&d.getDate()===+month[1])return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
  return null;
 }
