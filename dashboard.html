@@ -15,7 +15,7 @@
     <title>Select My Venue CRM — Lead Management</title>
 
     <link rel="stylesheet" href="crm.css?v=20261106-assignment-exclusions-1">
-<link rel="stylesheet" href="ai-venue-discovery.css?v=20261106-ai-discovery-1">
+<link rel="stylesheet" href="ai-venue-discovery.css?v=20261107-ai-match-v2-1">
     <link rel="stylesheet" href="smv-business-os.css?v=20261107-hub-1">
     <link rel="stylesheet" href="smv-business-intelligence.css?v=20261107-bi-1">
 
@@ -82,7 +82,7 @@
         src="crm.js?v=20261106-assignment-exclusions-1"
         defer
     ></script>
-<script defer src="ai-venue-discovery.js?v=20261106-ai-discovery-1"></script>
+<script defer src="ai-venue-discovery.js?v=20261107-ai-match-v2-1"></script>
 
     <script defer src="venue-plan-center.js?v=20261013-corporate-polish-1"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.16/dist/purify.min.js"></script>
@@ -2333,7 +2333,7 @@
 <div class="smv-ai-field"><label for="smvAiGuests">GUESTS</label><input id="smvAiGuests" type="number" min="1" placeholder="e.g. 300"></div>
 <div class="smv-ai-field"><label for="smvAiBudget">TOTAL BUDGET (₹)</label><input id="smvAiBudget" type="number" min="0" placeholder="e.g. 500000"></div>
 <div class="smv-ai-field"><label for="smvAiType">VENUE TYPE</label><select id="smvAiType"><option value="">Any venue type</option><option value="banquet">Banquet hall</option><option value="hotel">Hotel</option><option value="restaurant">Restaurant</option></select></div>
-<div class="smv-ai-field"><label for="smvAiEventDate">EVENT DATE</label><input id="smvAiEventDate" type="date"></div><div class="smv-ai-field"><label><input id="smvAiParking" type="checkbox"> Parking required</label></div><div class="smv-ai-field"><label><input id="smvAiVeg" type="checkbox"> Vegetarian catering</label><label><input id="smvAiNonVeg" type="checkbox"> Non-vegetarian catering</label></div><div class="smv-ai-field"><label for="smvAiRadius">NEARBY RADIUS</label><select id="smvAiRadius"><option value="5">5 km</option><option value="10">10 km</option><option value="15" selected>15 km</option><option value="25">25 km</option><option value="40">40 km</option></select></div>
+<div class="smv-ai-field"><label for="smvAiEventDate">EVENT DATE</label><input id="smvAiEventDate" type="date"></div><div class="smv-ai-field"><label for="smvAiRooms">ROOMS REQUIRED</label><input id="smvAiRooms" type="number" min="0" inputmode="numeric" placeholder="e.g. 6"></div><div class="smv-ai-field"><label><input id="smvAiParking" type="checkbox"> Parking required</label></div><div class="smv-ai-field"><label><input id="smvAiVeg" type="checkbox"> Vegetarian catering</label><label><input id="smvAiNonVeg" type="checkbox"> Non-vegetarian catering</label></div><div class="smv-ai-field"><label for="smvAiRadius">NEARBY RADIUS</label><select id="smvAiRadius"><option value="5">5 km</option><option value="10">10 km</option><option value="15" selected>15 km</option><option value="25">25 km</option><option value="40">40 km</option></select></div>
 </div>
 <div class="smv-ai-controls"><label><input type="checkbox" id="smvAiStrictCapacity"> Require listed capacity to fit guest count</label><span>Compare up to 3 venues side by side</span></div><section id="smvAiCompare" class="smv-ai-compare" hidden><div class="smv-ai-compare-head"><strong>Venue comparison</strong><span id="smvAiCompareStatus">0 of 3 venues selected</span></div><div id="smvAiCompareBody"></div></section>
 <div class="smv-ai-status"><strong id="smvAiResultCount">Loading SMV venues…</strong><span>Approved + verified · hidden venues excluded</span></div>
