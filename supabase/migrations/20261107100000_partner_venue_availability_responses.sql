@@ -6,7 +6,7 @@ create table if not exists public.venue_partner_availability_responses (
   assignment_id uuid not null references public.venue_enquiry_assignments(id) on delete cascade,
   venue_id uuid not null references public.venues(id) on delete restrict,
   user_id uuid not null references auth.users(id) on delete restrict,
-  event_date date,
+  event_date date not null,
   availability_status text not null
     check (availability_status in ('available','unavailable','needs_info')),
   quoted_price numeric(12,2)
@@ -42,10 +42,12 @@ begin
   if not exists (
     select 1
     from public.venue_enquiry_assignments a
+    join public.customer_enquiries ce on ce.id = a.enquiry_id
     where a.id = new.assignment_id
       and a.venue_id = new.venue_id
+      and ce.event_date = new.event_date
   ) then
-    raise exception 'Availability response must belong to the matching venue assignment'
+    raise exception 'Availability response must match the assigned venue and the enquiry event date'
       using errcode = '23503';
   end if;
 
