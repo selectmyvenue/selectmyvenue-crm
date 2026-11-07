@@ -51,7 +51,7 @@ assert.equal(kundli.exact,false,'a different locality must not be promoted to an
 assert.equal(kundli.withinRadius,false,'a distant venue must be excluded by the selected radius');
 const cityOnly=w.smvScoreVenueMatch({...venue,area:'Kundli',city:'Delhi',latitude:null,longitude:null},w.smvParseVenueRequirements('Wedding'),[{alias_key:'manual|delhi',canonical_label:'Delhi',latitude:null,longitude:null}],15);
 assert.equal(cityOnly.exact,false,'city-only match must not be labelled exact locality');
-assert.equal(cityOnly.cityMatch,true);
+assert.equal(cityOnly.cityMatch,true);\nassert.equal(cityOnly.withinRadius,false,'city-only text without geocoded coordinates cannot prove a 15 km radius');
 const overBudget=w.smvScoreVenueMatch({...venue,price_max_per_person:1800},parsed,[location],15);
 assert(overBudget.score<scored.score,'total package estimate above total budget must reduce match score');
 const outdoorFalse=w.smvScoreVenueMatch({...venue,outdoor_available:false,area_features:{lawn:{available:false},open_area:{available:false}}},w.smvParseVenueRequirements('lawn preferred'),[location],15);const outdoorTrue=w.smvScoreVenueMatch({...venue,outdoor_available:true,area_features:{lawn:{available:true}}},w.smvParseVenueRequirements('lawn preferred'),[location],15);assert(outdoorFalse.score<outdoorTrue.score,'explicitly unavailable outdoor feature must score below available outdoor feature');const noGuests=w.smvParseVenueRequirements('₹5 lakh total budget');
