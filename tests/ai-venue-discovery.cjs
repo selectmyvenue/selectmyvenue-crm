@@ -83,7 +83,7 @@ const outdoorFalse=w.smvScoreVenueMatch({...venue,outdoor_available:false,area_f
  {v:{id:'far-confirmed'},m:{rankedScore:90,confidence:80,d:10},availability:{availability_status:'available'}},
  {v:{id:'strongest-fit'},m:{rankedScore:91,confidence:70,d:20},availability:null}
 ]);
-assert.deepEqual(ranked.map(x=>x.v.id),['strongest-fit','far-confirmed','near-unconfirmed'],'fit score remains primary; confirmed availability breaks equal-fit ties before distance');
+assert.equal(Array.from(ranked,x=>x.v.id).join(','),'strongest-fit,far-confirmed,near-unconfirmed','fit score remains primary; confirmed availability breaks equal-fit ties before distance');
 const noGuests=w.smvParseVenueRequirements('₹5 lakh total budget');
 assert.equal(noGuests.guests,null);
 assert.equal(noGuests.budget,500000);
