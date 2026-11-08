@@ -15,7 +15,14 @@ on:
       - 'dashboard.html'
       - 'package.json'
       - 'tests/automation-audit.cjs'
-      - '.github/workflows/live-crm-browser-smoke.yml'
+      - 'tests/business-os.cjs'
+      - 'tests/business-intelligence.cjs'
+      - 'tests/partner-availability-v2.cjs'
+      - 'smv-business-os.js'
+      - 'smv-business-os.css'
+      - 'smv-business-intelligence.js'
+      - 'smv-business-intelligence.css'
+      - 'crm-enhancements.js'
       - '.github/workflows/live-crm-browser-smoke.yml'
 
 permissions:

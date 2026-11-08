@@ -52,3 +52,7 @@
 .smv-bi-foot{margin-top:14px;color:#8a9d97;font-size:9px}
 @media(max-width:1050px){.smv-bi-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){#smvBusinessIntelligence{margin:10px;padding:12px;border-radius:13px}.smv-bi-header{align-items:flex-start;flex-direction:column}.smv-bi-tools{width:100%}.smv-bi-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.smv-bi-kpi{padding:10px}.smv-bi-grid{grid-template-columns:1fr}.smv-bi-wide{grid-column:auto}.smv-bi-two{grid-template-columns:1fr}.smv-bi-actions{grid-template-columns:1fr}.smv-bi-actions article{align-items:flex-start;flex-direction:column}.smv-bi-card{padding:12px}.smv-bi-card-head h2{font-size:14px}}
+
+.smv-bi-response-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:760px){.smv-bi-response-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:420px){.smv-bi-response-grid{grid-template-columns:1fr}}
