@@ -78,7 +78,13 @@ assert.equal(w.smvCheckVenueEligibility({...venue,parking_available:false},w.smv
 const unknownCapacity=w.smvScoreVenueMatch({...venue,capacity_max:null},w.smvParseVenueRequirements('Wedding, 300 guests'),[location],15);
 assert.equal(w.smvCheckVenueEligibility({...venue,capacity_max:null},unknownCapacity,w.smvParseVenueRequirements('Wedding, 300 guests'),true).eligible,false,'unknown capacity must not be presented as a verified fit under strict capacity');
 
-const outdoorFalse=w.smvScoreVenueMatch({...venue,outdoor_available:false,area_features:{lawn:{available:false},open_area:{available:false}}},w.smvParseVenueRequirements('lawn preferred'),[location],15);const outdoorTrue=w.smvScoreVenueMatch({...venue,outdoor_available:true,area_features:{lawn:{available:true}}},w.smvParseVenueRequirements('lawn preferred'),[location],15);assert(outdoorFalse.score<outdoorTrue.score,'explicitly unavailable outdoor feature must score below available outdoor feature');const noGuests=w.smvParseVenueRequirements('₹5 lakh total budget');
+const outdoorFalse=w.smvScoreVenueMatch({...venue,outdoor_available:false,area_features:{lawn:{available:false},open_area:{available:false}}},w.smvParseVenueRequirements('lawn preferred'),[location],15);const outdoorTrue=w.smvScoreVenueMatch({...venue,outdoor_available:true,area_features:{lawn:{available:true}}},w.smvParseVenueRequirements('lawn preferred'),[location],15);assert(outdoorFalse.score<outdoorTrue.score,'explicitly unavailable outdoor feature must score below available outdoor feature');const ranked=w.smvRankVenueMatches([
+ {v:{id:'near-unconfirmed'},m:{rankedScore:90,confidence:80,d:2},availability:null},
+ {v:{id:'far-confirmed'},m:{rankedScore:90,confidence:80,d:10},availability:{availability_status:'available'}},
+ {v:{id:'strongest-fit'},m:{rankedScore:91,confidence:70,d:20},availability:null}
+]);
+assert.deepEqual(ranked.map(x=>x.v.id),['strongest-fit','far-confirmed','near-unconfirmed'],'fit score remains primary; confirmed availability breaks equal-fit ties before distance');
+const noGuests=w.smvParseVenueRequirements('₹5 lakh total budget');
 assert.equal(noGuests.guests,null);
 assert.equal(noGuests.budget,500000);
 console.log('PASS AI Venue Discovery: natural-language extraction, total-budget parsing, exact/nearby distance, and explainable ranking');
