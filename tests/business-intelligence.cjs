@@ -55,7 +55,7 @@ const wait=()=>new Promise(r=>setTimeout(r,20));
  await wait();await wait();
  assert.equal(d.querySelectorAll('#smvBiKpis .smv-bi-kpi').length,6,'six executive KPIs render');
  assert(d.getElementById('smvBiTeam').textContent.includes('Test Executive'),'team analytics renders staff');
- assert(d.getElementById('smvBiTeam').textContent.includes('Conversion'),'team analytics exposes conversion rate');
+ assert(d.getElementById('smvBiTeam').textContent.includes('Conv.'),'team analytics exposes conversion rate');
  assert(d.getElementById('smvBiTeam').textContent.includes('50%'),'team analytics calculates owner conversion from period leads');
  assert(d.getElementById('smvBiTeam').textContent.includes('Follow-ups'),'team analytics includes scheduled follow-up history');
  assert(d.getElementById('smvBiTeam').textContent.includes('Overdue'),'team analytics includes current overdue follow-ups');
