@@ -6,12 +6,23 @@ const BI_URL="billing/?v=20261002-renewal-term-8";
 function setActive(id){$$(".crm-top-nav .crm-nav-item").forEach(x=>{const active=x.id===id;x.classList.toggle("active",active);if(active)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current");});}
 function showLeads(){const hub=$("#smvBusinessOSHub"),bi=$("#smvBusinessIntelligence"),main=$(".crm-main"),venue=$("#venueManagementSection");if(hub)hub.hidden=true;if(bi)bi.hidden=true;if(venue)venue.hidden=true;if(main)main.hidden=false;setActive("crmLeadManagementBtn");}
 function openHub(){const main=$(".crm-main"),venue=$("#venueManagementSection"),bi=$("#smvBusinessIntelligence"),hub=$("#smvBusinessOSHub");if(!hub||!main)return;["#smvCustomer360","#smvGrowthQualityCentre","#smvLiveOperations","#smvSmartMatchDesk","#smvPartnerResponseCentre","#smvVenueTrustCentre"].forEach(s=>{const el=$(s);if(el)el.hidden=true;});main.hidden=true;if(venue)venue.hidden=true;if(bi)bi.hidden=true;hub.hidden=false;hub.scrollIntoView({behavior:"smooth",block:"start"});}
-function openBI(target){showLeads();$("#smvBusinessIntelligenceBtn")?.click();if(target)window.setTimeout(()=>$("#"+target)?.scrollIntoView({behavior:"smooth",block:"start"}),180);}
+function openBI(target){if(window.SMVBusinessIntelligence?.open){window.SMVBusinessIntelligence.open();if(target)window.setTimeout(()=>$("#"+target)?.scrollIntoView({behavior:"smooth",block:"start"}),220);return;}showLeads();}
 function openVenues(plan){showLeads();$("#venueManagementBtn")?.click();if(plan)window.setTimeout(()=>$("#venuePlanCenterBtn")?.click(),250);}
 function mount(){
  window.SMVBusinessOS={open:openHub,showLeads};
+ const closeAccount=()=>{const menu=$("#crmAccountMenu");if(menu)menu.open=false;};
  const accountButton=$("#smvAccountBusinessOSBtn");
- if(accountButton&&!accountButton.dataset.bound){accountButton.dataset.bound="true";accountButton.addEventListener("click",()=>{const menu=$("#crmAccountMenu");if(menu)menu.open=false;openHub();});}
+ if(accountButton&&!accountButton.dataset.bound){accountButton.dataset.bound="true";accountButton.addEventListener("click",()=>{closeAccount();openHub();});}
+ const biButton=$("#smvAccountBusinessIntelligenceBtn");
+ if(biButton&&!biButton.dataset.bound){biButton.dataset.bound="true";biButton.addEventListener("click",()=>{closeAccount();openBI();});}
+ $("[data-smv-account-action]").forEach(button=>{if(button.dataset.bound)return;button.dataset.bound="true";button.addEventListener("click",()=>{closeAccount();const action=button.dataset.smvAccountAction;
+  if(action==="operations"){if(window.SMVLiveOperations?.open)window.SMVLiveOperations.open();else openHub();}
+  else if(action==="matching"){if(window.SMVSmartMatchDesk?.open)window.SMVSmartMatchDesk.open();else openHub();}
+  else if(action==="customer360"){if(window.SMVCustomer360?.open)window.SMVCustomer360.open();else openHub();}
+  else if(action==="partner"){if(window.SMVPartnerResponseCentre?.open)window.SMVPartnerResponseCentre.open();else openHub();}
+  else if(action==="trust"){if(window.SMVVenueTrustCentre?.open)window.SMVVenueTrustCentre.open();else openHub();}
+  else if(action==="venues"){openVenues(false);}
+ });});
  if($("#smvBusinessOSHub"))return;
  const hub=document.createElement("section");hub.id="smvBusinessOSHub";hub.hidden=true;hub.setAttribute("aria-label","SMV Business OS tools");
  hub.innerHTML='<header class="smv-hub-head"><div><div class="smv-hub-kicker">SELECT MY VENUE · MASTER CRM</div><h1>Business <span>OS</span></h1><p>Your operational tools, one tap away. Customer Enquiries remains your home workspace.</p></div><button type="button" class="smv-hub-home" data-hub-action="home">← Back to Enquiries</button></header>'+
