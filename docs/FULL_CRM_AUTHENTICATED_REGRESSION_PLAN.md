@@ -77,3 +77,29 @@ Never perform guessed-ID or cross-tenant mutation probes against real customer r
 - No unexpected console/network errors in supported browsers.
 - Supabase schema/RLS diff confirms no change to `customer_enquiries` or partner isolation.
 - User reviews the release summary and explicitly approves any deployment separately.
+
+
+## Two-partner database isolation check — 2026-11-09
+
+Two active test partner profiles were found and linked to separate test venues:
+- Partner A → Test Venue (Delhi)
+- Partner B → Test Venue 2 (Gurgaon)
+
+The owner supplied a screenshot showing the Partner B session in the Partner CRM for Test Venue 2. The screenshot displayed zero assigned enquiries.
+
+A read-only database RLS simulation was run for each partner identity using the PostgreSQL `authenticated` role and the corresponding JWT subject claim. No rows were inserted, updated or deleted.
+
+| Dataset | Partner A / Test Venue | Partner B / Test Venue 2 |
+|---|---:|---:|
+| Visible venues | Test Venue only | Test Venue 2 only |
+| Partner profiles | 1 | 1 |
+| Assigned enquiries | 3 | 0 |
+| Availability responses | 0 | 0 |
+| Venue activity logs | 17 | 0 |
+| Partner notifications | 9 | 0 |
+| Partner-visible billing records | 0 | 0 |
+| Direct `customer_enquiries` rows | 0 | 0 |
+
+Result: the database RLS simulation showed no cross-venue visibility in either direction for the tested datasets. Both partners saw only their own venue/profile and associated partner-scoped records. Neither partner could directly read `customer_enquiries`.
+
+Important limitation: this is a database-role/JWT-claim RLS simulation, not a full browser session test using each partner's real access token. The screenshot confirms the second Partner CRM session is open, but the first partner's browser session and the complete click-through flows (opening assigned leads, changing status, availability submission, logout/login) still require an authenticated browser run. Do not label the full end-to-end partner test as complete until those are exercised.
