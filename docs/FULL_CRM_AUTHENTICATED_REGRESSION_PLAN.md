@@ -129,3 +129,23 @@ Evidence classification:
 - Status updates, availability responses, notifications and write actions: not tested using a synthetic enquiry and remain outside this read-only evidence.
 
 This advances the partner read-path check, but does not by itself close the complete authenticated release gate.
+
+
+## New Business OS workspaces — 2026-11-09
+
+The following separate Master CRM workspaces were added on the audit branch:
+- Growth & Quality Centre — read-only inventory, locality and lead-quality overview.
+- Live Operations Desk — read-only follow-up and partner activity queue.
+- Smart Match Desk V3 — explainable rules-based ranking against approved + verified venue inventory.
+- Partner Response Centre — read-only monitoring of existing partner availability replies, quotations, response age and partner notes.
+
+All four workspaces are additive. They do not modify the Customer Enquiries markup, CSS, filters, forms, table or assignment workflow. No schema, RLS, or production data changes are included. Each has a safety/contract test in the `npm test` chain.
+
+The Partner Response Centre uses existing `venue_enquiry_assignments` and `venue_partner_availability_responses` tables, with the existing venue ownership RLS policies. Its Master-side UI is read-only; the partner's existing response workflow remains the write path.
+
+Latest CI for commit `697d0333b96df346fbb697fca47f42d987f2bcaf`:
+- HR Portal Regression Checks: passed.
+- The test log shows all existing CRM regression suites and the new Growth & Quality, Live Operations, Smart Match Desk and Partner Response Centre safety contracts passed.
+- Live CRM browser smoke test was still running at the time of this update.
+
+The two partner accounts and screenshots documented above establish dashboard/read-only context and database RLS simulation, but a complete browser-token cross-tenant probe and partner write workflow still need controlled testing with synthetic data. Do not change the existing three booked enquiries in Partner A during this test.
