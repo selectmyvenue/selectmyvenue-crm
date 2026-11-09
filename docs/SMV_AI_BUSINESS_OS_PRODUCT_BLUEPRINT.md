@@ -165,3 +165,20 @@ Keep Customer Enquiries as the default Master CRM home. Every module has a visib
 - Test Master, Employee, two partner accounts, HR and Billing.
 - Run staging synthetic write tests before any new write workflow.
 - Owner approves each production release separately.
+
+
+## Implementation update — Smart Match Desk V3 (2026-11-09)
+A separate Business OS workspace has been added to the Master CRM dashboard:
+- Selects an existing open enquiry from `customer_enquiries` using read-only access.
+- Reads approved + verified venues from `venues`.
+- Scores locality text, capacity, per-person budget, event suitability and recorded food information.
+- Displays match score, data confidence, reasons and missing/unknown evidence.
+- Excludes venues not approved + verified and blocks known capacity/budget mismatches.
+- Optional strict capacity filter requires a listed capacity fit when enabled.
+- Provides a drill-down to the original enquiry detail modal.
+- No automatic assignment, status mutation, customer message, availability promise or booking.
+- No schema, RLS, production data or paid API changes.
+
+The existing AI Venue Discovery in the assignment modal remains available. This new desk is an independent executive/staff-side entry point; it does not replace the original matching flow.
+
+Automated contracts were added to `npm test`. Browser-level validation and CI confirmation are still pending.
