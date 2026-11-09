@@ -15,7 +15,7 @@ function mount(){
  if(accountButton&&!accountButton.dataset.bound){accountButton.dataset.bound="true";accountButton.addEventListener("click",()=>{closeAccount();openHub();});}
  const biButton=$("#smvAccountBusinessIntelligenceBtn");
  if(biButton&&!biButton.dataset.bound){biButton.dataset.bound="true";biButton.addEventListener("click",()=>{closeAccount();openBI();});}
- $("[data-smv-account-action]").forEach(button=>{if(button.dataset.bound)return;button.dataset.bound="true";button.addEventListener("click",()=>{closeAccount();const action=button.dataset.smvAccountAction;
+ $$("[data-smv-account-action]").forEach(button=>{if(button.dataset.bound)return;button.dataset.bound="true";button.addEventListener("click",()=>{closeAccount();const action=button.dataset.smvAccountAction;
   if(action==="operations"){if(window.SMVLiveOperations?.open)window.SMVLiveOperations.open();else openHub();}
   else if(action==="matching"){if(window.SMVSmartMatchDesk?.open)window.SMVSmartMatchDesk.open();else openHub();}
   else if(action==="customer360"){if(window.SMVCustomer360?.open)window.SMVCustomer360.open();else openHub();}
