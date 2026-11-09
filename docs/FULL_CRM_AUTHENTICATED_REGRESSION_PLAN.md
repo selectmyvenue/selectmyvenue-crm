@@ -103,3 +103,14 @@ A read-only database RLS simulation was run for each partner identity using the 
 Result: the database RLS simulation showed no cross-venue visibility in either direction for the tested datasets. Both partners saw only their own venue/profile and associated partner-scoped records. Neither partner could directly read `customer_enquiries`.
 
 Important limitation: this is a database-role/JWT-claim RLS simulation, not a full browser session test using each partner's real access token. The screenshot confirms the second Partner CRM session is open, but the first partner's browser session and the complete click-through flows (opening assigned leads, changing status, availability submission, logout/login) still require an authenticated browser run. Do not label the full end-to-end partner test as complete until those are exercised.
+
+
+## Partner dashboard screenshot evidence — 2026-11-09
+
+The owner supplied screenshots from both separate Partner CRM sessions:
+- Partner A dashboard: Test Venue, Shakti Nagar, Delhi; dashboard shows 3 assigned enquiries, all displayed as Booked.
+- Partner B dashboard: Test Venue 2, Gurgaon; dashboard shows 0 assigned enquiries.
+
+The visible lead names/contact details in the screenshots are intentionally not copied into this test report. No lead status was changed and no customer data was modified.
+
+Combined with the database RLS simulation recorded above, the screenshots are consistent with the expected tenant separation. They establish that both partner dashboards can load and show their respective venue context, but they do not by themselves prove every row-level browser query or mutation path. Remaining browser checks: open a lead's details under Partner A, confirm Partner B cannot open or discover it, and exercise only non-destructive/read-only actions. Do not change the Booked statuses of these existing records as part of testing.
