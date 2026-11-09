@@ -900,6 +900,158 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 }
 </style>
 
+
+<style id="billing-sage-corporate-refinement">
+/* Sage corporate refinement — actual Billing Center component selectors */
+:root{
+ --bg:#eaf2ed;--panel:#f8fbf9;--panel2:#eff6f1;--line:#d7e4dc;
+ --text:#183b32;--muted:#627b70;--teal:#087f72;--gold:#c49a38;
+ --ok:#176b50;--warn:#916516;--danger:#a74343;--light:#f4f8f5;--ink:#183b32;
+ color-scheme:light;
+}
+html,body{background:#eaf2ed!important;color:#183b32!important}
+body{
+ background:radial-gradient(ellipse at 12% 0%,rgba(22,155,119,.09),transparent 32%),linear-gradient(145deg,#eef5f0 0%,#e7f0e9 52%,#edf4ef 100%)!important;
+}
+.shell{max-width:1600px;padding:22px 28px 38px}
+.topbar{
+ background:linear-gradient(115deg,#f9fcfa,#f0f7f2)!important;
+ border:1px solid #d8e6dd!important;border-radius:17px!important;
+ box-shadow:0 8px 26px rgba(27,72,54,.07)!important;
+ padding:15px 19px!important;
+}
+.brand strong{color:#173d32!important;font-size:18px!important;font-weight:850;letter-spacing:-.35px}
+.brand small{color:#6a8177!important;font-size:11px!important}
+.brand img{width:185px!important;height:58px!important}
+h1{color:#173d32!important;font-size:31px!important;letter-spacing:-.9px!important;margin:29px 0 6px!important}
+.subtitle{color:#627b70!important;font-size:13px!important;margin-bottom:21px!important}
+.layout{grid-template-columns:minmax(410px,.86fr) minmax(0,1.55fr)!important;gap:20px!important;align-items:start}
+.card{
+ background:linear-gradient(145deg,#fbfdfb 0%,#f4f9f5 100%)!important;
+ border:1px solid #d8e5dc!important;border-radius:17px!important;
+ box-shadow:0 8px 28px rgba(27,72,54,.065)!important;
+}
+.card-head{
+ background:#edf5ef!important;border-bottom:1px solid #dce8df!important;
+ padding:16px 19px!important;
+}
+.card-head h2{color:#1b4639!important;font-size:15px!important;font-weight:850!important}
+.card-head small{color:#6c8378!important}
+.card-body{padding:18px!important}
+.search{grid-template-columns:minmax(0,1fr) 116px!important;gap:10px!important;margin-bottom:13px!important}
+.search input,.field input,.field select,.field textarea{
+ background:#f7fbf8!important;color:#1c4035!important;
+ border:1px solid #cfdfd4!important;border-radius:10px!important;
+ padding:12px 14px!important;min-height:46px!important;
+ box-shadow:inset 0 1px 2px rgba(25,70,50,.025)!important;
+}
+.search input::placeholder,.field input::placeholder,.field textarea::placeholder{color:#8da298!important}
+.search input:focus,.field input:focus,.field select:focus,.field textarea:focus{
+ background:#fff!important;border-color:#5aa995!important;
+ box-shadow:0 0 0 3px rgba(8,127,114,.12)!important;
+}
+.field select option{background:#f7fbf8!important;color:#1c4035!important}
+.venue-list{gap:10px!important;max-height:calc(100vh - 260px)!important;padding:2px 3px 3px 0!important}
+.venue-row{
+ background:#f7fbf8!important;border:1px solid #dce8df!important;
+ border-radius:13px!important;padding:14px!important;gap:13px!important;
+ box-shadow:0 2px 7px rgba(27,72,54,.035)!important;
+ transition:background .16s ease,border-color .16s ease,box-shadow .16s ease;
+}
+.venue-row:hover{border-color:#a9cdbb!important;background:#f0f8f2!important;box-shadow:0 5px 13px rgba(27,72,54,.07)!important}
+.venue-row.selected{background:#e8f5ed!important;border:1px solid #80bca0!important;box-shadow:0 0 0 2px rgba(8,127,114,.08)!important}
+.venue-name{color:#173f33!important;font-size:13px!important;font-weight:850!important}
+.venue-address{color:#5e786c!important;font-size:11px!important;line-height:1.55!important}
+.selected-venue-address{color:#5c786b!important}
+.venue-meta{color:#71887c!important;font-size:10px!important}
+.id{color:#71877d!important}
+.pill{font-size:9px!important;letter-spacing:.025em!important;padding:4px 8px!important}
+.pill.active,.pill.paid{color:#17664c!important;background:#e2f3e9!important;border-color:#c3e2ce!important}
+.pill.pending,.pill.trialing{color:#855e13!important;background:#fff5df!important;border-color:#f0dfb6!important}
+.pill.expired,.pill.paused,.pill.cancelled{color:#a13f3f!important;background:#fff0ed!important;border-color:#f0d3cd!important}
+.empty{color:#71877d!important}
+.venue-title h2{color:#173f33!important;font-size:22px!important;font-weight:850!important;letter-spacing:-.45px!important}
+.venue-title small{color:#60796e!important;font-size:11px!important;line-height:1.5!important}
+.identity{gap:11px!important;margin-top:17px!important}
+.info{
+ background:#edf5ef!important;border:1px solid #d8e6dc!important;
+ border-radius:12px!important;padding:13px!important;
+}
+.info span{color:#6b8377!important;font-size:9px!important;letter-spacing:.09em!important}
+.info strong{color:#1a4336!important;font-size:12px!important;font-weight:850!important}
+.section{margin-top:19px!important}
+.section h3{color:#214c3d!important;font-size:13px!important;font-weight:850!important;letter-spacing:.015em!important;margin-bottom:11px!important}
+.formgrid{gap:13px!important}
+.field{gap:7px!important}
+.field label{color:#617b6e!important;font-size:9px!important;letter-spacing:.085em!important}
+.field textarea{min-height:88px!important}
+.date-note{color:#72887d!important;font-size:10px!important}
+.form-actions{gap:10px!important;margin-top:16px!important}
+.form-actions .btn{min-width:148px!important}
+.btn{
+ color:#23483b!important;background:#f8fbf9!important;
+ border:1px solid #cbded2!important;border-radius:10px!important;
+ padding:11px 15px!important;font-weight:800!important;
+ box-shadow:0 2px 5px rgba(27,72,54,.045)!important;
+ transition:all .16s ease!important;
+}
+.btn:hover{background:#edf6f0!important;border-color:#9fc6b0!important;box-shadow:0 5px 13px rgba(27,72,54,.09)!important;transform:translateY(-1px)}
+.btn.primary{background:linear-gradient(135deg,#0d9a85,#08766c)!important;color:#fff!important;border-color:#087f72!important}
+.btn.primary:hover{background:linear-gradient(135deg,#0a8a78,#06675f)!important}
+.btn.success{background:linear-gradient(135deg,#278d68,#176d52)!important;color:#fff!important;border-color:#176d52!important}
+.btn.gold{background:linear-gradient(135deg,#e8c66c,#c49a38)!important;color:#28372e!important;border-color:#c49a38!important}
+.btn.danger{color:#a13f3f!important;background:#fff5f3!important;border-color:#edcfca!important}
+.notice{background:#fff8e9!important;border:1px solid #eddfbb!important;color:#786537!important;border-radius:11px!important;padding:13px!important;font-size:11px!important}
+.price-summary{
+ background:linear-gradient(110deg,#e7f4ec,#f0f7f1)!important;
+ border:1px solid #cfe4d5!important;border-radius:13px!important;padding:14px!important;gap:11px!important;
+}
+.price-summary span{color:#607c6d!important;font-size:9px!important}
+.price-summary strong{color:#1a5744!important;font-size:16px!important}
+.history{margin-top:20px!important}
+.tablewrap{border:1px solid #dce8df!important;border-radius:12px!important;background:#f9fcfa!important;overflow:auto}
+table{min-width:760px!important}
+th,td{border-bottom:1px solid #e5eee8!important;padding:12px 13px!important;color:#355448!important;font-size:11px!important}
+th{background:#edf5ef!important;color:#688174!important;font-size:9px!important;letter-spacing:.085em!important}
+td strong{color:#1b4437!important;font-size:12px!important}
+td small{color:#72887d!important}
+.muted{color:#6f867a!important}
+.modal{background:rgba(22,51,39,.42)!important;backdrop-filter:blur(4px)!important}
+.modalbox{background:#f8fbf9!important;border:1px solid #d7e5dc!important;border-radius:17px!important;box-shadow:0 24px 70px rgba(20,50,36,.22)!important}
+.modalbox>.card-head{background:#edf5ef!important}
+.modalbody{background:#f8fbf9!important;color:#1c4035!important}
+.toast{background:#e4f4e9!important;color:#17664c!important;border:1px solid #c4e2ce!important;box-shadow:0 12px 30px rgba(27,72,54,.14)!important}
+.toast.error{background:#fff0ed!important;color:#a13f3f!important;border-color:#edcfca!important}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(8,127,114,.22)!important;outline-offset:2px}
+@media(max-width:1040px){
+ .shell{padding:16px!important}
+ .layout{grid-template-columns:1fr!important;gap:15px!important}
+ .venue-list{max-height:390px!important}
+}
+@media(max-width:620px){
+ .shell{padding:10px 10px 24px!important}
+ .topbar{padding:11px 13px!important;border-radius:14px!important}
+ .brand{gap:9px!important;flex-wrap:wrap}
+ .brand img{width:145px!important;height:45px!important}
+ .brand strong{font-size:13px!important}
+ .brand small{font-size:9px!important}
+ h1{font-size:25px!important;margin-top:22px!important}
+ .subtitle{font-size:12px!important;line-height:1.5!important}
+ .layout{gap:12px!important}
+ .card{border-radius:14px!important}
+ .card-head{padding:13px!important}
+ .card-body{padding:12px!important}
+ .identity{grid-template-columns:1fr 1fr!important}
+ .info{padding:10px!important}
+ .info strong{font-size:11px!important}
+ .formgrid{grid-template-columns:1fr!important}
+ .field.full{grid-column:auto!important}
+ .price-summary{grid-template-columns:1fr 1fr!important}
+ .venue-row{grid-template-columns:1fr!important}
+ .form-actions .btn{width:100%!important;min-width:0!important}
+}
+</style>
+
 </head>
 <body>
 <div class="shell">
