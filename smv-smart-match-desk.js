@@ -33,7 +33,7 @@ function scoreVenue(lead,venue){
  if(!priceKnown)warnings.push("Per-person pricing is missing");
  if(!loc)warnings.push("Locality is not an exact text match");
  const score=max?Math.round(points/max*100):0,confidence=max?Math.round(known/max*100):0;
- return {score,confidence,verified,eligible:blockers.length===0,reasons,warnings,blockers,capacity:capKnown?cap:null,capacityFit,pricePerPerson:pp||null,priceFit,locationFit:loc,availability:"confirmation_required"};
+ return {score,confidence,verified,eligible:blockers.length===0,reasons,warnings,blockers,capacity:capKnown?cap:null,capacityFit:capFit,pricePerPerson:pp||null,priceFit,locationFit:loc,availability:"confirmation_required"};
 }
 function rank(lead,items){return items.map(v=>({venue:v,match:scoreVenue(lead,v)})).sort((a,b)=>(Number(b.match.eligible)-Number(a.match.eligible))||(b.match.score-a.match.score)||(b.match.confidence-a.match.confidence));}
 function fmt(n){return new Intl.NumberFormat("en-IN").format(Number(n)||0);}
