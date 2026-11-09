@@ -90,16 +90,32 @@
         '</div><p class="smv-gq-foot">Read-only analysis. No enquiry, venue, partner, employee, billing or permission records are created, updated or deleted. Counts depend on the signed-in account’s existing access policies.</p>';
       document.body.appendChild(section);
       section.addEventListener("click", e => {
-        const b = e.target.closest("[data-gq]");
-        if (!b) return;
-        if (b.dataset.gq === "hub") showHub();
-        if (b.dataset.gq === "refresh") load(true);
         const lead = e.target.closest("[data-gq-lead]");
         if (lead) {
           const id = lead.dataset.gqLead;
           showLeads();
           if (id && typeof window.openLeadModal === "function") window.openLeadModal(String(id));
           else $('[data-work-view="new"]')?.click();
+          return;
+        }
+        const b = e.target.closest("[data-gq]");
+        if (!b) return;
+        if (b.dataset.gq === "hub") showHub();
+        if (b.dataset.gq === "refresh") load(true);
+        if (b.dataset.gq === "venues") {
+          const section = $("#smvGrowthQualityCentre");
+          if (section) section.hidden = true;
+          $("#smvBusinessOSHub") && ($("#smvBusinessOSHub").hidden = true);
+          const main = $(".crm-main"), venues = $("#venueManagementSection");
+          if (main) main.hidden = true;
+          if (venues) venues.hidden = false;
+          document.querySelectorAll(".crm-top-nav .crm-nav-item").forEach(x => {
+            const active = x.id === "venueManagementBtn";
+            x.classList.toggle("active", active);
+            if (active) x.setAttribute("aria-current", "page");
+            else x.removeAttribute("aria-current");
+          });
+          $("#venueManagementSection")?.scrollIntoView({behavior:"smooth", block:"start"});
         }
       });
     }
