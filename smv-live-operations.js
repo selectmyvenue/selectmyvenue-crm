@@ -75,7 +75,7 @@ function subscribe(){
   channel.subscribe(state=>{const s=$("#smvLiveStatus");if(s&&state==="SUBSCRIBED")s.textContent="Realtime subscription connected · authorised data only. Manual refresh remains available.";if(s&&["CHANNEL_ERROR","TIMED_OUT","CLOSED"].includes(state))s.textContent="Realtime is unavailable for one or more tables. Manual refresh remains available.";});
  }catch(e){channel=null;console.warn("SMV realtime subscription unavailable",e);}
 }
-function start(){mount();$("#crmLeadManagementBtn")?.addEventListener("click",()=>{const s=$("#smvLiveOperations");if(s)s.hidden=true;});$("#venueManagementBtn")?.addEventListener("click",()=>{const s=$("#smvLiveOperations");if(s)s.hidden=true;});}
+function start(){mount();["#crmLeadManagementBtn","#venueManagementBtn","#smvBusinessIntelligenceBtn","#smvBusinessOSHubBtn"].forEach(sel=>$(sel)?.addEventListener("click",()=>{const s=$("#smvLiveOperations");if(s)s.hidden=true;}));}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start);else start();
 window.SMVLiveOperations={open,refresh};
 })();
