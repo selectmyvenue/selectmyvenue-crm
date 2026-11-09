@@ -1,0 +1,50 @@
+/* SMV Growth & Quality Centre — isolated styles; no CRM home selectors. */
+#smvGrowthQualityCentre[hidden]{display:none!important}
+#smvGrowthQualityCentre{width:min(1600px,calc(100% - 40px));margin:22px auto 48px;padding:24px;border:1px solid #dce9e4;border-radius:20px;background:#f8fcfa;color:#173f37}
+.smv-gq-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:18px}
+.smv-gq-kicker{font-size:10px;font-weight:900;letter-spacing:.15em;color:#a27b3d}
+.smv-gq-head h1{margin:7px 0 5px;font-size:clamp(25px,3vw,36px);line-height:1.1;color:#123f39}
+.smv-gq-head h1 span{color:#0b8a70}
+.smv-gq-head p{max-width:760px;margin:0;color:#6b837b;font-size:13px;line-height:1.55}
+.smv-gq-actions{display:flex;gap:8px;flex-wrap:wrap}
+.smv-gq-actions button,.smv-gq-secondary{min-height:40px;padding:9px 13px;border:1px solid #cfe1d9;border-radius:10px;background:#fff;color:#20594b;font-size:11px;font-weight:850;cursor:pointer}
+.smv-gq-actions button:first-child{background:#087a62;border-color:#087a62;color:#fff}
+.smv-gq-status{margin:12px 0;padding:11px 13px;border:1px solid #dce9e4;border-radius:10px;background:#fff;color:#637d74;font-size:11px}
+.smv-gq-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:14px 0}
+.smv-gq-kpis article{display:flex;flex-direction:column;gap:6px;min-width:0;padding:14px;border:1px solid #e0ebe6;border-radius:12px;background:#fff}
+.smv-gq-kpis span{color:#71867f;font-size:10px;font-weight:750}
+.smv-gq-kpis strong{color:#145b49;font-size:24px;line-height:1.1}
+.smv-gq-kpis small{color:#91a19b;font-size:9px;line-height:1.35}
+.smv-gq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.smv-gq-panel{min-width:0;padding:16px;border:1px solid #dfeae5;border-radius:14px;background:#fff}
+.smv-gq-wide{grid-column:1/-1}
+.smv-gq-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:13px}
+.smv-gq-panel-head h2{margin:0 0 4px;color:#17483e;font-size:15px}
+.smv-gq-panel-head p{margin:0;color:#82948d;font-size:10px;line-height:1.45}
+.smv-gq-panel-head>span{flex:0 0 auto;color:#a27b3d;font-size:8px;font-weight:900;letter-spacing:.1em}
+.smv-gq-table-wrap{overflow-x:auto}
+.smv-gq-panel table{width:100%;border-collapse:collapse;font-size:11px}
+.smv-gq-panel th,.smv-gq-panel td{padding:10px 9px;border-bottom:1px solid #edf2ef;text-align:left;white-space:nowrap}
+.smv-gq-panel th{color:#82948d;font-size:9px;text-transform:uppercase;letter-spacing:.05em}
+.smv-gq-panel td{color:#36584f}
+.smv-gq-warning{color:#a15d1c}
+.smv-gq-note{margin:10px 0 0;color:#8b9b95;font-size:9px;line-height:1.5}
+.smv-gq-list{display:flex;flex-direction:column;gap:7px}
+.smv-gq-list article{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border:1px solid #edf2ef;border-radius:9px;background:#fcfefd}
+.smv-gq-list article>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.smv-gq-list strong{color:#31564b;font-size:10px}
+.smv-gq-list small,.smv-gq-muted{color:#899a93;font-size:9px;line-height:1.4}
+.smv-gq-list button{flex:0 0 auto;padding:7px 9px;border:1px solid #cfe1d9;border-radius:8px;background:#fff;color:#17634f;font-size:9px;font-weight:800;cursor:pointer}
+.smv-gq-statline{display:flex;align-items:baseline;gap:9px;color:#6f857c;font-size:11px}
+.smv-gq-statline strong{color:#a15d1c;font-size:27px}
+.smv-gq-mini{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.smv-gq-mini span{padding:6px 8px;border-radius:7px;background:#f2f8f5;color:#668077;font-size:9px}
+.smv-gq-bars{display:flex;flex-direction:column;gap:9px}
+.smv-gq-bars>div{display:grid;grid-template-columns:minmax(90px,1fr) minmax(70px,2fr) 34px;align-items:center;gap:9px;color:#6f857c;font-size:10px}
+.smv-gq-bars i{height:7px;overflow:hidden;border-radius:99px;background:#edf4f0}
+.smv-gq-bars i b{display:block;height:100%;border-radius:99px;background:#14866d}
+.smv-gq-bars strong{text-align:right;color:#31564b}
+.smv-gq-empty{padding:16px;border:1px dashed #dce9e4;border-radius:10px;color:#899a93;font-size:10px}
+.smv-gq-foot{margin:16px 0 0;color:#899a93;font-size:9px;line-height:1.5}
+@media(max-width:1100px){.smv-gq-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){#smvGrowthQualityCentre{width:calc(100% - 16px);margin:8px auto;padding:13px;border-radius:14px}.smv-gq-head{flex-direction:column}.smv-gq-actions{width:100%}.smv-gq-actions button{flex:1}.smv-gq-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.smv-gq-kpis article{padding:11px}.smv-gq-kpis strong{font-size:21px}.smv-gq-grid{grid-template-columns:1fr}.smv-gq-wide{grid-column:auto}.smv-gq-panel{padding:12px}.smv-gq-panel-head>span{display:none}.smv-gq-list article{align-items:flex-start}.smv-gq-list button{white-space:nowrap}}
