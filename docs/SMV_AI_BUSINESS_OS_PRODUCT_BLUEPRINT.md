@@ -182,3 +182,17 @@ A separate Business OS workspace has been added to the Master CRM dashboard:
 The existing AI Venue Discovery in the assignment modal remains available. This new desk is an independent executive/staff-side entry point; it does not replace the original matching flow.
 
 Automated contracts were added to `npm test`. Browser-level validation and CI confirmation are still pending.
+
+
+## Implementation update — Partner Response Centre (2026-11-09)
+A separate Master CRM workspace now monitors the existing partner response workflow:
+- Reads `venue_enquiry_assignments` with related customer enquiry and venue details.
+- Reads `venue_partner_availability_responses` for availability, quote, partner note and confirmation timestamp.
+- Filters by responded / available / unavailable / needs information / awaiting response / no reply after 24 hours.
+- Search by customer, venue, area and event; sort by assignment date or quoted amount.
+- KPI summary and direct drill-down to the original Customer Enquiry detail.
+- Uses existing RLS and partner ownership boundaries; no new tables or policies.
+- Read-only in Master: it does not edit enquiry status, assignments, quotes or partner responses.
+- Realtime subscriptions are attempted for assignment and partner response tables, with manual refresh and visible fallback messaging.
+
+Partner availability/quotation entry remains in the existing Partner CRM workflow; this Master module is its operational monitoring counterpart. No Customer Enquiries page markup, layout, CSS, schema or RLS policy was changed.
