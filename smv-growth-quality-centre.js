@@ -156,7 +156,6 @@
       if (!String(v.area || "").trim() && !String(v.city || "").trim()) missing.push("location");
       return {venue:v, missing};
     }).filter(x => x.missing.length);
-    const assignedByLead = groupBy(d.assignments, x => String(x.enquiry_id));
     const pending = d.assignments.filter(a => {
       const status = norm(a.assignment_status);
       if (["booked","converted","closed","lost","cancelled"].includes(status)) return false;
@@ -223,11 +222,6 @@
   }
   function start() {
     mount();
-    const hub = $("#smvBusinessOSHub");
-    if (hub && !hub.dataset.smvGqWired) {
-      hub.dataset.smvGqWired = "1";
-      $("#smvGrowthQualityCard")?.addEventListener("click", open);
-    }
     $("#crmLeadManagementBtn")?.addEventListener("click", showLeads);
     $("#smvBusinessOSHubBtn")?.addEventListener("click", () => { const p = $("#smvGrowthQualityCentre"); if (p) p.hidden = true; });
     $("#smvBusinessIntelligenceBtn")?.addEventListener("click", () => { const p = $("#smvGrowthQualityCentre"); if (p) p.hidden = true; });
