@@ -5,7 +5,7 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.quer
 const BI_URL="billing/?v=20261002-renewal-term-8";
 function setActive(id){$$(".crm-top-nav .crm-nav-item").forEach(x=>{const active=x.id===id;x.classList.toggle("active",active);if(active)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current");});}
 function showLeads(){const hub=$("#smvBusinessOSHub"),bi=$("#smvBusinessIntelligence"),main=$(".crm-main"),venue=$("#venueManagementSection");if(hub)hub.hidden=true;if(bi)bi.hidden=true;if(venue)venue.hidden=true;if(main)main.hidden=false;setActive("crmLeadManagementBtn");}
-function openHub(){const main=$(".crm-main"),venue=$("#venueManagementSection"),bi=$("#smvBusinessIntelligence"),hub=$("#smvBusinessOSHub");if(!hub||!main)return;main.hidden=true;if(venue)venue.hidden=true;if(bi)bi.hidden=true;hub.hidden=false;hub.scrollIntoView({behavior:"smooth",block:"start"});}
+function openHub(){const main=$(".crm-main"),venue=$("#venueManagementSection"),bi=$("#smvBusinessIntelligence"),hub=$("#smvBusinessOSHub");if(!hub||!main)return;["#smvCustomer360","#smvGrowthQualityCentre","#smvLiveOperations","#smvSmartMatchDesk","#smvPartnerResponseCentre","#smvVenueTrustCentre"].forEach(s=>{const el=$(s);if(el)el.hidden=true;});main.hidden=true;if(venue)venue.hidden=true;if(bi)bi.hidden=true;hub.hidden=false;hub.scrollIntoView({behavior:"smooth",block:"start"});}
 function openBI(target){showLeads();$("#smvBusinessIntelligenceBtn")?.click();if(target)window.setTimeout(()=>$("#"+target)?.scrollIntoView({behavior:"smooth",block:"start"}),180);}
 function openVenues(plan){showLeads();$("#venueManagementBtn")?.click();if(plan)window.setTimeout(()=>$("#venuePlanCenterBtn")?.click(),250);}
 function mount(){
@@ -15,7 +15,7 @@ function mount(){
  const hub=document.createElement("section");hub.id="smvBusinessOSHub";hub.hidden=true;hub.setAttribute("aria-label","SMV Business OS tools");
  hub.innerHTML='<header class="smv-hub-head"><div><div class="smv-hub-kicker">SELECT MY VENUE · MASTER CRM</div><h1>Business <span>OS</span></h1><p>Your operational tools, one tap away. Customer Enquiries remains your home workspace.</p></div><button type="button" class="smv-hub-home" data-hub-action="home">← Back to Enquiries</button></header>'+
  '<div class="smv-hub-grid">'+
- '<button type="button" class="smv-hub-card" data-hub-action="customer"><span class="smv-hub-icon">◉</span><strong>Customer 360</strong><small>Customer details, interaction history and follow-up timeline</small><em>Open lead workspace →</em></button>'+
+ 
  '<button type="button" class="smv-hub-card" data-hub-action="ai"><span class="smv-hub-icon">✦</span><strong>AI Venue Discovery</strong><small>Explainable venue matches, confidence and side-by-side comparison</small><em>Open from Assign Venues →</em></button>'+
  '<button type="button" class="smv-hub-card" data-hub-action="venues"><span class="smv-hub-icon">⌂</span><strong>Venue Inventory</strong><small>Partner venues, profile details and listing operations</small><em>Open venue management →</em></button>'+
  '<button type="button" class="smv-hub-card" data-hub-action="plans"><span class="smv-hub-icon">▤</span><strong>Venue Plan Centre</strong><small>Partner plans, trials, expiry and renewal tracking</small><em>Manage plans →</em></button>'+
