@@ -596,11 +596,20 @@
 
     const leadAssignments = assignments().filter(item => String(item.enquiry_id) === String(lead.id));
     leadAssignments.forEach(item => {
+      const venueMap = typeof assignedVenueDetails !== "undefined" ? assignedVenueDetails : {};
+      const venueName = safeText(venueMap[String(item.venue_id)]?.venue_name) || "Assigned venue";
       events.push({
         at: item.assigned_at || item.created_at,
         title: "Venue assigned",
-        detail: `Partner status: ${safeText(item.assignment_status || item.status || "assigned")}`
+        detail: venueName + " · Partner status: " + safeText(item.assignment_status || item.status || "assigned")
       });
+      [
+        { at: item.first_viewed_at, title: "Partner viewed enquiry", detail: venueName },
+        { at: item.first_contacted_at, title: "Partner contacted customer", detail: venueName },
+        { at: item.follow_up_at, title: "Partner follow-up due", detail: venueName },
+        { at: item.site_visit_at, title: "Partner site visit", detail: venueName },
+        { at: item.converted_at, title: "Venue booking recorded", detail: venueName }
+      ].filter(event => event.at).forEach(event => events.push(event));
       try {
         const activityMap = typeof assignmentActivityHistory !== "undefined" ? assignmentActivityHistory : {};
         const activity = Array.isArray(activityMap?.[String(item.id)]) ? activityMap[String(item.id)] : [];

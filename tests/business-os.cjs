@@ -18,10 +18,13 @@ assert.equal(d.querySelectorAll('#smvBusinessOS').length,0,'no oversized Busines
 const hub=d.getElementById('smvBusinessOSHub');
 assert(hub,'feature hub mounts');
 assert(hub.hidden,'feature hub stays off the homepage by default');
-assert(d.getElementById('smvBusinessOSHubBtn'),'desktop navigation exposes Business OS');
-assert.equal(hub.querySelectorAll('.smv-hub-card').length,10,'all ten feature destinations are present');
-d.getElementById('smvBusinessOSHubBtn').click();
-assert.equal(hub.hidden,false,'desktop Business OS button opens the hub');
+assert(d.getElementById('smvAccountBusinessOSBtn'),'Account menu exposes Business OS');
+assert(d.getElementById('smvAccountBusinessIntelligenceBtn'),'Account menu exposes Business Intelligence');
+for(const action of ['operations','matching','customer360','partner','trust','venues'])assert(d.querySelector('[data-smv-account-action="'+action+'"]'),'Account menu exposes '+action+' workspace');
+assert(!d.querySelector('.crm-top-nav #smvBusinessIntelligenceBtn'),'Business Intelligence is not a top-level header item');
+assert.equal(hub.querySelectorAll('.smv-hub-card').length,9,'all nine distinct feature destinations are present');
+d.getElementById('smvAccountBusinessOSBtn').click();
+assert.equal(hub.hidden,false,'Account menu Business OS button opens the hub');
 assert.equal(d.querySelector('.crm-main').hidden,true,'opening the hub hides the lead workspace without removing it');
 hub.querySelector('[data-hub-action="home"]').click();
 assert.equal(hub.hidden,true,'back action closes the hub');

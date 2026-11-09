@@ -1,0 +1,34 @@
+name: Authenticated partner isolation smoke test
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: partner-authenticated-isolation
+  cancel-in-progress: false
+jobs:
+  partner-isolation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Verify two partner accounts cannot see each other's venue
+        env:
+          PARTNER_A_EMAIL: ${{ secrets.SMV_TEST_PARTNER_A_EMAIL }}
+          PARTNER_A_PASSWORD: ${{ secrets.SMV_TEST_PARTNER_A_PASSWORD }}
+          PARTNER_A_OWN_VENUE: ${{ secrets.SMV_TEST_PARTNER_A_VENUE_LABEL }}
+          PARTNER_A_FORBIDDEN_VENUE: ${{ secrets.SMV_TEST_PARTNER_B_VENUE_LABEL }}
+          PARTNER_B_EMAIL: ${{ secrets.SMV_TEST_PARTNER_B_EMAIL }}
+          PARTNER_B_PASSWORD: ${{ secrets.SMV_TEST_PARTNER_B_PASSWORD }}
+          PARTNER_B_OWN_VENUE: ${{ secrets.SMV_TEST_PARTNER_B_VENUE_LABEL }}
+          PARTNER_B_FORBIDDEN_VENUE: ${{ secrets.SMV_TEST_PARTNER_A_VENUE_LABEL }}
+          PARTNER_LOGIN_URL: https://partner.selectmyvenue.com/login.html
+          PARTNER_DASHBOARD_URL: https://partner.selectmyvenue.com/dashboard.html
+        run: node tests/partner-authenticated-isolation.mjs
