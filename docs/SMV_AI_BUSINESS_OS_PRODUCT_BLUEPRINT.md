@@ -208,3 +208,15 @@ A separate Master CRM Customer 360 workspace now:
 - Adds an isolated responsive stylesheet and a safety contract test to `npm test`.
 
 This first version is enquiry-centric: it presents the interaction history for the selected enquiry. Cross-enquiry identity resolution (merging multiple enquiries by phone/email) is deliberately not automated, to avoid incorrectly merging family members or duplicate-but-distinct event requests.
+
+
+## Implementation update — Venue Trust & Profile Quality Centre (2026-11-09)
+A separate Master CRM workspace now performs a read-only quality audit of the existing `venues` table:
+- Checks venue name/type, locality, full address, contact details, maximum capacity, per-person price range, event types, description, cover image and map link.
+- Calculates a transparent profile completeness percentage and critical missing-field count.
+- Filters inventory by critical gaps, incomplete/complete profiles and current approval/verification status.
+- Shows the current stored approval and verification statuses without treating profile completeness as verification.
+- Links staff to the existing Venue Management workflow for authorised corrections.
+- Adds a responsive isolated stylesheet and read-only safety test in `npm test`.
+
+No venue is auto-approved, verified, published or modified by this audit. No new schema or RLS policy is introduced.
