@@ -149,3 +149,14 @@ Latest CI for commit `697d0333b96df346fbb697fca47f42d987f2bcaf`:
 - Live CRM browser smoke test was still running at the time of this update.
 
 The two partner accounts and screenshots documented above establish dashboard/read-only context and database RLS simulation, but a complete browser-token cross-tenant probe and partner write workflow still need controlled testing with synthetic data. Do not change the existing three booked enquiries in Partner A during this test.
+
+
+### Customer 360 verification
+Customer 360 is enquiry-centric and read-only. Test enquiries with:
+- no assignments or follow-ups;
+- one or more venue assignments and availability responses;
+- CRM activity history and contact markers;
+- site visit and conversion timestamps;
+- missing optional fields and empty activity sets.
+
+Expected: all events are attributed to the selected enquiry ID and ordered by event timestamp; absent fields display as not recorded; no automatic identity merge across enquiries; original enquiry modal opens without changing the selected record.
