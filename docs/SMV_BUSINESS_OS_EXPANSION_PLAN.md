@@ -58,3 +58,16 @@ The Growth & Quality Centre is a first read-only increment, not a claim that all
 - Run the authenticated two-partner isolation test with two distinct partner users and two distinct venues.
 - Run Master and Employee role tests and verify HR/Billing access restrictions.
 - Do not merge/deploy until all gates pass and the owner separately approves release.
+
+
+## New Live Operations Desk
+An additive read-only workspace now provides:
+- Follow-up due/overdue queue based on existing `follow_up_at` values.
+- First-response review for open leads without recorded contact after four hours.
+- Approved + verified venue supply by city.
+- Partner assignment view/contact/site-visit timestamp pulse.
+- Direct navigation back to the existing enquiry detail and venue management workflows.
+- Supabase Realtime subscriptions where enabled, plus manual refresh.
+- No writes, migrations, RLS changes, or paid API dependencies.
+
+See `docs/SMV_AI_BUSINESS_OS_PRODUCT_BLUEPRINT.md` for the complete module architecture, acceptance criteria, navigation model and phased roadmap.
