@@ -52,7 +52,7 @@ function mount(){
  '<main class="smv-match-panel"><div class="smv-match-results-head"><div><h2>Recommended venues</h2><p id="smvMatchCount">Select an enquiry to calculate matches.</p></div><label><input type="checkbox" id="smvMatchStrict" checked> Require listed capacity fit</label></div><div id="smvMatchResults" class="smv-match-results"><div class="smv-match-empty">Choose an enquiry to calculate recommendations.</div></div></main></div>'+
  '<footer class="smv-match-foot">Match scores are rule-based indicators, not guarantees. Only approved + verified venues are included. Missing prices, capacity, facilities and event-date availability must be confirmed with the venue. No automatic assignment, customer message or booking is made.</footer>';
  document.body.appendChild(s);
- s.addEventListener("click",e=>{const b=e.target.closest("[data-match]");if(!b)return;if(b.dataset.match==="back")back();if(b.dataset.match==="refresh")load(true);});
+ s.addEventListener("click",e=>{const leadBtn=e.target.closest("[data-open-lead]");if(leadBtn){const id=leadBtn.dataset.openLead;const section=$("#smvSmartMatchDesk"),main=$(".crm-main"),hub=$("#smvBusinessOSHub"),venue=$("#venueManagementSection");if(section)section.hidden=true;if(hub)hub.hidden=true;if(venue)venue.hidden=true;if(main)main.hidden=false;document.querySelectorAll(".crm-top-nav .crm-nav-item").forEach(x=>{const active=x.id==="crmLeadManagementBtn";x.classList.toggle("active",active);if(active)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current");});if(typeof window.openLeadModal==="function")window.openLeadModal(String(id));else $("#leadManagementSection")?.scrollIntoView({behavior:"smooth",block:"start"});return;}const b=e.target.closest("[data-match]");if(!b)return;if(b.dataset.match==="back")back();if(b.dataset.match==="refresh")load(true);});
  $("#smvMatchLead")?.addEventListener("change",e=>{selected=leads.find(x=>String(x.id)===e.target.value)||null;render();});
  $("#smvMatchStrict")?.addEventListener("change",render);
  }
@@ -63,7 +63,7 @@ function render(){
  const facts=[["Event",selected.occasion],["Date",selected.event_date],["Guests",selected.guests],["Area",selected.location],["Budget/person",selected.budget_per_person?"₹"+fmt(selected.budget_per_person):null],["Food",selected.food_preference]];
  brief.innerHTML='<div class="smv-match-facts">'+facts.map(([k,v])=>'<div><small>'+esc(k)+'</small><strong>'+esc(v||"Not recorded")+'</strong></div>').join("")+'</div>';
  const strict=$("#smvMatchStrict")?.checked!==false;
- results=rank(selected,venues).filter(x=>x.match.eligible&&(!strict||!selected.guests||x.match.capacityFit||!x.match.capacity));
+ results=rank(selected,venues).filter(x=>x.match.eligible&&(!strict||!selected.guests||x.match.capacityFit));
  const excluded=venues.length-results.length;
  count.textContent=fmt(results.length)+" eligible matches · "+fmt(excluded)+" excluded or not eligible · "+fmt(venues.length)+" venues reviewed";
  if(!results.length){out.innerHTML='<div class="smv-match-empty">No eligible venue match found. Review the customer requirements or add verified venue inventory. Do not relax a hard requirement without confirming it with the customer.</div>';return;}
