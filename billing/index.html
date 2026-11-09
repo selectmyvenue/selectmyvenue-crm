@@ -1052,6 +1052,100 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 }
 </style>
 
+
+<style id="billing-compact-workspace-layout">
+/* Compact, viewport-aware billing workspace — screen only */
+@media screen and (min-width:1041px){
+ .shell{max-width:1760px;padding:14px 22px 18px!important}
+ .topbar{min-height:76px!important;padding:9px 16px!important}
+ .brand{gap:13px!important}
+ .brand img{width:158px!important;height:48px!important}
+ h1{font-size:27px!important;margin:13px 0 2px!important}
+ .subtitle{font-size:11px!important;margin:0 0 12px!important}
+ .layout{
+  grid-template-columns:minmax(350px, .72fr) minmax(0,1.55fr)!important;
+  gap:14px!important;
+  height:calc(100vh - 158px)!important;
+  min-height:560px!important;
+  align-items:stretch!important;
+ }
+ .layout>section:first-child,
+ .layout>section:nth-child(2){min-height:0!important;height:100%!important}
+ .layout>section:first-child>.card{
+  height:100%!important;display:flex!important;flex-direction:column!important;
+ }
+ .layout>section:first-child>.card>.card-body{
+  display:flex!important;flex:1 1 auto!important;flex-direction:column!important;
+  min-height:0!important;padding:12px!important;
+ }
+ .search{flex:0 0 auto!important;margin-bottom:9px!important;grid-template-columns:minmax(0,1fr) 104px!important}
+ .search input{min-height:40px!important;padding:8px 11px!important}
+ .venue-list{
+  flex:1 1 auto!important;min-height:0!important;max-height:none!important;
+  overflow-y:auto!important;overscroll-behavior:contain!important;
+  gap:7px!important;padding:1px 4px 2px 0!important;
+ }
+ .venue-row{padding:9px 10px!important;gap:9px!important;border-radius:10px!important}
+ .venue-name{font-size:12px!important}
+ .venue-address{font-size:9px!important;line-height:1.35!important}
+ .venue-meta{font-size:9px!important;margin-top:4px!important}
+ .venue-row .btn{padding:8px 10px!important;font-size:11px!important;white-space:nowrap!important}
+ .layout>section:nth-child(2){overflow:hidden!important}
+ #billingWorkspace.show{
+  height:100%!important;max-height:100%!important;
+  display:flex!important;flex-direction:column!important;
+ }
+ #billingWorkspace>.card-body{
+  flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;
+  overscroll-behavior:contain!important;padding:14px 16px 18px!important;
+ }
+ #emptyWorkspace{height:100%!important}
+ .venue-title h2{font-size:19px!important}
+ .venue-title small{font-size:9px!important;margin-top:3px!important}
+ .identity{gap:8px!important;margin-top:10px!important}
+ .info{padding:8px 10px!important;border-radius:9px!important}
+ .info span{font-size:7px!important}
+ .info strong{font-size:10px!important;margin-top:3px!important}
+ .section{margin-top:10px!important}
+ .section h3{font-size:11px!important;margin-bottom:7px!important}
+ .formgrid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px 10px!important}
+ .field{gap:4px!important}
+ .field label{font-size:8px!important;letter-spacing:.07em!important}
+ .search input,.field input,.field select,.field textarea{
+  min-height:37px!important;padding:8px 10px!important;font-size:11px!important;
+  border-radius:8px!important;
+ }
+ .field textarea{min-height:54px!important}
+ .date-note{font-size:8px!important;margin-top:3px!important}
+ .notice{padding:8px 10px!important;margin-top:8px!important;font-size:9px!important;line-height:1.4!important}
+ .form-actions{gap:7px!important;margin-top:9px!important}
+ .form-actions .btn{min-width:0!important;padding:8px 10px!important;font-size:10px!important}
+ .history{margin-top:11px!important}
+ .history .card-head{padding-bottom:6px!important}
+ th,td{padding:8px 9px!important;font-size:9px!important}
+}
+@media screen and (min-width:1041px) and (max-width:1320px){
+ .layout{grid-template-columns:minmax(315px,.68fr) minmax(0,1.5fr)!important}
+ .formgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media screen and (max-width:1040px){
+ .shell{padding:12px 14px 22px!important}
+ .layout{height:auto!important;min-height:0!important}
+ .layout>section:first-child>.card{height:auto!important}
+ .venue-list{max-height:360px!important;overflow-y:auto!important}
+ #billingWorkspace.show{height:auto!important;max-height:none!important;display:block!important}
+ #billingWorkspace>.card-body{overflow:visible!important}
+ .formgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media screen and (max-width:620px){
+ .shell{padding:9px!important}
+ .topbar{min-height:0!important}
+ .formgrid{grid-template-columns:1fr!important}
+ .field.full{grid-column:auto!important}
+ .layout{grid-template-columns:1fr!important}
+}
+</style>
+
 </head>
 <body>
 <div class="shell">
