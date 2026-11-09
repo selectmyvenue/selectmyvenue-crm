@@ -5,12 +5,12 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.quer
 const BI_URL="billing/?v=20261002-renewal-term-8";
 function setActive(id){$$(".crm-top-nav .crm-nav-item").forEach(x=>{const active=x.id===id;x.classList.toggle("active",active);if(active)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current");});}
 function showLeads(){const hub=$("#smvBusinessOSHub"),bi=$("#smvBusinessIntelligence"),main=$(".crm-main"),venue=$("#venueManagementSection");if(hub)hub.hidden=true;if(bi)bi.hidden=true;if(venue)venue.hidden=true;if(main)main.hidden=false;setActive("crmLeadManagementBtn");}
-function openHub(){const main=$(".crm-main"),venue=$("#venueManagementSection"),bi=$("#smvBusinessIntelligence"),hub=$("#smvBusinessOSHub");if(!hub||!main)return;main.hidden=true;if(venue)venue.hidden=true;if(bi)bi.hidden=true;hub.hidden=false;setActive("smvBusinessOSHubBtn");hub.scrollIntoView({behavior:"smooth",block:"start"});}
+function openHub(){const main=$(".crm-main"),venue=$("#venueManagementSection"),bi=$("#smvBusinessIntelligence"),hub=$("#smvBusinessOSHub");if(!hub||!main)return;main.hidden=true;if(venue)venue.hidden=true;if(bi)bi.hidden=true;hub.hidden=false;hub.scrollIntoView({behavior:"smooth",block:"start"});}
 function openBI(target){showLeads();$("#smvBusinessIntelligenceBtn")?.click();if(target)window.setTimeout(()=>$("#"+target)?.scrollIntoView({behavior:"smooth",block:"start"}),180);}
 function openVenues(plan){showLeads();$("#venueManagementBtn")?.click();if(plan)window.setTimeout(()=>$("#venuePlanCenterBtn")?.click(),250);}
 function mount(){
- const nav=$(".crm-top-nav");
- if(nav&&!$("#smvBusinessOSHubBtn")){const b=document.createElement("button");b.type="button";b.id="smvBusinessOSHubBtn";b.className="crm-nav-item";b.title="Open SMV Business OS tools";b.innerHTML='<span class="crm-nav-icon" aria-hidden="true">✦</span><span>Business OS</span>';b.addEventListener("click",openHub);nav.appendChild(b);}
+ const accountButton=$("#smvAccountBusinessOSBtn");
+ if(accountButton&&!accountButton.dataset.bound){accountButton.dataset.bound="true";accountButton.addEventListener("click",()=>{const menu=$("#crmAccountMenu");if(menu)menu.open=false;openHub();});}
  if($("#smvBusinessOSHub"))return;
  const hub=document.createElement("section");hub.id="smvBusinessOSHub";hub.hidden=true;hub.setAttribute("aria-label","SMV Business OS tools");
  hub.innerHTML='<header class="smv-hub-head"><div><div class="smv-hub-kicker">SELECT MY VENUE · MASTER CRM</div><h1>Business <span>OS</span></h1><p>Your operational tools, one tap away. Customer Enquiries remains your home workspace.</p></div><button type="button" class="smv-hub-home" data-hub-action="home">← Back to Enquiries</button></header>'+
