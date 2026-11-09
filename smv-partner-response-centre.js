@@ -19,7 +19,7 @@ function mount(){
  '<div class="smv-prc-table-wrap"><table class="smv-prc-table"><thead><tr><th>Customer / Event</th><th>Venue / Area</th><th>Assigned</th><th>Partner response</th><th>Quote</th><th>Partner note</th><th>Next step</th></tr></thead><tbody id="smvPrcRows"><tr><td colspan="7">Loading partner activity…</td></tr></tbody></table></div>'+
  '<p class="smv-prc-foot">This is a monitoring workspace. Partner availability and quotes are displayed exactly as recorded. A partner reply is not a confirmed booking. Customer Enquiries and assignment records are not edited here.</p>';
  document.body.appendChild(s);
- s.addEventListener("click",e=>{const b=e.target.closest("[data-prc]");if(!b)return;if(b.dataset.prc==="back")back();if(b.dataset.prc==="refresh")load(true);const lead=e.target.closest("[data-open-enquiry]");if(lead){const id=lead.dataset.openEnquiry;close();if(typeof window.openLeadModal==="function")window.openLeadModal(id);else document.querySelector(".crm-main")?.scrollIntoView({behavior:"smooth"});}});
+ s.addEventListener("click",e=>{const lead=e.target.closest("[data-open-enquiry]");if(lead){const id=lead.dataset.openEnquiry;close();if(typeof window.openLeadModal==="function")window.openLeadModal(id);else document.querySelector(".crm-main")?.scrollIntoView({behavior:"smooth"});return;}const b=e.target.closest("[data-prc]");if(!b)return;if(b.dataset.prc==="back")back();if(b.dataset.prc==="refresh")load(true);});
  $("#smvPrcFilter").addEventListener("change",e=>{filter=e.target.value;render();});
  $("#smvPrcSearch").addEventListener("input",render);
  $("#smvPrcSort").addEventListener("change",render);
