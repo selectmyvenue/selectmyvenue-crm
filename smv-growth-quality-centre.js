@@ -229,6 +229,9 @@
       $("#smvGrowthQualityCard")?.addEventListener("click", open);
     }
     $("#crmLeadManagementBtn")?.addEventListener("click", showLeads);
+    $("#smvBusinessOSHubBtn")?.addEventListener("click", () => { const p = $("#smvGrowthQualityCentre"); if (p) p.hidden = true; });
+    $("#smvBusinessIntelligenceBtn")?.addEventListener("click", () => { const p = $("#smvGrowthQualityCentre"); if (p) p.hidden = true; });
+    $("#venueManagementBtn")?.addEventListener("click", () => { const p = $("#smvGrowthQualityCentre"); if (p) p.hidden = true; });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
   else start();
