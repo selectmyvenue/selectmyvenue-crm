@@ -9,6 +9,7 @@ function openHub(){const main=$(".crm-main"),venue=$("#venueManagementSection"),
 function openBI(target){showLeads();$("#smvBusinessIntelligenceBtn")?.click();if(target)window.setTimeout(()=>$("#"+target)?.scrollIntoView({behavior:"smooth",block:"start"}),180);}
 function openVenues(plan){showLeads();$("#venueManagementBtn")?.click();if(plan)window.setTimeout(()=>$("#venuePlanCenterBtn")?.click(),250);}
 function mount(){
+ window.SMVBusinessOS={open:openHub,showLeads};
  const accountButton=$("#smvAccountBusinessOSBtn");
  if(accountButton&&!accountButton.dataset.bound){accountButton.dataset.bound="true";accountButton.addEventListener("click",()=>{const menu=$("#crmAccountMenu");if(menu)menu.open=false;openHub();});}
  if($("#smvBusinessOSHub"))return;
@@ -28,8 +29,9 @@ function mount(){
  '</div><p class="smv-hub-foot">Some reports use existing CRM records only. External ad spend and ROAS require a connected reporting sync; automated messages and record changes remain human-controlled.</p>';
  document.body.appendChild(hub);
  hub.addEventListener("click",e=>{const b=e.target.closest("[data-hub-action]");if(!b)return;const a=b.dataset.hubAction;
-  if(a==="home"||a==="customer"){showLeads();$("#leadManagementSection")?.scrollIntoView({behavior:"smooth",block:"start"});return;}
-  if(a==="ai"){showLeads();$("#leadsTableBody")?.scrollIntoView({behavior:"smooth",block:"start"});return;}
+  if(a==="home"){showLeads();$("#leadManagementSection")?.scrollIntoView({behavior:"smooth",block:"start"});return;}
+  if(a==="customer"){if(window.SMVCustomer360?.open){window.SMVCustomer360.open();return;}showLeads();return;}
+  if(a==="ai"){if(window.SMVSmartMatchDesk?.open){window.SMVSmartMatchDesk.open();return;}showLeads();$("#leadsTableBody")?.scrollIntoView({behavior:"smooth",block:"start"});return;}
   if(a==="venues"){openVenues(false);return;}if(a==="plans"){openVenues(true);return;}
   if(a==="bi"){openBI();return;}if(a==="team"){openBI("smvBiTeam");return;}if(a==="marketing"){openBI("smvBiMarketing");return;}if(a==="automation"){openBI("smvBiActions");return;}
   if(a==="billing"){window.open(BI_URL,"_blank","noopener");return;}if(a==="hr"){window.open("https://crm.selectmyvenue.com/hr/","_blank","noopener");}
