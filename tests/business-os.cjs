@@ -18,10 +18,10 @@ assert.equal(d.querySelectorAll('#smvBusinessOS').length,0,'no oversized Busines
 const hub=d.getElementById('smvBusinessOSHub');
 assert(hub,'feature hub mounts');
 assert(hub.hidden,'feature hub stays off the homepage by default');
-assert(d.getElementById('smvBusinessOSHubBtn'),'desktop navigation exposes Business OS');
+assert(d.getElementById('smvAccountBusinessOSBtn'),'Account menu exposes Business OS');
 assert.equal(hub.querySelectorAll('.smv-hub-card').length,10,'all ten feature destinations are present');
-d.getElementById('smvBusinessOSHubBtn').click();
-assert.equal(hub.hidden,false,'desktop Business OS button opens the hub');
+d.getElementById('smvAccountBusinessOSBtn').click();
+assert.equal(hub.hidden,false,'Account menu Business OS button opens the hub');
 assert.equal(d.querySelector('.crm-main').hidden,true,'opening the hub hides the lead workspace without removing it');
 hub.querySelector('[data-hub-action="home"]').click();
 assert.equal(hub.hidden,true,'back action closes the hub');
