@@ -114,3 +114,18 @@ The owner supplied screenshots from both separate Partner CRM sessions:
 The visible lead names/contact details in the screenshots are intentionally not copied into this test report. No lead status was changed and no customer data was modified.
 
 Combined with the database RLS simulation recorded above, the screenshots are consistent with the expected tenant separation. They establish that both partner dashboards can load and show their respective venue context, but they do not by themselves prove every row-level browser query or mutation path. Remaining browser checks: open a lead's details under Partner A, confirm Partner B cannot open or discover it, and exercise only non-destructive/read-only actions. Do not change the Booked statuses of these existing records as part of testing.
+
+
+## Partner lead detail and session controls — owner-reported — 2026-11-09
+
+The owner supplied a screenshot of the Partner A lead-details modal opened from the assigned-enquiries list. The modal successfully displays the selected enquiry's detail fields inside the Partner CRM. The owner also reports that all Partner CRM buttons are working, including login and logout.
+
+No customer-identifying values from the screenshot are reproduced in this report. No record was edited during this check.
+
+Evidence classification:
+- Lead detail modal opens: screenshot-confirmed for the shown Partner A record.
+- Login/logout and all other buttons: owner-reported working; not independently exercised by the assistant.
+- Reciprocal Partner B non-visibility: supported by the prior read-only RLS simulation and Partner B dashboard screenshot; a full browser-token attempt to access Partner A's specific lead was not captured.
+- Status updates, availability responses, notifications and write actions: not tested using a synthetic enquiry and remain outside this read-only evidence.
+
+This advances the partner read-path check, but does not by itself close the complete authenticated release gate.
