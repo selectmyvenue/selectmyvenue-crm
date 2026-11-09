@@ -160,3 +160,12 @@ Customer 360 is enquiry-centric and read-only. Test enquiries with:
 - missing optional fields and empty activity sets.
 
 Expected: all events are attributed to the selected enquiry ID and ordered by event timestamp; absent fields display as not recorded; no automatic identity merge across enquiries; original enquiry modal opens without changing the selected record.
+
+
+### Venue Trust & Profile Quality Centre verification
+- Load venue inventory under an authenticated Master session; confirm counts match the same authorised venue set shown by Venue Management.
+- Test search and every filter, including critical missing fields, incomplete/complete profiles and verification state.
+- Select a venue with missing details and confirm the checklist identifies only absent source values.
+- Confirm the module never writes to `venues`; it only links to existing Venue Management for authorised edits.
+- Confirm completeness is not presented as proof of identity, licensing, pricing or availability verification.
+- Confirm Customer Enquiries remains in its original DOM and layout while switching into and out of this workspace.
