@@ -196,3 +196,15 @@ A separate Master CRM workspace now monitors the existing partner response workf
 - Realtime subscriptions are attempted for assignment and partner response tables, with manual refresh and visible fallback messaging.
 
 Partner availability/quotation entry remains in the existing Partner CRM workflow; this Master module is its operational monitoring counterpart. No Customer Enquiries page markup, layout, CSS, schema or RLS policy was changed.
+
+
+## Implementation update — Customer 360 (2026-11-09)
+A separate Master CRM Customer 360 workspace now:
+- Searches existing enquiries by customer name, mobile, email or enquiry ID.
+- Shows a customer/enquiry profile using existing enquiry fields.
+- Builds a chronological interaction timeline from CRM activity logs, follow-ups, venue assignments, partner view/contact/site-visit/conversion markers, availability replies and recorded customer contact/conversion fields.
+- Links back to the original enquiry detail for authorised changes.
+- Uses read-only queries only; no customer, assignment, follow-up or partner-response writes.
+- Adds an isolated responsive stylesheet and a safety contract test to `npm test`.
+
+This first version is enquiry-centric: it presents the interaction history for the selected enquiry. Cross-enquiry identity resolution (merging multiple enquiries by phone/email) is deliberately not automated, to avoid incorrectly merging family members or duplicate-but-distinct event requests.
