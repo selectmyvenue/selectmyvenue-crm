@@ -169,3 +169,15 @@ Expected: all events are attributed to the selected enquiry ID and ordered by ev
 - Confirm the module never writes to `venues`; it only links to existing Venue Management for authorised edits.
 - Confirm completeness is not presented as proof of identity, licensing, pricing or availability verification.
 - Confirm Customer Enquiries remains in its original DOM and layout while switching into and out of this workspace.
+
+
+## Read-only live partner RLS simulation — 2026-11-09
+Using the three active partner identities already present in `venue_partner_profiles`, a read-only SQL session was switched to the PostgreSQL `authenticated` role and `request.jwt.claim.sub` was set to each profile's user ID. For each identity:
+- Assignment rows visible: 1, 3 and 0 respectively.
+- Distinct assigned venues visible: 1, 1 and 0 respectively.
+- Every visible assignment belonged only to that partner profile's own venue.
+- Direct rows visible from `customer_enquiries`: 0 for all three.
+- Venue rows visible: exactly 1 own venue for each identity.
+- Availability response rows visible: 0 for all three; the live response table currently had no rows for these identities.
+
+This verifies the current database RLS read boundary under the authenticated database role for the inspected partner identities. It is **not** a browser-token login test and does not verify partner response INSERT/UPDATE actions. Those require controlled UI testing with the two test logins and a synthetic test assignment; no live data was written for this check.
