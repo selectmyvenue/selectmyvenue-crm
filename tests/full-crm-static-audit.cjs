@@ -13,7 +13,8 @@ function check(label, fn) {
   console.log('PASS ' + label);
 }
 function localAssetPath(route, reference) {
-  const clean = reference.split(/[?#]/, 1)[0];
+  const raw = reference.split(/[?#]/, 1)[0];
+  const clean = raw.startsWith('/') ? raw.slice(1) : raw;
   if (!clean || /^(?:[a-z]+:)?\/\//i.test(clean) || clean.startsWith('data:') || clean.startsWith('#')) return null;
   return path.resolve(root, path.dirname(route), decodeURIComponent(clean));
 }
