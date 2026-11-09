@@ -2,7 +2,7 @@
   "name": "selectmyvenue-crm",
   "private": true,
   "scripts": {
-    "test": "node tests/master-workspace.cjs && node tests/business-os.cjs && node tests/ai-venue-discovery.cjs && node tests/employee-ui.cjs && node tests/automation-audit.cjs && node tests/hr-portal.cjs && node tests/business-intelligence.cjs && node tests/partner-availability-v2.cjs && node tests/full-crm-static-audit.cjs && node tests/growth-quality-centre.cjs && node tests/live-operations.cjs"
+    "test": "node tests/master-workspace.cjs && node tests/business-os.cjs && node tests/ai-venue-discovery.cjs && node tests/employee-ui.cjs && node tests/automation-audit.cjs && node tests/hr-portal.cjs && node tests/business-intelligence.cjs && node tests/partner-availability-v2.cjs && node tests/full-crm-static-audit.cjs && node tests/growth-quality-centre.cjs && node tests/live-operations.cjs && node tests/smart-match-desk.cjs"
   },
   "devDependencies": {
     "jsdom": "26.1.0"
