@@ -34,6 +34,7 @@ async function run() {
   check(html.includes('<option value="sales_terms">Sales Executive — Terms &amp; Conditions / Business Protection Agreement</option>') && html.includes('id="uploadType"'), 'sales protection agreement is available in signed-document upload selector');
   check(html.includes('id="requiredDocSlots"') && html.includes("type:'sales_terms',label:'Signed Sales Terms & Business Protection Agreement'"), 'sales roles receive a named mandatory signed-document upload slot');
   check(html.includes("d.status==='signed'&&d.file_path") && html.includes('Cannot activate yet. Upload signed mandatory documents first:'), 'activation is blocked until required signed files are uploaded');
+  check(html.includes('smv-master-letterhead') && html.includes('https://d2ol7oe51mr4n9.cloudfront.net/user_3Ih9wnQzG3XZOicOIhWaLzWTJcg/96be40c4-8d42-4c7f-89e6-23727891099a.png'), 'all generated HR letters use the exact approved master letterhead image');
   console.log('HR portal static checks passed.');
 }
 
