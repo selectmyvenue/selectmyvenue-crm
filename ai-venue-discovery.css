@@ -17,3 +17,31 @@
  #smvAiDiscovery .smv-ai-card-actions label{min-height:38px}
  #smvAiDiscovery .smv-ai-compare{margin-inline:-2px;padding:10px}
 }
+
+/* SMV Enterprise Venue Assignment Control Center */
+.smv-assignment-center{margin:14px 0 16px;padding:18px;border:1px solid #d7e5df;border-radius:16px;background:linear-gradient(135deg,#fbfdfc 0%,#f1f7f4 100%);box-shadow:0 8px 24px rgba(18,63,55,.06)}
+.smv-assignment-center-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.smv-assignment-center-heading>div>span{font-size:9px;letter-spacing:.17em;font-weight:900;color:#9b793d}
+.smv-assignment-center-heading h3{margin:4px 0;color:#143f37;font-size:19px;letter-spacing:-.02em}
+.smv-assignment-center-heading p{margin:4px 0 0;color:#687e77;font-size:11px;line-height:1.5}
+.smv-assignment-live{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:6px 9px;border:1px solid #cfe4d9;border-radius:20px;background:#f4faf6;color:#22644e;font-size:10px;font-weight:800}
+.smv-assignment-live i{width:7px;height:7px;border-radius:50%;background:#2e9b6b;box-shadow:0 0 0 3px #dff2e7}
+.smv-assignment-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.smv-assignment-kpis article{min-width:0;padding:11px 12px;border:1px solid #e1ebe6;border-radius:11px;background:#fff}
+.smv-assignment-kpis small{display:block;color:#71857e;font-size:9px;letter-spacing:.08em;font-weight:900}
+.smv-assignment-kpis strong{display:block;margin:4px 0;color:#174a3e;font-size:22px;line-height:1.1;font-variant-numeric:tabular-nums}
+.smv-assignment-kpis span{display:block;color:#82918b;font-size:9px;line-height:1.4}
+.smv-assignment-basket{padding:12px 13px;border:1px solid #dce8e2;border-radius:11px;background:#fff}
+.smv-assignment-basket>div:first-child{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.smv-assignment-basket>div:first-child strong{color:#204d42;font-size:12px}
+.smv-assignment-basket>div:first-child span{color:#6c8279;font-size:10px}
+.smv-assignment-basket-items{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;color:#81918b;font-size:10px}
+.smv-assignment-basket-chip{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:6px 8px;border-radius:7px;background:#f1f7f4;color:#315e50;font-size:10px;font-weight:800}
+.smv-assignment-basket-chip em{font-style:normal;color:#8a6d37;font-size:9px}
+.smv-assignment-center-foot{margin-top:10px;color:#81918b;font-size:9px;line-height:1.5}
+.smv-enterprise-match{display:inline-flex;align-items:center;gap:4px;margin:5px 5px 0 0;padding:4px 6px;border:1px solid #dce8e2;border-radius:6px;background:#f4f8f6;color:#28604e;font-size:9px;font-weight:900;white-space:nowrap}
+.smv-enterprise-match.review{border-color:#eadfc9;background:#fbf7ef;color:#87652e}
+.smv-enterprise-match.blocked{border-color:#efd9d6;background:#fcf3f2;color:#99564d}
+.smv-enterprise-match small{font-size:8px;font-weight:700;color:inherit;opacity:.8}
+.venue-assignment-item.smv-ranked-first{border-color:#9dcbb8;box-shadow:0 0 0 1px rgba(87,151,121,.1)}
+@media(max-width:700px){.smv-assignment-center{padding:13px}.smv-assignment-center-heading h3{font-size:16px}.smv-assignment-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.smv-assignment-basket>div:first-child{align-items:flex-start;flex-direction:column;gap:4px}.smv-assignment-live{font-size:9px}}
