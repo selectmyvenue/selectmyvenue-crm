@@ -292,7 +292,7 @@ performance_improvement_plan:'PERFORMANCE IMPROVEMENT PLAN\n\nEmployee: '+name+'
 other:'HR DOCUMENT\n\nPurpose / subject: [complete]\nPerson: '+name+'\nRole: '+role+'\nDate: '+date+'\n\nBackground and verified facts: [complete]\nTerms / decision / action required: [complete]\nEffective date and owner: [complete]\nApplicable policy / supporting records: [complete]\nReview / appeal / contact route, where relevant: [complete]\n\nFor Select My Venue\nAuthorised signatory: __________________  Date: ______\nAcknowledged by: __________________  Date: ______'};
 
 const heading=type==='engagement_letter'?'APPOINTMENT / ENGAGEMENT AGREEMENT\n\n':'';
-const raw=(heading+base+(bodies[type]||bodies.other)+(type==='offer_letter'?'':'\n\nHR REVIEW: Complete every bracketed item and approve before sending.'));
+const raw=(base+heading+(bodies[type]||bodies.other)+(type==='offer_letter'?'':'\n\nHR REVIEW: Complete every bracketed item and approve before sending.'));
 const parts=raw.split('\n');let titleIndex=parts.findIndex(x=>x.trim()&&!/^DRAFT\s*[—-]/i.test(x.trim())&&!/^This document is a working draft/i.test(x.trim()));
 const docTitle=(parts[titleIndex]||'HR DOCUMENT').trim();
 const bodyLines=parts.slice(titleIndex+1);let skipToName=false,openingRemoved=false;
