@@ -55,6 +55,21 @@ function addMobileEntry(){
 }
 function start(){
  mount();addMobileEntry();
+ // Close the Account menu on outside click or Escape; clicks inside remain usable.
+ const accountMenu=$("#crmAccountMenu"), accountPanel=$("#crmAccountMenuPanel");
+ if(accountMenu&&!accountMenu.dataset.dismissBound){
+  accountMenu.dataset.dismissBound="true";
+  document.addEventListener("click",event=>{
+   if(!accountMenu.open)return;
+   if(accountMenu.contains(event.target)||accountPanel?.contains(event.target))return;
+   accountMenu.open=false;
+  });
+  document.addEventListener("keydown",event=>{
+   if(event.key!=="Escape"||!accountMenu.open)return;
+   accountMenu.open=false;
+   $("#crmAccountMenuToggle")?.focus();
+  });
+ }
  const observer=new MutationObserver(addMobileEntry);observer.observe(document.body,{childList:true,subtree:true});
  document.addEventListener("click",e=>{if(e.target.closest('[data-smv-more="business-os"]')){e.preventDefault();openHub();$("#smvMobileMoreMenu").hidden=true;document.querySelector('[data-smv-mobile="more"]')?.classList.remove("active");}});
  $("#crmLeadManagementBtn")?.addEventListener("click",showLeads);
