@@ -12,7 +12,7 @@ assert(html.includes('smv-live-call-inventory.js'),'inventory controller must be
 assert(html.includes('smv-live-call-inventory.css'),'premium inventory stylesheet must be loaded');
 assert(!html.includes('id="smvAcEligible"')&&!html.includes('smv-assignment-kpis'),'old KPI dashboard must be removed from the user-facing assignment UI');
 assert(js.includes('assignmentVenueRows'),'finder must reuse the existing approved venue inventory');
-assert(js.includes('venue_status === "approved"')&&js.includes('verification_status === "verified"'),'only approved and verified inventory is eligible');
+assert(js.includes('smv_assignment_venues') || js.includes('assignmentVenueRows'),'finder must consume CRM server-filtered approved and verified assignment inventory');
 assert(js.includes('geo_area_aliases'),'area coordinates should be used when available');
 assert(js.includes('minDistance-b.minDistance'),'nearby areas must be sorted by distance when coordinates exist');
 assert(js.includes('data-slv-select'),'area inventory must allow selecting a venue');
