@@ -35,6 +35,8 @@ async function run() {
   check(html.includes('id="requiredDocSlots"') && html.includes("type:'sales_terms',label:'Signed Sales Terms & Business Protection Agreement'"), 'sales roles receive a named mandatory signed-document upload slot');
   check(html.includes("d.status==='signed'&&d.file_path") && html.includes('Cannot activate yet. Upload signed mandatory documents first:'), 'activation is blocked until required signed files are uploaded');
   check(html.includes('smv-master-letterhead') && html.includes('https://d2ol7oe51mr4n9.cloudfront.net/user_3Ih9wnQzG3XZOicOIhWaLzWTJcg/96be40c4-8d42-4c7f-89e6-23727891099a.png'), 'all generated HR letters use the exact approved master letterhead image');
+  check(html.includes('@page{size:A4 portrait;margin:0}') && !html.includes('DRAFT — REVIEW BEFORE ISSUE</div><div class="letter-date">'), 'prints all HR letters without browser date/title margins or draft/date banner');
+  check(html.includes('letter-footer') && html.includes('aria-label="End of Select My Venue letter"'), 'adds a matching teal-and-gold finishing footer to every HR letter');
   console.log('HR portal static checks passed.');
 }
 
