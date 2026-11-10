@@ -2,19 +2,22 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
+const {spawnSync}=require('node:child_process');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'dashboard.html'),'utf8');
 const inventory=fs.readFileSync(path.join(root,'smv-live-call-inventory.js'),'utf8');
+for(const file of ['crm-core.js','ai-venue-discovery.js','smv-enterprise-assignment-center.js','smv-live-call-inventory.js']) { const check=spawnSync(process.execPath,['--check',path.join(root,file)],{encoding:'utf8'}); assert.equal(check.status,0,file+' must parse without JavaScript syntax errors: '+check.stderr); }
 assert(html.includes('id="smvLiveInventoryResults"'),'assignment modal must show live inventory finder');
 assert(html.includes('id="smvLiveCallInventory"'),'live inventory panel must have a unique ID');
 assert(!html.includes('id="smvAssignmentControlCenter"'),'retired KPI dashboard must not be reintroduced');
 assert(!html.includes('id="smvAcEligible"'),'retired KPI dashboard must stay removed');
 assert(html.includes('id="smvAiOpen"'),'AI discovery launcher must remain available');
 assert(html.includes('id="venueAssignmentList"'),'original assignment venue list must remain available');
+assert(html.includes('id="smvAiExact"')&&html.includes('id="smvAiNearby"'),'legacy AI exact and nearby match result containers must remain available');
 assert.match(html,/crm\.js[\s\S]*ai-venue-discovery\.js[\s\S]*smv-enterprise-assignment-center\.js[\s\S]*smv-live-call-inventory\.js/,'legacy matching and live inventory modules must load after CRM scripts');
 assert(inventory.includes('data-slv-select')&&inventory.includes('.venue-assignment-checkbox'),'new inventory selection must feed the existing assignment save flow');
 assert(!inventory.includes('.from("customer_enquiries")')&&!inventory.includes('.insert(')&&!inventory.includes('.update('),'new finder must not write to database tables');
 const inventoryCss=fs.readFileSync(path.join(root,'smv-live-call-inventory.css'),'utf8');
 assert(!inventoryCss.includes('#venueAssignmentModal #venueAssignmentList{position:absolute!important;width:1px!important'),'original assignment list must not be hidden');
 assert(!inventoryCss.includes('.smv-assignment-center,.smv-ai-launch-row,#smvAiDiscovery{display:none!important}'),'legacy matching sections must not be hidden');
-console.log('PASS Live inventory finder and legacy AI/assignment views coexist; original venue list remains visible');
+console.log('PASS Live inventory + legacy assignment matching; all assignment JavaScript parses and original list remains visible');
