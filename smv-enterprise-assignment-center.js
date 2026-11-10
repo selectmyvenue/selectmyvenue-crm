@@ -6,9 +6,10 @@
 "use strict";
 const $=s=>document.querySelector(s);
 const safe=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let ranked=[],refreshTimer=null,sorting=false,confirmBypass=false,lastLeadId=null;
+let ranked=[],refreshTimer=null,sorting=false,confirmBypass=false;
 function lead(){try{return typeof assignmentCurrentLead!=="undefined"?assignmentCurrentLead:null;}catch(_){return null;}}
 function assigned(venueId){try{return typeof isVenueAlreadyAssigned==="function"&&isVenueAlreadyAssigned(venueId);}catch(_){return false;}}
+function reactivation(venueId){try{return typeof allVenueAssignments!=="undefined"&&allVenueAssignments.some(row=>String(row.venue_id)===String(venueId)&&row.assignment_status==="cancelled");}catch(_){return false;}}
 function getRows(){return ranked;}
 function updateBasket(){
  const list=$("#venueAssignmentList"),items=$("#smvAcBasketItems"),count=$("#smvAcSelected"),summary=$("#smvAcBasketSummary"),hint=$("#smvAcSelectedHint");
@@ -20,7 +21,7 @@ function updateBasket(){
  const rowsById=new Map(ranked.map(r=>[String(r.venue.id),r]));
  items.innerHTML=selected.length?selected.slice(0,10).map(cb=>{
   const row=rowsById.get(String(cb.value)),name=row?.venue?.venue_name||cb.closest(".venue-assignment-item")?.querySelector(".venue-assignment-item-title strong")?.textContent||"Selected venue";
-  const state=assigned(cb.value)?"Already active":row?.reactivation?"Reactivation":"New assignment";
+  const state=assigned(cb.value)?"Already active":reactivation(cb.value)?"Reactivation":"New assignment";
   return '<span class="smv-assignment-basket-chip">'+safe(name)+' <em>'+safe(state)+'</em></span>';
  }).join("")+(selected.length>10?'<span class="smv-assignment-basket-chip">+'+(selected.length-10)+' more</span>':""):"Select venues from the ranked list or AI discovery.";
 }
@@ -96,7 +97,7 @@ function boot(){
  document.addEventListener("click",confirmAssignment,true);
  const observer=new MutationObserver(()=>{if(!sorting)scheduleRefresh();});
  observer.observe(modal,{attributes:true,attributeFilter:["hidden"]});
- observer.observe(list,{childList:true,subtree:true});
+ observer.observe(list,{childList:true});
  document.addEventListener("change",event=>{if(event.target.closest("#smvAiDiscovery"))scheduleRefresh();});
  document.addEventListener("input",event=>{if(event.target.closest("#smvAiDiscovery"))scheduleRefresh();});
  const aiOpen=$("#smvAiOpen");aiOpen?.addEventListener("click",scheduleRefresh);
