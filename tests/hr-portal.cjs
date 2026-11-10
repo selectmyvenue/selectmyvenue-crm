@@ -40,7 +40,8 @@ async function run() {
   check(html.includes('https://unpkg.com/@supabase/supabase-js@2') && html.includes('Secure HR connection library is unavailable'), 'HR portal has a fallback CDN and visible recovery if the auth library fails to load');
   check(!html.includes("content:''") && html.includes('.letter-footer:before{content:""') && html.includes('.letter-footer:after{content:""'), 'branded footer CSS does not break the shared HR page JavaScript parser');
   check(html.includes('Mr./Ms. ') && html.includes('[Enter candidate postal address here]') && html.includes('Subject: '), 'all HR letters receive the standard dated recipient, editable address, subject and salutation opening');
-  check(html.includes('https://d2ol7oe51mr4n9.cloudfront.net/user_3Ih9wnQzG3XZOicOIhWaLzWTJcg/06f6db26-66f5-4dcb-b2f2-6cdc9eac0377.png') && html.includes('authorised-signature') && html.includes('Date: \'+signDate+\''), 'all HR letters include the cleaned original Raj Kumar signature and generation date');
+  check(html.includes('<p class="clause"><strong>') && html.includes('Please sign and return the duplicate copy of this Offer Letter') && html.includes('support@selectmyvenue.com') && html.includes('We look forward to welcoming you aboard.'), 'numbered sections are bold and offer letters end with the support-email acceptance and welcome wording');
+  check(!html.includes('06f6db26-66f5-4dcb-b2f2-6cdc9eac0377.png') && html.includes('<strong>Raj Kumar</strong><br>Sole Proprietor'), 'all HR letters use text-only Raj Kumar / Sole Proprietor sign-off without a signature image');
   check(html.includes('letter-footer') && html.includes('smv-master-letterhead'), 'all HR letters share the master header and branded footer');
   console.log('HR portal static checks passed.');
 }
