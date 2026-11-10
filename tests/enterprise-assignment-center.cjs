@@ -4,8 +4,6 @@ const fs=require('node:fs');
 const path=require('node:path');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'dashboard.html'),'utf8');
-const ai=fs.readFileSync(path.join(root,'ai-venue-discovery.js'),'utf8');
-const center=fs.readFileSync(path.join(root,'smv-enterprise-assignment-center.js'),'utf8');
 const inventory=fs.readFileSync(path.join(root,'smv-live-call-inventory.js'),'utf8');
 assert(html.includes('id="smvLiveInventoryResults"'),'assignment modal must show the replacement live inventory finder');
 assert(!html.includes('smv-assignment-kpis'),'the old KPI dashboard must not occupy assignment space');
@@ -16,4 +14,4 @@ assert(center.includes('window.confirm(message)'),'existing assignment save must
 assert(center.includes('Existing active assignments will be preserved'),'confirmation must disclose append-only semantics');
 assert(inventory.includes('data-slv-select')&&inventory.includes('.venue-assignment-checkbox'),'new inventory selection must feed the existing assignment save flow');
 assert(!inventory.includes('.from("customer_enquiries")')&&!inventory.includes('.insert(')&&!inventory.includes('.update('),'new finder must not write to database tables');
-console.log('PASS Assignment UI replacement: legacy save confirmation preserved; new live inventory UI owns discovery and selection');
+console.log('PASS Assignment UI replacement: legacy dashboard assets removed; new live inventory UI owns discovery and selection');
