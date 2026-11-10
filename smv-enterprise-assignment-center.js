@@ -39,6 +39,8 @@ function renderRanks(){
   if(!x||!y)return 0;
   return (Number(y.gate.eligible)-Number(x.gate.eligible))||(y.match.score-x.match.score)||(y.match.confidence-x.match.confidence)||((x.match.d??999)-(y.match.d??999));
  });
+ const currentOrder=Array.from(list.querySelectorAll(".venue-assignment-item"));
+ const needsReorder=currentOrder.length===nodes.length&&currentOrder.some((node,index)=>node!==nodes[index]);
  sorting=true;
  nodes.forEach((node,index)=>{
   const cb=node.querySelector(".venue-assignment-checkbox"),row=byId.get(String(cb?.value)),main=node.querySelector(".venue-assignment-item-main"),title=node.querySelector(".venue-assignment-item-title");
@@ -60,7 +62,7 @@ function renderRanks(){
   availability.classList.toggle("blocked",status==="unavailable");
   if(blocked){node.dataset.smvReview=row.gate.blockers.join("; ");badge.title="Review required: "+row.gate.blockers.join("; ");}
   else{delete node.dataset.smvReview;badge.title=m.reasons.slice(0,5).join("; ");}
-  list.appendChild(node);
+  if(needsReorder)list.appendChild(node);
  });
  sorting=false;
 }
