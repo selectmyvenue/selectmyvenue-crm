@@ -39,6 +39,9 @@ async function run() {
   check(html.includes('letter-footer') && html.includes('aria-label="End of Select My Venue letter"'), 'adds a matching teal-and-gold finishing footer to every HR letter');
   check(html.includes('https://unpkg.com/@supabase/supabase-js@2') && html.includes('Secure HR connection library is unavailable'), 'HR portal has a fallback CDN and visible recovery if the auth library fails to load');
   check(!html.includes("content:''") && html.includes('.letter-footer:before{content:""') && html.includes('.letter-footer:after{content:""'), 'branded footer CSS does not break the shared HR page JavaScript parser');
+  check(html.includes('Mr./Ms. ') && html.includes('[Enter candidate postal address here]') && html.includes('Subject: '), 'all HR letters receive the standard dated recipient, editable address, subject and salutation opening');
+  check(html.includes('https://d2ol7oe51mr4n9.cloudfront.net/user_3Ih9wnQzG3XZOicOIhWaLzWTJcg/06f6db26-66f5-4dcb-b2f2-6cdc9eac0377.png') && html.includes('authorised-signature') && html.includes('Date: \'+signDate+\''), 'all HR letters include the approved Raj Kumar signature and generation date');
+  check(html.includes('letter-footer') && html.includes('smv-master-letterhead'), 'all HR letters share the master header and branded footer');
   console.log('HR portal static checks passed.');
 }
 
