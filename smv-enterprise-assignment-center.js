@@ -6,7 +6,7 @@
 "use strict";
 const $=s=>document.querySelector(s);
 const safe=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let ranked=[],refreshTimer=null,sorting=false,confirmBypass=false;
+let ranked=[],refreshTimer=null,sorting=false,confirmBypass=false,assignmentChannel=null,subscribedLeadId=null;
 function lead(){try{return typeof assignmentCurrentLead!=="undefined"?assignmentCurrentLead:null;}catch(_){return null;}}
 function assigned(venueId){try{return typeof isVenueAlreadyAssigned==="function"&&isVenueAlreadyAssigned(venueId);}catch(_){return false;}}
 function reactivation(venueId){try{return typeof allVenueAssignments!=="undefined"&&allVenueAssignments.some(row=>String(row.venue_id)===String(venueId)&&row.assignment_status==="cancelled");}catch(_){return false;}}
@@ -79,6 +79,30 @@ async function refresh(){
  }catch(error){console.warn("SMV assignment ranking refresh skipped",error);}
 }
 function scheduleRefresh(){clearTimeout(refreshTimer);refreshTimer=setTimeout(refresh,160);}
+async function stopAssignmentRealtime(){
+ const old=assignmentChannel;assignmentChannel=null;subscribedLeadId=null;
+ if(old){try{await old.unsubscribe();}catch(error){console.warn("SMV assignment realtime unsubscribe skipped",error);}}
+}
+async function startAssignmentRealtime(enquiryId){
+ const id=String(enquiryId||"");if(!id||subscribedLeadId===id)return;
+ await stopAssignmentRealtime();
+ let client=null;try{client=typeof getSupabaseClient==="function"?getSupabaseClient():null;}catch(_){}
+ const state=$("#smvAcLiveState");
+ if(!client?.channel){if(state)state.textContent="Manual refresh fallback";return;}
+ try{
+  const channel=client.channel("smv-assignment-center-"+id)
+   .on("postgres_changes",{event:"*",schema:"public",table:"venue_enquiry_assignments",filter:"enquiry_id=eq."+id},async()=>{
+    try{if(typeof loadVenueAssignments==="function")await loadVenueAssignments();}catch(error){console.warn("SMV assignment live refresh skipped",error);}
+    const list=$("#venueAssignmentList");
+    list?.querySelectorAll(".venue-assignment-checkbox").forEach(cb=>{if(assigned(cb.value))cb.checked=true;});
+    updateBasket();scheduleRefresh();
+   })
+   .subscribe(status=>{
+    if(state)state.textContent=status==="SUBSCRIBED"?"Live assignment updates":"Manual refresh fallback";
+   });
+  assignmentChannel=channel;subscribedLeadId=id;
+ }catch(error){if(state)state.textContent="Manual refresh fallback";console.warn("SMV assignment realtime unavailable",error);}
+}
 function confirmAssignment(event){
  if(confirmBypass){confirmBypass=false;return;}
  const button=event.target.closest("#saveVenueAssignment");if(!button)return;
@@ -96,13 +120,13 @@ function boot(){
  modal.addEventListener("change",event=>{if(event.target.matches(".venue-assignment-checkbox"))updateBasket();});
  document.addEventListener("click",confirmAssignment,true);
  const observer=new MutationObserver(()=>{if(!sorting)scheduleRefresh();});
- observer.observe(modal,{attributes:true,attributeFilter:["hidden"]});
+ observer.observe(modal,{attributes:true,attributeFilter:["hidden"]});\n modal.addEventListener("transitionend",()=>{if(modal.hidden)stopAssignmentRealtime();});
  observer.observe(list,{childList:true});
  document.addEventListener("change",event=>{if(event.target.closest("#smvAiDiscovery"))scheduleRefresh();});
  document.addEventListener("input",event=>{if(event.target.closest("#smvAiDiscovery"))scheduleRefresh();});
  const aiOpen=$("#smvAiOpen");aiOpen?.addEventListener("click",scheduleRefresh);
  const search=$("#assignmentVenueSearch");search?.addEventListener("input",()=>setTimeout(()=>{renderRanks();updateBasket();},80));
- if(!modal.hidden)scheduleRefresh();
+ if(!modal.hidden)scheduleRefresh();\n const close=$("#closeVenueAssignmentModal");close?.addEventListener("click",()=>stopAssignmentRealtime());\n const cancel=$("#cancelVenueAssignment");cancel?.addEventListener("click",()=>stopAssignmentRealtime());
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
 window.SMVEnterpriseAssignmentCenter={refresh,updateBasket,getRankedRows:getRows};
