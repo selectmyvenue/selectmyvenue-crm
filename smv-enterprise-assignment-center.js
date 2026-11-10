@@ -49,8 +49,8 @@ function renderRanks(){
   node.classList.toggle("smv-ranked-first",index===0);
   let badge=title.querySelector(".smv-enterprise-match");
   if(!badge){badge=document.createElement("span");badge.className="smv-enterprise-match";title.appendChild(badge);}
-  const m=row.match,known=m.confidence>=70,blocked=!row.gate.eligible;
-  badge.className="smv-enterprise-match"+(blocked?" blocked":!known?" review":"");
+  const m=row.match,known=m.confidence>=70,hardBlocked=row.gate.blockers.some(reason=>/below requirement|exceeds stated budget|explicitly unavailable/i.test(reason)),reviewRequired=!row.gate.eligible&&!hardBlocked,blocked=hardBlocked;
+  badge.className="smv-enterprise-match"+(blocked?" blocked":(!known||reviewRequired)?" review":"");
   const fit=m.score>=80?"Strong fit":m.score>=65?"Potential fit":m.score>0?"Review fit":"Add requirements";
   badge.textContent=fit+" · "+m.score+"%";
   const detail=document.createElement("small");detail.textContent=" · "+m.confidence+"% data confidence";
@@ -58,10 +58,10 @@ function renderRanks(){
   let availability=title.querySelector(".smv-assignment-availability");
   if(!availability){availability=document.createElement("span");availability.className="smv-enterprise-match smv-assignment-availability";title.appendChild(availability);}
   const status=row.availability?.availability_status;
-  availability.textContent=status==="available"?"Partner available":status==="unavailable"?"Partner unavailable":status==="needs_info"?"Partner needs details":"Date unconfirmed";
+  availability.textContent=status==="available"?"Partner available":status==="unavailable"?"Partner unavailable":status==="needs_info"?"Partner needs details":m.availabilityStatus==="date_not_provided"?"Event date needed":"Awaiting partner";
   availability.classList.toggle("review",status!=="available");
   availability.classList.toggle("blocked",status==="unavailable");
-  if(blocked){node.dataset.smvReview=row.gate.blockers.join("; ");badge.title="Review required: "+row.gate.blockers.join("; ");}
+  if(row.gate.blockers.length){node.dataset.smvReview=row.gate.blockers.join("; ");badge.title=(blocked?"Mismatch: ":"Review required: ")+row.gate.blockers.join("; ");}
   else{delete node.dataset.smvReview;badge.title=m.reasons.slice(0,5).join("; ");}
   if(needsReorder)list.appendChild(node);
  });
