@@ -49,3 +49,88 @@
 #venueAssignmentModal .slv-area-list{scrollbar-width:thin}
 #venueAssignmentModal .slv-area-head{min-height:58px}
 @media(max-width:760px){#venueAssignmentModal .venue-assignment-list{max-height:300px}#venueAssignmentModal .slv-area-list{max-height:230px}}
+
+
+/* Assignment workspace polish — layout only; no assignment or data behaviour changes. */
+#venueAssignmentModal .venue-assignment-card{
+  width:min(1500px,calc(100vw - 32px))!important;
+  max-height:calc(100dvh - 24px)!important;
+  display:flex!important;flex-direction:column!important;
+  overflow-y:auto!important;overscroll-behavior:contain;
+  scrollbar-width:thin;scrollbar-color:#9bbdb1 #eef5f1;
+}
+#venueAssignmentModal .venue-assignment-header,
+#venueAssignmentModal .venue-assignment-requirement,
+#venueAssignmentModal .venue-assignment-actions{flex:0 0 auto}
+#venueAssignmentModal .venue-assignment-header{padding:16px 20px!important}
+#venueAssignmentModal .venue-assignment-header h2{font-size:clamp(21px,2vw,27px)!important;letter-spacing:-.45px}
+#venueAssignmentModal .venue-assignment-header p{font-size:12px!important;line-height:1.45}
+#venueAssignmentModal .venue-assignment-requirement{font-size:12px!important;line-height:1.55}
+#venueAssignmentModal .smv-live-inventory{padding:16px 18px!important;margin:10px 0 12px!important}
+#venueAssignmentModal .slv-heading h3{font-size:clamp(19px,1.8vw,23px)!important}
+#venueAssignmentModal .slv-heading p{font-size:12px!important;line-height:1.5}
+#venueAssignmentModal .slv-meta{font-size:11px!important}
+#venueAssignmentModal .slv-area-list{
+  max-height:min(34vh,360px)!important;min-height:130px;
+  overflow-y:auto!important;overscroll-behavior:contain;
+  scrollbar-width:thin;scrollbar-color:#a4c5b8 #eff6f2;
+}
+#venueAssignmentModal .slv-area-card{border-radius:13px}
+#venueAssignmentModal .slv-area-head{min-height:62px;padding:12px 14px}
+#venueAssignmentModal .slv-area-title strong{font-size:13px!important;line-height:1.35}
+#venueAssignmentModal .slv-area-title small,
+#venueAssignmentModal .slv-venue-copy span,
+#venueAssignmentModal .slv-venue-copy small{font-size:11px!important;line-height:1.45}
+#venueAssignmentModal .slv-venue-copy strong{font-size:12px!important;line-height:1.4}
+#venueAssignmentModal .slv-select-btn{min-height:34px;padding:8px 12px;font-size:11px}
+#venueAssignmentModal .smv-ai-launch-row{margin:10px 0!important}
+#venueAssignmentModal #smvAiDiscovery{margin:10px 0!important}
+#venueAssignmentModal .venue-assignment-toolbar{padding:10px 14px!important;gap:9px!important}
+#venueAssignmentModal .venue-assignment-toolbar input{min-height:40px!important;font-size:13px!important}
+#venueAssignmentModal .venue-assignment-list{
+  min-height:160px!important;max-height:min(38vh,420px)!important;
+  overflow-y:auto!important;overscroll-behavior:contain;
+  scrollbar-width:thin;scrollbar-color:#a4c5b8 #eff6f2;
+  padding:4px 6px!important;
+}
+#venueAssignmentModal .venue-assignment-list,
+#venueAssignmentModal .venue-assignment-list *{line-height:1.45}
+#venueAssignmentModal .venue-assignment-list strong,
+#venueAssignmentModal .venue-assignment-list b{font-size:13px}
+#venueAssignmentModal .venue-assignment-note{padding:10px 14px!important}
+#venueAssignmentModal .venue-assignment-note textarea{min-height:64px!important}
+#venueAssignmentModal .venue-assignment-actions{
+  position:sticky!important;bottom:0!important;z-index:8;
+  display:flex!important;flex-wrap:wrap!important;justify-content:flex-end!important;
+  gap:10px!important;padding:12px 16px!important;
+  border-top:1px solid #dceae4!important;
+  background:rgba(250,253,251,.97)!important;
+  backdrop-filter:blur(12px);
+  box-shadow:0 -8px 22px rgba(16,65,53,.07);
+}
+#venueAssignmentModal .venue-assignment-actions button{
+  min-height:42px!important;padding:10px 17px!important;
+  border-radius:10px!important;font-size:12px!important;font-weight:800!important;
+}
+#venueAssignmentModal #smvAssignWhatsApp{min-width:148px}
+#venueAssignmentModal .venue-assignment-card::-webkit-scrollbar,
+#venueAssignmentModal .slv-area-list::-webkit-scrollbar,
+#venueAssignmentModal .venue-assignment-list::-webkit-scrollbar{width:9px}
+#venueAssignmentModal .venue-assignment-card::-webkit-scrollbar-thumb,
+#venueAssignmentModal .slv-area-list::-webkit-scrollbar-thumb,
+#venueAssignmentModal .venue-assignment-list::-webkit-scrollbar-thumb{background:#a4c5b8;border:2px solid #eff6f2;border-radius:20px}
+@media(max-width:760px){
+  #venueAssignmentModal .venue-assignment-card{width:calc(100vw - 12px)!important;max-height:calc(100dvh - 12px)!important}
+  #venueAssignmentModal .venue-assignment-header{padding:13px 14px!important}
+  #venueAssignmentModal .smv-live-inventory{padding:12px!important}
+  #venueAssignmentModal .slv-area-list{grid-template-columns:1fr!important;max-height:25vh!important;min-height:100px}
+  #venueAssignmentModal .venue-assignment-list{max-height:30vh!important;min-height:130px!important}
+  #venueAssignmentModal .venue-assignment-actions{display:grid!important;grid-template-columns:1fr 1fr!important;padding:9px!important;gap:8px!important}
+  #venueAssignmentModal .venue-assignment-actions #smvAssignWhatsApp{grid-column:1/-1;width:100%}
+  #venueAssignmentModal .venue-assignment-actions button{width:100%;min-width:0!important}
+}
+@media(max-height:700px) and (min-width:761px){
+  #venueAssignmentModal .slv-area-list{max-height:25vh!important;min-height:100px}
+  #venueAssignmentModal .venue-assignment-list{max-height:28vh!important;min-height:120px!important}
+  #venueAssignmentModal .smv-live-inventory{padding:11px 14px!important}
+}
