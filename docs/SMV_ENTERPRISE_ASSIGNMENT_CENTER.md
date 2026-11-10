@@ -67,3 +67,6 @@ These are proposed operating targets. They are not represented as automated aler
 - Existing assignment insert/reactivation/append-only behavior remains the persistence authority.
 - No automatic WhatsApp or customer messaging.
 - Do not merge/deploy until CI, browser regression and role-isolation checks pass.
+
+
+Implementation note: the Account workspace menu remains independently scrollable on small viewports so the added enterprise workspace shortcuts do not become inaccessible.
