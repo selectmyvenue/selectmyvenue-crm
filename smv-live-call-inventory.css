@@ -1,9 +1,9 @@
-/* Premium live-call inventory finder */
-.smv-assignment-center,.smv-ai-launch-row,#smvAiDiscovery{display:none!important}
-#venueAssignmentModal .venue-assignment-toolbar{display:none!important}
-#venueAssignmentModal #venueAssignmentList{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important}
-.smv-live-inventory{margin:8px 0 18px;padding:20px;border:1px solid #d7e7e1;border-radius:20px;background:linear-gradient(135deg,#f8fcfa 0%,#eef7f3 58%,#f9fbfa 100%);box-shadow:0 12px 34px rgba(17,70,58,.07)}
-.slv-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px}
+/* Premium live-call finder with original assignment views restored */
+#venueAssignmentModal .venue-assignment-toolbar{display:flex!important}
+#venueAssignmentModal #venueAssignmentList{position:relative!important;width:auto!important;height:auto!important;overflow:visible!important;clip:auto!important;white-space:normal!important}
+#smvAiDiscovery[hidden]{display:none!important}
+.smv-live-inventory{margin:8px 0 12px;padding:14px;border:1px solid #d7e7e1;border-radius:20px;background:linear-gradient(135deg,#f8fcfa 0%,#eef7f3 58%,#f9fbfa 100%);box-shadow:0 12px 34px rgba(17,70,58,.07)}
+.slv-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:10px}
 .slv-kicker{font-size:10px;letter-spacing:1.8px;font-weight:800;color:#a47a32}
 .slv-heading h3{margin:5px 0 4px;color:#123f36;font-size:22px;font-weight:800;letter-spacing:-.45px}
 .slv-heading p{margin:0;color:#6b817a;font-size:12px}
@@ -15,7 +15,7 @@
 .slv-search-wrap input{width:100%;min-width:0;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;color:#173f36!important;font-size:15px!important;font-weight:650;padding:7px 0!important}
 .slv-search-wrap input::placeholder{color:#9aaea7;font-weight:450}
 .slv-meta{display:flex;justify-content:space-between;gap:12px;margin:10px 2px 13px;color:#789087;font-size:11px}
-.slv-area-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-height:390px;overflow:auto;padding:1px 4px 2px 1px}
+.slv-area-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-height:260px;overflow:auto;padding:1px 4px 2px 1px}
 .slv-area-card{min-width:0;border:1px solid #dce9e3;border-radius:14px;background:rgba(255,255,255,.9);overflow:hidden;transition:border-color .18s,box-shadow .18s}
 .slv-area-card.is-exact{border-color:#72b6a0;box-shadow:0 4px 16px rgba(29,112,87,.08)}
 .slv-area-head{width:100%;display:flex;align-items:center;gap:10px;padding:13px 14px;border:0;background:transparent;text-align:left;cursor:pointer}
@@ -41,3 +41,11 @@
 #smvInventoryFeedback[data-type="success"]{color:#18734f}
 #smvInventoryFeedback[data-type="warning"]{color:#a16d1c}
 @media(max-width:760px){.smv-live-inventory{padding:14px;border-radius:15px}.slv-heading{flex-direction:column;gap:9px}.slv-heading h3{font-size:19px}.slv-area-list{grid-template-columns:1fr;max-height:440px}.slv-meta{flex-direction:column;gap:4px}.slv-venue-row{align-items:flex-start}}
+
+/* Keep legacy matching controls close to the call inventory, with comfortable scrolling. */
+#venueAssignmentModal .smv-live-inventory + .smv-ai-launch-row{margin:8px 0 10px}
+#venueAssignmentModal .venue-assignment-toolbar{flex-wrap:wrap;gap:8px}
+#venueAssignmentModal .venue-assignment-list{max-height:340px;overflow-y:auto;min-height:100px}
+#venueAssignmentModal .slv-area-list{scrollbar-width:thin}
+#venueAssignmentModal .slv-area-head{min-height:58px}
+@media(max-width:760px){#venueAssignmentModal .venue-assignment-list{max-height:300px}#venueAssignmentModal .slv-area-list{max-height:230px}}

@@ -109,15 +109,9 @@ function confirmAssignment(event){
  const list=$("#venueAssignmentList"),selected=Array.from(list?.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)")||[]);
  if(!selected.length)return;
  const names=selected.map(cb=>cb.closest(".venue-assignment-item")?.querySelector(".venue-assignment-item-title strong")?.textContent||"Venue");
- const preview=names.slice(0,8).map((n,i)=>(i+1)+". "+n).join("
-");
- const extra=names.length>8?"
-…and "+(names.length-8)+" more":"";
- const message="Confirm assignment for "+names.length+" venue"+(names.length===1?"":"s")+"?
-
-"+preview+extra+"
-
-This will save assignments to the selected customer enquiry. Existing active assignments will be preserved.";
+ const preview=names.slice(0,8).map((n,i)=>(i+1)+". "+n).join("\n");
+ const extra=names.length>8?"\n…and "+(names.length-8)+" more":"";
+ const message="Confirm assignment for "+names.length+" venue"+(names.length===1?"":"s")+"?\n\n"+preview+extra+"\n\nThis will save assignments to the selected customer enquiry. Existing active assignments will be preserved.";
  if(!window.confirm(message)){event.preventDefault();event.stopImmediatePropagation();return;}
 }
 function boot(){
