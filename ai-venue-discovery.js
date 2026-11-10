@@ -170,4 +170,29 @@ document.addEventListener("input",e=>{if(e.target.closest("#smvAiDiscovery")){if
 document.addEventListener("change",e=>{if(e.target.closest("#smvAiDiscovery")){if(e.target.id==="smvAiEventDate"){const client=typeof getSupabaseClient==="function"?getSupabaseClient():null,lead=typeof assignmentCurrentLead!=="undefined"?assignmentCurrentLead:null;loadAvailabilityResponsesForLead(client,lead).then(render);}else render();}});
 const assignmentList=$("#venueAssignmentList");if(assignmentList&&typeof MutationObserver!=="undefined"){new MutationObserver(()=>{if($("#smvAiDiscovery")&&!$("#smvAiDiscovery").hidden)render();}).observe(assignmentList,{childList:true,subtree:true});}
 window.smvParseVenueRequirements=parse;window.smvExtractEventDate=extractEventDate;window.smvScoreVenueMatch=score;window.smvCheckVenueEligibility=eligibility;window.smvPopulateLeadRequirements=populateLeadRequirements;window.smvRenderAiVenueDiscovery=render;window.smvRefreshVenueDiscovery=render;window.smvRankVenueMatches=rankVenueRows;
+window.smvPrepareAssignmentCenter=async function(lead){
+ if(lead)populateLeadRequirements(lead);
+ await init();
+ if(lead)populateLeadRequirements(lead);
+ const requirement=$("#smvAiRequirement"),areas=$("#smvAiLocations"),guests=$("#smvAiGuests"),budget=$("#smvAiBudget"),date=$("#smvAiEventDate"),rooms=$("#smvAiRooms");
+ const c=parse(requirement?.value||"");
+ c.guests=Number(guests?.value||lead?.guests||c.guests)||null;
+ c.budget=Number(budget?.value||c.budget)||null;
+ c.eventDate=date?.value||lead?.event_date||c.eventDate||null;
+ c.rooms=Number(rooms?.value||lead?.rooms_required||0)||null;
+ c.venueType=$("#smvAiType")?.value||c.venueType;
+ c.parking=$("#smvAiParking")?.checked===true||c.parking;
+ c.veg=$("#smvAiVeg")?.checked===true||c.veg;
+ c.nonVeg=$("#smvAiNonVeg")?.checked===true||c.nonVeg;
+ const loc=locations(),radius=Number($("#smvAiRadius")?.value||15),strict=$("#smvAiStrictCapacity")?.checked!==false;
+ const rows=(typeof assignmentVenueRows!=="undefined"?assignmentVenueRows:[]).map(v=>{
+  const m=score(v,c,loc,radius),gate=eligibility(v,m,c,strict),availability=availabilityByVenue.get(String(v.id))||null;
+  return {venue:v,match:m,gate,availability};
+ });
+ rows.sort((x,y)=>{
+  const ax=x.availability?.availability_status==="available"?1:0,ay=y.availability?.availability_status==="available"?1:0;
+  return (y.match.score-x.match.score)||(y.match.confidence-x.match.confidence)||(ay-ax)||((x.match.d??999)-(y.match.d??999))||String(x.venue.venue_name||"").localeCompare(String(y.venue.venue_name||""));
+ });
+ return rows;
+};
 })();

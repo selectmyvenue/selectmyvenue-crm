@@ -17,3 +17,14 @@
 .smv-hub-foot{margin:16px 0 0;color:#82948d;font-size:10px;line-height:1.5}
 @media(max-width:900px){.smv-hub-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){#smvBusinessOSHub{margin:8px;padding:14px;border-radius:14px}.smv-hub-head{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}.smv-hub-head p{font-size:12px}.smv-hub-home{width:100%;min-height:44px}.smv-hub-grid{grid-template-columns:1fr;gap:9px}.smv-hub-card{min-height:126px;padding:14px;gap:6px}.smv-hub-card strong{font-size:14px}.smv-hub-card small{font-size:11px}.smv-hub-foot{font-size:10px}}
+
+/* Keep the expanded Account workspace menu usable on laptop and mobile screens. */
+#crmAccountMenuPanel{
+ max-height: calc(100dvh - max(104px,env(safe-area-inset-top) + 72px));
+ overflow-y: auto !important;
+ overscroll-behavior:contain;
+ scrollbar-gutter:stable;
+}
+@media(max-width:600px){
+ #crmAccountMenuPanel{max-height: calc(100dvh - max(88px,env(safe-area-inset-top) + 64px));}
+}

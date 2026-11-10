@@ -89,6 +89,7 @@
         defer
     ></script>
 <script defer src="ai-venue-discovery.js?v=20261107-ai-match-v2-1"></script>
+<script defer src="smv-enterprise-assignment-center.js?v=20261110-enterprise-v1"></script>
 
     <script defer src="venue-plan-center.js?v=20261013-corporate-polish-1"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.16/dist/purify.min.js"></script>
@@ -2316,6 +2317,17 @@
             <div class="venue-assignment-requirement" id="assignmentRequirementSummary">
                 Select approved and verified venues to receive this enquiry.
             </div>
+<section id="smvAssignmentControlCenter" class="smv-assignment-center" aria-label="Enterprise venue assignment control center">
+ <div class="smv-assignment-center-heading"><div><span>SMV REVENUE OPERATIONS</span><h3>Venue Assignment Control Center</h3><p>One ranked view of fit, data confidence, partner availability and assignment readiness.</p></div><span class="smv-assignment-live"><i></i> <span id="smvAcLiveState">Connecting live updates…</span></span></div>
+ <div class="smv-assignment-kpis">
+  <article><small>ELIGIBLE VENUES</small><strong id="smvAcEligible">—</strong><span>Approved + verified</span></article>
+  <article><small>STRONG MATCHES</small><strong id="smvAcStrong">—</strong><span>Fit ≥ 80 · confidence ≥ 70</span></article>
+  <article><small>PARTNER CONFIRMED</small><strong id="smvAcAvailable">—</strong><span>For this event date</span></article>
+  <article><small>SELECTED</small><strong id="smvAcSelected">0</strong><span id="smvAcSelectedHint">Ready for review</span></article>
+ </div>
+ <div class="smv-assignment-basket"><div><strong>Assignment basket</strong><span id="smvAcBasketSummary">No venues selected</span></div><div id="smvAcBasketItems" class="smv-assignment-basket-items">Select venues from the ranked list or AI discovery.</div></div>
+ <div class="smv-assignment-center-foot">Ranking is decision support, not a booking guarantee. Verify missing information and event-date availability with each partner before confirming a customer option.</div>
+</section>
 <div class="smv-ai-launch-row"><button type="button" id="smvAiOpen" class="smv-ai-launch">✦ AI Venue Discovery <span>Find the best-fit SMV venues</span></button></div>
 <section id="smvAiDiscovery" hidden aria-label="AI Venue Discovery">
 <div class="smv-ai-head"><div><div class="smv-ai-kicker">SELECT MY VENUE · SMART MATCH</div><h3>AI Venue Discovery</h3><p>Describe the customer requirement naturally. Explore exact-area matches and nearby alternatives.</p></div><button type="button" id="smvAiClose" class="smv-ai-close">Close ×</button></div>
