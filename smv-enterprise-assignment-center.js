@@ -6,7 +6,7 @@
 "use strict";
 const $=s=>document.querySelector(s);
 const safe=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let ranked=[],refreshTimer=null,sorting=false,confirmBypass=false,assignmentChannel=null,subscribedLeadId=null;
+let ranked=[],refreshTimer=null,sorting=false,assignmentChannel=null,subscribedLeadId=null;
 function lead(){try{return typeof assignmentCurrentLead!=="undefined"?assignmentCurrentLead:null;}catch(_){return null;}}
 function assigned(venueId){try{return typeof isVenueAlreadyAssigned==="function"&&isVenueAlreadyAssigned(venueId);}catch(_){return false;}}
 function reactivation(venueId){try{return typeof allVenueAssignments!=="undefined"&&allVenueAssignments.some(row=>String(row.venue_id)===String(venueId)&&row.assignment_status==="cancelled");}catch(_){return false;}}
@@ -71,6 +71,7 @@ async function refresh(){
  const modal=$("#venueAssignmentModal");if(!modal||modal.hidden)return;
  const current=lead();if(!current)return;
  const id=String(current.id||"");if(!id)return;
+ await startAssignmentRealtime(id);
  try{
   if(typeof window.smvPrepareAssignmentCenter!=="function")return;
   ranked=await window.smvPrepareAssignmentCenter(current);
@@ -104,29 +105,36 @@ async function startAssignmentRealtime(enquiryId){
  }catch(error){if(state)state.textContent="Manual refresh fallback";console.warn("SMV assignment realtime unavailable",error);}
 }
 function confirmAssignment(event){
- if(confirmBypass){confirmBypass=false;return;}
  const button=event.target.closest("#saveVenueAssignment");if(!button)return;
  const list=$("#venueAssignmentList"),selected=Array.from(list?.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)")||[]);
  if(!selected.length)return;
  const names=selected.map(cb=>cb.closest(".venue-assignment-item")?.querySelector(".venue-assignment-item-title strong")?.textContent||"Venue");
- const preview=names.slice(0,8).map((n,i)=>(i+1)+". "+n).join("\n");
- const extra=names.length>8?"\n…and "+(names.length-8)+" more":"";
- const message="Confirm assignment for "+names.length+" venue"+(names.length===1?"":"s")+"?\n\n"+preview+extra+"\n\nThis will save assignments to the selected customer enquiry. Existing active assignments will be preserved.";
+ const preview=names.slice(0,8).map((n,i)=>(i+1)+". "+n).join("
+");
+ const extra=names.length>8?"
+…and "+(names.length-8)+" more":"";
+ const message="Confirm assignment for "+names.length+" venue"+(names.length===1?"":"s")+"?
+
+"+preview+extra+"
+
+This will save assignments to the selected customer enquiry. Existing active assignments will be preserved.";
  if(!window.confirm(message)){event.preventDefault();event.stopImmediatePropagation();return;}
- confirmBypass=true;
 }
 function boot(){
  const modal=$("#venueAssignmentModal"),list=$("#venueAssignmentList");if(!modal||!list)return;
  modal.addEventListener("change",event=>{if(event.target.matches(".venue-assignment-checkbox"))updateBasket();});
  document.addEventListener("click",confirmAssignment,true);
  const observer=new MutationObserver(()=>{if(modal.hidden)stopAssignmentRealtime();else if(!sorting)scheduleRefresh();});
- observer.observe(modal,{attributes:true,attributeFilter:["hidden"]});\n modal.addEventListener("transitionend",()=>{if(modal.hidden)stopAssignmentRealtime();});
+ observer.observe(modal,{attributes:true,attributeFilter:["hidden"]});
+ modal.addEventListener("transitionend",()=>{if(modal.hidden)stopAssignmentRealtime();});
  observer.observe(list,{childList:true});
  document.addEventListener("change",event=>{if(event.target.closest("#smvAiDiscovery"))scheduleRefresh();});
  document.addEventListener("input",event=>{if(event.target.closest("#smvAiDiscovery"))scheduleRefresh();});
  const aiOpen=$("#smvAiOpen");aiOpen?.addEventListener("click",scheduleRefresh);
  const search=$("#assignmentVenueSearch");search?.addEventListener("input",()=>setTimeout(()=>{renderRanks();updateBasket();},80));
- if(!modal.hidden)scheduleRefresh();\n const close=$("#closeVenueAssignmentModal");close?.addEventListener("click",()=>stopAssignmentRealtime());\n const cancel=$("#cancelVenueAssignment");cancel?.addEventListener("click",()=>stopAssignmentRealtime());
+ if(!modal.hidden)scheduleRefresh();
+ const close=$("#closeVenueAssignmentModal");close?.addEventListener("click",()=>stopAssignmentRealtime());
+ const cancel=$("#cancelVenueAssignment");cancel?.addEventListener("click",()=>stopAssignmentRealtime());
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
 window.SMVEnterpriseAssignmentCenter={refresh,updateBasket,getRankedRows:getRows};
