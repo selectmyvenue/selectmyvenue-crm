@@ -20,11 +20,11 @@
 
 /* Keep the expanded Account workspace menu usable on laptop and mobile screens. */
 #crmAccountMenuPanel{
- max-height:calc(100dvh - max(104px,env(safe-area-inset-top) + 72px));
- overflow-y:auto!important;
+ max-height: calc(100dvh - max(104px,env(safe-area-inset-top) + 72px));
+ overflow-y: auto !important;
  overscroll-behavior:contain;
  scrollbar-gutter:stable;
 }
 @media(max-width:600px){
- #crmAccountMenuPanel{max-height:calc(100dvh - max(88px,env(safe-area-inset-top) + 64px));}
+ #crmAccountMenuPanel{max-height: calc(100dvh - max(88px,env(safe-area-inset-top) + 64px));}
 }
