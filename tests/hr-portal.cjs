@@ -38,6 +38,7 @@ async function run() {
   check(html.includes('@page{size:A4 portrait;margin:0}') && !html.includes('DRAFT — REVIEW BEFORE ISSUE</div><div class="letter-date">'), 'prints all HR letters without browser date/title margins or draft/date banner');
   check(html.includes('letter-footer') && html.includes('aria-label="End of Select My Venue letter"'), 'adds a matching teal-and-gold finishing footer to every HR letter');
   check(html.includes('https://unpkg.com/@supabase/supabase-js@2') && html.includes('Secure HR connection library is unavailable'), 'HR portal has a fallback CDN and visible recovery if the auth library fails to load');
+  check(!html.includes("content:''") && html.includes('.letter-footer:before{content:""') && html.includes('.letter-footer:after{content:""'), 'branded footer CSS does not break the shared HR page JavaScript parser');
   console.log('HR portal static checks passed.');
 }
 
