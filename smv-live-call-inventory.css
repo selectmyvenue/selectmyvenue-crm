@@ -1,0 +1,43 @@
+/* Premium live-call inventory finder */
+.smv-assignment-center,.smv-ai-launch-row,#smvAiDiscovery{display:none!important}
+#venueAssignmentModal .venue-assignment-toolbar{display:none!important}
+#venueAssignmentModal #venueAssignmentList{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important}
+.smv-live-inventory{margin:8px 0 18px;padding:20px;border:1px solid #d7e7e1;border-radius:20px;background:linear-gradient(135deg,#f8fcfa 0%,#eef7f3 58%,#f9fbfa 100%);box-shadow:0 12px 34px rgba(17,70,58,.07)}
+.slv-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px}
+.slv-kicker{font-size:10px;letter-spacing:1.8px;font-weight:800;color:#a47a32}
+.slv-heading h3{margin:5px 0 4px;color:#123f36;font-size:22px;font-weight:800;letter-spacing:-.45px}
+.slv-heading p{margin:0;color:#6b817a;font-size:12px}
+.slv-live-pill{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border:1px solid #d2e6dc;border-radius:999px;background:#fff;color:#28725e;font-size:11px;font-weight:750;white-space:nowrap}
+.slv-live-pill i{width:7px;height:7px;border-radius:50%;background:#26a477;box-shadow:0 0 0 4px rgba(38,164,119,.12)}
+.slv-search-wrap{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid #cbded6;border-radius:14px;background:#fff;box-shadow:0 3px 12px rgba(17,70,58,.04)}
+.slv-search-wrap:focus-within{border-color:#27866e;box-shadow:0 0 0 3px rgba(39,134,110,.12)}
+.slv-search-icon{font-size:20px;color:#277b66}
+.slv-search-wrap input{width:100%;min-width:0;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;color:#173f36!important;font-size:15px!important;font-weight:650;padding:7px 0!important}
+.slv-search-wrap input::placeholder{color:#9aaea7;font-weight:450}
+.slv-meta{display:flex;justify-content:space-between;gap:12px;margin:10px 2px 13px;color:#789087;font-size:11px}
+.slv-area-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-height:390px;overflow:auto;padding:1px 4px 2px 1px}
+.slv-area-card{min-width:0;border:1px solid #dce9e3;border-radius:14px;background:rgba(255,255,255,.9);overflow:hidden;transition:border-color .18s,box-shadow .18s}
+.slv-area-card.is-exact{border-color:#72b6a0;box-shadow:0 4px 16px rgba(29,112,87,.08)}
+.slv-area-head{width:100%;display:flex;align-items:center;gap:10px;padding:13px 14px;border:0;background:transparent;text-align:left;cursor:pointer}
+.slv-area-marker{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;border-radius:10px;background:#edf6f1;color:#27775f;font-size:11px;font-weight:850}
+.slv-area-title{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px}
+.slv-area-title strong{color:#19483d;font-size:13px;font-weight:800;overflow-wrap:anywhere}
+.slv-area-title small{color:#81958d;font-size:10px}
+.slv-distance{color:#4e8875;font-size:10px;white-space:nowrap}
+.slv-chevron{color:#76958a;font-size:17px}
+.slv-area-venues{padding:0 12px 10px}
+.slv-venue-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 2px;border-top:1px solid #edf2ef}
+.slv-venue-copy{display:flex;min-width:0;flex-direction:column;gap:3px}
+.slv-venue-copy strong{color:#214b40;font-size:12px;font-weight:750}
+.slv-venue-copy span,.slv-venue-copy small{color:#7b8f87;font-size:10px;line-height:1.4;overflow-wrap:anywhere}
+.slv-select-btn{flex:0 0 auto;padding:7px 10px;border:1px solid #b9d9cd;border-radius:9px;background:#f3faf6;color:#176c53;font-size:11px;font-weight:800;cursor:pointer}
+.slv-select-btn:hover{background:#e4f4eb;border-color:#78b69e}
+.slv-select-btn.is-selected,.slv-select-btn:disabled{background:#e7f5ed;color:#287557;cursor:default}
+.slv-assigned{flex:0 0 auto;color:#8a6b2d;font-size:10px;font-weight:750}
+.slv-empty{display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;min-height:110px;padding:22px;border:1px dashed #cbded5;border-radius:14px;background:rgba(255,255,255,.65);text-align:center}
+.slv-empty strong{color:#315c50;font-size:13px}
+.slv-empty span{max-width:540px;color:#82958d;font-size:11px;line-height:1.5}
+#smvInventoryFeedback{min-height:16px;margin-top:9px;color:#658176;font-size:11px}
+#smvInventoryFeedback[data-type="success"]{color:#18734f}
+#smvInventoryFeedback[data-type="warning"]{color:#a16d1c}
+@media(max-width:760px){.smv-live-inventory{padding:14px;border-radius:15px}.slv-heading{flex-direction:column;gap:9px}.slv-heading h3{font-size:19px}.slv-area-list{grid-template-columns:1fr;max-height:440px}.slv-meta{flex-direction:column;gap:4px}.slv-venue-row{align-items:flex-start}}
