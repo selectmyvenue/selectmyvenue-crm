@@ -119,7 +119,7 @@ function boot(){
  const modal=$("#venueAssignmentModal"),list=$("#venueAssignmentList");if(!modal||!list)return;
  modal.addEventListener("change",event=>{if(event.target.matches(".venue-assignment-checkbox"))updateBasket();});
  document.addEventListener("click",confirmAssignment,true);
- const observer=new MutationObserver(()=>{if(!sorting)scheduleRefresh();});
+ const observer=new MutationObserver(()=>{if(modal.hidden)stopAssignmentRealtime();else if(!sorting)scheduleRefresh();});
  observer.observe(modal,{attributes:true,attributeFilter:["hidden"]});\n modal.addEventListener("transitionend",()=>{if(modal.hidden)stopAssignmentRealtime();});
  observer.observe(list,{childList:true});
  document.addEventListener("change",event=>{if(event.target.closest("#smvAiDiscovery"))scheduleRefresh();});
