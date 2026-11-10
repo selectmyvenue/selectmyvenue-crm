@@ -11,12 +11,12 @@
   const state = { rows: [], aliases: [], target: "", city: "", timer: null, loading: false };
 
   function lead() {
-    try { return typeof assignmentCurrentLead !== "undefined" ? assignmentCurrentLead : (typeof currentLead !== "undefined" ? currentLead : null); }
+    try { return typeof assignmentCurrentLead !== "undefined" ? assignmentCurrentLead : null; }
     catch (_) { return null; }
   }
   function venueRows() {
     try {
-      if (Array.isArray(assignmentVenueRows)) return assignmentVenueRows;
+      if (typeof assignmentVenueRows !== "undefined" && Array.isArray(assignmentVenueRows)) return assignmentVenueRows;
     } catch (_) {}
     return [];
   }
@@ -24,7 +24,7 @@
     try { return typeof isVenueAlreadyAssigned === "function" && isVenueAlreadyAssigned(id); }
     catch (_) { return false; }
   }
-  function locationText(v) { return [v.area, v.city, v.address, v.venue_address, v.full_address].filter(Boolean).join(" "); }
+  function locationText(v) { return [v.address, v.full_address, v.area, v.city, v.state, v.pincode].filter(Boolean).join(" "); }
   function coords(v) {
     const lat = Number(v.latitude ?? v.lat), lng = Number(v.longitude ?? v.lng ?? v.long);
     return Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180 ? [lat,lng] : null;
@@ -36,8 +36,9 @@
     return 12742*Math.asin(Math.sqrt(x));
   }
   function approved(v) {
-    return v.venue_status === "approved" && v.verification_status === "verified" &&
-      v.is_active !== false && v.is_hidden !== true && v.hidden_from_assignment !== true;
+    // assignmentVenueRows is populated by CRM's smv_assignment_venues RPC
+    // (or its approved+verified fallback) and hidden IDs are already excluded.
+    return v && v.id && v.is_hidden !== true && v.hidden_from_assignment !== true;
   }
   function getAlias(query) {
     const q=norm(query);
@@ -152,7 +153,7 @@
           dist+'<span class="slv-chevron">⌄</span></button>'+
         '<div class="slv-area-venues" '+(i===0?'':'hidden')+'>'+g.venues.map(v=>{
           const id=String(v.id),assigned=isAssigned(v.id),addr=clean(v.address || v.venue_address || v.full_address);
-          return '<article class="slv-venue-row"><div class="slv-venue-copy"><strong>'+esc(v.venue_name || v.name || "Venue")+'</strong><span>'+esc([v.venue_type,v.area,v.city].filter(Boolean).join(" · "))+'</span>'+(addr?'<small>'+esc(addr)+'</small>':'<small>Full address not available in venue record</small>')+'</div>'+
+          return '<article class="slv-venue-row"><div class="slv-venue-copy"><strong>'+esc(v.venue_name || "Venue")+'</strong><span>'+esc([v.venue_type,v.area,v.city].filter(Boolean).join(" · "))+'</span>'+(addr?'<small>'+esc(addr)+'</small>':'<small>Full address not available in venue record</small>')+'</div>'+
             (assigned?'<span class="slv-assigned">Already assigned</span>':'<button type="button" class="slv-select-btn" data-slv-select="'+esc(id)+'">＋ Select</button>')+
             '</article>';
         }).join("")+'</div></section>';
@@ -161,7 +162,7 @@
   function syncFromLead() {
     const input=$("#smvCallLocationSearch"); if(!input)return;
     const next=targetFromLead();
-    if(next && !input.value.trim())input.value=next;
+    if(next)input.value=next;
     render();
   }
   function boot() {
@@ -184,8 +185,10 @@
       if(select)selectVenue(select.dataset.slvSelect);
     });
     const observer=new MutationObserver(()=>{
-      if(!modal.hidden){syncFromLead();if(!state.aliases.length)loadAliases().then(render);}
+      if(!modal.hidden){syncFromLead();render();}
     });
+    const venueList=$("#venueAssignmentList");
+    if(venueList)new MutationObserver(()=>{if(!modal.hidden)render();}).observe(venueList,{childList:true,subtree:true});
     observer.observe(modal,{attributes:true,attributeFilter:["hidden"]});
     modal.addEventListener("transitionend",()=>{if(!modal.hidden)syncFromLead();});
     syncFromLead();
