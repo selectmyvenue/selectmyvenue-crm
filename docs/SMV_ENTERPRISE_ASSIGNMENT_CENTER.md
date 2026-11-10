@@ -12,6 +12,7 @@ Make venue assignment the operational engine that converts customer requirements
 - Each venue row exposes fit score, data confidence and date-specific partner response state.
 - A persistent selection basket summarizes selected venues and distinguishes already-active assignments from new assignments.
 - A final human confirmation step previews the selected venue names before the existing save workflow runs.
+- Enquiry-scoped Supabase Realtime subscription refreshes assignment state for the open enquiry; manual refresh remains the fallback when Realtime is unavailable.
 - Existing assignment persistence remains in `crm-core.js`; this UI controller makes no direct database writes.
 
 ## Ranking model and interpretation
