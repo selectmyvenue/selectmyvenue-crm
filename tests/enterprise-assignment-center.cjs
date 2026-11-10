@@ -16,6 +16,8 @@ assert(ai.includes('eligibility(v,m,c,strict)'),'ranking must retain the match e
 assert(center.includes('window.smvPrepareAssignmentCenter(current)'),'control center must use the AI ranking adapter');
 assert(center.includes('data confidence'),'match cards must display data confidence');
 assert(center.includes('Partner available'),'partner availability state must be visible');
+assert(center.includes('postgres_changes')&&center.includes('venue_enquiry_assignments'),'assignment updates must subscribe to the current enquiry in realtime');
+assert(center.includes('Manual refresh fallback'),'realtime must degrade safely when unavailable');
 assert(center.includes('window.confirm(message)'),'assignment save must require explicit final staff confirmation');
 assert(center.includes('Existing active assignments will be preserved'),'confirmation must disclose append-only semantics');
 assert(!center.includes('.from("customer_enquiries")'),'control center must not write customer enquiries');
