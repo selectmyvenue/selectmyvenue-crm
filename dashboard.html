@@ -15,7 +15,8 @@
     <title>Select My Venue CRM — Lead Management</title>
 
     <link rel="stylesheet" href="crm.css?v=20261106-assignment-exclusions-1">
-    <link rel="stylesheet" href="smv-live-call-inventory.css?v=20261110-premium-v1">
+    <link rel="stylesheet" href="ai-venue-discovery.css?v=20261107-ai-match-v2-2">
+    <link rel="stylesheet" href="smv-live-call-inventory.css?v=20261110-premium-v2">
     <link rel="stylesheet" href="smv-business-os.css?v=20261107-hub-1">
     <link rel="stylesheet" href="smv-business-intelligence.css?v=20261107-bi-1">
     <link rel="stylesheet" href="smv-growth-quality-centre.css?v=20261109-gq-1">
@@ -88,7 +89,9 @@
         src="crm.js?v=20261106-assignment-exclusions-1"
         defer
     ></script>
-<script defer src="smv-live-call-inventory.js?v=20261110-premium-v1"></script>
+<script defer src="ai-venue-discovery.js?v=20261107-ai-match-v2-2"></script>
+<script defer src="smv-enterprise-assignment-center.js?v=20261110-enterprise-v2"></script>
+<script defer src="smv-live-call-inventory.js?v=20261110-premium-v2"></script>
 
     <script defer src="venue-plan-center.js?v=20261013-corporate-polish-1"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.16/dist/purify.min.js"></script>
@@ -2316,6 +2319,10 @@
             <div class="venue-assignment-requirement" id="assignmentRequirementSummary">
                 Select approved and verified venues to receive this enquiry.
             </div>
+<section id="smvAssignmentControlCenter" class="smv-assignment-center" aria-label="Enterprise venue assignment control center">
+<div class="smv-assignment-center-heading"><div><span>SMV REVENUE OPERATIONS</span><h3>Venue Assignment Control Center</h3><p>Fit, data confidence, partner availability and assignment readiness.</p></div><span class="smv-assignment-live"><i></i><span id="smvAcLiveState">Connecting live updates…</span></span></div>
+<div class="smv-assignment-kpis"><article><small>ELIGIBLE VENUES</small><strong id="smvAcEligible">—</strong><span>Approved + verified</span></article><article><small>STRONG MATCHES</small><strong id="smvAcStrong">—</strong><span>Fit ≥ 80 · confidence ≥ 70</span></article><article><small>PARTNER CONFIRMED</small><strong id="smvAcAvailable">—</strong><span>For this event date</span></article><article><small>SELECTED</small><strong id="smvAcSelected">0</strong><span id="smvAcSelectedHint">Ready for review</span></article></div>
+<div class="smv-assignment-basket"><div><strong>Assignment basket</strong><span id="smvAcBasketSummary">No venues selected</span></div><div id="smvAcBasketItems" class="smv-assignment-basket-items">Select venues from the ranked list or AI discovery.</div></div><div class="smv-assignment-center-foot">Ranking is decision support, not a booking guarantee. Confirm event-date availability with each partner.</div></section>
 <section id="smvAssignmentControlCenter" class="smv-live-inventory" aria-label="Live call venue inventory finder">
  <div class="slv-heading"><div><div class="slv-kicker">SELECT MY VENUE · LIVE CALL DESK</div><h3>Find Venues by Customer Location</h3><p>Type the customer's preferred area to see SMV inventory nearby and across the city.</p></div><span class="slv-live-pill"><i></i> Inventory from SMV</span></div>
  <label class="slv-search-wrap" for="smvCallLocationSearch"><span class="slv-search-icon">⌕</span><input id="smvCallLocationSearch" type="search" autocomplete="off" placeholder="Type customer area — e.g. Rajouri Garden, Chhatarpur, Sohna Road, Delhi"></label>
@@ -2323,6 +2330,12 @@
  <div id="smvLiveInventoryResults" class="slv-area-list"><div class="slv-empty"><strong>Start with the customer's preferred area</strong><span>Type an area or city to view the locations where SMV has venue inventory.</span></div></div>
  <div id="smvInventoryFeedback" role="status" aria-live="polite"></div>
 </section>
+<div class="smv-ai-launch-row"><button type="button" id="smvAiOpen" class="smv-ai-launch">✦ AI Venue Discovery <span>Find the best-fit SMV venues</span></button></div>
+<section id="smvAiDiscovery" hidden aria-label="AI Venue Discovery"><div class="smv-ai-head"><div><div class="smv-ai-kicker">SELECT MY VENUE · SMART MATCH</div><h3>AI Venue Discovery</h3><p>Explore exact-area matches and nearby alternatives.</p></div><button type="button" id="smvAiClose" class="smv-ai-close">Close ×</button></div>
+<div class="smv-ai-inputs"><div class="smv-ai-field smv-ai-wide"><label for="smvAiRequirement">CUSTOMER REQUIREMENT / CALL NOTES</label><textarea id="smvAiRequirement" placeholder="Wedding, 300 guests, budget, preferred area..."></textarea><button type="button" id="smvAiMic" class="smv-ai-mic">🎙 Dictate call notes</button></div>
+<div class="smv-ai-field"><label for="smvAiLocations">PREFERRED AREAS · MULTIPLE OK</label><input id="smvAiLocations" placeholder="Sohna Road, Golf Course Extension"></div><div class="smv-ai-field"><label for="smvAiGuests">GUESTS</label><input id="smvAiGuests" type="number" min="1"></div><div class="smv-ai-field"><label for="smvAiBudget">TOTAL BUDGET (₹)</label><input id="smvAiBudget" type="number" min="0"></div><div class="smv-ai-field"><label for="smvAiType">VENUE TYPE</label><select id="smvAiType"><option value="">Any venue type</option><option value="banquet">Banquet hall</option><option value="hotel">Hotel</option><option value="restaurant">Restaurant</option></select></div><div class="smv-ai-field"><label for="smvAiEventDate">EVENT DATE</label><input id="smvAiEventDate" type="date"></div><div class="smv-ai-field"><label for="smvAiRooms">ROOMS REQUIRED</label><input id="smvAiRooms" type="number" min="0"></div><div class="smv-ai-field"><label><input id="smvAiParking" type="checkbox"> Parking required</label></div><div class="smv-ai-field"><label><input id="smvAiVeg" type="checkbox"> Vegetarian</label><label><input id="smvAiNonVeg" type="checkbox"> Non-vegetarian</label></div><div class="smv-ai-field"><label for="smvAiRadius">NEARBY RADIUS</label><select id="smvAiRadius"><option value="5">5 km</option><option value="10">10 km</option><option value="15" selected>15 km</option><option value="25">25 km</option><option value="40">40 km</option></select></div></div>
+<div class="smv-ai-controls"><label><input type="checkbox" id="smvAiStrictCapacity" checked> Require verified capacity</label><span>Compare up to 3 venues</span></div><section id="smvAiCompare" class="smv-ai-compare" hidden><div class="smv-ai-compare-head"><strong>Venue comparison</strong><span id="smvAiCompareStatus">0 of 3 selected</span></div><div id="smvAiCompareBody"></div></section>
+<div class="smv-ai-status"><strong id="smvAiResultCount">Loading SMV venues…</strong><span>Approved + verified · hidden venues excluded</span></div><div class="smv-ai-section"><div class="smv-ai-section-title">Exact location matches <span id="smvAiExactCount">0</span></div><div id="smvAiExact" class="smv-ai-results"><p class="smv-ai-empty">Enter preferred area(s).</p></div></div><div class="smv-ai-section"><div class="smv-ai-section-title">Nearby alternatives <span id="smvAiNearbyCount">0</span></div><div id="smvAiNearby" class="smv-ai-results"><p class="smv-ai-empty">Nearby options will appear here.</p></div></div></section>
             <div class="venue-assignment-toolbar">
                 <input
                     type="search"
