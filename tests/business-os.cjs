@@ -9,6 +9,11 @@ const html=fs.readFileSync(path.join(root,'dashboard.html'),'utf8');
 const script=fs.readFileSync(path.join(root,'smv-business-os.js'),'utf8');
 const css=fs.readFileSync(path.join(root,'smv-business-os.css'),'utf8');
 assert(html.includes('smv-business-os.css')&&html.includes('smv-business-os.js'),'dashboard loads Business OS assets');
+assert(css.includes('max-height: calc(100dvh - max(104px'),'Account workspace menu is viewport-bounded and scrollable');
+assert(css.includes('overflow-y: auto !important'),'Account workspace menu supports vertical scrolling');
+assert(script.includes('event.key!=="Escape"'),'Escape closes the Account menu');
+assert(script.includes('accountPanel?.contains(event.target)'),'clicks inside the Account panel do not dismiss it');
+
 assert(css.includes('@media(max-width:600px)'),'hub has a narrow-phone layout');
 const dom=new JSDOM(html,{url:'https://crm.selectmyvenue.com/dashboard.html',runScripts:'outside-only',pretendToBeVisual:true});
 dom.window.HTMLElement.prototype.scrollIntoView=function(){};
