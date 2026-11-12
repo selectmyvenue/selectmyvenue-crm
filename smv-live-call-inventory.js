@@ -105,23 +105,61 @@
     });
     return {city,groups:list,total:cityRows.length,allTotal:all.length,hasCoords:!!targetCoords};
   }
+  function findCheckbox(id) {
+    const list=$("#venueAssignmentList");
+    return list && [...list.querySelectorAll(".venue-assignment-checkbox")].find(x=>String(x.value)===String(id));
+  }
+  function selectedVenues() {
+    const list=$("#venueAssignmentList");
+    return list ? [...list.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)")] : [];
+  }
+  function syncSelectionPanel() {
+    const panel=$("#smvInventorySelectedList"),count=$("#smvInventorySelectedCount");
+    if(!panel)return;
+    const selected=selectedVenues();
+    if(count)count.textContent=String(selected.length);
+    if(!selected.length) {
+      panel.innerHTML='<span class="slv-selected-empty">No venues selected yet</span>';
+    } else {
+      panel.innerHTML=selected.map(cb=>{
+        const id=String(cb.value),name=clean(cb.dataset.venueName || cb.closest(".venue-assignment-item")?.querySelector(".venue-assignment-item-title strong")?.textContent || cb.dataset.venueLabel || "Selected venue");
+        return '<span class="slv-selected-chip"><strong>'+esc(name)+'</strong><button type="button" data-slv-remove="'+esc(id)+'" aria-label="Remove '+esc(name)+'">×</button></span>';
+      }).join("");
+    }
+    try { window.SMVEnterpriseAssignmentCenter?.updateBasket(); } catch (_) {}
+    try { window.SMVLiveOperations?.refresh?.(); } catch (_) {}
+  }
   function selectVenue(id) {
     const list=$("#venueAssignmentList");
-    const cb=list && [...list.querySelectorAll(".venue-assignment-checkbox")].find(x=>String(x.value)===String(id));
-    if(!cb) {
-      showMessage("Venue assignment list is still loading. Please wait a moment and try again.","warning");
-      return;
+    if(isAssigned(id)) { showMessage("This venue is already assigned to this enquiry.","info"); return; }
+    let cb=findCheckbox(id);
+    if(!cb && list) {
+      const venue=venueRows().find(v=>String(v.id)===String(id));
+      if(venue) {
+        // Keep the existing CRM save pipeline as the single write path even if
+        // its searchable legacy list has not rendered this inventory row yet.
+        cb=document.createElement("input");
+        cb.type="checkbox"; cb.className="venue-assignment-checkbox";
+        cb.value=String(id); cb.checked=true;
+        cb.dataset.venueName=clean(venue.venue_name);
+        cb.dataset.venueLabel=clean(venue.venue_name);
+        cb.setAttribute("aria-label","Selected "+clean(venue.venue_name));
+        cb.style.position="absolute"; cb.style.width="1px"; cb.style.height="1px";
+        cb.style.opacity="0"; cb.style.pointerEvents="none";
+        let bridge=$("#smvInventorySelectionBridge");
+        if(!bridge){bridge=document.createElement("div");bridge.id="smvInventorySelectionBridge";bridge.hidden=true;list.appendChild(bridge);}
+        bridge.appendChild(cb);
+      }
     }
-    if(cb.disabled || isAssigned(id)) {
-      showMessage("This venue is already assigned to this enquiry.","info");
-      return;
-    }
+    if(!cb) { showMessage("This venue is not currently available in the approved inventory list. Refresh venues and try again.","warning"); return; }
+    if(cb.disabled) { showMessage("This venue cannot be selected. Please refresh the approved inventory.","warning"); return; }
     cb.checked=true;
+    cb.dataset.venueName=cb.dataset.venueName || clean(venueRows().find(v=>String(v.id)===String(id))?.venue_name);
     cb.dispatchEvent(new Event("change",{bubbles:true}));
     const btn=$('[data-slv-select="'+CSS.escape(String(id))+'"]');
     if(btn){btn.textContent="Selected";btn.disabled=true;btn.classList.add("is-selected");}
-    showMessage("Venue added to assignment selection. Use Assign Selected Venues below to confirm.","success");
-    try { window.SMVEnterpriseAssignmentCenter?.updateBasket(); } catch (_) {}
+    syncSelectionPanel();
+    showMessage("Venue added to Selected Now. Use Assign Selected Venues below to confirm.","success");
   }
   function showMessage(message,type) {
     const el=$("#smvInventoryFeedback"); if(!el)return;
@@ -137,7 +175,15 @@
       $("#smvInventoryMeta").textContent="Ready for live call";
       return;
     }
-    const result=makeGroups(query);
+    const all=venueRows().filter(approved);
+    const tokens=norm(query).split(" ").filter(Boolean);
+    const directMatches=all.filter(v=>{
+      const searchable=norm([v.venue_name,v.contact_person,v.address,v.venue_address,v.full_address,v.area,v.locality,v.city,v.state,v.pincode,v.venue_type].filter(Boolean).join(" "));
+      return tokens.length>0 && tokens.every(token=>searchable.includes(token));
+    });
+    const result=directMatches.length
+      ? (()=>{const groups=new Map();directMatches.forEach(v=>{const area=clean(v.area||v.locality||v.city||"Area not listed"),key=norm(area);if(!groups.has(key))groups.set(key,{area,venues:[],distances:[]});groups.get(key).venues.push(v);});return {city:"Matching venue details",groups:[...groups.values()].map(g=>({...g,exactArea:true,minDistance:null})),total:directMatches.length};})()
+      : makeGroups(query);
     $("#smvInventoryMeta").textContent=(result.city ? result.city+" inventory" : "SMV inventory") + " · "+result.total+" approved venues · "+result.groups.length+" areas";
     if(!result.groups.length) {
       root.innerHTML='<div class="slv-empty"><strong>No approved venue inventory found</strong><span>Try the city name or a nearby locality. Hidden, unverified and unapproved venues are excluded.</span></div>';
@@ -154,7 +200,7 @@
         '<div class="slv-area-venues" '+(i===0?'':'hidden')+'>'+g.venues.map(v=>{
           const id=String(v.id),assigned=isAssigned(v.id),addr=clean(v.address || v.venue_address || v.full_address);
           return '<article class="slv-venue-row"><div class="slv-venue-copy"><strong>'+esc(v.venue_name || "Venue")+'</strong><span>'+esc([v.venue_type,v.area,v.city].filter(Boolean).join(" · "))+'</span>'+(addr?'<small>'+esc(addr)+'</small>':'<small>Full address not available in venue record</small>')+'</div>'+
-            (assigned?'<span class="slv-assigned">Already assigned</span>':'<button type="button" class="slv-select-btn" data-slv-select="'+esc(id)+'">＋ Select</button>')+
+            (assigned?'<span class="slv-assigned">Already assigned</span>':(findCheckbox(id)?.checked?'<button type="button" class="slv-select-btn is-selected" data-slv-select="'+esc(id)+'" disabled>Selected</button>':'<button type="button" class="slv-select-btn" data-slv-select="'+esc(id)+'">＋ Select</button>'))+
             '</article>';
         }).join("")+'</div></section>';
     }).join("");
@@ -175,6 +221,8 @@
       if(input && !modal.hidden){input.value=leadArea.value;queueRender();}
     });
     $("#smvCallLocationSearch")?.addEventListener("input",queueRender);
+    modal.addEventListener("change",e=>{if(e.target.matches(".venue-assignment-checkbox")){syncSelectionPanel();render();}});
+    syncSelectionPanel();
     modal.addEventListener("click",e=>{
       const toggle=e.target.closest("[data-slv-toggle]");
       if(toggle){
@@ -183,6 +231,8 @@
       }
       const select=e.target.closest("[data-slv-select]");
       if(select)selectVenue(select.dataset.slvSelect);
+      const remove=e.target.closest("[data-slv-remove]");
+      if(remove){const cb=findCheckbox(remove.dataset.slvRemove);if(cb){cb.checked=false;cb.dispatchEvent(new Event("change",{bubbles:true}));}syncSelectionPanel();render();}
     });
     const observer=new MutationObserver(()=>{
       if(!modal.hidden){syncFromLead();render();}
