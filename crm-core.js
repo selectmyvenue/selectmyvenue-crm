@@ -8254,36 +8254,12 @@ async function saveVenueAssignments(options = {}) {
         )
     ).map(input => input.value);
 
-    const smartSelected =
-        typeof window.smvGetAssignmentSelection === "function"
-            ? window.smvGetAssignmentSelection()
-            : [];
+    /* Only checked venue controls represent an explicit staff action.
+       Never silently merge an AI/recommended shortlist into a database write:
+       recommendations may be displayed, but assignment requires a checked box. */
+    const selected = [...new Set(visibleSelected.map(String))];
 
-    /* UI checkboxes are the final source of truth for staff intent.
-       Merge them with the smart shortlist so either path remains reliable. */
-    const manualSelectionTouched =
-        typeof window.smvAssignmentSelectionTouched === "function"
-            ? window.smvAssignmentSelectionTouched()
-            : typeof window.smvAssignmentSelectionTouched === "boolean"
-                ? window.smvAssignmentSelectionTouched
-                : false;
-
-    /* When staff has manually changed the checklist, the checklist becomes
-       the source of truth. Otherwise the automatic shortlist is preserved. */
-    const selected = [
-        ...new Set(
-            (
-                manualSelectionTouched
-                    ? visibleSelected
-                    : [
-                        ...visibleSelected,
-                        ...(Array.isArray(smartSelected) ? smartSelected : [])
-                    ]
-            ).map(String)
-        )
-    ];
-
-    if (!selected.length && !manualSelectionTouched) {
+    if (!selected.length) {
         showAssignmentMessage(
             "Select at least one approved and verified venue.",
             "error"

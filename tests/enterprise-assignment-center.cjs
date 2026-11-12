@@ -16,6 +16,13 @@ assert(html.includes('id="venueAssignmentList"'),'original assignment venue list
 assert(html.includes('id="smvAiExact"')&&html.includes('id="smvAiNearby"'),'legacy AI exact and nearby match result containers must remain available');
 assert.match(html,/crm\.js[\s\S]*ai-venue-discovery\.js[\s\S]*smv-enterprise-assignment-center\.js[\s\S]*smv-live-call-inventory\.js/,'legacy matching and live inventory modules must load after CRM scripts');
 assert(inventory.includes('data-slv-select')&&inventory.includes('.venue-assignment-checkbox'),'new inventory selection must feed the existing assignment save flow');
+const core=fs.readFileSync(path.join(root,'crm-core.js'),'utf8');
+const saveStart=core.indexOf('async function saveVenueAssignments');
+const saveEnd=core.indexOf('function setupVenueAssignment',saveStart);
+const saveBlock=core.slice(saveStart,saveEnd);
+assert(saveBlock.includes('const selected = [...new Set(visibleSelected.map(String))]'),'only explicitly checked venues may be assigned');
+assert(!saveBlock.includes('smvGetAssignmentSelection')&&!saveBlock.includes('smartSelected'),'AI/recommended shortlist must never silently create venue assignments');
+assert(saveBlock.includes('if (!selected.length)'),'assignment save must stop when no venue checkbox is selected');
 assert(!inventory.includes('.from("customer_enquiries")')&&!inventory.includes('.insert(')&&!inventory.includes('.update('),'new finder must not write to database tables');
 const inventoryCss=fs.readFileSync(path.join(root,'smv-live-call-inventory.css'),'utf8');
 assert(!inventoryCss.includes('#venueAssignmentModal #venueAssignmentList{position:absolute!important;width:1px!important'),'original assignment list must not be hidden');
