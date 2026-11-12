@@ -107,7 +107,12 @@
   }
   function findCheckbox(id) {
     const list=$("#venueAssignmentList");
-    return list && [...list.querySelectorAll(".venue-assignment-checkbox")].find(x=>String(x.value)===String(id));
+    if(!list)return null;
+    // A disabled legacy checkbox is not a usable selection control. Prefer an
+    // enabled control; if none exists, selectVenue creates an enabled bridge
+    // checkbox so the venue can enter the same basket and save pipeline.
+    return [...list.querySelectorAll(".venue-assignment-checkbox")]
+      .find(x=>String(x.value)===String(id) && !x.disabled) || null;
   }
   function selectedVenues() {
     const list=$("#venueAssignmentList");
