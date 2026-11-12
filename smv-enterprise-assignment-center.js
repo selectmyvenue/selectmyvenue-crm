@@ -26,7 +26,7 @@ function updateBasket(){
   return '<span class="smv-assignment-basket-chip">'+safe(name)+' <em>'+safe(state)+'</em></span>';
  }).join("")+(selected.length>10?'<span class="smv-assignment-basket-chip">+'+(selected.length-10)+' more</span>':""):"Select venues from the ranked list or AI discovery.";
  }
- window.SMVLiveCallInventory?.syncSelectionPanel?.();
+
 }
 function updateKpis(){
  const rows=ranked,eligible=$("#smvAcEligible"),strong=$("#smvAcStrong"),available=$("#smvAcAvailable");

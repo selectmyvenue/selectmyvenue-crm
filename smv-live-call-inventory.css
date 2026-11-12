@@ -313,10 +313,3 @@
 .slv-selected-chip button{width:19px;height:19px;border:0;border-radius:50%;background:#dcefe7;color:#176c59;font-size:15px;line-height:1;cursor:pointer}
 .slv-select-btn.is-selected{background:#e5f5ee;color:#087b65;border-color:#a9d9c8;cursor:default}
 #smvInventorySelectionBridge{display:none!important}
-
-/* One shared selection basket, placed in the assignment modal's top dock. */
-.smv-assignment-selection-dock{display:flex;justify-content:flex-end;align-items:stretch;margin:10px 0 12px}
-.smv-assignment-selected-panel{width:min(50%,680px);min-width:min(100%,360px);padding:10px 13px;border:1px solid #cfe5dc;border-radius:13px;background:#f8fcfa}
-.smv-assignment-selected-panel .slv-selected-heading{margin-bottom:7px}
-.smv-assignment-selected-panel .slv-selected-list{min-height:28px}
-@media(max-width:760px){.smv-assignment-selection-dock{justify-content:stretch}.smv-assignment-selected-panel{width:100%;min-width:0}}
