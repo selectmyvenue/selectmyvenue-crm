@@ -13,17 +13,20 @@ function reactivation(venueId){try{return typeof allVenueAssignments!=="undefine
 function getRows(){return ranked;}
 function updateBasket(){
  const list=$("#venueAssignmentList"),items=$("#smvAcBasketItems"),count=$("#smvAcSelected"),summary=$("#smvAcBasketSummary"),hint=$("#smvAcSelectedHint");
- if(!list||!items)return;
+ if(!list)return;
  const selected=Array.from(list.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)"));
  if(count)count.textContent=String(selected.length);
  if(summary)summary.textContent=selected.length?selected.length+" venue"+(selected.length===1?"":"s")+" selected":"No venues selected";
  if(hint)hint.textContent=selected.length?"Review before assignment":"Ready for review";
+ if(items){
  const rowsById=new Map(ranked.map(r=>[String(r.venue.id),r]));
  items.innerHTML=selected.length?selected.slice(0,10).map(cb=>{
   const row=rowsById.get(String(cb.value)),name=row?.venue?.venue_name||cb.closest(".venue-assignment-item")?.querySelector(".venue-assignment-item-title strong")?.textContent||"Selected venue";
   const state=assigned(cb.value)?"Already active":reactivation(cb.value)?"Reactivation":"New assignment";
   return '<span class="smv-assignment-basket-chip">'+safe(name)+' <em>'+safe(state)+'</em></span>';
- }).join("")+(selected.length>10?'<span class="smv-assignment-basket-chip">+'+(selected.length-10)+' more</span>':""):"Select venues from the ranked list or AI discovery."; window.SMVLiveCallInventory?.syncSelectionPanel?.();
+ }).join("")+(selected.length>10?'<span class="smv-assignment-basket-chip">+'+(selected.length-10)+' more</span>':""):"Select venues from the ranked list or AI discovery.";
+ }
+ window.SMVLiveCallInventory?.syncSelectionPanel?.();
 }
 function updateKpis(){
  const rows=ranked,eligible=$("#smvAcEligible"),strong=$("#smvAcStrong"),available=$("#smvAcAvailable");
