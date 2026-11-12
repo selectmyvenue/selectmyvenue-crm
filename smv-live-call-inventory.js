@@ -114,20 +114,10 @@
     return list ? [...list.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)")] : [];
   }
   function syncSelectionPanel() {
-    const panel=$("#smvInventorySelectedList"),count=$("#smvInventorySelectedCount");
-    if(!panel)return;
-    const selected=selectedVenues();
-    if(count)count.textContent=String(selected.length);
-    if(!selected.length) {
-      panel.innerHTML='<span class="slv-selected-empty">No venues selected yet</span>';
-    } else {
-      panel.innerHTML=selected.map(cb=>{
-        const id=String(cb.value),name=clean(cb.dataset.venueName || cb.closest(".venue-assignment-item")?.querySelector(".venue-assignment-item-title strong")?.textContent || cb.dataset.venueLabel || "Selected venue");
-        return '<span class="slv-selected-chip"><strong>'+esc(name)+'</strong><button type="button" data-slv-remove="'+esc(id)+'" aria-label="Remove '+esc(name)+'">×</button></span>';
-      }).join("");
-    }
+    // The legacy assignment basket at the top of this modal is the single
+    // shared selection surface. Both inventory and AI selections flow through
+    // the same .venue-assignment-checkbox controls and existing save handler.
     try { window.SMVEnterpriseAssignmentCenter?.updateBasket(); } catch (_) {}
-    try { window.SMVLiveOperations?.refresh?.(); } catch (_) {}
   }
   function selectVenue(id) {
     const list=$("#venueAssignmentList");
@@ -246,5 +236,5 @@
   }
   function queueRender(){clearTimeout(state.timer);state.timer=setTimeout(render,120);}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
-  window.SMVLiveCallInventory={refresh:render,selectVenue,syncSelectionPanel};
+  window.SMVLiveCallInventory={refresh:render,selectVenue};
 })();
