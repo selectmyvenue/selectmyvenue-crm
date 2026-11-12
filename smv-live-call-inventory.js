@@ -114,11 +114,9 @@
     return list ? [...list.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)")] : [];
   }
   function syncSelectionPanel() {
-    const list=$("#venueAssignmentList");
-    if(!list)return;
-    // Dispatch a bubbling change from the shared list so every CRM selection
-    // listener sees the canonical checked state, then refresh the basket.
-    try { list.dispatchEvent(new Event("change",{bubbles:true})); } catch (_) {}
+    // The checkbox change event already bubbles to the modal's shared handler.
+    // Refresh the single basket directly; never dispatch another change event
+    // here, which could recursively re-enter this handler.
     try { window.SMVEnterpriseAssignmentCenter?.updateBasket(); } catch (_) {}
   }
   function selectVenue(id) {
