@@ -114,9 +114,11 @@
     return list ? [...list.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)")] : [];
   }
   function syncSelectionPanel() {
-    // The legacy assignment basket at the top of this modal is the single
-    // shared selection surface. Both inventory and AI selections flow through
-    // the same .venue-assignment-checkbox controls and existing save handler.
+    const list=$("#venueAssignmentList");
+    if(!list)return;
+    // Dispatch a bubbling change from the shared list so every CRM selection
+    // listener sees the canonical checked state, then refresh the basket.
+    try { list.dispatchEvent(new Event("change",{bubbles:true})); } catch (_) {}
     try { window.SMVEnterpriseAssignmentCenter?.updateBasket(); } catch (_) {}
   }
   function selectVenue(id) {
