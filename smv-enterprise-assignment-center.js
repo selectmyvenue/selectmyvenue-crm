@@ -23,7 +23,7 @@ function updateBasket(){
   const row=rowsById.get(String(cb.value)),name=row?.venue?.venue_name||cb.closest(".venue-assignment-item")?.querySelector(".venue-assignment-item-title strong")?.textContent||"Selected venue";
   const state=assigned(cb.value)?"Already active":reactivation(cb.value)?"Reactivation":"New assignment";
   return '<span class="smv-assignment-basket-chip">'+safe(name)+' <em>'+safe(state)+'</em></span>';
- }).join("")+(selected.length>10?'<span class="smv-assignment-basket-chip">+'+(selected.length-10)+' more</span>':""):"Select venues from the ranked list or AI discovery.";
+ }).join("")+(selected.length>10?'<span class="smv-assignment-basket-chip">+'+(selected.length-10)+' more</span>':""):"Select venues from the ranked list or AI discovery."; window.SMVLiveCallInventory?.syncSelectionPanel?.();
 }
 function updateKpis(){
  const rows=ranked,eligible=$("#smvAcEligible"),strong=$("#smvAcStrong"),available=$("#smvAcAvailable");
