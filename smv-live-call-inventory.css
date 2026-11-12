@@ -301,3 +301,15 @@
   #venueAssignmentModal .smv-live-inventory{padding:8px 11px!important}
   #venueAssignmentModal .slv-area-list{max-height:36vh!important;min-height:110px!important}
 }
+
+/* Explicit live-inventory selection basket */
+.slv-selected-now{margin:10px 0;padding:10px 12px;border:1px solid #cfe5dc;border-radius:13px;background:#fff}
+.slv-selected-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;color:#176c59;font-size:10px;letter-spacing:.8px;font-weight:850}
+.slv-selected-heading span{letter-spacing:0;color:#71877f;font-weight:650}
+.slv-selected-heading b{display:inline-grid;place-items:center;min-width:21px;height:21px;padding:0 5px;border-radius:99px;background:#e5f4ee;color:#087b65}
+.slv-selected-list{display:flex;flex-wrap:wrap;gap:7px;min-height:28px;align-items:center}
+.slv-selected-empty{color:#84958f;font-size:11px}
+.slv-selected-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 8px 6px 10px;border:1px solid #b8dfd1;border-radius:999px;background:#f0faf5;color:#155b4c;font-size:11px}
+.slv-selected-chip button{width:19px;height:19px;border:0;border-radius:50%;background:#dcefe7;color:#176c59;font-size:15px;line-height:1;cursor:pointer}
+.slv-select-btn.is-selected{background:#e5f5ee;color:#087b65;border-color:#a9d9c8;cursor:default}
+#smvInventorySelectionBridge{display:none!important}
