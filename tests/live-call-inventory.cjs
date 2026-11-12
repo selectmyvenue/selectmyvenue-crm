@@ -22,3 +22,10 @@ assert(js.includes('customerPreferredArea'),'live lead-area typing must sync int
 assert(!js.includes('.from("customer_enquiries")')&&!js.includes('.insert(')&&!js.includes('.update('),'finder must not write to customer enquiry or database tables');
 assert(css.includes('.slv-area-card')&&css.includes('.slv-search-wrap')&&css.includes('@media(max-width:760px)'),'finder must have premium responsive styling');
 console.log('PASS Live Call Inventory Finder: enquiry area sync, approved inventory, nearest-first area grouping, venue selection handoff and no database writes');
+
+const assignmentCenter=fs.readFileSync(path.join(root,'smv-enterprise-assignment-center.js'),'utf8');
+assert(html.includes('class="smv-assignment-selection-dock"'), 'single selected panel must be docked at the top of the assignment modal');
+assert(html.includes('id="smvInventorySelectedList"') && html.includes('id="smvInventorySelectedCount"'), 'top selected panel must expose shared selection ids');
+assert(!html.includes('class="slv-selected-now"'), 'duplicate selected panel under live inventory must be removed');
+assert(js.includes('syncSelectionPanel'), 'live inventory selection must expose a shared selection sync method');
+assert(assignmentCenter.includes('syncSelectionPanel'), 'enterprise assignment list and live inventory must update the same selected panel');
