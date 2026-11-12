@@ -16,6 +16,10 @@ assert(html.includes('id="venueAssignmentList"'),'original assignment venue list
 assert(html.includes('id="smvAiExact"')&&html.includes('id="smvAiNearby"'),'legacy AI exact and nearby match result containers must remain available');
 assert.match(html,/crm\.js[\s\S]*ai-venue-discovery\.js[\s\S]*smv-enterprise-assignment-center\.js[\s\S]*smv-live-call-inventory\.js/,'legacy matching and live inventory modules must load after CRM scripts');
 assert(inventory.includes('data-slv-select')&&inventory.includes('.venue-assignment-checkbox'),'new inventory selection must feed the existing assignment save flow');
+assert(inventory.includes('v.venue_name,v.contact_person,v.address,v.venue_address,v.full_address'),'live inventory search must include venue names and full address fields');
+assert(html.includes('id="smvInventorySelectedList"')&&html.includes('id="smvInventorySelectedCount"'),'live inventory must show selected venue names and count');
+assert(inventory.includes('data-slv-remove'),'selected venue chips must be removable before assignment');
+assert(inventory.includes('smvInventorySelectionBridge'),'selection must still reach the CRM save pipeline if legacy list filtering hides a checkbox');
 const core=fs.readFileSync(path.join(root,'crm-core.js'),'utf8');
 const saveStart=core.indexOf('async function saveVenueAssignments');
 const saveEnd=core.indexOf('function setupVenueAssignment',saveStart);
