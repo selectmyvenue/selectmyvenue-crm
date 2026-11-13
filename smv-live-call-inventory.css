@@ -313,3 +313,19 @@
 .slv-selected-chip button{width:19px;height:19px;border:0;border-radius:50%;background:#dcefe7;color:#176c59;font-size:15px;line-height:1;cursor:pointer}
 .slv-select-btn.is-selected{background:#e5f5ee;color:#087b65;border-color:#a9d9c8;cursor:default}
 #smvInventorySelectionBridge{display:none!important}
+
+
+/* Unified assignment overview: one canonical selection basket for all tools. */
+.smv-assignment-selection-overview{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:10px 0 14px;position:relative;z-index:1}
+.smv-assignment-overview-panel{min-width:0;border:1px solid #cfe5df;border-radius:14px;background:#f8fcfa;padding:10px 12px;min-height:84px}
+.smv-assignment-overview-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#55766f;font-size:12px;font-weight:850;letter-spacing:.06em;margin-bottom:8px}
+.smv-assignment-overview-heading>span{display:inline-flex;align-items:center;justify-content:center;min-width:23px;height:23px;border-radius:50%;background:#dff3ec;color:#087d68;font-size:12px;letter-spacing:0}
+.smv-assignment-overview-items{display:flex;align-items:flex-start;align-content:flex-start;flex-wrap:wrap;gap:7px;max-height:112px;overflow:auto}
+.smv-assignment-overview-empty{color:#879b95;font-size:12px;font-style:italic;padding:5px 0}
+.smv-assignment-basket-chip,.smv-assignment-assigned-chip{display:inline-flex;align-items:center;gap:6px;max-width:100%;border-radius:999px;padding:6px 9px;background:#fff2d4;border:1px solid #f0d18b;color:#74520a;font-size:12px;font-weight:750}
+.smv-assignment-basket-chip em{font-style:normal;font-size:10px;font-weight:600;color:#997a36}
+.smv-assignment-basket-chip button{border:0;background:transparent;color:#946300;font-size:16px;line-height:1;cursor:pointer;padding:0 1px}
+.smv-assignment-assigned-chip{background:#eaf7f2;border-color:#bce5d7;color:#126b5b}
+.smv-assignment-assigned-chip small{font-size:10px;color:#63877e;font-weight:500}
+.smv-assignment-overview-summary{font-size:11px;color:#78918a;margin-top:6px}
+@media(max-width:760px){.smv-assignment-selection-overview{grid-template-columns:1fr}.smv-assignment-overview-panel{min-height:70px}}
