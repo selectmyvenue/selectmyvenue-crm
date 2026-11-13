@@ -141,6 +141,7 @@
         const modal=$("#venueAssignmentModal");
         let bridge=modal?.querySelector("#smvInventorySelectionBridge");
         if(!bridge && modal){bridge=document.createElement("div");bridge.id="smvInventorySelectionBridge";bridge.hidden=true;modal.appendChild(bridge);}
+        if(!bridge){showMessage("Unable to prepare the shared selection list. Close and reopen assignment, then try again.","warning");return;}
         bridge.appendChild(cb);
       }
     }
