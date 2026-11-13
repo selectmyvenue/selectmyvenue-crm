@@ -9,6 +9,15 @@
   const clean = v => String(v ?? "").trim();
   const norm = v => clean(v).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
   const state = { rows: [], aliases: [], target: "", city: "", timer: null, loading: false };
+  // Canonical in-memory selection shared by every assignment surface.
+  function selectionStore(){
+    const w=window;
+    if(!w.SMVAssignmentSelection)w.SMVAssignmentSelection={ids:new Set(),names:new Map()};
+    const s=w.SMVAssignmentSelection;
+    if(!(s.ids instanceof Set))s.ids=new Set(Array.isArray(s.ids)?s.ids.map(String):[]);
+    if(!(s.names instanceof Map))s.names=new Map();
+    return s;
+  }
 
   function lead() {
     try { return typeof assignmentCurrentLead !== "undefined" ? assignmentCurrentLead : null; }
@@ -112,8 +121,8 @@
     return controls.find(x=>String(x.value)===String(id) && !x.disabled) || null;
   }
   function selectedVenues() {
-    const modal=$("#venueAssignmentModal");
-    return modal ? [...modal.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)")] : [];
+    const s=selectionStore();
+    return [...s.ids].map(id=>({value:id,dataset:{venueName:s.names.get(id)||""}}));
   }
   function syncSelectionPanel() {
     // The checkbox change event already bubbles to the modal's shared handler.
@@ -147,8 +156,12 @@
     }
     if(!cb) { showMessage("This venue is not currently available in the approved inventory list. Refresh venues and try again.","warning"); return; }
     if(cb.disabled) { showMessage("This venue cannot be selected. Please refresh the approved inventory.","warning"); return; }
+    const venue=venueRows().find(v=>String(v.id)===String(id));
+    const store=selectionStore();
+    store.ids.add(String(id));
+    store.names.set(String(id),clean(venue?.venue_name||cb.dataset.venueName||cb.dataset.venueLabel||"Selected venue"));
     cb.checked=true;
-    cb.dataset.venueName=cb.dataset.venueName || clean(venueRows().find(v=>String(v.id)===String(id))?.venue_name);
+    cb.dataset.venueName=store.names.get(String(id));
     cb.dispatchEvent(new Event("change",{bubbles:true}));
     const btn=$('[data-slv-select="'+CSS.escape(String(id))+'"]');
     if(btn){btn.textContent="Selected";btn.disabled=true;btn.classList.add("is-selected");}
@@ -194,7 +207,7 @@
         '<div class="slv-area-venues" '+(i===0?'':'hidden')+'>'+g.venues.map(v=>{
           const id=String(v.id),assigned=isAssigned(v.id),addr=clean(v.address || v.venue_address || v.full_address);
           return '<article class="slv-venue-row"><div class="slv-venue-copy"><strong>'+esc(v.venue_name || "Venue")+'</strong><span>'+esc([v.venue_type,v.area,v.city].filter(Boolean).join(" · "))+'</span>'+(addr?'<small>'+esc(addr)+'</small>':'<small>Full address not available in venue record</small>')+'</div>'+
-            (assigned?'<span class="slv-assigned">Already assigned</span>':(findCheckbox(id)?.checked?'<button type="button" class="slv-select-btn is-selected" data-slv-select="'+esc(id)+'" disabled>Selected</button>':'<button type="button" class="slv-select-btn" data-slv-select="'+esc(id)+'">＋ Select</button>'))+
+            (assigned?'<span class="slv-assigned">Already assigned</span>':(selectionStore().ids.has(id)||findCheckbox(id)?.checked?'<button type="button" class="slv-select-btn is-selected" data-slv-select="'+esc(id)+'" disabled>Selected</button>':'<button type="button" class="slv-select-btn" data-slv-select="'+esc(id)+'">＋ Select</button>'))+
             '</article>';
         }).join("")+'</div></section>';
     }).join("");
@@ -226,7 +239,7 @@
       const select=e.target.closest("[data-slv-select]");
       if(select)selectVenue(select.dataset.slvSelect);
       const remove=e.target.closest("[data-slv-remove]");
-      if(remove){const cb=findCheckbox(remove.dataset.slvRemove);if(cb){cb.checked=false;cb.dispatchEvent(new Event("change",{bubbles:true}));}syncSelectionPanel();render();}
+      if(remove){const id=String(remove.dataset.slvRemove),store=selectionStore();store.ids.delete(id);store.names.delete(id);const cb=findCheckbox(id);if(cb){cb.checked=false;cb.dispatchEvent(new Event("change",{bubbles:true}));}syncSelectionPanel();render();}
     });
     const observer=new MutationObserver(()=>{
       if(!modal.hidden){syncFromLead();render();}
