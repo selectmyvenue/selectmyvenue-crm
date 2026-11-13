@@ -94,4 +94,3 @@ assert.equal(controller.selectionStore().ids.size, 0,
   'selection store must not leak venue IDs across customer enquiries');
 
 console.log('PASS Assignment selection runtime: new inventory + legacy list share the top basket, removal syncs, and enquiry changes clear stale selections.');
-window.close();
