@@ -8302,16 +8302,17 @@ async function saveVenueAssignments(options = {}) {
         return;
     }
 
+    const selectionStore = window.SMVAssignmentSelection;
+    const storedSelected = selectionStore?.ids instanceof Set
+        ? [...selectionStore.ids].map(String)
+        : [];
     const visibleSelected = Array.from(
-        document.querySelectorAll(
-            ".venue-assignment-checkbox:checked:not(:disabled)"
-        )
-    ).map(input => input.value);
+        document.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)")
+    ).map(input => String(input.value));
 
-    /* Only checked venue controls represent an explicit staff action.
-       Never silently merge an AI/recommended shortlist into a database write:
-       recommendations may be displayed, but assignment requires a checked box. */
-    const selected = [...new Set(visibleSelected.map(String))];
+    // The shared store is authoritative; checked controls are a compatibility
+    // fallback for the legacy assignment list.
+    const selected = [...new Set([...storedSelected, ...visibleSelected])];
 
     if (!selected.length) {
         showAssignmentMessage(
