@@ -12,6 +12,12 @@ function lead(){try{return typeof assignmentCurrentLead!=="undefined"?assignment
 function assigned(venueId){try{return typeof isVenueAlreadyAssigned==="function"&&isVenueAlreadyAssigned(venueId);}catch(_){return false;}}
 function reactivation(venueId){try{return typeof allVenueAssignments!=="undefined"&&allVenueAssignments.some(row=>String(row.venue_id)===String(venueId)&&row.assignment_status==="cancelled");}catch(_){return false;}}
 function getRows(){return ranked;}
+function beginLead(enquiryId){
+ const store=selectionStore(),nextLeadId=String(enquiryId||"");
+ if(store.leadId!==nextLeadId){store.ids.clear();store.names.clear();store.leadId=nextLeadId;}
+ updateBasket();
+ return store;
+}
 function updateBasket(){
  const modal=$("#venueAssignmentModal"),items=$("#smvAcBasketItems"),count=$("#smvAcSelected"),summary=$("#smvAcBasketSummary"),hint=$("#smvAcSelectedHint"),assignedItems=$("#smvAcAssignedItems"),assignedCount=$("#smvAcAssignedCount");
  if(!modal)return;
@@ -169,5 +175,5 @@ function boot(){
  const cancel=$("#cancelVenueAssignment");cancel?.addEventListener("click",()=>stopAssignmentRealtime());
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
-window.SMVEnterpriseAssignmentCenter={refresh,updateBasket,getRankedRows:getRows,selectionStore};
+window.SMVEnterpriseAssignmentCenter={refresh,updateBasket,getRankedRows:getRows,selectionStore,beginLead};
 })();
