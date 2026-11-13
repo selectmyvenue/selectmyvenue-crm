@@ -19,12 +19,18 @@ assert(inventory.includes('data-slv-select')&&inventory.includes('.venue-assignm
 assert(inventory.includes('v.venue_name,v.contact_person,v.address,v.venue_address,v.full_address'),'live inventory search must include venue names and full address fields');
 assert(html.includes('id="smvAcBasketItems"')&&html.includes('id="smvAcSelected"'),'assignment modal must provide one shared Selected Now basket and count');
 assert(html.includes('id="smvAcAssignedItems"')&&html.includes('id="smvAcAssignedCount"'),'assignment modal must provide the Already Assigned panel');
+assert.match(html,/smv-live-call-inventory\.css\?v=20261114-assignment-selection-2/,'assignment basket CSS must use a fresh cache key');
+assert.match(html,/smv-enterprise-assignment-center\.js\?v=20261114-assignment-selection-2/,'assignment controller must use a fresh cache key');
+assert.match(html,/smv-live-call-inventory\.js\?v=20261114-assignment-selection-2/,'live inventory controller must use a fresh cache key');
+assert.match(html,/crm\.js\?v=20261114-assignment-selection-2/,'CRM loader must use a fresh cache key');
 assert(inventory.includes('window.SMVEnterpriseAssignmentCenter?.updateBasket'),'live inventory selection must update the shared basket');
 assert(inventory.includes('data-slv-remove'),'selected venue chips must be removable before assignment');
 assert(inventory.includes('smvInventorySelectionBridge'),'selection must still reach the CRM save pipeline if legacy list filtering hides a checkbox');
 const enterprise=fs.readFileSync(path.join(root,'smv-enterprise-assignment-center.js'),'utf8');
 assert(enterprise.includes('const selected=[...store.ids]')&&enterprise.includes('data-smv-remove-selection'),'Selected Now must render from the canonical store and support removal');
 const core=fs.readFileSync(path.join(root,'crm-core.js'),'utf8');
+assert(core.includes('window.SMVEnterpriseAssignmentCenter?.beginLead(lead.id)'),'opening an enquiry must start a lead-scoped selection session');
+assert(fs.readFileSync(path.join(root,'smv-enterprise-assignment-center.js'),'utf8').includes('function beginLead(enquiryId)'),'shared assignment controller must clear selections when the active enquiry changes');
 const saveStart=core.indexOf('async function saveVenueAssignments');
 const saveEnd=core.indexOf('function setupVenueAssignment',saveStart);
 const saveBlock=core.slice(saveStart,saveEnd);
