@@ -126,7 +126,14 @@ function confirmAssignment(event){
 }
 function boot(){
  const modal=$("#venueAssignmentModal"),list=$("#venueAssignmentList");if(!modal||!list)return;
- modal.addEventListener("change",event=>{if(event.target.matches(".venue-assignment-checkbox"))updateBasket();});
+ modal.addEventListener("change",event=>{
+  const cb=event.target;
+  if(!cb.matches(".venue-assignment-checkbox"))return;
+  const store=selectionStore(),id=String(cb.value);
+  if(cb.checked){store.ids.add(id);store.names.set(id,cb.dataset.venueName||cb.dataset.venueLabel||cb.closest(".venue-assignment-item")?.querySelector(".venue-assignment-item-title strong")?.textContent||"Selected venue");}
+  else{store.ids.delete(id);store.names.delete(id);}
+  updateBasket();
+ });
  document.addEventListener("click",confirmAssignment,true);
  const observer=new MutationObserver(()=>{if(modal.hidden)stopAssignmentRealtime();else if(!sorting)scheduleRefresh();});
  observer.observe(modal,{attributes:true,attributeFilter:["hidden"]});
