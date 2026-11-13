@@ -8126,6 +8126,10 @@ function renderAssignmentVenues() {
     // Live Call Desk / AI tools. The legacy list uses innerHTML, so checked
     // controls must be captured before it is rebuilt.
     const selectedById = new Map();
+    const sharedSelection = window.SMVAssignmentSelection;
+    if (sharedSelection?.ids instanceof Set) sharedSelection.ids.forEach(id => {
+        selectedById.set(String(id), {name: sharedSelection.names?.get(String(id)) || "Selected venue"});
+    });
     (modal || document).querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)").forEach(cb => {
         selectedById.set(String(cb.value), {
             name: safeValue(cb.dataset.venueName || cb.dataset.venueLabel ||
@@ -8302,16 +8306,17 @@ async function saveVenueAssignments(options = {}) {
         return;
     }
 
+    const selectionStore = window.SMVAssignmentSelection;
+    const storedSelected = selectionStore?.ids instanceof Set
+        ? [...selectionStore.ids].map(String)
+        : [];
     const visibleSelected = Array.from(
-        document.querySelectorAll(
-            ".venue-assignment-checkbox:checked:not(:disabled)"
-        )
-    ).map(input => input.value);
+        document.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)")
+    ).map(input => String(input.value));
 
-    /* Only checked venue controls represent an explicit staff action.
-       Never silently merge an AI/recommended shortlist into a database write:
-       recommendations may be displayed, but assignment requires a checked box. */
-    const selected = [...new Set(visibleSelected.map(String))];
+    // The shared store is authoritative; checked controls are a compatibility
+    // fallback for the legacy assignment list.
+    const selected = [...new Set([...storedSelected, ...visibleSelected])];
 
     if (!selected.length) {
         showAssignmentMessage(
@@ -8514,6 +8519,14 @@ async function saveVenueAssignments(options = {}) {
                 `${alreadyCount} venue${alreadyCount === 1 ? " is" : "s are"} already assigned to this enquiry. No new assignment was created.`,
                 "info"
             );
+        }
+
+        // Clear only after the database write and refresh succeeded.
+        if (window.SMVAssignmentSelection?.ids instanceof Set) {
+            selectedUnique.forEach(id => {
+                window.SMVAssignmentSelection.ids.delete(String(id));
+                window.SMVAssignmentSelection.names?.delete(String(id));
+            });
         }
 
         return {
