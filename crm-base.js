@@ -1031,7 +1031,7 @@
   installCompactHeaderButtons();
   installAssignmentFullscreenPolish();
 
-  loadScript("crm-core.js?v=20261004-assignment-plan-warning-2", function () {
+  loadScript("crm-core.js?v=20261114-assignment-selection-2", function () {
     installInternalCommentOnlyBehavior();
     installLeadRenderNormalizer();
     installSaveCustomerCommentPreserver();
