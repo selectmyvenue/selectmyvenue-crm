@@ -8126,6 +8126,10 @@ function renderAssignmentVenues() {
     // Live Call Desk / AI tools. The legacy list uses innerHTML, so checked
     // controls must be captured before it is rebuilt.
     const selectedById = new Map();
+    const sharedSelection = window.SMVAssignmentSelection;
+    if (sharedSelection?.ids instanceof Set) sharedSelection.ids.forEach(id => {
+        selectedById.set(String(id), {name: sharedSelection.names?.get(String(id)) || "Selected venue"});
+    });
     (modal || document).querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)").forEach(cb => {
         selectedById.set(String(cb.value), {
             name: safeValue(cb.dataset.venueName || cb.dataset.venueLabel ||
