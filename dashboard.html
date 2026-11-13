@@ -2319,6 +2319,18 @@
             <div class="venue-assignment-requirement" id="assignmentRequirementSummary">
                 Select approved and verified venues to receive this enquiry.
             </div>
+            <section class="smv-assignment-selection-overview" aria-label="Assignment selection overview">
+                <div class="smv-assignment-overview-panel">
+                    <div class="smv-assignment-overview-heading">ALREADY ASSIGNED <span id="smvAcAssignedCount">0</span></div>
+                    <div id="smvAcAssignedItems" class="smv-assignment-overview-items"><span class="smv-assignment-overview-empty">No venues assigned yet.</span></div>
+                </div>
+                <div class="smv-assignment-overview-panel smv-assignment-selected-panel">
+                    <div class="smv-assignment-overview-heading">SELECTED NOW <span id="smvAcSelected">0</span></div>
+                    <div id="smvAcBasketItems" class="smv-assignment-overview-items"><span class="smv-assignment-overview-empty">Select venues from either tool below.</span></div>
+                    <div id="smvAcBasketSummary" class="smv-assignment-overview-summary">No venues selected</div>
+                    <span id="smvAcSelectedHint" class="sr-only">Ready for review</span>
+                </div>
+            </section>
 <section id="smvLiveCallInventory" class="smv-live-inventory" aria-label="Live call venue inventory finder">
  <div class="slv-heading"><div><div class="slv-kicker">SELECT MY VENUE · LIVE CALL DESK</div><h3>Find Venues by Customer Location</h3><p>Type the customer's preferred area to see SMV inventory nearby and across the city.</p></div><span class="slv-live-pill"><i></i> Inventory from SMV</span></div>
  <label class="slv-search-wrap" for="smvCallLocationSearch"><span class="slv-search-icon">⌕</span><input id="smvCallLocationSearch" type="search" autocomplete="off" placeholder="Type customer area — e.g. Rajouri Garden, Chhatarpur, Sohna Road, Delhi"></label>
