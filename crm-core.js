@@ -8521,6 +8521,14 @@ async function saveVenueAssignments(options = {}) {
             );
         }
 
+        // Clear only after the database write and refresh succeeded.
+        if (window.SMVAssignmentSelection?.ids instanceof Set) {
+            selectedUnique.forEach(id => {
+                window.SMVAssignmentSelection.ids.delete(String(id));
+                window.SMVAssignmentSelection.names?.delete(String(id));
+            });
+        }
+
         return {
             ok: true,
             selected,
