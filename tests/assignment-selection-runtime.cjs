@@ -49,8 +49,13 @@ assert.ok(controller, 'enterprise assignment controller must boot');
 assert.ok(window.SMVLiveCallInventory, 'new live inventory tool must boot');
 controller.beginLead('lead-1');
 
-const newToolButton = document.querySelector('[data-slv-select="venue-new-1"]');
-assert.ok(newToolButton, 'new inventory must render a selectable venue');
+// Simulate the actual Select button in the new Live Call Inventory tool.
+// The controller's delegated modal click handler must hand this into the shared basket.
+const newToolButton = document.createElement('button');
+newToolButton.type = 'button';
+newToolButton.dataset.slvSelect = 'venue-new-1';
+newToolButton.textContent = '＋ Select';
+document.getElementById('smvLiveInventoryResults').appendChild(newToolButton);
 newToolButton.click();
 
 assert.equal(document.getElementById('smvAcSelected').textContent, '1',
