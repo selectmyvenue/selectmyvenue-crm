@@ -12,11 +12,17 @@ function lead(){try{return typeof assignmentCurrentLead!=="undefined"?assignment
 function assigned(venueId){try{return typeof isVenueAlreadyAssigned==="function"&&isVenueAlreadyAssigned(venueId);}catch(_){return false;}}
 function reactivation(venueId){try{return typeof allVenueAssignments!=="undefined"&&allVenueAssignments.some(row=>String(row.venue_id)===String(venueId)&&row.assignment_status==="cancelled");}catch(_){return false;}}
 function getRows(){return ranked;}
+function beginLead(enquiryId){
+ const store=selectionStore(),nextLeadId=String(enquiryId||"");
+ if(store.leadId!==nextLeadId){store.ids.clear();store.names.clear();store.leadId=nextLeadId;}
+ updateBasket();
+ return store;
+}
 function updateBasket(){
- const modal=$("#venueAssignmentModal"),items=$("#smvAcBasketItems"),count=$("#smvAcSelected"),summary=$("#smvAcBasketSummary"),hint=$("#smvAcSelectedHint");
+ const modal=$("#venueAssignmentModal"),items=$("#smvAcBasketItems"),count=$("#smvAcSelected"),summary=$("#smvAcBasketSummary"),hint=$("#smvAcSelectedHint"),assignedItems=$("#smvAcAssignedItems"),assignedCount=$("#smvAcAssignedCount");
  if(!modal)return;
  const store=selectionStore();
- // Synchronize canonical IDs to visible/bridge checkboxes for the legacy save flow.
+ // Every visible/bridge checkbox mirrors the same canonical ID Set.
  modal.querySelectorAll(".venue-assignment-checkbox").forEach(cb=>{cb.checked=store.ids.has(String(cb.value));});
  const selected=[...store.ids];
  if(count)count.textContent=String(selected.length);
@@ -24,12 +30,24 @@ function updateBasket(){
  if(hint)hint.textContent=selected.length?"Review before assignment":"Ready for review";
  if(items){
   const rowsById=new Map(ranked.map(r=>[String(r.venue.id),r]));
-  items.innerHTML=selected.length?selected.slice(0,10).map(id=>{
-   const row=rowsById.get(id);
-   const name=row?.venue?.venue_name||store.names.get(id)||"Selected venue";
+  items.innerHTML=selected.length?selected.map(id=>{
+   const row=rowsById.get(id),name=row?.venue?.venue_name||store.names.get(id)||"Selected venue";
    const state=assigned(id)?"Already active":reactivation(id)?"Reactivation":"New assignment";
-   return '<span class="smv-assignment-basket-chip">'+safe(name)+' <em>'+safe(state)+'</em></span>';
-  }).join("")+(selected.length>10?'<span class="smv-assignment-basket-chip">+'+(selected.length-10)+' more</span>':""):"Select venues from the ranked list or AI discovery.";
+   return '<span class="smv-assignment-basket-chip">'+safe(name)+' <em>'+safe(state)+'</em><button type="button" data-smv-remove-selection="'+safe(id)+'" aria-label="Remove '+safe(name)+'">×</button></span>';
+  }).join(""):'<span class="smv-assignment-overview-empty">Select venues from either tool below.</span>';
+ }
+ if(assignedItems){
+  let rows=[];
+  try{rows=Array.isArray(allVenueAssignments)?allVenueAssignments.filter(x=>String(x.assignment_status||"").toLowerCase()!=="cancelled"):[];}catch(_){}
+  const unique=new Map();
+  rows.forEach(x=>{const id=String(x.venue_id||"");if(id&&!unique.has(id))unique.set(id,x);});
+  if(assignedCount)assignedCount.textContent=String(unique.size);
+  assignedItems.innerHTML=unique.size?[...unique.entries()].map(([id,x])=>{
+   const venue=(typeof assignmentVenueRows!=="undefined"?assignmentVenueRows:[]).find(v=>String(v.id)===id);
+   const name=venue?.venue_name||x.venue_name||x.venues?.venue_name||"Assigned venue";
+   const area=venue?.area||x.area||"";
+   return '<span class="smv-assignment-assigned-chip">'+safe(name)+(area?' <small>· '+safe(area)+'</small>':'')+'</span>';
+  }).join(""):'<span class="smv-assignment-overview-empty">No venues assigned yet.</span>';
  }
 }
 
@@ -134,6 +152,15 @@ function boot(){
   else{store.ids.delete(id);store.names.delete(id);}
   updateBasket();
  });
+ modal.addEventListener("click",event=>{
+  const remove=event.target.closest("[data-smv-remove-selection]");
+  if(!remove)return;
+  const id=String(remove.dataset.smvRemoveSelection),store=selectionStore();
+  store.ids.delete(id);store.names.delete(id);
+  modal.querySelectorAll(".venue-assignment-checkbox").forEach(cb=>{if(String(cb.value)===id)cb.checked=false;});
+  updateBasket();
+  window.SMVLiveCallInventory?.refreshSelection?.();
+ });
  document.addEventListener("click",confirmAssignment,true);
  const observer=new MutationObserver(()=>{if(modal.hidden)stopAssignmentRealtime();else if(!sorting)scheduleRefresh();});
  observer.observe(modal,{attributes:true,attributeFilter:["hidden"]});
@@ -148,5 +175,5 @@ function boot(){
  const cancel=$("#cancelVenueAssignment");cancel?.addEventListener("click",()=>stopAssignmentRealtime());
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
-window.SMVEnterpriseAssignmentCenter={refresh,updateBasket,getRankedRows:getRows};
+window.SMVEnterpriseAssignmentCenter={refresh,updateBasket,getRankedRows:getRows,selectionStore,beginLead};
 })();

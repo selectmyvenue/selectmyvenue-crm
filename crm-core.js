@@ -7965,6 +7965,9 @@ async function openVenueAssignmentModal(enquiryId) {
         return;
     }
 
+    // Start a lead-scoped selection session. Pending selections from another
+    // enquiry must never leak into this customer's assignment.
+    window.SMVEnterpriseAssignmentCenter?.beginLead(lead.id);
     assignmentCurrentLead = lead;
     assignmentSearch = "";
 
