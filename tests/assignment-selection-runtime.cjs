@@ -13,7 +13,7 @@ const html = '<!doctype html><html><body>' +
     '<input id="customerPreferredArea" value="West Delhi">' +
     '<section id="smvLiveCallInventory">' +
       '<input id="smvCallLocationSearch" value="West Delhi">' +
-      '<div id="smvLiveInventoryResults"></div><div id="smvInventoryFeedback"></div>' +
+      '<div id="smvInventoryMeta"></div><div id="smvLiveInventoryResults"></div><div id="smvInventoryFeedback"></div>' +
     '</section>' +
     '<div id="venueAssignmentList"></div><button id="smvAiOpen" type="button"></button>' +
     '<section id="smvAiDiscovery"></section><input id="assignmentVenueSearch">' +
