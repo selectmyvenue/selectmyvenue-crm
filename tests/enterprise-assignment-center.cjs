@@ -22,11 +22,14 @@ assert(html.includes('id="smvAcAssignedItems"')&&html.includes('id="smvAcAssigne
 assert(inventory.includes('window.SMVEnterpriseAssignmentCenter?.updateBasket'),'live inventory selection must update the shared basket');
 assert(inventory.includes('data-slv-remove'),'selected venue chips must be removable before assignment');
 assert(inventory.includes('smvInventorySelectionBridge'),'selection must still reach the CRM save pipeline if legacy list filtering hides a checkbox');
+const enterprise=fs.readFileSync(path.join(root,'smv-enterprise-assignment-center.js'),'utf8');
+assert(enterprise.includes('const selected=[...store.ids]')&&enterprise.includes('data-smv-remove-selection'),'Selected Now must render from the canonical store and support removal');
 const core=fs.readFileSync(path.join(root,'crm-core.js'),'utf8');
 const saveStart=core.indexOf('async function saveVenueAssignments');
 const saveEnd=core.indexOf('function setupVenueAssignment',saveStart);
 const saveBlock=core.slice(saveStart,saveEnd);
-assert(saveBlock.includes('const selected = [...new Set(visibleSelected.map(String))]'),'only explicitly checked venues may be assigned');
+assert(saveBlock.includes('const selected = [...new Set([...storedSelected, ...visibleSelected])]'),'the canonical shared selection store and legacy checked controls must feed one save payload');
+assert(saveBlock.includes('const selectionStore = window.SMVAssignmentSelection'),'assignment save must read the canonical shared selection store');
 assert(!saveBlock.includes('smvGetAssignmentSelection')&&!saveBlock.includes('smartSelected'),'AI/recommended shortlist must never silently create venue assignments');
 assert(saveBlock.includes('if (!selected.length)'),'assignment save must stop when no venue checkbox is selected');
 assert(!inventory.includes('.from("customer_enquiries")')&&!inventory.includes('.insert(')&&!inventory.includes('.update('),'new finder must not write to database tables');
