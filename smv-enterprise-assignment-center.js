@@ -5,6 +5,7 @@
 (function(){
 "use strict";
 const $=s=>document.querySelector(s);
+function selectionStore(){const w=window;if(!w.SMVAssignmentSelection)w.SMVAssignmentSelection={ids:new Set(),names:new Map()};const s=w.SMVAssignmentSelection;if(!(s.ids instanceof Set))s.ids=new Set(Array.isArray(s.ids)?s.ids.map(String):[]);if(!(s.names instanceof Map))s.names=new Map();return s;}
 const safe=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let ranked=[],refreshTimer=null,sorting=false,assignmentChannel=null,subscribedLeadId=null;
 function lead(){try{return typeof assignmentCurrentLead!=="undefined"?assignmentCurrentLead:null;}catch(_){return null;}}
@@ -14,23 +15,21 @@ function getRows(){return ranked;}
 function updateBasket(){
  const modal=$("#venueAssignmentModal"),items=$("#smvAcBasketItems"),count=$("#smvAcSelected"),summary=$("#smvAcBasketSummary"),hint=$("#smvAcSelectedHint");
  if(!modal)return;
- const selected=Array.from(modal.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)"));
- const uniqueSelected=Array.from(new Map(selected.map(cb=>[String(cb.value),cb])).values());
- if(count)count.textContent=String(uniqueSelected.length);
- if(summary)summary.textContent=uniqueSelected.length?uniqueSelected.length+" venue"+(uniqueSelected.length===1?"":"s")+" selected":"No venues selected";
- if(hint)hint.textContent=uniqueSelected.length?"Review before assignment":"Ready for review";
+ const store=selectionStore();
+ // Synchronize canonical IDs to visible/bridge checkboxes for the legacy save flow.
+ modal.querySelectorAll(".venue-assignment-checkbox").forEach(cb=>{cb.checked=store.ids.has(String(cb.value));});
+ const selected=[...store.ids];
+ if(count)count.textContent=String(selected.length);
+ if(summary)summary.textContent=selected.length?selected.length+" venue"+(selected.length===1?"":"s")+" selected":"No venues selected";
+ if(hint)hint.textContent=selected.length?"Review before assignment":"Ready for review";
  if(items){
   const rowsById=new Map(ranked.map(r=>[String(r.venue.id),r]));
-  items.innerHTML=uniqueSelected.length?uniqueSelected.slice(0,10).map(cb=>{
-   const row=rowsById.get(String(cb.value));
-   const name=row?.venue?.venue_name
-    ||cb.dataset.venueName
-    ||cb.dataset.venueLabel
-    ||cb.closest(".venue-assignment-item")?.querySelector(".venue-assignment-item-title strong")?.textContent
-    ||"Selected venue";
-   const state=assigned(cb.value)?"Already active":reactivation(cb.value)?"Reactivation":"New assignment";
+  items.innerHTML=selected.length?selected.slice(0,10).map(id=>{
+   const row=rowsById.get(id);
+   const name=row?.venue?.venue_name||store.names.get(id)||"Selected venue";
+   const state=assigned(id)?"Already active":reactivation(id)?"Reactivation":"New assignment";
    return '<span class="smv-assignment-basket-chip">'+safe(name)+' <em>'+safe(state)+'</em></span>';
-  }).join("")+(uniqueSelected.length>10?'<span class="smv-assignment-basket-chip">+'+(uniqueSelected.length-10)+' more</span>':""):"Select venues from the ranked list or AI discovery.";
+  }).join("")+(selected.length>10?'<span class="smv-assignment-basket-chip">+'+(selected.length-10)+' more</span>':""):"Select venues from the ranked list or AI discovery.";
  }
 }
 
@@ -116,10 +115,10 @@ async function startAssignmentRealtime(enquiryId){
 function confirmAssignment(event){
  const button=event.target.closest("#saveVenueAssignment");if(!button)return;
  const modal=$("#venueAssignmentModal");
- const selected=Array.from(modal?.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)")||[]);
- const uniqueSelected=Array.from(new Map(selected.map(cb=>[String(cb.value),cb])).values());
+ const store=selectionStore();
+ const uniqueSelected=[...store.ids];
  if(!uniqueSelected.length)return;
- const names=uniqueSelected.map(cb=>cb.dataset.venueName||cb.dataset.venueLabel||cb.closest(".venue-assignment-item")?.querySelector(".venue-assignment-item-title strong")?.textContent||"Venue");
+ const names=uniqueSelected.map(id=>store.names.get(id)||"Venue");
  const preview=names.slice(0,8).map((n,i)=>(i+1)+". "+n).join("\n");
  const extra=names.length>8?"\n…and "+(names.length-8)+" more":"";
  const message="Confirm assignment for "+names.length+" venue"+(names.length===1?"":"s")+"?\n\n"+preview+extra+"\n\nThis will save assignments to the selected customer enquiry. Existing active assignments will be preserved.";
