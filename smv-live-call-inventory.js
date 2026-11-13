@@ -254,4 +254,5 @@
   function queueRender(){clearTimeout(state.timer);state.timer=setTimeout(render,120);}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
   window.SMVLiveCallInventory={refresh:render,selectVenue};
+  window.SMVLiveCallInventory = { refresh: render, refreshSelection: render, getRows: venueRows };
 })();
