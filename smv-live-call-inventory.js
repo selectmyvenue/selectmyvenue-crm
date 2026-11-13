@@ -106,17 +106,14 @@
     return {city,groups:list,total:cityRows.length,allTotal:all.length,hasCoords:!!targetCoords};
   }
   function findCheckbox(id) {
-    const list=$("#venueAssignmentList");
-    if(!list)return null;
-    // A disabled legacy checkbox is not a usable selection control. Prefer an
-    // enabled control; if none exists, selectVenue creates an enabled bridge
-    // checkbox so the venue can enter the same basket and save pipeline.
-    return [...list.querySelectorAll(".venue-assignment-checkbox")]
-      .find(x=>String(x.value)===String(id) && !x.disabled) || null;
+    const modal=$("#venueAssignmentModal"),list=$("#venueAssignmentList");
+    const controls=[...(list?.querySelectorAll(".venue-assignment-checkbox")||[]),
+      ...(modal?.querySelector("#smvInventorySelectionBridge")?.querySelectorAll(".venue-assignment-checkbox")||[])];
+    return controls.find(x=>String(x.value)===String(id) && !x.disabled) || null;
   }
   function selectedVenues() {
-    const list=$("#venueAssignmentList");
-    return list ? [...list.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)")] : [];
+    const modal=$("#venueAssignmentModal");
+    return modal ? [...modal.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)")] : [];
   }
   function syncSelectionPanel() {
     // The checkbox change event already bubbles to the modal's shared handler.
@@ -141,8 +138,10 @@
         cb.setAttribute("aria-label","Selected "+clean(venue.venue_name));
         cb.style.position="absolute"; cb.style.width="1px"; cb.style.height="1px";
         cb.style.opacity="0"; cb.style.pointerEvents="none";
-        let bridge=$("#smvInventorySelectionBridge");
-        if(!bridge){bridge=document.createElement("div");bridge.id="smvInventorySelectionBridge";bridge.hidden=true;list.appendChild(bridge);}
+        const modal=$("#venueAssignmentModal");
+        let bridge=modal?.querySelector("#smvInventorySelectionBridge");
+        if(!bridge && modal){bridge=document.createElement("div");bridge.id="smvInventorySelectionBridge";bridge.hidden=true;modal.appendChild(bridge);}
+        if(!bridge){showMessage("Unable to prepare the shared selection list. Close and reopen assignment, then try again.","warning");return;}
         bridge.appendChild(cb);
       }
     }
