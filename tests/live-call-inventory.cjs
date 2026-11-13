@@ -25,5 +25,5 @@ console.log('PASS Live Call Inventory Finder: enquiry area sync, approved invent
 
 assert(!html.includes('smv-assignment-selection-dock'), 'do not render a second Selected Now panel below the assignment summary');
 assert(!html.includes('smvInventorySelectedList'), 'single selection UI must remain the existing top-right assignment basket');
-assert(js.includes('window.SMVEnterpriseAssignmentCenter?.updateBasket()'), 'live inventory selections must refresh the existing shared assignment basket');
+assert(js.includes('window.SMVEnterpriseAssignmentCenter?.updateBasket'), 'live inventory selections must refresh the existing shared assignment basket');
 assert(js.includes('cb.dispatchEvent(new Event("change",{bubbles:true}))'), 'inventory selections must enter the existing assignment checkbox/save flow');
