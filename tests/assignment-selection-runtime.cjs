@@ -31,16 +31,14 @@ window.CSS.escape = window.CSS.escape || function (value) {
   return String(value).replace(/[^a-zA-Z0-9_-]/g, '\\$&');
 };
 
-window.eval(
-  "let assignmentCurrentLead = { id: 'lead-1', preferred_area: 'West Delhi' };" +
-  "let assignmentVenueRows = [" +
-    "{ id: 'venue-new-1', venue_name: 'New Inventory Venue', city: 'Delhi', area: 'West Delhi', is_hidden: false }," +
-    "{ id: 'venue-legacy-1', venue_name: 'Legacy Assignment Venue', city: 'Delhi', area: 'West Delhi', is_hidden: false }" +
-  "];" +
-  "let allVenueAssignments = [];" +
-  "function isVenueAlreadyAssigned() { return false; }" +
-  "function getSupabaseClient() { return null; }"
-);
+window.assignmentCurrentLead = { id: 'lead-1', preferred_area: 'West Delhi' };
+window.assignmentVenueRows = [
+  { id: 'venue-new-1', venue_name: 'New Inventory Venue', city: 'Delhi', area: 'West Delhi', is_hidden: false },
+  { id: 'venue-legacy-1', venue_name: 'Legacy Assignment Venue', city: 'Delhi', area: 'West Delhi', is_hidden: false }
+];
+window.allVenueAssignments = [];
+window.isVenueAlreadyAssigned = function () { return false; };
+window.getSupabaseClient = function () { return null; };
 
 window.eval(fs.readFileSync(path.join(root, 'smv-enterprise-assignment-center.js'), 'utf8'));
 window.eval(fs.readFileSync(path.join(root, 'smv-live-call-inventory.js'), 'utf8'));
