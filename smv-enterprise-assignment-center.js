@@ -115,9 +115,11 @@ async function startAssignmentRealtime(enquiryId){
 }
 function confirmAssignment(event){
  const button=event.target.closest("#saveVenueAssignment");if(!button)return;
- const list=$("#venueAssignmentList"),selected=Array.from(list?.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)")||[]);
+ const modal=$("#venueAssignmentModal");
+ const selected=Array.from(modal?.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)")||[]);
+ const uniqueSelected=Array.from(new Map(selected.map(cb=>[String(cb.value),cb])).values());
  if(!uniqueSelected.length)return;
- const names=selected.map(cb=>cb.closest(".venue-assignment-item")?.querySelector(".venue-assignment-item-title strong")?.textContent||"Venue");
+ const names=uniqueSelected.map(cb=>cb.dataset.venueName||cb.dataset.venueLabel||cb.closest(".venue-assignment-item")?.querySelector(".venue-assignment-item-title strong")?.textContent||"Venue");
  const preview=names.slice(0,8).map((n,i)=>(i+1)+". "+n).join("\n");
  const extra=names.length>8?"\n…and "+(names.length-8)+" more":"";
  const message="Confirm assignment for "+names.length+" venue"+(names.length===1?"":"s")+"?\n\n"+preview+extra+"\n\nThis will save assignments to the selected customer enquiry. Existing active assignments will be preserved.";
