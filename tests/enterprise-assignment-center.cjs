@@ -20,9 +20,9 @@ assert(inventory.includes('function venueSearchText(v)')&&inventory.includes('v.
 assert(html.includes('id="smvAcBasketItems"')&&html.includes('id="smvAcSelected"'),'assignment modal must provide one shared Selected Now basket and count');
 assert(html.includes('id="smvAcAssignedItems"')&&html.includes('id="smvAcAssignedCount"'),'assignment modal must provide the Already Assigned panel');
 assert.match(html,/smv-live-call-inventory\.css\?v=20261114-live-assignment-one-page-1/,'single-page assignment CSS must use a fresh cache key');
-assert.match(html,/smv-enterprise-assignment-center\\.js\\?v=20261114-assigned-current-enquiry-1/,'assignment controller must use a fresh cache key');
+assert.match(html,/smv-enterprise-assignment-center\\.js\\?v=20261114-assigned-current-enquiry-1/,'the existing Smart Venue Matches controller cache must remain unchanged');
 assert.match(html,/smv-live-call-inventory\.js\?v=20261114-live-assignment-one-page-1/,'live inventory controller must use a fresh cache key');
-assert.match(html,/crm\.js\?v=20261114-live-assignment-one-page-1/,'CRM loader must use a fresh cache key');
+assert.match(html,/crm\.js\?v=20261114-assignment-selection-2/,'the existing CRM loader version must remain unchanged');
 assert(inventory.includes('window.SMVEnterpriseAssignmentCenter?.updateBasket'),'live inventory selection must update the shared basket');
 assert(inventory.includes('data-slv-remove'),'selected venue chips must be removable before assignment');
 assert(inventory.includes('smvInventorySelectionBridge'),'selection must still reach the CRM save pipeline if legacy list filtering hides a checkbox');
