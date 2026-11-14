@@ -328,8 +328,12 @@ lines=lines.slice(bodyStart);
 while(lines.length&&!/^Dear /i.test(lines[0].trim()))lines.shift();
 if(lines.length)lines.shift();
 while(lines.length&&!lines[0].trim())lines.shift();
-const isOfferLetter=docDraft?.document_type==='offer_letter';
-const title=isOfferLetter?'':(lines.shift()||'HR DOCUMENT').trim();
+// Detect this offer-opening paragraph from its content as well as the selected document type.
+ // A saved / reopened draft can have a different internal type; the opening text must
+ // still remain body copy and must never be consumed as the document title.
+const isOfferOpeningLine=/^We are pleased to offer you the position of .+ at Select My Venue,/i.test(String(lines[0]||'').trim());
+const isOfferLetter=docDraft?.document_type==='offer_letter'||isOfferOpeningLine;
+const title=(isOfferLetter||isOfferOpeningLine)?'':(lines.shift()||'HR DOCUMENT').trim();
 const recipientName=recipientNameLine.replace(/^Mr\.\/Ms\.\s*/,'').replace(/^Mr\.\s*/,'').replace(/^Mrs?\.\s*/,'');
 const salutationName=isOfferLetter?(recipientName.trim().split(/\s+/)[0]||recipientName):recipientName;
 const hasAcceptanceSection=lines.some(x=>/^10\.\s*ACCEPTANCE AND SIGNATURES/i.test(x.trim()));
@@ -346,8 +350,9 @@ let paragraph=[];
 const flush=()=>{
  if(paragraph.length){
   const text=paragraph.join(' ');
-  const isOfferOpening=/^We are pleased to offer you the position of Venue Listing Executive at Select My Venue/i.test(text);
-  out.push('<p'+(isOfferOpening?' class="letter-opening-paragraph"':'')+'>'+paragraph.map(esc).join(' ')+'</p>');
+  const isOfferOpening=/^We are pleased to offer you the position of .+ at Select My Venue,/i.test(text);
+  const openingStyle=isOfferOpening?' style="font:400 10pt/1.48 Arial,Helvetica,sans-serif;font-weight:400;font-size:10pt;line-height:1.48;color:#243b38;background:transparent;border:0;box-shadow:none;padding:0;margin:0 0 8px;text-align:left;text-transform:none;letter-spacing:normal"':'';
+  out.push('<p'+(isOfferOpening?' class="letter-opening-paragraph"':'')+openingStyle+'>'+paragraph.map(esc).join(' ')+'</p>');
   paragraph=[];
  }
 };
