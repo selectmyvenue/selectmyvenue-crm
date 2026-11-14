@@ -328,7 +328,7 @@ const out=[
  '<div class="letter-recipient"><strong>To,</strong><br>'+esc(candidate)+'<br>'+esc(address)+'</div>',
  '<p><strong>Subject:</strong> '+esc(subjectLine.replace(/^Subject:\s*/i,''))+'</p>',
  '<p>Dear '+esc(salutationName)+',</p>',
- ...(title?['<h1>'+esc(title)+'</h1>'][])
+ ...(title?['<h1>'+esc(title)+'</h1>']:[])
 ];
 let paragraph=[];
 const flush=()=>{
