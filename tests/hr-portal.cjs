@@ -82,6 +82,7 @@ async function run() {
     'Date: __________________'
   ].join('\n');
   const renderedOffer = formatterDom.window.__formatHrLetterBody(sampleOffer);
+  check(renderedOffer.includes('<p class="letter-opening-paragraph">We are pleased to offer you the position of Venue Listing Executive at Select My Venue'), 'offer letter opening legal paragraph is rendered as normal body copy, not a highlighted callout');
   check(renderedOffer.includes('<p class="letter-field-line"><strong>Enterprise Name:</strong> Select My Venue</p>'), 'offer letter keeps Enterprise Name on its own line');
   check(renderedOffer.includes('<p class="letter-field-line"><strong>Business Constitution:</strong> Proprietorship</p>'), 'offer letter keeps Business Constitution on its own line');
   check(renderedOffer.includes('<p class="letter-field-line"><strong>Proposed Commencement Date:</strong> 2026-11-15</p>') && renderedOffer.includes('<p class="letter-field-line"><strong>Reporting / Coordination:</strong>'), 'role and commencement details remain separate labelled lines');
