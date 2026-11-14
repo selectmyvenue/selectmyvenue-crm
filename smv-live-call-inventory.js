@@ -8,7 +8,7 @@
   const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const clean = v => String(v ?? "").trim();
   const norm = v => clean(v).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-  const state = { rows: [], aliases: [], target: "", city: "", timer: null, loading: false };
+  const state = { rows: [], aliases: [], target: "", city: "", defaultQuery: "", timer: null, loading: false };
   // Canonical in-memory selection shared by every assignment surface.
   function selectionStore(){
     const w=window;
