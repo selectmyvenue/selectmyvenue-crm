@@ -60,6 +60,7 @@ async function run() {
     '14 November 2026', '', 'To,', 'Mr. Amar Satya Mehta', 'H.No. G-66, Lajpat Nagar II,', 'South East Delhi, Delhi 110024', '',
     'Subject: Offer Letter for the position of Venue Listing Executive at Select My Venue', '',
     'Dear Amar,', '',
+    'We are pleased to offer you the position of Venue Listing Executive at Select My Venue, under the engagement arrangement and on the terms set out below. The actual legal classification of this relationship will be determined by the applicable law and the parties’ actual working arrangement, and not merely by the title used in this document.', '',
     '1. COMPANY DETAILS',
     'Enterprise Name: Select My Venue',
     'Business Constitution: Proprietorship',
