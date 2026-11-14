@@ -16,7 +16,7 @@
 
     <link rel="stylesheet" href="crm.css?v=20261106-assignment-exclusions-1">
     <link rel="stylesheet" href="ai-venue-discovery.css?v=20261107-ai-match-v2-2">
-    <link rel="stylesheet" href="smv-live-call-inventory.css?v=20261114-live-assignment-one-page-1">
+    <link rel="stylesheet" href="smv-live-call-inventory.css?v=20261114-assignment-selection-2">
     <link rel="stylesheet" href="smv-business-os.css?v=20261107-hub-1">
     <link rel="stylesheet" href="smv-business-intelligence.css?v=20261107-bi-1">
     <link rel="stylesheet" href="smv-growth-quality-centre.css?v=20261109-gq-1">
@@ -90,8 +90,8 @@
         defer
     ></script>
 <script defer src="ai-venue-discovery.js?v=20261107-ai-match-v2-2"></script>
-<script defer src="smv-enterprise-assignment-center.js?v=20261114-assigned-current-enquiry-1"></script>
-<script defer src="smv-live-call-inventory.js?v=20261114-live-assignment-one-page-1"></script>
+<script defer src="smv-enterprise-assignment-center.js?v=20261114-assignment-selection-2"></script>
+<script defer src="smv-live-call-inventory.js?v=20261114-assignment-selection-2"></script>
 
     <script defer src="venue-plan-center.js?v=20261013-corporate-polish-1"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.16/dist/purify.min.js"></script>
@@ -2316,7 +2316,6 @@
                 >×</button>
             </div>
 
-            <div class="smv-assignment-modal-body">
             <div class="venue-assignment-requirement" id="assignmentRequirementSummary">
                 Select approved and verified venues to receive this enquiry.
             </div>
@@ -2333,10 +2332,10 @@
                 </div>
             </section>
 <section id="smvLiveCallInventory" class="smv-live-inventory" aria-label="Live call venue inventory finder">
- <div class="slv-heading"><div><div class="slv-kicker">SELECT MY VENUE · LIVE CALL DESK</div><h3>Find Venues by Customer Location</h3><p>Search any area, city, venue name, venue type, owner contact, phone number or address. All matching approved venues appear together below.</p></div><span class="slv-live-pill"><i></i> Inventory from SMV</span></div>
- <label class="slv-search-wrap" for="smvCallLocationSearch"><span class="slv-search-icon">⌕</span><input id="smvCallLocationSearch" type="search" autocomplete="off" placeholder="Search by location or keyword — e.g. Gurgaon Phase 2, banquet, hotel name, phone, owner or area"></label>
-  <div class="slv-meta"><span id="smvInventoryMeta">Ready to search all SMV inventory</span><span>All approved &amp; verified venues · Select multiple</span></div>
- <div id="smvLiveInventoryResults" class="slv-area-list"><div class="slv-empty"><strong>Search all SMV venues in one place</strong><span>Enter a locality, city, venue name, hotel, restaurant, banquet, contact number or any other keyword. Every matching approved venue will appear together.</span></div></div>
+ <div class="slv-heading"><div><div class="slv-kicker">SELECT MY VENUE · LIVE CALL DESK</div><h3>Find Venues by Customer Location</h3><p>Type the customer's preferred area to see SMV inventory nearby and across the city.</p></div><span class="slv-live-pill"><i></i> Inventory from SMV</span></div>
+ <label class="slv-search-wrap" for="smvCallLocationSearch"><span class="slv-search-icon">⌕</span><input id="smvCallLocationSearch" type="search" autocomplete="off" placeholder="Type customer area — e.g. Rajouri Garden, Chhatarpur, Sohna Road, Delhi"></label>
+  <div class="slv-meta"><span id="smvInventoryMeta">Ready for live call</span><span>Approved & verified venues only</span></div>
+ <div id="smvLiveInventoryResults" class="slv-area-list"><div class="slv-empty"><strong>Start with the customer's preferred area</strong><span>Type an area or city to view the locations where SMV has venue inventory.</span></div></div>
  <div id="smvInventoryFeedback" role="status" aria-live="polite"></div>
 </section>
 <div class="smv-ai-launch-row"><button type="button" id="smvAiOpen" class="smv-ai-launch">✦ AI Venue Discovery <span>Find the best-fit SMV venues</span></button></div>
@@ -2375,7 +2374,6 @@
             </div>
 
             <div id="venueAssignmentMessage" class="form-message" role="status" aria-live="polite"></div>
-            </div>
 
             <div class="venue-assignment-actions">
                 <button
@@ -2387,7 +2385,7 @@
                     type="button"
                     id="saveVenueAssignment"
                     class="save-btn"
-                >Assign Selected Venues to This Enquiry</button>
+                >Assign Selected Venues</button>
                 <button
                     type="button"
                     id="smvAssignWhatsApp"
