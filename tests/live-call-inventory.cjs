@@ -21,7 +21,10 @@ assert(js.includes('preferred_area'),'current enquiry preferred area must prefil
 assert(js.includes('customerPreferredArea'),'live lead-area typing must sync into the finder');
 assert(!js.includes('.from("customer_enquiries")')&&!js.includes('.insert(')&&!js.includes('.update('),'finder must not write to customer enquiry or database tables');
 assert(css.includes('.slv-area-section')&&css.includes('.slv-venue-results-grid')&&css.includes('.slv-search-wrap')&&css.includes('@media(max-width:760px)'),'finder must have premium responsive all-results styling');
-assert(css.includes('max-height:none!important')&&css.includes('overflow:visible!important'),'all venue result cards must remain expanded rather than hidden inside an inner scroll list');
+assert(css.includes('max-height:min(24vh,220px)!important')&&css.includes('overflow-y:auto!important'),'new finder results must have a compact, independently scrollable results area');
+assert(css.includes('.smv-assignment-modal-body{')&&css.includes('min-height:0!important;')&&css.includes('overflow-y:auto!important;'),'the assignment modal main content must have a reliable scroll container');
+assert(css.includes('height:min(92dvh,900px)!important')&&css.includes('overflow:hidden!important'),'the assignment modal must have a constrained height so its content can scroll');
+assert(css.includes('flex:0 0 auto!important;')&&css.includes('position:relative!important;'),'Assign footer must remain outside the scrolling content');
 assert(js.includes('function venueSearchText(v)'),'finder must expose one keyword haystack for the full venue record');
 for (const field of ['v.venue_name','v.contact_person','v.owner_name','v.phone','v.mobile','v.email','v.full_address','v.pincode','v.venue_type','v.capacity_max']) assert(js.includes(field),'keyword search must include '+field);
 assert(js.includes('tokens.every(token=>searchable.includes(token))'),'multi-word searches must match all typed tokens across venue fields');
