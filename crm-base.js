@@ -1031,7 +1031,7 @@
   installCompactHeaderButtons();
   installAssignmentFullscreenPolish();
 
-  loadScript("crm-core.js?v=20261114-assignment-current-enquiry-2", function () {
+  loadScript("crm-core.js?v=20261114-live-assignment-one-page-1", function () {
     installInternalCommentOnlyBehavior();
     installLeadRenderNormalizer();
     installSaveCustomerCommentPreserver();
