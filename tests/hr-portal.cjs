@@ -43,6 +43,48 @@ async function run() {
   check(html.includes('<h2 class="numbered-heading">') && html.includes('Please sign and return the duplicate copy of this Job Offer Letter') && html.includes('support@selectmyvenue.com') && html.includes('We look forward to welcoming you aboard.') && html.includes('Sincerely,</p>'), 'numbered section headings are bold and offer letters end with support-email acceptance and classic sign-off');
   check(!html.includes('06f6db26-66f5-4dcb-b2f2-6cdc9eac0377.png') && html.includes('<strong>Raj Kumar</strong><br>Sole Proprietor'), 'all HR letters use text-only Raj Kumar / Sole Proprietor sign-off without a signature image');
   check(html.includes('letter-footer') && html.includes('smv-master-letterhead'), 'all HR letters share the master header and branded footer');
+
+  check(html.includes('letter-field-line') && html.includes('field=line.match') && html.includes('10\\.\\s*ACCEPTANCE AND SIGNATURES'), 'final HR letter formatter preserves label/value rows and the full acceptance section');
+  const formatterStart = html.indexOf('function formatHrLetterBody(raw){');
+  const formatterEnd = html.indexOf("$('print').onclick=", formatterStart);
+  check(formatterStart >= 0 && formatterEnd > formatterStart, 'final HR letter formatter is available for regression testing');
+  const formatterSource = html.slice(formatterStart, formatterEnd);
+  const formatterDom = new JSDOM('<!doctype html><html><body></body></html>', { runScripts: 'outside-only' });
+  formatterDom.window.docDraft = { document_type: 'offer_letter' };
+  formatterDom.window.esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
+  formatterDom.window.eval(formatterSource + '\nwindow.__formatHrLetterBody = formatHrLetterBody;');
+  const sampleOffer = [
+    '14 November 2026', '', 'To,', 'Mr. Amar Satya Mehta', 'H.No. G-66, Lajpat Nagar II, South East Delhi, Delhi 110024', '',
+    'Subject: Offer Letter for the position of Venue Listing Executive at Select My Venue', '',
+    'Dear Amar,', '',
+    '1. COMPANY DETAILS',
+    'Enterprise Name: Select My Venue',
+    'Business Constitution: Proprietorship',
+    'GSTIN: 07BTAPK8541A1Z1', '',
+    '2. ROLE AND COMMENCEMENT',
+    'Role: Venue Listing Executive',
+    'Proposed Commencement Date: 2026-11-15',
+    'Work Arrangement: Fully remote with flexible working hours subject to agreed deliverables.',
+    'Reporting / Coordination: Coordinate with the Company’s designated contact for assignments.', '',
+    '10. ACCEPTANCE AND SIGNATURES',
+    'By signing below, both parties confirm that they have read and understood the terms.',
+    'For Select My Venue',
+    'Name: Raj Kumar',
+    'Designation: Sole Proprietor',
+    'Date: 2026-11-14', '',
+    'ACCEPTANCE BY EXECUTIVE',
+    'I, Amar Satya Mehta, confirm my acceptance of this engagement.',
+    'Signature: ________________________________________',
+    'Name: Amar Satya Mehta',
+    'Date: __________________'
+  ].join('\n');
+  const renderedOffer = formatterDom.window.__formatHrLetterBody(sampleOffer);
+  check(renderedOffer.includes('<p class="letter-field-line"><strong>Enterprise Name:</strong> Select My Venue</p>'), 'offer letter keeps Enterprise Name on its own line');
+  check(renderedOffer.includes('<p class="letter-field-line"><strong>Business Constitution:</strong> Proprietorship</p>'), 'offer letter keeps Business Constitution on its own line');
+  check(renderedOffer.includes('<p class="letter-field-line"><strong>Proposed Commencement Date:</strong> 2026-11-15</p>') && renderedOffer.includes('<p class="letter-field-line"><strong>Reporting / Coordination:</strong>'), 'role and commencement details remain separate labelled lines');
+  check(renderedOffer.includes('<h2 class="numbered-heading">10. ACCEPTANCE AND SIGNATURES</h2>') && renderedOffer.includes('ACCEPTANCE BY EXECUTIVE') && renderedOffer.includes('Signature:'), 'offer letter preserves company and candidate acceptance/signature sections');
+  check(!renderedOffer.includes('Select My Venue Business Constitution') && !renderedOffer.includes('Please sign and return the duplicate copy'), 'offer letter does not collapse adjacent fields or duplicate a generic acceptance paragraph');
+  formatterDom.window.close();
   console.log('HR portal static checks passed.');
 }
 
