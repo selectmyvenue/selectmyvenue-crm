@@ -329,3 +329,104 @@
 .smv-assignment-assigned-chip small{font-size:10px;color:#63877e;font-weight:500}
 .smv-assignment-overview-summary{font-size:11px;color:#78918a;margin-top:6px}
 @media(max-width:760px){.smv-assignment-selection-overview{grid-template-columns:1fr}.smv-assignment-overview-panel{min-height:70px}}
+
+
+/* Unified one-page Live Call Desk: every matched venue remains expanded and selectable. */
+#venueAssignmentModal .smv-assignment-modal-body{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  padding:0 0 10px;
+  scrollbar-gutter:stable;
+}
+#venueAssignmentModal .venue-assignment-actions{
+  flex:0 0 auto;
+  position:relative;
+  z-index:5;
+  background:#fff;
+  border-top:1px solid #e4efea;
+  padding:12px 20px 16px!important;
+}
+#venueAssignmentModal .venue-assignment-card{
+  width:min(1240px,100%);
+  max-height:min(94vh,960px);
+}
+#venueAssignmentModal .venue-assignment-requirement{
+  margin:10px 18px 8px;
+  padding:9px 12px;
+}
+#venueAssignmentModal .smv-assignment-selection-overview{
+  margin:8px 18px 10px;
+}
+#venueAssignmentModal .smv-live-inventory{
+  margin:8px 18px 14px;
+  padding:14px 15px;
+}
+#venueAssignmentModal .slv-heading h3{font-size:21px}
+#venueAssignmentModal .slv-heading p{max-width:760px}
+#venueAssignmentModal .slv-search-wrap input{min-height:46px;font-size:14px}
+#venueAssignmentModal .slv-area-list{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:12px!important;
+  max-height:none!important;
+  min-height:0!important;
+  overflow:visible!important;
+  padding:1px!important;
+}
+#venueAssignmentModal .slv-area-section{
+  min-width:0;padding:10px;border:1px solid #dcebe4;border-radius:13px;background:#fbfefc;
+}
+#venueAssignmentModal .slv-area-section-header{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  margin:0 0 9px;padding:0 2px 7px;border-bottom:1px solid #e7f0eb;
+}
+#venueAssignmentModal .slv-area-section-header>div{
+  display:flex;align-items:baseline;flex-wrap:wrap;gap:8px;
+}
+#venueAssignmentModal .slv-area-section-header strong{color:#174c40;font-size:13px;font-weight:850}
+#venueAssignmentModal .slv-area-section-header small{color:#82948c;font-size:10px}
+#venueAssignmentModal .slv-venue-results-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;
+}
+#venueAssignmentModal .slv-venue-card{
+  display:flex;align-items:stretch;justify-content:space-between;gap:12px;min-width:0;
+  padding:11px 12px;border:1px solid #e1ece6;border-radius:11px;background:#fff;
+  box-shadow:0 1px 4px rgba(14,69,52,.035);transition:border-color .16s,background .16s,box-shadow .16s;
+}
+#venueAssignmentModal .slv-venue-card.is-selected{
+  border-color:#80c6ae;background:#f3fbf7;box-shadow:0 3px 12px rgba(26,112,80,.07);
+}
+#venueAssignmentModal .slv-venue-card-main{display:flex;flex:1 1 auto;min-width:0;flex-direction:column;gap:5px}
+#venueAssignmentModal .slv-venue-card-title{display:flex;align-items:center;flex-wrap:wrap;gap:7px}
+#venueAssignmentModal .slv-venue-card-title strong{color:#17483d;font-size:13px;font-weight:850;overflow-wrap:anywhere}
+#venueAssignmentModal .slv-venue-card-title>span{
+  border-radius:999px;padding:3px 7px;background:#edf6f1;color:#467565;font-size:9px;font-weight:750;
+}
+#venueAssignmentModal .slv-venue-card-location{color:#437464;font-size:10px;font-weight:700}
+#venueAssignmentModal .slv-venue-card-address{color:#768b82;font-size:10px;line-height:1.4;overflow-wrap:anywhere}
+#venueAssignmentModal .slv-venue-card-details{display:flex;align-items:center;flex-wrap:wrap;gap:4px 11px;margin-top:2px}
+#venueAssignmentModal .slv-venue-card-details span{color:#82948c;font-size:9px;line-height:1.35;overflow-wrap:anywhere}
+#venueAssignmentModal .slv-venue-card-action{display:flex;flex:0 0 auto;align-items:center;justify-content:center}
+#venueAssignmentModal .slv-select-btn{white-space:nowrap;min-width:104px;min-height:34px;padding:7px 10px;border-radius:9px;font-size:10px}
+#venueAssignmentModal .slv-assigned{max-width:120px;text-align:center;white-space:normal}
+#venueAssignmentModal .venue-assignment-note{padding:4px 18px 0}
+#venueAssignmentModal .venue-assignment-note textarea{min-height:54px}
+#venueAssignmentModal .venue-assignment-toolbar[hidden],
+#venueAssignmentModal #smvHiddenVenuePanel[hidden],
+#venueAssignmentModal #venueAssignmentList[hidden],
+#venueAssignmentModal .smv-ai-launch-row[hidden],
+#venueAssignmentModal #smvAiDiscovery[hidden]{display:none!important}
+#venueAssignmentModal #smvInventoryFeedback{margin:5px 18px 0;min-height:18px;font-size:11px}
+@media(max-width:760px){
+  #venueAssignmentModal .venue-assignment-card{width:100%;max-height:96vh}
+  #venueAssignmentModal .smv-live-inventory{margin:7px 10px 12px;padding:10px}
+  #venueAssignmentModal .smv-assignment-selection-overview{margin:7px 10px 9px}
+  #venueAssignmentModal .venue-assignment-requirement{margin:8px 10px 7px}
+  #venueAssignmentModal .slv-venue-results-grid{grid-template-columns:1fr}
+  #venueAssignmentModal .slv-venue-card{gap:8px;padding:9px}
+  #venueAssignmentModal .slv-venue-card-title strong{font-size:12px}
+  #venueAssignmentModal .slv-select-btn{min-width:88px;padding:6px 8px}
+  #venueAssignmentModal .venue-assignment-actions{padding:9px 10px 11px!important;gap:6px}
+}

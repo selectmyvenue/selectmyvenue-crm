@@ -83,7 +83,7 @@ async function run() {
     'Date: __________________'
   ].join('\n');
   const renderedOffer = formatterDom.window.__formatHrLetterBody(sampleOffer);
-  check(renderedOffer.includes('<p class="letter-opening-paragraph">We are pleased to offer you the position of Venue Listing Executive at Select My Venue'), 'offer letter opening legal paragraph is rendered as normal body copy, not a highlighted callout');
+  check(renderedOffer.includes('<p class="letter-opening-paragraph" style="font:400 10pt/1.48 Arial,Helvetica,sans-serif;') && renderedOffer.includes('We are pleased to offer you the position of Venue Listing Executive at Select My Venue'), 'offer letter opening legal paragraph is rendered as normal body copy, not a highlighted callout');
   formatterDom.window.docDraft = { document_type: 'engagement_letter' };
   const reopenedDraftOutput = formatterDom.window.__formatHrLetterBody(sampleOffer);
   check(reopenedDraftOutput.includes('<p class="letter-opening-paragraph" style="font:400 10pt/1.48 Arial,Helvetica,sans-serif;') && !reopenedDraftOutput.includes('<h1>We are pleased to offer'), 'offer opening remains normal left-aligned body copy even when a reopened draft has a different internal document type');
