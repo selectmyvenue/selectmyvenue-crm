@@ -7965,9 +7965,6 @@ async function openVenueAssignmentModal(enquiryId) {
         return;
     }
 
-    // Start a lead-scoped selection session. Pending selections from another
-    // enquiry must never leak into this customer's assignment.
-    window.SMVEnterpriseAssignmentCenter?.beginLead(lead.id);
     assignmentCurrentLead = lead;
     assignmentSearch = "";
 
@@ -8122,29 +8119,9 @@ function isRecommendedAssignmentVenue(venue, lead) {
 function renderAssignmentVenues() {
     const list = document.getElementById("venueAssignmentList");
     const count = document.getElementById("assignmentVenueCount");
-    const modal = document.getElementById("venueAssignmentModal");
-    if (!list || !assignmentCurrentLead) return;
 
-    // Keep one canonical selection across legacy search re-renders and the
-    // Live Call Desk / AI tools. The legacy list uses innerHTML, so checked
-    // controls must be captured before it is rebuilt.
-    const selectedById = new Map();
-    const sharedSelection = window.SMVAssignmentSelection;
-    if (sharedSelection?.ids instanceof Set) sharedSelection.ids.forEach(id => {
-        selectedById.set(String(id), {name: sharedSelection.names?.get(String(id)) || "Selected venue"});
-    });
-    (modal || document).querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)").forEach(cb => {
-        selectedById.set(String(cb.value), {
-            name: safeValue(cb.dataset.venueName || cb.dataset.venueLabel ||
-                cb.closest(".venue-assignment-item")?.querySelector(".venue-assignment-item-title strong")?.textContent || "")
-        });
-    });
-    let bridge = modal?.querySelector("#smvInventorySelectionBridge");
-    if (modal && !bridge) {
-        bridge = document.createElement("div");
-        bridge.id = "smvInventorySelectionBridge";
-        bridge.hidden = true;
-        modal.appendChild(bridge);
+    if (!list || !assignmentCurrentLead) {
+        return;
     }
 
     const search = assignmentSearch;
@@ -8171,8 +8148,6 @@ function renderAssignmentVenues() {
 
     if (!venues.length) {
         list.innerHTML = '<div class="venue-assignment-empty">No approved and verified venues match this search.</div>';
-        if (bridge) syncAssignmentSelectionBridge(bridge, selectedById, new Set());
-        window.SMVEnterpriseAssignmentCenter?.updateBasket();
         return;
     }
 
@@ -8211,7 +8186,7 @@ function renderAssignmentVenues() {
                     type="checkbox"
                     class="venue-assignment-checkbox"
                     value="${escapeHTML(venue.id)}"
-                    ${assigned || selectedById.has(String(venue.id)) ? "checked" : ""}
+                    ${assigned ? "checked" : ""}
                 >
                 <div class="venue-assignment-item-main">
                     <div class="venue-assignment-item-title">
@@ -8233,42 +8208,6 @@ function renderAssignmentVenues() {
             </label>
         `;
     }).join("");
-
-    if (bridge) {
-        const visibleIds = new Set(venues.map(venue => String(venue.id)));
-        syncAssignmentSelectionBridge(bridge, selectedById, visibleIds);
-    }
-    window.SMVEnterpriseAssignmentCenter?.updateBasket();
-}
-
-function syncAssignmentSelectionBridge(bridge, selectedById, visibleIds) {
-    // Only keep selected IDs outside the rendered/search-filtered cards.
-    // When a selected venue becomes visible, its normal card checkbox carries
-    // the selection instead of creating duplicate controls.
-    bridge.querySelectorAll(".venue-assignment-checkbox").forEach(cb => {
-        if (!selectedById.has(String(cb.value)) || visibleIds.has(String(cb.value))) cb.remove();
-    });
-    selectedById.forEach((meta, id) => {
-        if (visibleIds.has(id)) return;
-        let cb = Array.from(bridge.querySelectorAll(".venue-assignment-checkbox")).find(item => String(item.value) === id);
-        if (!cb) {
-            cb = document.createElement("input");
-            cb.type = "checkbox";
-            cb.className = "venue-assignment-checkbox";
-            cb.value = id;
-            cb.checked = true;
-            cb.style.position = "absolute";
-            cb.style.width = "1px";
-            cb.style.height = "1px";
-            cb.style.opacity = "0";
-            cb.style.pointerEvents = "none";
-            bridge.appendChild(cb);
-        }
-        cb.checked = true;
-        cb.disabled = false;
-        cb.dataset.venueName = meta.name || cb.dataset.venueName || "Selected venue";
-        cb.dataset.venueLabel = cb.dataset.venueName;
-    });
 }
 
 function showAssignmentMessage(message, type = "") {
@@ -8309,17 +8248,16 @@ async function saveVenueAssignments(options = {}) {
         return;
     }
 
-    const selectionStore = window.SMVAssignmentSelection;
-    const storedSelected = selectionStore?.ids instanceof Set
-        ? [...selectionStore.ids].map(String)
-        : [];
     const visibleSelected = Array.from(
-        document.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)")
-    ).map(input => String(input.value));
+        document.querySelectorAll(
+            ".venue-assignment-checkbox:checked:not(:disabled)"
+        )
+    ).map(input => input.value);
 
-    // The shared store is authoritative; checked controls are a compatibility
-    // fallback for the legacy assignment list.
-    const selected = [...new Set([...storedSelected, ...visibleSelected])];
+    /* Only checked venue controls represent an explicit staff action.
+       Never silently merge an AI/recommended shortlist into a database write:
+       recommendations may be displayed, but assignment requires a checked box. */
+    const selected = [...new Set(visibleSelected.map(String))];
 
     if (!selected.length) {
         showAssignmentMessage(
@@ -8522,14 +8460,6 @@ async function saveVenueAssignments(options = {}) {
                 `${alreadyCount} venue${alreadyCount === 1 ? " is" : "s are"} already assigned to this enquiry. No new assignment was created.`,
                 "info"
             );
-        }
-
-        // Clear only after the database write and refresh succeeded.
-        if (window.SMVAssignmentSelection?.ids instanceof Set) {
-            selectedUnique.forEach(id => {
-                window.SMVAssignmentSelection.ids.delete(String(id));
-                window.SMVAssignmentSelection.names?.delete(String(id));
-            });
         }
 
         return {
