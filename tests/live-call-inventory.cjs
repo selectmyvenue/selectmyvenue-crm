@@ -28,9 +28,11 @@ assert(js.includes('tokens.every(token=>searchable.includes(token))'),'multi-wor
 assert(js.includes('No matching approved venue found'),'unmatched generic keywords must not return an unrelated full-city venue list');
 assert(!js.includes('data-slv-toggle'),'venue result areas must not be collapsed behind accordion toggles');
 assert(html.includes('smv-assignment-modal-body'),'search results and note must use one scrollable modal body');
-assert(html.includes('id="venueAssignmentList" class="venue-assignment-list" hidden'),'legacy list must remain only as a hidden save-compatibility bridge');
-assert(html.includes('class="venue-assignment-toolbar" hidden'),'legacy search toolbar must not appear below the Live Call Desk');
-assert(html.includes('class="smv-ai-launch-row" hidden'),'second AI selection surface must not compete with the single live-search workflow');
+assert(html.includes('data-smv-account-action="matching">✦ Smart Venue Matching</button>'),'the existing Smart Venue Matches entry point must remain unchanged');
+assert(html.includes('id="smvAiOpen"')&&html.includes('id="smvAiDiscovery"')&&html.includes('SELECT MY VENUE · SMART MATCH'),'the existing Smart Venue Matches panel must remain available inside assignment');
+assert(html.includes('<div class="venue-assignment-toolbar">')&&html.includes('<div id="venueAssignmentList" class="venue-assignment-list">'),'the original assignment search and list must remain available');
+assert(!html.includes('class="smv-ai-launch-row" hidden')&&!html.includes('class="venue-assignment-toolbar" hidden')&&!html.includes('class="venue-assignment-list" hidden'),'the old matching and assignment controls must not be hidden by the new finder');
+assert(html.includes('smv-assignment-modal-body'),'the assignment modal must keep one scrollable content area and its fixed action footer');
 console.log('PASS Live Call Inventory Finder: enquiry area sync, approved inventory, nearest-first area grouping, venue selection handoff and no database writes');
 
 assert(!html.includes('smv-assignment-selection-dock'), 'do not render a second Selected Now panel below the assignment summary');
