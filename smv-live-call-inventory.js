@@ -8,7 +8,7 @@
   const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const clean = v => String(v ?? "").trim();
   const norm = v => clean(v).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-  const state = { rows: [], aliases: [], target: "", city: "", timer: null, loading: false };
+  const state = { rows: [], aliases: [], target: "", city: "", defaultQuery: "", timer: null, loading: false };
   // Canonical in-memory selection shared by every assignment surface.
   function selectionStore(){
     const w=window;
@@ -67,52 +67,82 @@
     return clean(l.preferred_area || $("#customerPreferredArea")?.value || l.location || "");
   }
   function detectCity(query, rows, l) {
-    const fromLead=clean(l?.city || l?.location || "");
     const q=norm(query);
     const cityNames=[...new Set(rows.map(v=>clean(v.city)).filter(Boolean))];
-    const direct=cityNames.find(c=>norm(c)===q || (q.length>2 && q.includes(norm(c))));
+    const direct=cityNames.find(c=>norm(c)===q || (q.length>2 && (q.includes(norm(c)) || norm(c).includes(q))));
     if (direct) return direct;
     const alias=getAlias(query);
     if (alias?.city_family) {
       const match=cityNames.find(c=>norm(c)===norm(alias.city_family));
       if (match) return match;
     }
-    const leadCity=cityNames.find(c=>norm(fromLead).includes(norm(c)) || norm(c).includes(norm(fromLead)));
-    if (leadCity) return leadCity;
-    const cityMention=cityNames.find(c=>q.includes(norm(c)));
-    return cityMention || "";
+    // Use the current lead's city as a nearby fallback only for the untouched
+    // prefilled area. An arbitrary unmatched keyword must not dump an unrelated city.
+    if(q && q===norm(state.defaultQuery)){
+      const fromLead=clean(l?.city || l?.location || "");
+      const leadCity=cityNames.find(c=>norm(fromLead).includes(norm(c)) || norm(c).includes(norm(fromLead)));
+      if(leadCity) return leadCity;
+    }
+    return "";
+  }
+  function groupRowsByArea(rows, options={}) {
+    const groups=new Map();
+    rows.forEach(v=>{
+      const area=clean(v.area || v.locality || v.city || "Area not listed");
+      const key=norm(area)||"area not listed";
+      if(!groups.has(key)) groups.set(key,{area,venues:[],distances:[]});
+      const group=groups.get(key);
+      group.venues.push(v);
+      const d=distance(options.targetCoords,coords(v));
+      if(d!==null)group.distances.push(d);
+    });
+    const list=[...groups.values()].map(group=>({
+      ...group,
+      minDistance:group.distances.length?Math.min(...group.distances):null
+    }));
+    list.sort((a,b)=>{
+      if(options.exactArea){
+        const ae=norm(a.area)===options.exactArea || norm(a.area).includes(options.exactArea);
+        const be=norm(b.area)===options.exactArea || norm(b.area).includes(options.exactArea);
+        if(ae!==be)return ae?-1:1;
+      }
+      if(a.minDistance!==null && b.minDistance!==null)return a.minDistance-b.minDistance;
+      if(a.minDistance!==null)return -1;
+      if(b.minDistance!==null)return 1;
+      return a.area.localeCompare(b.area);
+    });
+    list.forEach(group=>group.venues.sort((x,y)=>clean(x.venue_name).localeCompare(clean(y.venue_name))));
+    return list;
   }
   function makeGroups(query) {
     const all=venueRows().filter(approved);
     const l=lead()||{};
     const city=detectCity(query,all,l);
     const alias=getAlias(query);
+    if(!city && !alias)return null;
     const targetCoords=alias && Number.isFinite(Number(alias.latitude)) && Number.isFinite(Number(alias.longitude))
       ? [Number(alias.latitude),Number(alias.longitude)] : null;
     const cityRows=city ? all.filter(v=>norm(v.city)===norm(city)) : all;
-    const exact=norm(query);
-    const groups=new Map();
-    cityRows.forEach(v=>{
-      const area=clean(v.area || v.locality || v.city || "Area not listed");
-      const key=norm(area)||"area not listed";
-      if(!groups.has(key)) groups.set(key,{area,venues:[],distances:[]});
-      const g=groups.get(key); g.venues.push(v);
-      const d=distance(targetCoords,coords(v));
-      if(d!==null)g.distances.push(d);
-    });
-    const list=[...groups.values()].map(g=>{
-      const exactArea=norm(g.area)===exact || (exact.length>2 && norm(g.area).includes(exact)) || (exact.length>2 && exact.includes(norm(g.area)));
-      const minDistance=g.distances.length?Math.min(...g.distances):null;
-      return {...g,exactArea,minDistance};
-    });
-    list.sort((a,b)=>{
-      if(a.exactArea!==b.exactArea)return a.exactArea?-1:1;
-      if(a.minDistance!==null && b.minDistance!==null)return a.minDistance-b.minDistance;
-      if(a.minDistance!==null)return -1;
-      if(b.minDistance!==null)return 1;
-      return a.area.localeCompare(b.area);
-    });
-    return {city,groups:list,total:cityRows.length,allTotal:all.length,hasCoords:!!targetCoords};
+    if(!cityRows.length)return null;
+    return {
+      city,
+      groups:groupRowsByArea(cityRows,{targetCoords,exactArea:norm(query)}),
+      total:cityRows.length,
+      allTotal:all.length,
+      hasCoords:!!targetCoords,
+      nearbyFallback:true
+    };
+  }
+  function venueSearchText(v) {
+    const fields=[
+      v.venue_name,v.name,v.contact_person,v.contact_name,v.owner_name,v.manager_name,
+      v.phone,v.mobile,v.contact_number,v.phone_number,v.whatsapp_number,v.email,v.contact_email,
+      v.address,v.full_address,v.venue_address,v.area,v.locality,v.city,v.state,v.pincode,
+      v.venue_type,v.type,v.category,v.venue_category,v.capacity_min,v.capacity_max,v.capacity,
+      v.max_capacity,v.guest_capacity,v.price_min_per_person,v.price_max_per_person,
+      v.website,v.website_url
+    ];
+    return norm(fields.filter(value=>value!==null&&value!==undefined).join(" "));
   }
   function findCheckbox(id) {
     const modal=$("#venueAssignmentModal"),list=$("#venueAssignmentList");
@@ -173,49 +203,79 @@
     el.textContent=message; el.dataset.type=type||"info";
   }
   function render() {
-    const input=$("#smvCallLocationSearch"), root=$("#smvLiveInventoryResults");
+    const input=$("#smvCallLocationSearch"),root=$("#smvLiveInventoryResults");
     if(!input||!root)return;
     const query=clean(input.value);
     state.target=query;
-    if(!query) {
-      root.innerHTML='<div class="slv-empty"><strong>Start with the customer’s preferred area</strong><span>Type an area such as Rajouri Garden, Chhatarpur, Sohna Road or a city. SMV inventory areas will appear here.</span></div>';
-      $("#smvInventoryMeta").textContent="Ready for live call";
+    if(!query){
+      root.innerHTML='<div class="slv-empty"><strong>Search all SMV venues in one place</strong><span>Enter a locality, city, venue name, venue type, contact number, owner name or address. All matching approved and verified venues will appear here.</span></div>';
+      $("#smvInventoryMeta").textContent="Ready to search all SMV inventory";
       return;
     }
     const all=venueRows().filter(approved);
     const tokens=norm(query).split(" ").filter(Boolean);
     const directMatches=all.filter(v=>{
-      const searchable=norm([v.venue_name,v.contact_person,v.address,v.venue_address,v.full_address,v.area,v.locality,v.city,v.state,v.pincode,v.venue_type].filter(Boolean).join(" "));
-      return tokens.length>0 && tokens.every(token=>searchable.includes(token));
+      const searchable=venueSearchText(v);
+      return tokens.length>0&&tokens.every(token=>searchable.includes(token));
     });
-    const result=directMatches.length
-      ? (()=>{const groups=new Map();directMatches.forEach(v=>{const area=clean(v.area||v.locality||v.city||"Area not listed"),key=norm(area);if(!groups.has(key))groups.set(key,{area,venues:[],distances:[]});groups.get(key).venues.push(v);});return {city:"Matching venue details",groups:[...groups.values()].map(g=>({...g,exactArea:true,minDistance:null})),total:directMatches.length};})()
-      : makeGroups(query);
-    $("#smvInventoryMeta").textContent=(result.city ? result.city+" inventory" : "SMV inventory") + " · "+result.total+" approved venues · "+result.groups.length+" areas";
-    if(!result.groups.length) {
-      root.innerHTML='<div class="slv-empty"><strong>No approved venue inventory found</strong><span>Try the city name or a nearby locality. Hidden, unverified and unapproved venues are excluded.</span></div>';
+    let result;
+    if(directMatches.length){
+      result={
+        city:"",
+        groups:groupRowsByArea(directMatches),
+        total:directMatches.length,
+        nearbyFallback:false
+      };
+    }else{
+      result=makeGroups(query);
+    }
+    if(!result||!result.groups.length){
+      $("#smvInventoryMeta").textContent="0 matching venues";
+      root.innerHTML='<div class="slv-empty"><strong>No matching approved venue found</strong><span>Try another area, city, venue name, venue type, owner contact, phone number or a shorter keyword.</span></div>';
       return;
     }
-    root.innerHTML=result.groups.map((g,i)=>{
-      const dist=g.minDistance!==null ? '<small class="slv-distance">'+g.minDistance.toFixed(1)+' km approx.</small>' : "";
-      const label=g.exactArea ? "Preferred area" : (g.minDistance!==null ? "Nearest alternative" : "Other inventory area");
-      return '<section class="slv-area-card '+(g.exactArea?'is-exact':'')+'">'+
-        '<button type="button" class="slv-area-head" aria-expanded="'+(i===0?'true':'false')+'" data-slv-toggle="'+i+'">'+
-          '<span class="slv-area-marker">'+(g.exactArea?'●':String(i+1).padStart(2,"0"))+'</span>'+
-          '<span class="slv-area-title"><strong>'+esc(g.area)+'</strong><small>'+esc(label)+' · '+g.venues.length+' venue'+(g.venues.length===1?'':'s')+'</small></span>'+
-          dist+'<span class="slv-chevron">⌄</span></button>'+
-        '<div class="slv-area-venues" '+(i===0?'':'hidden')+'>'+g.venues.map(v=>{
-          const id=String(v.id),assigned=isAssigned(v.id),addr=clean(v.address || v.venue_address || v.full_address);
-          return '<article class="slv-venue-row"><div class="slv-venue-copy"><strong>'+esc(v.venue_name || "Venue")+'</strong><span>'+esc([v.venue_type,v.area,v.city].filter(Boolean).join(" · "))+'</span>'+(addr?'<small>'+esc(addr)+'</small>':'<small>Full address not available in venue record</small>')+'</div>'+
-            (assigned?'<span class="slv-assigned">Already assigned</span>':(selectionStore().ids.has(id)||findCheckbox(id)?.checked?'<button type="button" class="slv-select-btn is-selected" data-slv-select="'+esc(id)+'" disabled>Selected</button>':'<button type="button" class="slv-select-btn" data-slv-select="'+esc(id)+'">＋ Select</button>'))+
-            '</article>';
-        }).join("")+'</div></section>';
+    const areaCount=result.groups.length;
+    $("#smvInventoryMeta").textContent=result.total+" approved venues · "+areaCount+" area"+(areaCount===1?"":"s")+(result.nearbyFallback?" · nearby city inventory":" · all keyword matches");
+    root.innerHTML=result.groups.map(group=>{
+      const rows=group.venues.map(v=>{
+        const id=String(v.id),assigned=isAssigned(id),store=selectionStore();
+        const selected=store.ids.has(id)||!!findCheckbox(id)?.checked;
+        const address=clean(v.full_address||v.venue_address||v.address);
+        const contactName=clean(v.contact_person||v.contact_name||v.owner_name||v.manager_name);
+        const phone=clean(v.phone||v.mobile||v.contact_number||v.phone_number||v.whatsapp_number);
+        const email=clean(v.email||v.contact_email);
+        const capacity=clean(v.capacity_max||v.max_capacity||v.capacity||"");
+        const type=clean(v.venue_type||v.type||v.category||"Venue");
+        const location=clean([v.area||v.locality,v.city,v.state].filter(Boolean).join(" · "));
+        const price=(v.price_min_per_person||v.price_max_per_person)
+          ?"₹"+(v.price_min_per_person||"—")+"–"+(v.price_max_per_person||"—")+"/person":"";
+        const contactBits=[
+          contactName?'<span>Contact: '+esc(contactName)+'</span>':"",
+          phone?'<span>☎ '+esc(phone)+'</span>':"",
+          email?'<span>✉ '+esc(email)+'</span>':"",
+          capacity?'<span>Capacity: '+esc(capacity)+'</span>':"",
+          price?'<span>'+esc(price)+'</span>':""
+        ].filter(Boolean).join("");
+        const action=assigned
+          ?'<span class="slv-assigned">Already assigned to this enquiry</span>'
+          :selected
+            ?'<button type="button" class="slv-select-btn is-selected" data-slv-select="'+esc(id)+'" disabled>✓ Selected</button>'
+            :'<button type="button" class="slv-select-btn" data-slv-select="'+esc(id)+'">＋ Select venue</button>';
+        return '<article class="slv-venue-card'+(selected?' is-selected':'')+'">'+
+          '<div class="slv-venue-card-main"><div class="slv-venue-card-title"><strong>'+esc(v.venue_name||"Venue")+'</strong><span>'+esc(type)+'</span></div>'+
+          '<div class="slv-venue-card-location">'+(location?'📍 '+esc(location):"Location not listed")+'</div>'+
+          (address?'<div class="slv-venue-card-address">'+esc(address)+'</div>':'')+
+          (contactBits?'<div class="slv-venue-card-details">'+contactBits+'</div>':'')+
+          '</div><div class="slv-venue-card-action">'+action+'</div></article>';
+      }).join("");
+      const distanceText=group.minDistance!==null?" · nearest pin "+group.minDistance.toFixed(1)+" km":"";
+      return '<section class="slv-area-section"><div class="slv-area-section-header"><div><strong>'+esc(group.area)+'</strong><small>'+group.venues.length+' venue'+(group.venues.length===1?"":"s")+distanceText+'</small></div></div><div class="slv-venue-results-grid">'+rows+'</div></section>';
     }).join("");
   }
   function syncFromLead() {
     const input=$("#smvCallLocationSearch"); if(!input)return;
     const next=targetFromLead();
-    if(next)input.value=next;
+    if(next){input.value=next;state.defaultQuery=next;}
     render();
   }
   function boot() {
@@ -231,11 +291,6 @@
     modal.addEventListener("change",e=>{if(e.target.matches(".venue-assignment-checkbox")){syncSelectionPanel();render();}});
     syncSelectionPanel();
     modal.addEventListener("click",e=>{
-      const toggle=e.target.closest("[data-slv-toggle]");
-      if(toggle){
-        const panel=toggle.parentElement.querySelector(".slv-area-venues");
-        const open=panel.hidden; panel.hidden=!open; toggle.setAttribute("aria-expanded",String(open));
-      }
       const select=e.target.closest("[data-slv-select]");
       if(select)selectVenue(select.dataset.slvSelect);
       const remove=e.target.closest("[data-slv-remove]");
