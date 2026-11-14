@@ -7965,10 +7965,12 @@ async function openVenueAssignmentModal(enquiryId) {
         return;
     }
 
+    // Set the active enquiry before refreshing either assignment surface.
+    // The Already Assigned panel filters by assignmentCurrentLead.id.
+    assignmentCurrentLead = lead;
     // Start a lead-scoped selection session. Pending selections from another
     // enquiry must never leak into this customer's assignment.
     window.SMVEnterpriseAssignmentCenter?.beginLead(lead.id);
-    assignmentCurrentLead = lead;
     assignmentSearch = "";
 
     const search = document.getElementById("assignmentVenueSearch");
