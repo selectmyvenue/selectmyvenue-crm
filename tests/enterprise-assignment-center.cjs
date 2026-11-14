@@ -19,7 +19,7 @@ assert(inventory.includes('data-slv-select')&&inventory.includes('.venue-assignm
 assert(inventory.includes('function venueSearchText(v)')&&inventory.includes('v.venue_name,v.name,v.contact_person')&&inventory.includes('v.phone,v.mobile,v.contact_number')&&inventory.includes('v.address,v.full_address,v.venue_address'),'live inventory search must include venue names, contacts, phone and full address fields');
 assert(html.includes('id="smvAcBasketItems"')&&html.includes('id="smvAcSelected"'),'assignment modal must provide one shared Selected Now basket and count');
 assert(html.includes('id="smvAcAssignedItems"')&&html.includes('id="smvAcAssignedCount"'),'assignment modal must provide the Already Assigned panel');
-assert.match(html,/smv-live-call-inventory\.css\?v=20261114-live-assignment-one-page-1/,'single-page assignment CSS must use a fresh cache key');
+assert.match(html,/smv-live-call-inventory\.css\?v=20261114-assignment-modal-scroll-2/,'single-page assignment CSS must use a fresh cache key');
 assert.match(html,/smv-enterprise-assignment-center\.js\?v=20261114-assigned-current-enquiry-1/,'the existing Smart Venue Matches controller cache must remain unchanged');
 assert.match(html,/smv-live-call-inventory\.js\?v=20261114-live-assignment-one-page-1/,'live inventory controller must use a fresh cache key');
 assert.match(html,/crm\.js\?v=20261114-assignment-selection-2/,'the existing CRM loader version must remain unchanged');
