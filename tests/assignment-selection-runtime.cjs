@@ -36,7 +36,19 @@ window.assignmentVenueRows = [
   { id: 'venue-new-1', venue_name: 'New Inventory Venue', city: 'Delhi', area: 'West Delhi', is_hidden: false },
   { id: 'venue-legacy-1', venue_name: 'Legacy Assignment Venue', city: 'Delhi', area: 'West Delhi', is_hidden: false }
 ];
-window.allVenueAssignments = [];
+window.allVenueAssignments = [
+  ...Array.from({ length: 31 }, (_, index) => ({
+    id: 'historical-assignment-' + index,
+    enquiry_id: 'different-enquiry',
+    venue_id: 'historical-venue-' + index,
+    venue_name: 'Historical Venue ' + (index + 1),
+    assignment_status: 'assigned'
+  })),
+  { id: 'current-assignment-1', enquiry_id: 'lead-1', venue_id: 'current-venue-1', venue_name: 'Current Lead Venue One', assignment_status: 'assigned' },
+  { id: 'current-assignment-2', enquiry_id: 'lead-1', venue_id: 'current-venue-2', venue_name: 'Current Lead Venue Two', assignment_status: 'viewed' },
+  { id: 'cancelled-current', enquiry_id: 'lead-1', venue_id: 'cancelled-venue', venue_name: 'Cancelled Current Venue', assignment_status: 'cancelled' },
+  { id: 'cancelled-other', enquiry_id: 'different-enquiry', venue_id: 'venue-new-1', venue_name: 'Other Lead Cancelled Venue', assignment_status: 'cancelled' }
+];
 window.isVenueAlreadyAssigned = function () { return false; };
 window.getSupabaseClient = function () { return null; };
 
@@ -48,6 +60,12 @@ const controller = window.SMVEnterpriseAssignmentCenter;
 assert.ok(controller, 'enterprise assignment controller must boot');
 assert.ok(window.SMVLiveCallInventory, 'new live inventory tool must boot');
 controller.beginLead('lead-1');
+assert.equal(document.getElementById('smvAcAssignedCount').textContent, '2',
+  'Already Assigned count must include only active assignments for the open enquiry, not 31 assignments from other enquiries');
+assert.match(document.getElementById('smvAcAssignedItems').textContent, /Current Lead Venue One/);
+assert.match(document.getElementById('smvAcAssignedItems').textContent, /Current Lead Venue Two/);
+assert.doesNotMatch(document.getElementById('smvAcAssignedItems').textContent, /Historical Venue/);
+assert.doesNotMatch(document.getElementById('smvAcAssignedItems').textContent, /Cancelled Current Venue/);
 
 // Simulate the actual Select button in the new Live Call Inventory tool.
 // The controller's delegated modal click handler must hand this into the shared basket.
@@ -90,7 +108,18 @@ assert.match(document.getElementById('smvAcBasketItems').textContent, /Legacy As
 controller.beginLead('lead-2');
 assert.equal(document.getElementById('smvAcSelected').textContent, '0',
   'changing the active enquiry must clear unsubmitted selections from the previous enquiry');
+assert.equal(document.getElementById('smvAcAssignedCount').textContent, '0',
+  'a new enquiry with no assignments must show zero even when other enquiries have history');
+assert.match(document.getElementById('smvAcAssignedItems').textContent, /No venues assigned yet/);
+
 assert.equal(controller.selectionStore().ids.size, 0,
   'selection store must not leak venue IDs across customer enquiries');
+
+controller.beginLead('lead-new');
+assert.equal(document.getElementById('smvAcSelected').textContent, '0',
+  'changing to a fresh enquiry must clear pending selections');
+assert.equal(document.getElementById('smvAcAssignedCount').textContent, '0',
+  'fresh enquiries must not inherit historical assigned venue counts');
+assert.match(document.getElementById('smvAcAssignedItems').textContent, /No venues assigned yet/);
 
 console.log('PASS Assignment selection runtime: new inventory + legacy list share the top basket, removal syncs, and enquiry changes clear stale selections.');
