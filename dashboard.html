@@ -2316,6 +2316,7 @@
                 >×</button>
             </div>
 
+            <div class="smv-assignment-modal-body">
             <div class="venue-assignment-requirement" id="assignmentRequirementSummary">
                 Select approved and verified venues to receive this enquiry.
             </div>
@@ -2326,25 +2327,25 @@
                 </div>
                 <div class="smv-assignment-overview-panel smv-assignment-selected-panel">
                     <div class="smv-assignment-overview-heading">SELECTED NOW <span id="smvAcSelected">0</span></div>
-                    <div id="smvAcBasketItems" class="smv-assignment-overview-items"><span class="smv-assignment-overview-empty">Select venues from either tool below.</span></div>
+                    <div id="smvAcBasketItems" class="smv-assignment-overview-items"><span class="smv-assignment-overview-empty">Select venues from the live results below.</span></div>
                     <div id="smvAcBasketSummary" class="smv-assignment-overview-summary">No venues selected</div>
                     <span id="smvAcSelectedHint" class="sr-only">Ready for review</span>
                 </div>
             </section>
 <section id="smvLiveCallInventory" class="smv-live-inventory" aria-label="Live call venue inventory finder">
- <div class="slv-heading"><div><div class="slv-kicker">SELECT MY VENUE · LIVE CALL DESK</div><h3>Find Venues by Customer Location</h3><p>Type the customer's preferred area to see SMV inventory nearby and across the city.</p></div><span class="slv-live-pill"><i></i> Inventory from SMV</span></div>
- <label class="slv-search-wrap" for="smvCallLocationSearch"><span class="slv-search-icon">⌕</span><input id="smvCallLocationSearch" type="search" autocomplete="off" placeholder="Type customer area — e.g. Rajouri Garden, Chhatarpur, Sohna Road, Delhi"></label>
-  <div class="slv-meta"><span id="smvInventoryMeta">Ready for live call</span><span>Approved & verified venues only</span></div>
- <div id="smvLiveInventoryResults" class="slv-area-list"><div class="slv-empty"><strong>Start with the customer's preferred area</strong><span>Type an area or city to view the locations where SMV has venue inventory.</span></div></div>
+ <div class="slv-heading"><div><div class="slv-kicker">SELECT MY VENUE · LIVE CALL DESK</div><h3>Search &amp; Select Venues</h3><p>Search any area, city, venue name, venue type, owner contact, phone number or address. All matching approved venues appear together below.</p></div><span class="slv-live-pill"><i></i> Inventory from SMV</span></div>
+ <label class="slv-search-wrap" for="smvCallLocationSearch"><span class="slv-search-icon">⌕</span><input id="smvCallLocationSearch" type="search" autocomplete="off" placeholder="Search by location or keyword — e.g. Gurgaon Phase 2, banquet, hotel name, phone, owner or area"></label>
+  <div class="slv-meta"><span id="smvInventoryMeta">Ready to search all SMV inventory</span><span>All approved &amp; verified venues · Select multiple</span></div>
+ <div id="smvLiveInventoryResults" class="slv-area-list"><div class="slv-empty"><strong>Search all SMV venues in one place</strong><span>Enter a locality, city, venue name, hotel, restaurant, banquet, contact number or any other keyword. Every matching approved venue will appear together.</span></div></div>
  <div id="smvInventoryFeedback" role="status" aria-live="polite"></div>
 </section>
-<div class="smv-ai-launch-row"><button type="button" id="smvAiOpen" class="smv-ai-launch">✦ AI Venue Discovery <span>Find the best-fit SMV venues</span></button></div>
-<section id="smvAiDiscovery" hidden aria-label="AI Venue Discovery"><div class="smv-ai-head"><div><div class="smv-ai-kicker">SELECT MY VENUE · SMART MATCH</div><h3>AI Venue Discovery</h3><p>Explore exact-area matches and nearby alternatives.</p></div><button type="button" id="smvAiClose" class="smv-ai-close">Close ×</button></div>
+<div class="smv-ai-launch-row" hidden aria-hidden="true"><button type="button" id="smvAiOpen" class="smv-ai-launch">✦ AI Venue Discovery <span>Find the best-fit SMV venues</span></button></div>
+<section id="smvAiDiscovery" hidden aria-hidden="true" aria-label="AI Venue Discovery"><div class="smv-ai-head"><div><div class="smv-ai-kicker">SELECT MY VENUE · SMART MATCH</div><h3>AI Venue Discovery</h3><p>Explore exact-area matches and nearby alternatives.</p></div><button type="button" id="smvAiClose" class="smv-ai-close">Close ×</button></div>
 <div class="smv-ai-inputs"><div class="smv-ai-field smv-ai-wide"><label for="smvAiRequirement">CUSTOMER REQUIREMENT / CALL NOTES</label><textarea id="smvAiRequirement" placeholder="Wedding, 300 guests, budget, preferred area..."></textarea><button type="button" id="smvAiMic" class="smv-ai-mic">🎙 Dictate call notes</button></div>
 <div class="smv-ai-field"><label for="smvAiLocations">PREFERRED AREAS · MULTIPLE OK</label><input id="smvAiLocations" placeholder="Sohna Road, Golf Course Extension"></div><div class="smv-ai-field"><label for="smvAiGuests">GUESTS</label><input id="smvAiGuests" type="number" min="1"></div><div class="smv-ai-field"><label for="smvAiBudget">TOTAL BUDGET (₹)</label><input id="smvAiBudget" type="number" min="0"></div><div class="smv-ai-field"><label for="smvAiType">VENUE TYPE</label><select id="smvAiType"><option value="">Any venue type</option><option value="banquet">Banquet hall</option><option value="hotel">Hotel</option><option value="restaurant">Restaurant</option></select></div><div class="smv-ai-field"><label for="smvAiEventDate">EVENT DATE</label><input id="smvAiEventDate" type="date"></div><div class="smv-ai-field"><label for="smvAiRooms">ROOMS REQUIRED</label><input id="smvAiRooms" type="number" min="0"></div><div class="smv-ai-field"><label><input id="smvAiParking" type="checkbox"> Parking required</label></div><div class="smv-ai-field"><label><input id="smvAiVeg" type="checkbox"> Vegetarian</label><label><input id="smvAiNonVeg" type="checkbox"> Non-vegetarian</label></div><div class="smv-ai-field"><label for="smvAiRadius">NEARBY RADIUS</label><select id="smvAiRadius"><option value="5">5 km</option><option value="10">10 km</option><option value="15" selected>15 km</option><option value="25">25 km</option><option value="40">40 km</option></select></div></div>
 <div class="smv-ai-controls"><label><input type="checkbox" id="smvAiStrictCapacity" checked> Require verified capacity</label><span>Compare up to 3 venues</span></div><section id="smvAiCompare" class="smv-ai-compare" hidden><div class="smv-ai-compare-head"><strong>Venue comparison</strong><span id="smvAiCompareStatus">0 of 3 selected</span></div><div id="smvAiCompareBody"></div></section>
 <div class="smv-ai-status"><strong id="smvAiResultCount">Loading SMV venues…</strong><span>Approved + verified · hidden venues excluded</span></div><div class="smv-ai-section"><div class="smv-ai-section-title">Exact location matches <span id="smvAiExactCount">0</span></div><div id="smvAiExact" class="smv-ai-results"><p class="smv-ai-empty">Enter preferred area(s).</p></div></div><div class="smv-ai-section"><div class="smv-ai-section-title">Nearby alternatives <span id="smvAiNearbyCount">0</span></div><div id="smvAiNearby" class="smv-ai-results"><p class="smv-ai-empty">Nearby options will appear here.</p></div></div></section>
-            <div class="venue-assignment-toolbar">
+            <div class="venue-assignment-toolbar" hidden aria-hidden="true">
                 <input
                     type="search"
                     id="assignmentVenueSearch"
@@ -2355,12 +2356,12 @@
                 <button type="button" id="smvToggleHiddenVenues" class="smv-hidden-toggle" aria-expanded="false">Hidden venues <span id="smvHiddenVenueCount">0</span></button>
             </div>
 
-            <section id="smvHiddenVenuePanel" class="smv-hidden-panel" hidden aria-label="Hidden venues">
+            <section id="smvHiddenVenuePanel" class="smv-hidden-panel" hidden aria-hidden="true" aria-label="Hidden venues">
                 <div class="smv-hidden-panel-heading"><strong>Hidden from assignment</strong><span>Website listings and past assignments are not affected.</span></div>
                 <div id="smvHiddenVenueList" class="smv-hidden-venue-list"><div class="venue-assignment-loading">Open to view hidden venues.</div></div>
             </section>
 
-            <div id="venueAssignmentList" class="venue-assignment-list">
+            <div id="venueAssignmentList" class="venue-assignment-list" hidden aria-hidden="true">
                 <div class="venue-assignment-loading">Loading venues...</div>
             </div>
 
@@ -2374,6 +2375,7 @@
             </div>
 
             <div id="venueAssignmentMessage" class="form-message" role="status" aria-live="polite"></div>
+            </div>
 
             <div class="venue-assignment-actions">
                 <button
@@ -2385,7 +2387,7 @@
                     type="button"
                     id="saveVenueAssignment"
                     class="save-btn"
-                >Assign Selected Venues</button>
+                >Assign Selected Venues to This Enquiry</button>
                 <button
                     type="button"
                     id="smvAssignWhatsApp"
