@@ -39,12 +39,15 @@ async function run() {
   check(html.includes('letter-footer') && html.includes('aria-label="End of Select My Venue letter"'), 'adds a matching teal-and-gold finishing footer to every HR letter');
   check(html.includes('https://unpkg.com/@supabase/supabase-js@2') && html.includes('Secure HR connection library is unavailable'), 'HR portal has a fallback CDN and visible recovery if the auth library fails to load');
   check(!html.includes("content:''") && html.includes('.letter-footer:before{content:""') && html.includes('.letter-footer:after{content:""'), 'branded footer CSS does not break the shared HR page JavaScript parser');
-  check(html.includes('Mr./Ms. ') && html.includes('[Enter candidate postal address here]') && html.includes('Subject: '), 'all HR letters receive the standard dated recipient, editable address, subject and salutation opening');
+  check(html.includes('Mr./Ms. ') && html.includes('id="recipientAddress"') && html.includes('Subject: '), 'all HR letters receive the standard dated recipient, editable full address field, subject and salutation opening');
   check(html.includes('<h2 class="numbered-heading">') && html.includes('Please sign and return the duplicate copy of this Job Offer Letter') && html.includes('support@selectmyvenue.com') && html.includes('We look forward to welcoming you aboard.') && html.includes('Sincerely,</p>'), 'numbered section headings are bold and offer letters end with support-email acceptance and classic sign-off');
   check(!html.includes('06f6db26-66f5-4dcb-b2f2-6cdc9eac0377.png') && html.includes('<strong>Raj Kumar</strong><br>Sole Proprietor'), 'all HR letters use text-only Raj Kumar / Sole Proprietor sign-off without a signature image');
   check(html.includes('letter-footer') && html.includes('smv-master-letterhead'), 'all HR letters share the master header and branded footer');
 
   check(html.includes('letter-field-line') && html.includes('field=line.match') && html.includes('10\\.\\s*ACCEPTANCE AND SIGNATURES'), 'final HR letter formatter preserves label/value rows and the full acceptance section');
+
+  check(html.includes('id="recipientAddress"') && html.includes("const address=String($(\'recipientAddress\')?.value") && html.includes("Enter the recipient’s complete postal address above"), 'formal HR letters collect an explicit full postal address before generation');
+  check(html.includes('font-size:12pt') && html.includes('border-left:4px solid #c99b45') && html.includes('color:#087d70'), 'section headings and field labels have a distinct visual colour and size hierarchy');
   const formatterStart = html.indexOf('function formatHrLetterBody(raw){');
   const formatterEnd = html.indexOf("$('print').onclick=", formatterStart);
   check(formatterStart >= 0 && formatterEnd > formatterStart, 'final HR letter formatter is available for regression testing');
@@ -54,7 +57,7 @@ async function run() {
   formatterDom.window.esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
   formatterDom.window.eval(formatterSource + '\nwindow.__formatHrLetterBody = formatHrLetterBody;');
   const sampleOffer = [
-    '14 November 2026', '', 'To,', 'Mr. Amar Satya Mehta', 'H.No. G-66, Lajpat Nagar II, South East Delhi, Delhi 110024', '',
+    '14 November 2026', '', 'To,', 'Mr. Amar Satya Mehta', 'H.No. G-66, Lajpat Nagar II,', 'South East Delhi, Delhi 110024', '',
     'Subject: Offer Letter for the position of Venue Listing Executive at Select My Venue', '',
     'Dear Amar,', '',
     '1. COMPANY DETAILS',
@@ -83,6 +86,8 @@ async function run() {
   check(renderedOffer.includes('<p class="letter-field-line"><strong>Business Constitution:</strong> Proprietorship</p>'), 'offer letter keeps Business Constitution on its own line');
   check(renderedOffer.includes('<p class="letter-field-line"><strong>Proposed Commencement Date:</strong> 2026-11-15</p>') && renderedOffer.includes('<p class="letter-field-line"><strong>Reporting / Coordination:</strong>'), 'role and commencement details remain separate labelled lines');
   check(renderedOffer.includes('<h2 class="numbered-heading">10. ACCEPTANCE AND SIGNATURES</h2>') && renderedOffer.includes('ACCEPTANCE BY EXECUTIVE') && renderedOffer.includes('Signature:'), 'offer letter preserves company and candidate acceptance/signature sections');
+  check(renderedOffer.includes('H.No. G-66, Lajpat Nagar II,<br>South East Delhi, Delhi 110024'), 'recipient address is preserved in full across multiple address lines');
+  check(renderedOffer.includes('<h2 class="numbered-heading">1. COMPANY DETAILS</h2>') && renderedOffer.includes('<h2 class="numbered-heading">2. ROLE AND COMMENCEMENT</h2>'), 'main numbered section headings render as distinct section headings');
   check(!renderedOffer.includes('Select My Venue Business Constitution') && !renderedOffer.includes('Please sign and return the duplicate copy'), 'offer letter does not collapse adjacent fields or duplicate a generic acceptance paragraph');
   formatterDom.window.close();
   console.log('HR portal static checks passed.');
