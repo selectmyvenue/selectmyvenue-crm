@@ -134,13 +134,17 @@
     };
   }
   function venueSearchText(v) {
+    const searchableValues=Object.values(v||{}).filter(value=>
+      typeof value==="string" || typeof value==="number"
+    );
     const fields=[
       v.venue_name,v.name,v.contact_person,v.contact_name,v.owner_name,v.manager_name,
-      v.phone,v.mobile,v.contact_number,v.phone_number,v.whatsapp_number,v.email,v.contact_email,
+      v.phone,v.mobile,v.contact_number,v.phone_number,v.contact_phone,v.owner_phone,
+      v.manager_phone,v.contact_mobile,v.whatsapp_number,v.email,v.contact_email,
       v.address,v.full_address,v.venue_address,v.area,v.locality,v.city,v.state,v.pincode,
       v.venue_type,v.type,v.category,v.venue_category,v.capacity_min,v.capacity_max,v.capacity,
       v.max_capacity,v.guest_capacity,v.price_min_per_person,v.price_max_per_person,
-      v.website,v.website_url
+      v.website,v.website_url,...searchableValues
     ];
     return norm(fields.filter(value=>value!==null&&value!==undefined).join(" "));
   }
@@ -196,7 +200,7 @@
     const btn=$('[data-slv-select="'+CSS.escape(String(id))+'"]');
     if(btn){btn.textContent="Selected";btn.disabled=true;btn.classList.add("is-selected");}
     syncSelectionPanel();
-    showMessage("Venue added to Selected Now. Use Assign Selected Venues below to confirm.","success");
+    showMessage("Venue added to Selected Now. Use Assign Selected Venues at the bottom to confirm.","success");
   }
   function showMessage(message,type) {
     const el=$("#smvInventoryFeedback"); if(!el)return;
