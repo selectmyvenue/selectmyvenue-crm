@@ -10,7 +10,16 @@ const safe=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"
 let ranked=[],refreshTimer=null,sorting=false,assignmentChannel=null,subscribedLeadId=null;
 function lead(){try{return typeof assignmentCurrentLead!=="undefined"?assignmentCurrentLead:null;}catch(_){return null;}}
 function assigned(venueId){try{return typeof isVenueAlreadyAssigned==="function"&&isVenueAlreadyAssigned(venueId);}catch(_){return false;}}
-function reactivation(venueId){try{return typeof allVenueAssignments!=="undefined"&&allVenueAssignments.some(row=>String(row.venue_id)===String(venueId)&&row.assignment_status==="cancelled");}catch(_){return false;}}
+function reactivation(venueId){
+ try{
+  const currentLeadId=String(lead()?.id||"");
+  return Boolean(currentLeadId)&&typeof allVenueAssignments!=="undefined"&&allVenueAssignments.some(row=>
+   String(row.enquiry_id||"")===currentLeadId&&
+   String(row.venue_id)===String(venueId)&&
+   String(row.assignment_status||"").toLowerCase()==="cancelled"
+  );
+ }catch(_){return false;}
+}
 function getRows(){return ranked;}
 function beginLead(enquiryId){
  const store=selectionStore(),nextLeadId=String(enquiryId||"");
@@ -38,7 +47,17 @@ function updateBasket(){
  }
  if(assignedItems){
   let rows=[];
-  try{rows=Array.isArray(allVenueAssignments)?allVenueAssignments.filter(x=>String(x.assignment_status||"").toLowerCase()!=="cancelled"):[];}catch(_){}
+  try{
+   const currentLeadId=String(lead()?.id||"");
+   // Assignment history is global for CRM reporting, but this panel is scoped
+   // to the enquiry currently open in the modal. A fresh lead must show zero.
+   rows=Array.isArray(allVenueAssignments)&&currentLeadId
+    ?allVenueAssignments.filter(x=>
+      String(x.enquiry_id||"")===currentLeadId&&
+      String(x.assignment_status||"").toLowerCase()!=="cancelled"
+     )
+    :[];
+  }catch(_){}
   const unique=new Map();
   rows.forEach(x=>{const id=String(x.venue_id||"");if(id&&!unique.has(id))unique.set(id,x);});
   if(assignedCount)assignedCount.textContent=String(unique.size);
