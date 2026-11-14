@@ -84,6 +84,11 @@ async function run() {
   ].join('\n');
   const renderedOffer = formatterDom.window.__formatHrLetterBody(sampleOffer);
   check(renderedOffer.includes('<p class="letter-opening-paragraph">We are pleased to offer you the position of Venue Listing Executive at Select My Venue'), 'offer letter opening legal paragraph is rendered as normal body copy, not a highlighted callout');
+  formatterDom.window.docDraft = { document_type: 'engagement_letter' };
+  const reopenedDraftOutput = formatterDom.window.__formatHrLetterBody(sampleOffer);
+  check(reopenedDraftOutput.includes('<p class="letter-opening-paragraph" style="font:400 10pt/1.48 Arial,Helvetica,sans-serif;') && !reopenedDraftOutput.includes('<h1>We are pleased to offer'), 'offer opening remains normal left-aligned body copy even when a reopened draft has a different internal document type');
+  check(!reopenedDraftOutput.includes('text-align:center') && !reopenedDraftOutput.includes('border-bottom:1px solid #d8e7e1'), 'offer opening does not inherit document-title centering or divider styling');
+  formatterDom.window.docDraft = { document_type: 'offer_letter' };
   check(renderedOffer.includes('<p class="letter-field-line"><strong>Enterprise Name:</strong> Select My Venue</p>'), 'offer letter keeps Enterprise Name on its own line');
   check(renderedOffer.includes('<p class="letter-field-line"><strong>Business Constitution:</strong> Proprietorship</p>'), 'offer letter keeps Business Constitution on its own line');
   check(renderedOffer.includes('<p class="letter-field-line"><strong>Proposed Commencement Date:</strong> 2026-11-15</p>') && renderedOffer.includes('<p class="letter-field-line"><strong>Reporting / Coordination:</strong>'), 'role and commencement details remain separate labelled lines');
