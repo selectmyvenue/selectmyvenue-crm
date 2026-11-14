@@ -52,5 +52,8 @@ assert(html.includes('id="smvAiOpen"')&&html.includes('id="smvAiDiscovery"')&&ht
 assert(html.includes('<div class="venue-assignment-toolbar">')&&html.includes('<div id="venueAssignmentList" class="venue-assignment-list">'),'the original assignment tool must remain visible and available');
 assert(!html.includes('class="smv-ai-launch-row" hidden')&&!html.includes('class="venue-assignment-toolbar" hidden')&&!html.includes('class="venue-assignment-list" hidden'),'the new live finder must not hide old assignment tools');
 assert(html.includes('class="smv-assignment-modal-body"')&&html.includes('<div class="venue-assignment-actions">'),'the modal must scroll its content while keeping Assign actions outside the scroll body');
+assert(inventoryCss.includes('height:min(92dvh,900px)!important')&&inventoryCss.includes('overflow:hidden!important'),'modal card must constrain its height so the inner body can scroll');
+assert(inventoryCss.includes('max-height:min(24vh,220px)!important')&&inventoryCss.includes('overflow-y:auto!important'),'new finder must not grow without limit and push old matching below the fold');
+assert(inventoryCss.includes('#venueAssignmentModal .smv-assignment-modal-body{')&&inventoryCss.includes('min-height:0!important;'),'modal body must be the primary scroll container');
 assert(!inventoryCss.includes('#venueAssignmentModal .smv-ai-launch-row{display:none'),'live finder styles must not suppress Smart Venue Matches');
 console.log('PASS Live inventory + legacy assignment matching; all assignment JavaScript parses and original list remains visible');
