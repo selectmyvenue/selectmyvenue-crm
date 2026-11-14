@@ -46,7 +46,7 @@ async function run() {
 
   check(html.includes('letter-field-line') && html.includes('field=line.match') && html.includes('10\\.\\s*ACCEPTANCE AND SIGNATURES'), 'final HR letter formatter preserves label/value rows and the full acceptance section');
 
-  check(html.includes('id="recipientAddress"') && html.includes('const address=String($(\\'recipientAddress\\')?.value') && html.includes("Enter the recipient’s complete postal address above"), 'formal HR letters collect an explicit full postal address before generation');
+  check(html.includes('id="recipientAddress"') && html.includes("const address=String($(\'recipientAddress\')?.value") && html.includes("Enter the recipient’s complete postal address above"), 'formal HR letters collect an explicit full postal address before generation');
   check(html.includes('font-size:12pt') && html.includes('border-left:4px solid #c99b45') && html.includes('color:#087d70'), 'section headings and field labels have a distinct visual colour and size hierarchy');
   const formatterStart = html.indexOf('function formatHrLetterBody(raw){');
   const formatterEnd = html.indexOf("$('print').onclick=", formatterStart);
