@@ -105,6 +105,7 @@ assert.doesNotMatch(document.getElementById('smvAcBasketItems').textContent, /Ne
 assert.match(document.getElementById('smvAcBasketItems').textContent, /Legacy Assignment Venue/,
   'removing one venue must preserve other selected venues');
 
+window.assignmentCurrentLead = { id: 'lead-2', preferred_area: 'West Delhi' };
 controller.beginLead('lead-2');
 assert.equal(document.getElementById('smvAcSelected').textContent, '0',
   'changing the active enquiry must clear unsubmitted selections from the previous enquiry');
@@ -115,6 +116,7 @@ assert.match(document.getElementById('smvAcAssignedItems').textContent, /No venu
 assert.equal(controller.selectionStore().ids.size, 0,
   'selection store must not leak venue IDs across customer enquiries');
 
+window.assignmentCurrentLead = { id: 'lead-new', preferred_area: 'West Delhi' };
 controller.beginLead('lead-new');
 assert.equal(document.getElementById('smvAcSelected').textContent, '0',
   'changing to a fresh enquiry must clear pending selections');
