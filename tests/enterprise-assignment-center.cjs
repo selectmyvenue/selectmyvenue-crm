@@ -16,7 +16,7 @@ assert(html.includes('id="venueAssignmentList"'),'original assignment venue list
 assert(html.includes('id="smvAiExact"')&&html.includes('id="smvAiNearby"'),'legacy AI exact and nearby match result containers must remain available');
 assert.match(html,/crm\.js[\s\S]*ai-venue-discovery\.js[\s\S]*smv-enterprise-assignment-center\.js[\s\S]*smv-live-call-inventory\.js/,'legacy matching and live inventory modules must load after CRM scripts');
 assert(inventory.includes('data-slv-select')&&inventory.includes('.venue-assignment-checkbox'),'new inventory selection must feed the existing assignment save flow');
-assert(inventory.includes('v.venue_name,v.contact_person,v.address,v.venue_address,v.full_address'),'live inventory search must include venue names and full address fields');
+assert(inventory.includes('function venueSearchText(v)')&&inventory.includes('v.venue_name,v.name,v.contact_person')&&inventory.includes('v.phone,v.mobile,v.contact_number')&&inventory.includes('v.address,v.full_address,v.venue_address'),'live inventory search must include venue names, contacts, phone and full address fields');
 assert(html.includes('id="smvAcBasketItems"')&&html.includes('id="smvAcSelected"'),'assignment modal must provide one shared Selected Now basket and count');
 assert(html.includes('id="smvAcAssignedItems"')&&html.includes('id="smvAcAssignedCount"'),'assignment modal must provide the Already Assigned panel');
 assert.match(html,/smv-live-call-inventory\.css\?v=20261114-live-assignment-one-page-1/,'single-page assignment CSS must use a fresh cache key');
