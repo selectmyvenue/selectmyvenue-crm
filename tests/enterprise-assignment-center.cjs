@@ -32,6 +32,10 @@ assert(enterprise.includes('String(x.enquiry_id||"")===currentLeadId'),'Already 
 assert(enterprise.includes('String(row.enquiry_id||"")===currentLeadId'),'reactivation status must be scoped to the active customer enquiry');
 const core=fs.readFileSync(path.join(root,'crm-core.js'),'utf8');
 assert(core.includes('window.SMVEnterpriseAssignmentCenter?.beginLead(lead.id)'),'opening an enquiry must start a lead-scoped selection session');
+const openAssignmentStart=core.indexOf('async function openVenueAssignmentModal');
+const activeLeadSet=core.indexOf('assignmentCurrentLead = lead;',openAssignmentStart);
+const selectionStart=core.indexOf('window.SMVEnterpriseAssignmentCenter?.beginLead(lead.id)',openAssignmentStart);
+assert(activeLeadSet>=0&&selectionStart>activeLeadSet,'active enquiry must be set before the assignment basket renders');
 assert(fs.readFileSync(path.join(root,'smv-enterprise-assignment-center.js'),'utf8').includes('function beginLead(enquiryId)'),'shared assignment controller must clear selections when the active enquiry changes');
 const saveStart=core.indexOf('async function saveVenueAssignments');
 const saveEnd=core.indexOf('function setupVenueAssignment',saveStart);
