@@ -28,6 +28,8 @@ assert(inventory.includes('data-slv-remove'),'selected venue chips must be remov
 assert(inventory.includes('smvInventorySelectionBridge'),'selection must still reach the CRM save pipeline if legacy list filtering hides a checkbox');
 const enterprise=fs.readFileSync(path.join(root,'smv-enterprise-assignment-center.js'),'utf8');
 assert(enterprise.includes('const selected=[...store.ids]')&&enterprise.includes('data-smv-remove-selection'),'Selected Now must render from the canonical store and support removal');
+assert(enterprise.includes('String(x.enquiry_id||"")===currentLeadId'),'Already Assigned panel must filter history to the active customer enquiry');
+assert(enterprise.includes('String(row.enquiry_id||"")===currentLeadId'),'reactivation status must be scoped to the active customer enquiry');
 const core=fs.readFileSync(path.join(root,'crm-core.js'),'utf8');
 assert(core.includes('window.SMVEnterpriseAssignmentCenter?.beginLead(lead.id)'),'opening an enquiry must start a lead-scoped selection session');
 assert(fs.readFileSync(path.join(root,'smv-enterprise-assignment-center.js'),'utf8').includes('function beginLead(enquiryId)'),'shared assignment controller must clear selections when the active enquiry changes');
