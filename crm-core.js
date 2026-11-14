@@ -8132,7 +8132,9 @@ function renderAssignmentVenues() {
     // controls must be captured before it is rebuilt.
     const selectedById = new Map();
     const sharedSelection = window.SMVAssignmentSelection;
-    if (sharedSelection?.ids instanceof Set) sharedSelection.ids.forEach(id => {
+    const sameLeadSelection = sharedSelection?.ids instanceof Set &&
+        String(sharedSelection.leadId || "") === String(assignmentCurrentLead.id);
+    if (sameLeadSelection) sharedSelection.ids.forEach(id => {
         selectedById.set(String(id), {name: sharedSelection.names?.get(String(id)) || "Selected venue"});
     });
     (modal || document).querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)").forEach(cb => {
@@ -8213,7 +8215,7 @@ function renderAssignmentVenues() {
                     type="checkbox"
                     class="venue-assignment-checkbox"
                     value="${escapeHTML(venue.id)}"
-                    ${assigned || selectedById.has(String(venue.id)) ? "checked" : ""}
+                    ${assigned ? "checked disabled" : selectedById.has(String(venue.id)) ? "checked" : ""}
                 >
                 <div class="venue-assignment-item-main">
                     <div class="venue-assignment-item-title">
@@ -8312,16 +8314,18 @@ async function saveVenueAssignments(options = {}) {
     }
 
     const selectionStore = window.SMVAssignmentSelection;
-    const storedSelected = selectionStore?.ids instanceof Set
-        ? [...selectionStore.ids].map(String)
-        : [];
+    const sameLeadSelection = selectionStore?.ids instanceof Set &&
+        String(selectionStore.leadId || "") === String(leadToAssign.id);
+    const storedSelected = sameLeadSelection ? [...selectionStore.ids].map(String) : [];
     const visibleSelected = Array.from(
         document.querySelectorAll(".venue-assignment-checkbox:checked:not(:disabled)")
     ).map(input => String(input.value));
 
-    // The shared store is authoritative; checked controls are a compatibility
-    // fallback for the legacy assignment list.
-    const selected = [...new Set([...storedSelected, ...visibleSelected])];
+    // Use only selections belonging to this enquiry. The hidden legacy checkbox
+    // container is a compatibility bridge; the visible Live Call Desk is the
+    // only selection UI in this modal. Never re-add already-active assignments.
+    const selected = [...new Set([...storedSelected, ...visibleSelected])]
+        .filter(venueId => !isVenueAlreadyAssigned(venueId));
 
     if (!selected.length) {
         showAssignmentMessage(
