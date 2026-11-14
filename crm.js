@@ -688,7 +688,7 @@
     window.setTimeout(updateActionBadge, 1200);
   }
 
-  addScript("crm-base.js?v=20261114-assignment-selection-2", function () {
+  addScript("crm-base.js?v=20261114-live-assignment-one-page-1", function () {
     let checks = 0;
     const waitForCore = window.setInterval(function () {
       checks += 1;
