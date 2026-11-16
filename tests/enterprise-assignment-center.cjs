@@ -23,7 +23,8 @@ assert(employee.includes('function smartMatch(v,l)'),'original requirement-aware
 assert(employee.includes('smvEnsureRoadDistances'),'original matcher must calculate driving distances when coordinates are available');
 assert(employee.includes("functions.invoke('route-distance'"),'road distances must use the existing OSRM route-distance Edge Function');
 assert(employee.includes("distanceMode='road'"),'venue cards must distinguish road distance from straight-line fallback');
-assert(employee.includes('Customer conversation tip'),'selected venue distance guidance must remain available');
+assert(employee.includes("match.distanceMode==='road'"),'venue cards must label driving distance and ETA when OSRM results are available');
+assert(employee.includes('distanceLabel=match.distanceKm'),'venue cards must display the calculated distance beside each match');
 const saveStart=core.indexOf('async function saveVenueAssignments');
 const saveEnd=core.indexOf('function setupVenueAssignment',saveStart);
 const saveBlock=core.slice(saveStart,saveEnd);
