@@ -147,7 +147,7 @@ window.startEmployeeIntegration=async function(client){
  }
  function smvLeadPoint(l){const lat=smvGeoNumber(l?.preferred_latitude),lon=smvGeoNumber(l?.preferred_longitude);return lat!==null&&lon!==null?{lat,lon,source:'lead'}:null;}
  function smvVenuePoint(v){const lat=smvGeoNumber(v?.latitude),lon=smvGeoNumber(v?.longitude);if(lat!==null&&lon!==null)return{lat,lon,source:'venue'};return smvMapPoint(v?.google_maps_url);}
- function smvDistanceKm(a,b){if(!a||!b)return null;const r=6371,toRad=d=>d*Math.PI/180,dLat=toRad(b.lat-a.lat),dLon=toRad(b.lon-a.lon),x=Math.sin(dLat/2)**2+Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLon/2)**2;return 2*r*Math.asin(Math.min(1,Math.sqrt(x)));}
+ function smvDistanceKm(a,b){if(!a||!b)return null;const r=6371,toRad=d=>d*Math.PI/180,dLat=toRad(b.lat-a.lat),dLon=toRad(b.lon-a.lon),x=Math.sin(dLat/2)**2+Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLon/2)**2,km=2*r*Math.asin(Math.min(1,Math.sqrt(x)));return Number.isFinite(km)&&km>=0.05?km:null;}
  function smvIsBroadLocation(v){return /^(delhi(?: ncr)?|gurgaon|gurugram|manesar|noida|greater noida|faridabad|ghaziabad)$/i.test(clean(v));}
  function smvGeoQueryForLead(l){
    const area=clean(l?.preferred_area),city=clean(l?.preferred_city||l?.location);
@@ -167,27 +167,45 @@ window.startEmployeeIntegration=async function(client){
    const key=smvRoadOriginKey(l);
    if(!key||v?.__smvRoadOriginKey!==key)return null;
    const km=Number(v?.__smvRoadKm),min=Number(v?.__smvRoadMin);
-   return Number.isFinite(km)&&km>=0?{km,min:Number.isFinite(min)&&min>=0?min:null,provider:v.__smvRoadProvider||'osrm'}:null;
+   return Number.isFinite(km)&&km>=0.05?{km,min:Number.isFinite(min)&&min>=0?min:null,provider:v.__smvRoadProvider||'osrm'}:null;
  }
  let smvRoadBatchKey='';
  async function smvEnsureRoadDistances(l,venues){
    const db=typeof getSupabaseClient==='function'?getSupabaseClient():null,origin=smvLeadPoint(l);
-   if(!db||!origin||!smvGeoQueryForLead(l))return false;
-   const rows=(venues||[]).map(v=>({v,p:smvVenuePoint(v)})).filter(x=>x.p).slice(0,25);
+   // Coordinates are the prerequisite. Do not require a separate text-area field:
+   // preferred coordinates may already exist from an earlier geocode.
+   if(!db||!origin)return false;
+   const rows=(venues||[]).map(v=>({v,p:smvVenuePoint(v)})).filter(x=>x.p&&x.v?.id);
    if(!rows.length)return false;
    const originKey=smvRoadOriginKey(l),batchKey=originKey+'|'+rows.map(x=>String(x.v.id)+':'+x.p.lat.toFixed(5)+','+x.p.lon.toFixed(5)).sort().join(';');
-   if(batchKey===smvRoadBatchKey&&rows.every(x=>x.v.__smvRoadOriginKey===originKey&&Number.isFinite(Number(x.v.__smvRoadKm))))return true;
+   if(batchKey===smvRoadBatchKey&&rows.every(x=>smvRoadFor(x.v,l)))return true;
    smvRoadBatchKey=batchKey;
-   try{
-     const {data,error}=await db.functions.invoke('route-distance',{body:{
-       origin:{lat:origin.lat,lon:origin.lon},
-       destinations:rows.map(x=>({id:String(x.v.id),lat:x.p.lat,lon:x.p.lon}))
-     }});
-     if(error||!data?.ok||!Array.isArray(data.results))return false;
-     const byId=new Map(data.results.map(r=>[String(r.id),r]));
-     rows.forEach(({v})=>{const r=byId.get(String(v.id));if(!r?.ok)return;v.__smvRoadOriginKey=originKey;v.__smvRoadKm=Number(r.distance_m)/1000;v.__smvRoadMin=Number.isFinite(Number(r.duration_s))?Number(r.duration_s)/60:null;v.__smvRoadProvider=r.provider||data.provider||'osrm';});
-     return true;
-   }catch(e){console.warn('Road distance unavailable',e);return false;}
+   const pending=rows.filter(x=>!smvRoadFor(x.v,l));
+   let successful=0;
+   // The route-distance Edge Function accepts up to 25 destinations per call.
+   for(let offset=0;offset<pending.length;offset+=25){
+     const chunk=pending.slice(offset,offset+25);
+     try{
+       const {data,error}=await db.functions.invoke('route-distance',{body:{
+         origin:{lat:origin.lat,lon:origin.lon},
+         destinations:chunk.map(x=>({id:String(x.v.id),lat:x.p.lat,lon:x.p.lon}))
+       }});
+       if(error||!data?.ok||!Array.isArray(data.results))continue;
+       const byId=new Map(data.results.map(r=>[String(r.id),r]));
+       chunk.forEach(({v})=>{
+         const r=byId.get(String(v.id)),meters=Number(r?.distance_m);
+         // Reject zero/near-zero routes caused by bad or duplicate coordinates.
+         if(!r?.ok||!Number.isFinite(meters)||meters<50)return;
+         v.__smvRoadOriginKey=originKey;
+         v.__smvRoadKm=meters/1000;
+         v.__smvRoadMin=Number.isFinite(Number(r.duration_s))?Number(r.duration_s)/60:null;
+         v.__smvRoadProvider=r.provider||data.provider||'osrm';
+         successful++;
+       });
+     }catch(e){console.warn('Road distance batch unavailable',e);}
+     if(offset+25<pending.length)await new Promise(resolve=>setTimeout(resolve,180));
+   }
+   return successful>0||rows.some(x=>smvRoadFor(x.v,l));
  }
  const smvGeoVenueAttempted=new Set();let smvGeoLeadBusy=false,smvGeoQueueBusy=false,smvGeoKickAt=0;
  function smvLeadGeoQueries(l){
@@ -317,7 +335,7 @@ window.startEmployeeIntegration=async function(client){
      */
      const pending=venues.filter(v=>!smvVenuePoint(v)).slice(0,25);
      for(const v of pending){const modal=document.getElementById('venueAssignmentModal');if(!modal||modal.hidden)break;await smvEnsureVenueGeo(v);await new Promise(r=>setTimeout(r,1100));}
-     if(hint&&smvLeadPoint(lead)&&smvGeoQueryForLead(lead))hint.textContent='Calculating road distance to venues…';
+     if(hint&&smvLeadPoint(lead))hint.textContent='Calculating road distance to venues…';
      const roadReady=await smvEnsureRoadDistances(lead,venues);
      if(hint&&roadReady)hint.textContent='Road-distance matching ready · OpenStreetMap / OSRM';
      smvPreparedKey='';
@@ -515,10 +533,11 @@ window.startEmployeeIntegration=async function(client){
  const nearestOptionKm=nearestOption?.km??null;
  const exactLocationPriority=locationMatch?3:(nearestOptionKm!==null&&nearestOptionKm<=15?2:(nearestOptionKm!==null&&nearestOptionKm<=25?1:0));
  const primaryDistanceKm=road?.km??directKm;
- const useRoadDistance=road&&primaryDistanceKm!==null&&(nearestOptionKm===null||primaryDistanceKm<=nearestOptionKm)&&!locationMatch;
+ const useRoadDistance=road&&primaryDistanceKm!==null&&(nearestOptionKm===null||primaryDistanceKm<=nearestOptionKm);
  let distanceKm=null,distanceMode='unknown';
- if(locationMatch&&nearestOptionKm!==null){distanceKm=nearestOptionKm;distanceMode='straight';}
- else if(primaryDistanceKm!==null){distanceKm=primaryDistanceKm;distanceMode=useRoadDistance?'road':'straight';}
+ if(useRoadDistance){distanceKm=primaryDistanceKm;distanceMode='road';}
+ else if(locationMatch&&nearestOptionKm!==null){distanceKm=nearestOptionKm;distanceMode='straight';}
+ else if(primaryDistanceKm!==null){distanceKm=primaryDistanceKm;distanceMode='straight';}
  else if(nearestOptionKm!==null){distanceKm=nearestOptionKm;distanceMode='straight';}
 
  /*
