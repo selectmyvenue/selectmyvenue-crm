@@ -1224,7 +1224,7 @@ const preferredArea =
                 )}
             </td>
 
-            <td class="action-column">
+            <td class="action-column details-action-cell">
 
                 <button
                     type="button"
@@ -1237,6 +1237,10 @@ const preferredArea =
                 >
                     <span>Details</span>
                 </button>
+
+            </td>
+
+            <td class="action-column assign-action-cell">
 
                 <button
                     type="button"
