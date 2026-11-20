@@ -1183,13 +1183,29 @@ const preferredArea =
             </td>
 
             <td class="lead-budget-cell">
-                ${lead.budget_per_person !== null && lead.budget_per_person !== undefined && lead.budget_per_person !== ""
-                    ? "₹" + escapeHTML(String(lead.budget_per_person))
-                    : "—"}
+                ${createInlineField(
+                    lead,
+                    "budget_per_person",
+                    lead.budget_per_person !== null && lead.budget_per_person !== undefined && lead.budget_per_person !== ""
+                        ? "₹" + escapeHTML(String(lead.budget_per_person))
+                        : "—",
+                    "number"
+                )}
             </td>
 
             <td class="lead-food-cell">
-                ${escapeHTML(safeValue(lead.food_preference).trim() || "—")}
+                ${createInlineField(
+                    lead,
+                    "food_preference",
+                    safeValue(lead.food_preference).trim() || "—",
+                    "select",
+                    [
+                        { value: "", label: "Any" },
+                        { value: "Veg", label: "Veg" },
+                        { value: "Non-Veg", label: "Non-Veg" },
+                        { value: "Both", label: "Both" }
+                    ]
+                )}
             </td>
 
             <td>
@@ -1224,7 +1240,7 @@ const preferredArea =
                 )}
             </td>
 
-            <td class="action-column">
+            <td class="action-column details-action-cell">
 
                 <button
                     type="button"
@@ -1237,6 +1253,10 @@ const preferredArea =
                 >
                     <span>Details</span>
                 </button>
+
+            </td>
+
+            <td class="action-column assign-action-cell">
 
                 <button
                     type="button"
@@ -1448,6 +1468,20 @@ function startInlineEdit(element) {
             );
     }
 
+    else if (field === "food_preference") {
+
+        editor =
+            createSelectEditor(
+                [
+                    { value: "", label: "Any" },
+                    { value: "Veg", label: "Veg" },
+                    { value: "Non-Veg", label: "Non-Veg" },
+                    { value: "Both", label: "Both" }
+                ],
+                originalValue
+            );
+    }
+
     else {
 
         editor =
@@ -1458,7 +1492,7 @@ function startInlineEdit(element) {
         editor.type =
             field === "event_date"
                 ? "date"
-                : field === "guests"
+                : (field === "guests" || field === "budget_per_person")
                     ? "number"
                     : "text";
 
@@ -1617,13 +1651,20 @@ async function saveInlineField(
         safeValue(newValue).trim();
 
     if (
-        field === "guests"
+        field === "guests" ||
+        field === "budget_per_person"
     ) {
 
         value =
             value
                 ? Number(value)
                 : null;
+    }
+
+    if (field === "food_preference" && !["", "Veg", "Non-Veg", "Both"].includes(value)) {
+        showToast("Please choose Veg, Non-Veg, Both or Any.", "error");
+        refreshLeadRow(leadId);
+        return;
     }
 
     if (
