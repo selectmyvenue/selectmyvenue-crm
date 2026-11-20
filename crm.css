@@ -6097,3 +6097,18 @@ body{
  .smv-hidden-toggle{margin-left:auto}
  .smv-assignment-hide{padding:6px 8px}
 }
+
+
+/* SMV lead list: budget and food columns; keep all cells readable without overlap. */
+@media (min-width: 761px) {
+  .table-wrapper:has(.leads-table) { overflow-x:auto!important; overflow-y:visible!important; max-width:100%!important; -webkit-overflow-scrolling:touch; }
+  .leads-table { min-width:1840px!important; width:max-content!important; table-layout:auto!important; }
+  .leads-table th.lead-budget-column,.leads-table td.lead-budget-cell { min-width:145px; width:145px; white-space:nowrap; }
+  .leads-table th.lead-food-column,.leads-table td.lead-food-cell { min-width:115px; width:115px; white-space:nowrap; }
+}
+@media (max-width:760px) {
+  .table-wrapper:has(.leads-table) { overflow-x:auto!important; overflow-y:visible!important; max-width:100%!important; -webkit-overflow-scrolling:touch; }
+  .leads-table { min-width:1640px!important; width:max-content!important; table-layout:auto!important; }
+  .leads-table th.lead-budget-column,.leads-table td.lead-budget-cell { min-width:130px; white-space:nowrap; }
+  .leads-table th.lead-food-column,.leads-table td.lead-food-cell { min-width:105px; white-space:nowrap; }
+}
