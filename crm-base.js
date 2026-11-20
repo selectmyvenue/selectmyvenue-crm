@@ -454,37 +454,59 @@
     if (!table) return;
 
     const headerRow = table.querySelector("thead tr");
-    if (headerRow) {
-      const headers = Array.from(headerRow.children);
-      if (headers.length === 12) {
-        headers[10].textContent = "COMMENT";
-        const actionHeader = headers[11];
-        actionHeader.textContent = "DETAILS";
-        actionHeader.classList.add("details-column");
-        const assignHeader = document.createElement("th");
-        assignHeader.textContent = "ASSIGN";
-        assignHeader.className = "assign-column";
-        actionHeader.after(assignHeader);
-      } else if (headers.length >= 13) {
-        headers[10].textContent = "COMMENT";
-        headers[11].textContent = "DETAILS";
-        headers[12].textContent = "ASSIGN";
-      }
+    const headers = headerRow ? Array.from(headerRow.children) : [];
+
+    // Current SMV lead table is explicitly 15 columns. Do not rename or
+    // split any of these cells: Location, Status, Comment, Details and
+    // Assign already have their own correctly aligned header/body cells.
+    if (headers.length === 15) {
+      const expected = [
+        "CUSTOMER", "PHONE", "CREATED DATE", "VENUE / AREA", "SOURCE",
+        "EVENT", "EVENT DATE", "GUESTS", "BUDGET / PERSON", "FOOD",
+        "LOCATION", "STATUS", "COMMENT", "DETAILS", "ASSIGN"
+      ];
+      headers.forEach((header, index) => {
+        const actual = String(header.textContent || "").replace(/\\s+/g, " ").trim().toUpperCase();
+        if (actual !== expected[index]) {
+          console.warn("SMV lead table header mismatch", { index, expected: expected[index], actual });
+        }
+      });
+
+      table.querySelectorAll("tbody tr").forEach(row => {
+        const cells = Array.from(row.children);
+        if (cells.length === 1 && cells[0].hasAttribute("colspan")) {
+          cells[0].setAttribute("colspan", "15");
+        }
+      });
+      return;
+    }
+
+    // Backward compatibility for legacy 12/13-column layouts only.
+    if (headerRow && headers.length === 12) {
+      headers[10].textContent = "COMMENT";
+      const actionHeader = headers[11];
+      actionHeader.textContent = "DETAILS";
+      actionHeader.classList.add("details-column");
+      const assignHeader = document.createElement("th");
+      assignHeader.textContent = "ASSIGN";
+      assignHeader.className = "assign-column";
+      actionHeader.after(assignHeader);
+    } else if (headerRow && headers.length === 13) {
+      headers[10].textContent = "COMMENT";
+      headers[11].textContent = "DETAILS";
+      headers[12].textContent = "ASSIGN";
     }
 
     table.querySelectorAll("tbody tr").forEach(row => {
       const cells = Array.from(row.children);
-
       if (cells.length === 1 && cells[0].hasAttribute("colspan")) {
         cells[0].setAttribute("colspan", "13");
         return;
       }
-
       if (cells.length === 12) {
         const actionCell = cells[11];
         const assignBtn = actionCell.querySelector(".venue-assign-btn");
         const detailsBtn = actionCell.querySelector(".view-lead-btn");
-
         if (assignBtn && detailsBtn) {
           const assignCell = document.createElement("td");
           assignCell.className = "assign-column-cell";
