@@ -1182,6 +1182,16 @@ const preferredArea =
                 )}
             </td>
 
+            <td class="lead-budget-cell">
+                ${lead.budget_per_person !== null && lead.budget_per_person !== undefined && lead.budget_per_person !== ""
+                    ? "₹" + escapeHTML(String(lead.budget_per_person))
+                    : "—"}
+            </td>
+
+            <td class="lead-food-cell">
+                ${escapeHTML(safeValue(lead.food_preference).trim() || "—")}
+            </td>
+
             <td>
                 ${createInlineField(
                     lead,
