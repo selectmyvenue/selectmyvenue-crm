@@ -337,7 +337,7 @@ while(lines.length&&!lines[0].trim())lines.shift();
 const isOfferOpeningLine=/^We are pleased to offer you the position of .+ at Select My Venue,/i.test(String(lines[0]||'').trim());
 const isOfferLetter=docDraft?.document_type==='offer_letter'||isOfferOpeningLine;
 const title=(isOfferLetter||isOfferOpeningLine)?'':(lines.shift()||'HR DOCUMENT').trim();
-const cleanHonorific=value=>String(value||'').replace(/^(?:(?:mr|mrs|ms|miss)\.?\s*,?\s*)+/i,'').trim();
+const cleanHonorific=value=>String(value||'').replace(/^(?:(?:mr\\.?\\s*\\/\\s*ms\\.?|mrs?|ms|miss)\.?\s*,?\s*)+/i,'').trim();
 const recipientName=cleanHonorific(recipientNameLine);
 const salutationText=salutationLine.replace(/^Dear\s+/i,'').replace(/,\s*$/,'').trim();
 const salutationName=(cleanHonorific(salutationText||recipientName).split(/\s+/)[0]||cleanHonorific(recipientName).split(/\s+/)[0]||recipientName);
