@@ -6191,3 +6191,193 @@ body{
   .table-wrapper .leads-table th,
   .table-wrapper .leads-table td { min-width:0!important; }
 }
+
+
+/* SMV final lead grid: equal width for each of the 15 columns.
+   Overrides legacy action-column widths so no column gets extra space. */
+.table-wrapper {
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  overflow-x:hidden!important;
+}
+.table-wrapper .leads-table {
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  table-layout:fixed!important;
+}
+.table-wrapper .leads-table thead th,
+.table-wrapper .leads-table tbody td {
+  box-sizing:border-box!important;
+  padding:9px 7px!important;
+  overflow:hidden!important;
+  vertical-align:middle!important;
+}
+
+.table-wrapper .leads-table thead th:nth-child(1),
+.table-wrapper .leads-table tbody td:nth-child(1) {
+  width:6.6666667%!important;
+  min-width:0!important;
+  max-width:6.6666667%!important;
+}
+
+.table-wrapper .leads-table thead th:nth-child(2),
+.table-wrapper .leads-table tbody td:nth-child(2) {
+  width:6.6666667%!important;
+  min-width:0!important;
+  max-width:6.6666667%!important;
+}
+
+.table-wrapper .leads-table thead th:nth-child(3),
+.table-wrapper .leads-table tbody td:nth-child(3) {
+  width:6.6666667%!important;
+  min-width:0!important;
+  max-width:6.6666667%!important;
+}
+
+.table-wrapper .leads-table thead th:nth-child(4),
+.table-wrapper .leads-table tbody td:nth-child(4) {
+  width:6.6666667%!important;
+  min-width:0!important;
+  max-width:6.6666667%!important;
+}
+
+.table-wrapper .leads-table thead th:nth-child(5),
+.table-wrapper .leads-table tbody td:nth-child(5) {
+  width:6.6666667%!important;
+  min-width:0!important;
+  max-width:6.6666667%!important;
+}
+
+.table-wrapper .leads-table thead th:nth-child(6),
+.table-wrapper .leads-table tbody td:nth-child(6) {
+  width:6.6666667%!important;
+  min-width:0!important;
+  max-width:6.6666667%!important;
+}
+
+.table-wrapper .leads-table thead th:nth-child(7),
+.table-wrapper .leads-table tbody td:nth-child(7) {
+  width:6.6666667%!important;
+  min-width:0!important;
+  max-width:6.6666667%!important;
+}
+
+.table-wrapper .leads-table thead th:nth-child(8),
+.table-wrapper .leads-table tbody td:nth-child(8) {
+  width:6.6666667%!important;
+  min-width:0!important;
+  max-width:6.6666667%!important;
+}
+
+.table-wrapper .leads-table thead th:nth-child(9),
+.table-wrapper .leads-table tbody td:nth-child(9) {
+  width:6.6666667%!important;
+  min-width:0!important;
+  max-width:6.6666667%!important;
+}
+
+.table-wrapper .leads-table thead th:nth-child(10),
+.table-wrapper .leads-table tbody td:nth-child(10) {
+  width:6.6666667%!important;
+  min-width:0!important;
+  max-width:6.6666667%!important;
+}
+
+.table-wrapper .leads-table thead th:nth-child(11),
+.table-wrapper .leads-table tbody td:nth-child(11) {
+  width:6.6666667%!important;
+  min-width:0!important;
+  max-width:6.6666667%!important;
+}
+
+.table-wrapper .leads-table thead th:nth-child(12),
+.table-wrapper .leads-table tbody td:nth-child(12) {
+  width:6.6666667%!important;
+  min-width:0!important;
+  max-width:6.6666667%!important;
+}
+
+.table-wrapper .leads-table thead th:nth-child(13),
+.table-wrapper .leads-table tbody td:nth-child(13) {
+  width:6.6666667%!important;
+  min-width:0!important;
+  max-width:6.6666667%!important;
+}
+
+.table-wrapper .leads-table thead th:nth-child(14),
+.table-wrapper .leads-table tbody td:nth-child(14) {
+  width:6.6666667%!important;
+  min-width:0!important;
+  max-width:6.6666667%!important;
+}
+
+.table-wrapper .leads-table thead th:nth-child(15),
+.table-wrapper .leads-table tbody td:nth-child(15) {
+  width:6.6666667%!important;
+  min-width:0!important;
+  max-width:6.6666667%!important;
+}
+.table-wrapper .leads-table thead th {
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+  text-overflow:clip!important;
+  line-height:1.2!important;
+  text-align:center!important;
+}
+.table-wrapper .leads-table tbody td {
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+.table-wrapper .leads-table tbody td:first-child {
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+  text-align:left!important;
+}
+.table-wrapper .leads-table tbody td:nth-child(8),
+.table-wrapper .leads-table tbody td:nth-child(9),
+.table-wrapper .leads-table tbody td:nth-child(10),
+.table-wrapper .leads-table tbody td:nth-child(11),
+.table-wrapper .leads-table tbody td:nth-child(12),
+.table-wrapper .leads-table tbody td:nth-child(13),
+.table-wrapper .leads-table tbody td:nth-child(14),
+.table-wrapper .leads-table tbody td:nth-child(15) {
+  text-align:center!important;
+}
+.table-wrapper .leads-table th.action-column,
+.table-wrapper .leads-table td.action-column {
+  width:6.6666667%!important;
+  min-width:0!important;
+  max-width:6.6666667%!important;
+  text-align:center!important;
+  padding-left:4px!important;
+  padding-right:4px!important;
+}
+.table-wrapper .leads-table td.details-action-cell button,
+.table-wrapper .leads-table td.assign-action-cell button,
+.table-wrapper .leads-table .view-lead-btn,
+.table-wrapper .leads-table .venue-assign-btn {
+  min-width:0!important;
+  max-width:100%!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  padding-left:4px!important;
+  padding-right:4px!important;
+  font-size:10px!important;
+  white-space:nowrap!important;
+}
+@media(max-width:1100px) {
+  .table-wrapper { overflow-x:auto!important; }
+  .table-wrapper .leads-table {
+    width:1710px!important;
+    min-width:1710px!important;
+    max-width:none!important;
+  }
+  .table-wrapper .leads-table thead th,
+  .table-wrapper .leads-table tbody td {
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+  }
+}
