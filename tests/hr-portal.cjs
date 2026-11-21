@@ -39,7 +39,9 @@ async function run() {
   check(html.includes('letter-footer') && html.includes('aria-label="End of Select My Venue letter"'), 'adds a matching teal-and-gold finishing footer to every HR letter');
   check(html.includes('https://unpkg.com/@supabase/supabase-js@2') && html.includes('Secure HR connection library is unavailable'), 'HR portal has a fallback CDN and visible recovery if the auth library fails to load');
   check(!html.includes("content:''") && html.includes('.letter-footer:before{content:""') && html.includes('.letter-footer:after{content:""'), 'branded footer CSS does not break the shared HR page JavaScript parser');
-  check(html.includes('Mr./Ms. ') && html.includes('id="recipientAddress"') && html.includes('Subject: '), 'all HR letters receive the standard dated recipient, editable full address field, subject and salutation opening');
+  check(!html.includes("\\nMr./Ms. '") && html.includes("To,\\n'+name+'\\n'+address") && html.includes('id="recipientAddress"') && html.includes('Subject: '), 'new HR letters use a clean recipient name with editable address and subject');
+  check(html.includes('The salutation is editable and optional') && html.includes("...(salutationLine?['<p>Dear '"), 'removing the optional Dear line does not make the formatter skip letter content');
+  check(html.includes('const cleanHonorific=') && html.includes('recipientName||recipientNameLine'), 'legacy Mr / Ms prefixes are removed from printed recipient names and salutations');
   check(html.includes('<h2 class="numbered-heading">') && html.includes('Please sign and return the duplicate copy of this Job Offer Letter') && html.includes('support@selectmyvenue.com') && html.includes('We look forward to welcoming you aboard.') && html.includes('Sincerely,</p>'), 'numbered section headings are bold and offer letters end with support-email acceptance and classic sign-off');
   check(!html.includes('06f6db26-66f5-4dcb-b2f2-6cdc9eac0377.png') && html.includes('<strong>Raj Kumar</strong><br>Sole Proprietor'), 'all HR letters use text-only Raj Kumar / Sole Proprietor sign-off without a signature image');
   check(html.includes('letter-footer') && html.includes('smv-master-letterhead'), 'all HR letters share the master header and branded footer');
@@ -83,6 +85,12 @@ async function run() {
     'Date: __________________'
   ].join('\n');
   const renderedOffer = formatterDom.window.__formatHrLetterBody(sampleOffer);
+  check(renderedOffer.includes('<div class="letter-recipient"><strong>To,</strong><br>Amar Satya Mehta<br>') && !renderedOffer.includes('Mr. Amar Satya Mehta'), 'printed recipient block removes Mr / Ms honorific prefixes');
+  check(renderedOffer.includes('<p>Dear Amar,</p>'), 'existing Dear first-name salutation is preserved cleanly');
+  const sampleOfferWithoutDear = sampleOffer.replace('Mr. Amar Satya Mehta', 'Mr, Amar Satya Mehta').replace('Dear Amar,\\n\\n', '');
+  const renderedOfferWithoutDear = formatterDom.window.__formatHrLetterBody(sampleOfferWithoutDear);
+  check(!renderedOfferWithoutDear.includes('<p>Dear ') && renderedOfferWithoutDear.includes('We are pleased to offer you the position of Venue Listing Executive at Select My Venue') && renderedOfferWithoutDear.includes('10. ACCEPTANCE AND SIGNATURES'), 'deleting Dear leaves the full offer letter body and acceptance section intact');
+  check(renderedOfferWithoutDear.includes('<div class="letter-recipient"><strong>To,</strong><br>Amar Satya Mehta<br>'), 'legacy Mr, name line is normalized without leaking Mr into Dear');
   check(renderedOffer.includes('<p class="letter-opening-paragraph" style="font:400 10pt/1.48 Arial,Helvetica,sans-serif;') && renderedOffer.includes('We are pleased to offer you the position of Venue Listing Executive at Select My Venue'), 'offer letter opening legal paragraph is rendered as normal body copy, not a highlighted callout');
   formatterDom.window.docDraft = { document_type: 'engagement_letter' };
   const reopenedDraftOutput = formatterDom.window.__formatHrLetterBody(sampleOffer);
