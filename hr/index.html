@@ -300,7 +300,7 @@ const filtered=bodyLines.filter(line=>{const v=line.trim();if(!openingRemoved&&/
 const subject=type==='offer_letter'?'Offer Letter for the position of '+role+' at Select My Venue':(type==='engagement_letter'||type==='appointment_letter')?'Offer / Engagement for the Position of '+role:docTitle;
 const address=String($('recipientAddress')?.value||p.postal_address||p.address||p.current_address||'').trim();
 const dateLabel=new Date(date+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
-const firstName=name.trim().split(/\s+/)[0]||name;return dateLabel+'\n\nTo,\nMr./Ms. '+name+'\n'+address+'\n\nSubject: '+subject+'\n\nDear '+firstName+',\n\n'+(docTitle?docTitle+'\n\n':'')+filtered.join('\n');
+const firstName=name.trim().split(/\s+/)[0]||name;return dateLabel+'\n\nTo,\n'+name+'\n'+address+'\n\nSubject: '+subject+'\n\nDear '+firstName+',\n\n'+(docTitle?docTitle+'\n\n':'')+filtered.join('\n');
 }
 $('generate').onclick=()=>{const p=people.find(x=>x.id===$('docPerson').value);if(!p){$('docStatus').textContent='Select a person first.';return}const now=new Date(),date=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-'),type=$('docType').value;$('docDate').value=date;const savedAddress=String(p.postal_address||p.address||p.current_address||'').trim();if(!$('recipientAddress').value.trim()&&savedAddress)$('recipientAddress').value=savedAddress;if(['offer_letter','engagement_letter','appointment_letter'].includes(type)&&!$('recipientAddress').value.trim()){$('docStatus').textContent='Enter the recipient’s complete postal address above before generating this formal letter.';$('recipientAddress').focus();return}if(type==='commission_policy'&&p.job_type!=='commission_only'&&!p.commission_type){$('docStatus').textContent='Commission Plan is for commission-based roles. Add agreed commission details to this person record first.';return}docDraft={person_id:p.id,document_type:type,title:$('docType').selectedOptions[0].text+' — '+p.full_name,document_date:date,status:'draft',content:makeHrTemplate(p,type,date)};$('preview').value=docDraft.content;$('docStatus').textContent='Correct template generated. Complete bracketed terms and review before issue.'};
 $('saveDoc').onclick=async()=>{if(!docDraft){$('docStatus').textContent='Generate a draft first.';return}docDraft.content=$('preview').value;const q=await db.from('hr_documents').insert(docDraft);$('docStatus').textContent=q.error?'Save failed: '+q.error.message:'Draft saved.';if(!q.error){await audit('document_draft_saved',docDraft.person_id,{document_type:docDraft.document_type,title:docDraft.title});await loadDocs()}};function formatHrLetterBody(raw){
@@ -325,25 +325,30 @@ if(!recipientNameLine){
 }
 const bodyStart=subjectIndex>=0?subjectIndex+1:Math.max(toIndex+1,0);
 lines=lines.slice(bodyStart);
-while(lines.length&&!/^Dear /i.test(lines[0].trim()))lines.shift();
-if(lines.length)lines.shift();
+while(lines.length&&!lines[0].trim())lines.shift();
+// The salutation is editable and optional. Remove it only when it is actually present;
+// never scan forward looking for "Dear", because that discards the whole edited letter.
+let salutationLine='';
+if(lines.length&&/^Dear\s+/i.test(lines[0].trim()))salutationLine=lines.shift().trim();
 while(lines.length&&!lines[0].trim())lines.shift();
 // Detect this offer-opening paragraph from its content as well as the selected document type.
- // A saved / reopened draft can have a different internal type; the opening text must
- // still remain body copy and must never be consumed as the document title.
+// A saved / reopened draft can have a different internal type; the opening text must
+// still remain body copy and must never be consumed as the document title.
 const isOfferOpeningLine=/^We are pleased to offer you the position of .+ at Select My Venue,/i.test(String(lines[0]||'').trim());
 const isOfferLetter=docDraft?.document_type==='offer_letter'||isOfferOpeningLine;
 const title=(isOfferLetter||isOfferOpeningLine)?'':(lines.shift()||'HR DOCUMENT').trim();
-const recipientName=recipientNameLine.replace(/^Mr\.\/Ms\.\s*/,'').replace(/^Mr\.\s*/,'').replace(/^Mrs?\.\s*/,'');
-const salutationName=isOfferLetter?(recipientName.trim().split(/\s+/)[0]||recipientName):recipientName;
+const cleanHonorific=value=>String(value||'').replace(/^(?:(?:mr\.?\s*\/\s*ms\.?|mrs?|ms|miss)\.?\s*,?\s*)+/i,'').trim();
+const recipientName=cleanHonorific(recipientNameLine);
+const salutationText=salutationLine.replace(/^Dear\s+/i,'').replace(/,\s*$/,'').trim();
+const salutationName=(cleanHonorific(salutationText||recipientName).split(/\s+/)[0]||cleanHonorific(recipientName).split(/\s+/)[0]||recipientName);
 const hasAcceptanceSection=lines.some(x=>/^10\.\s*ACCEPTANCE AND SIGNATURES/i.test(x.trim()));
 const hasCompanySignoff=lines.some(x=>/^(?:For Select My Venue\b|Select My Venue$|Sincerely,?)$/i.test(x.trim()));
 const recipientAddressHtml=addressLines.length?addressLines.map(esc).join('<br>'):'<span class="address-placeholder">[Complete postal address not entered]</span>';
 const out=[
  '<div class="letter-date">'+esc(dateLine)+'</div>',
- '<div class="letter-recipient"><strong>To,</strong><br>'+esc(recipientNameLine)+'<br>'+recipientAddressHtml+'</div>',
+ '<div class="letter-recipient"><strong>To,</strong><br>'+esc(recipientName||recipientNameLine)+'<br>'+recipientAddressHtml+'</div>',
  '<p><strong>Subject:</strong> '+esc(subjectLine.replace(/^Subject:\s*/i,''))+'</p>',
- '<p>Dear '+esc(salutationName)+',</p>',
+ ...(salutationLine?['<p>Dear '+esc(salutationName)+',</p>']:[]),
  ...(title?['<h1>'+esc(title)+'</h1>']:[])
 ];
 let paragraph=[];
