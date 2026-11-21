@@ -87,7 +87,7 @@ async function run() {
   const renderedOffer = formatterDom.window.__formatHrLetterBody(sampleOffer);
   check(renderedOffer.includes('<div class="letter-recipient"><strong>To,</strong><br>Amar Satya Mehta<br>') && !renderedOffer.includes('Mr. Amar Satya Mehta'), 'printed recipient block removes Mr / Ms honorific prefixes');
   check(renderedOffer.includes('<p>Dear Amar,</p>'), 'existing Dear first-name salutation is preserved cleanly');
-  const sampleOfferWithoutDear = sampleOffer.replace('Mr. Amar Satya Mehta', 'Mr, Amar Satya Mehta').replace('Dear Amar,\\n\\n', '');
+  const sampleOfferWithoutDear = sampleOffer.replace('Mr. Amar Satya Mehta', 'Mr, Amar Satya Mehta').replace('Dear Amar,\n\n', '');
   const renderedOfferWithoutDear = formatterDom.window.__formatHrLetterBody(sampleOfferWithoutDear);
   check(!renderedOfferWithoutDear.includes('<p>Dear ') && renderedOfferWithoutDear.includes('We are pleased to offer you the position of Venue Listing Executive at Select My Venue') && renderedOfferWithoutDear.includes('10. ACCEPTANCE AND SIGNATURES'), 'deleting Dear leaves the full offer letter body and acceptance section intact');
   check(renderedOfferWithoutDear.includes('<div class="letter-recipient"><strong>To,</strong><br>Amar Satya Mehta<br>'), 'legacy Mr, name line is normalized without leaking Mr into Dear');
