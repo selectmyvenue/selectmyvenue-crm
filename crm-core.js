@@ -7778,11 +7778,11 @@ function renderLeadVenueAssignments(enquiryId) {
                 return;
             }
             const message = [
-                "Select My Venue", "", "Namaste! 😊", "",
-                "Aapki event enquiry ke according humne aapki requirement *" + venueName + "* ke saath share ki hai.", "",
+                "Select My Venue 😊", "",
+                "Aapki enquiry *" + venueName + "* ke saath share ki hai.",
                 "Please venue ki call receive karein.", "",
-                "Agar aapko koi assistance chahiye, toh Select My Venue team se contact karein.", "",
-                "Happy Celebrations! 🎉"
+                "More celebration options: https://selectmyvenue.com/", "",
+                "Aapki celebrations ho aur bhi special! 🎉"
             ].join("\n");
             const url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
             window.open(url, "_blank", "noopener,noreferrer");
