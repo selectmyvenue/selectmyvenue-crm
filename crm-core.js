@@ -7755,6 +7755,35 @@ function renderLeadVenueAssignments(enquiryId) {
         return;
     }
 
+    const leadForWhatsApp = allLeads.find(item => String(item.id) === String(enquiryId)) || null;
+    const customerWhatsAppNumber = String(leadForWhatsApp?.mobile || "").replace(/\D/g, "");
+    const hasCustomerWhatsApp = customerWhatsAppNumber.length >= 10;
+
+    if (!container.dataset.smvWhatsAppHandlerBound) {
+        container.addEventListener("click", event => {
+            const button = event.target.closest("[data-send-assignment-whatsapp]");
+            if (!button || button.disabled) return;
+            const leadId = button.dataset.enquiryId;
+            const venueName = button.dataset.venueName || "the assigned venue";
+            const lead = allLeads.find(item => String(item.id) === String(leadId));
+            const rawNumber = String(lead?.mobile || "").replace(/\D/g, "");
+            if (!lead || rawNumber.length < 10) {
+                showToast("Customer mobile number is missing or invalid.", "error");
+                return;
+            }
+            const phone = rawNumber.length === 10 ? "91" + rawNumber : rawNumber;
+            const message = [
+                "Select My Venue", "", "Namaste! 😊", "",
+                "Aapki event enquiry ke according humne aapki requirement *" + venueName + "* ke saath share ki hai.", "",
+                "Please venue ki call receive karein.", "",
+                "Agar aapko koi assistance chahiye, toh Select My Venue team se contact karein.", "",
+                "Happy Celebrations! 🎉"
+            ].join("\n");
+            const url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
+            window.open(url, "_blank", "noopener,noreferrer");
+        });
+        container.dataset.smvWhatsAppHandlerBound = "true";
+    }
     container.innerHTML = assignments.map(assignment => {
         const venue = assignedVenueDetails[String(assignment.venue_id)] || {};
         const status = safeValue(assignment.assignment_status) || "assigned";
@@ -7818,6 +7847,17 @@ function renderLeadVenueAssignments(enquiryId) {
                     </div>
                 </div>
                 <div class="lead-venue-assignment-controls">
+                    ${!isCancelled ? `
+                        <button
+                            type="button"
+                            class="venue-assignment-whatsapp-btn"
+                            data-send-assignment-whatsapp="true"
+                            data-enquiry-id="${escapeHTML(enquiryId)}"
+                            data-venue-name="${escapeHTML(venue.venue_name || "Assigned Venue")}"
+                            ${hasCustomerWhatsApp ? "" : "disabled"}
+                            title="${hasCustomerWhatsApp ? "Open a pre-filled WhatsApp message to the customer" : "Customer mobile number is missing"}"
+                        >Send WhatsApp to Customer</button>
+                    ` : ""}
                     <select
                         class="venue-assignment-status-select"
                         data-assignment-id="${escapeHTML(assignment.id)}"
