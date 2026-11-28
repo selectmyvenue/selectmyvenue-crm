@@ -8332,9 +8332,9 @@ function renderAssignmentVenues() {
                             type="button"
                             class="smv-assignment-whatsapp"
                             data-assigned-venue-whatsapp="true"
-                            data-venue-name="${{escapeHTML(venue.venue_name || "Assigned Venue")}"
-                            ${{getCustomerWhatsAppNumber(assignmentCurrentLead?.mobile) ? "" : "disabled"}
-                            title="${{getCustomerWhatsAppNumber(assignmentCurrentLead?.mobile) ? "Open a pre-filled WhatsApp message to the customer" : "Customer mobile number is missing or invalid"}"
+                            data-venue-name="${escapeHTML(venue.venue_name || "Assigned Venue")}"
+                            ${getCustomerWhatsAppNumber(assignmentCurrentLead?.mobile) ? "" : "disabled"}
+                            title="${getCustomerWhatsAppNumber(assignmentCurrentLead?.mobile) ? "Open a pre-filled WhatsApp message to the customer" : "Customer mobile number is missing or invalid"}"
                         >WhatsApp</button>
                     ` : ""}
                     ${planWarning}
