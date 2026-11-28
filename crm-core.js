@@ -8242,7 +8242,7 @@ function renderAssignmentVenues() {
                 "Please venue ki call receive karein.", "",
                 "Agar aapko koi assistance chahiye, toh Select My Venue team se contact karein.", "",
                 "Happy Celebrations! 🎉"
-            ].join("\\n");
+            ].join("\n");
             const url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
             window.open(url, "_blank", "noopener,noreferrer");
         });
