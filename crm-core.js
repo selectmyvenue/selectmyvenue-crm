@@ -8220,6 +8220,35 @@ function renderAssignmentVenues() {
         return;
     }
 
+    // Free manual WhatsApp action for venues already assigned to this lead.
+    // Bind once because venue cards are re-rendered during filtering.
+    if (!list.dataset.smvAssignedWhatsAppHandlerBound) {
+        list.addEventListener("click", event => {
+            const button = event.target.closest("[data-assigned-venue-whatsapp]");
+            if (!button || button.disabled) return;
+            // The card is wrapped in a label; do not toggle its checkbox.
+            event.preventDefault();
+            event.stopPropagation();
+            const lead = assignmentCurrentLead;
+            const phone = getCustomerWhatsAppNumber(lead?.mobile);
+            const venueName = button.dataset.venueName || "the assigned venue";
+            if (!phone) {
+                showAssignmentMessage("Customer mobile number is missing or invalid.", "error");
+                return;
+            }
+            const message = [
+                "Select My Venue 😊", "", "Namaste!", "",
+                "Aapki enquiry *" + venueName + "* ke saath share ki hai.", "",
+                "Please venue ki call receive karein.", "",
+                "Agar aapko koi assistance chahiye, toh Select My Venue team se contact karein.", "",
+                "Happy Celebrations! 🎉"
+            ].join("\n");
+            const url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
+            window.open(url, "_blank", "noopener,noreferrer");
+        });
+        list.dataset.smvAssignedWhatsAppHandlerBound = "true";
+    }
+
     const search = assignmentSearch;
 
     const venues = assignmentVenueRows.filter(venue => {
@@ -8298,6 +8327,16 @@ function renderAssignmentVenues() {
                 </div>
                 <div class="venue-assignment-item-side">
                     <span class="venue-assignment-item-status">Verified</span>
+                    ${assigned ? `
+                        <button
+                            type="button"
+                            class="smv-assignment-whatsapp"
+                            data-assigned-venue-whatsapp="true"
+                            data-venue-name="${escapeHTML(venue.venue_name || "Assigned Venue")}"
+                            ${getCustomerWhatsAppNumber(assignmentCurrentLead?.mobile) ? "" : "disabled"}
+                            title="${getCustomerWhatsAppNumber(assignmentCurrentLead?.mobile) ? "Open a pre-filled WhatsApp message to the customer" : "Customer mobile number is missing or invalid"}"
+                        >WhatsApp</button>
+                    ` : ""}
                     ${planWarning}
                     <button type="button" class="smv-assignment-hide" data-hide-venue-id="${escapeHTML(venue.id)}" data-hide-venue-name="${escapeHTML(venue.venue_name || "Unnamed Venue")}">Hide</button>
                 </div>
