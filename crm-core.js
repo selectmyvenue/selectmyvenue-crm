@@ -7719,6 +7719,13 @@ function togglePartnerJourney(assignmentId) {
     if (button) button.textContent = opening ? "Hide Partner Journey" : "View Partner Journey";
 }
 
+function getCustomerWhatsAppNumber(mobile) {
+    const digits = String(mobile || "").replace(/\D/g, "");
+    if (digits.length === 10) return "91" + digits;
+    if (digits.length === 11 && digits.startsWith("0")) return "91" + digits.slice(1);
+    if (digits.length === 12 && digits.startsWith("91")) return digits;
+    return "";
+}
 function renderLeadVenueAssignments(enquiryId) {
     const container = document.getElementById("leadVenueAssignments");
     const count = document.getElementById("leadVenueAssignmentCount");
@@ -7756,8 +7763,7 @@ function renderLeadVenueAssignments(enquiryId) {
     }
 
     const leadForWhatsApp = allLeads.find(item => String(item.id) === String(enquiryId)) || null;
-    const customerWhatsAppNumber = String(leadForWhatsApp?.mobile || "").replace(/\D/g, "");
-    const hasCustomerWhatsApp = customerWhatsAppNumber.length >= 10;
+    const hasCustomerWhatsApp = Boolean(getCustomerWhatsAppNumber(leadForWhatsApp?.mobile));
 
     if (!container.dataset.smvWhatsAppHandlerBound) {
         container.addEventListener("click", event => {
@@ -7766,12 +7772,11 @@ function renderLeadVenueAssignments(enquiryId) {
             const leadId = button.dataset.enquiryId;
             const venueName = button.dataset.venueName || "the assigned venue";
             const lead = allLeads.find(item => String(item.id) === String(leadId));
-            const rawNumber = String(lead?.mobile || "").replace(/\D/g, "");
-            if (!lead || rawNumber.length < 10) {
+            const phone = getCustomerWhatsAppNumber(lead?.mobile);
+            if (!lead || !phone) {
                 showToast("Customer mobile number is missing or invalid.", "error");
                 return;
             }
-            const phone = rawNumber.length === 10 ? "91" + rawNumber : rawNumber;
             const message = [
                 "Select My Venue", "", "Namaste! 😊", "",
                 "Aapki event enquiry ke according humne aapki requirement *" + venueName + "* ke saath share ki hai.", "",
