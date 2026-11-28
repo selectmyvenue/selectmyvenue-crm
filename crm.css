@@ -6472,3 +6472,30 @@ body{
     table-layout:fixed!important;
   }
 }
+
+/* Free customer WhatsApp click-to-chat action on assigned venues */
+.venue-assignment-whatsapp-btn {
+    border: 1px solid #b8e6cc;
+    border-radius: 9px;
+    background: #effbf4;
+    color: #147a43;
+    padding: 8px 11px;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 750;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.venue-assignment-whatsapp-btn:hover:not(:disabled) {
+    background: #ddf6e7;
+    border-color: #8bd2a8;
+}
+.venue-assignment-whatsapp-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+@media (max-width: 760px) {
+    .venue-assignment-whatsapp-btn {
+        flex: 1 1 100%;
+    }
+}

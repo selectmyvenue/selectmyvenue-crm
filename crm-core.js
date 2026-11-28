@@ -7719,6 +7719,13 @@ function togglePartnerJourney(assignmentId) {
     if (button) button.textContent = opening ? "Hide Partner Journey" : "View Partner Journey";
 }
 
+function getCustomerWhatsAppNumber(mobile) {
+    const digits = String(mobile || "").replace(/\D/g, "");
+    if (digits.length === 10) return "91" + digits;
+    if (digits.length === 11 && digits.startsWith("0")) return "91" + digits.slice(1);
+    if (digits.length === 12 && digits.startsWith("91")) return digits;
+    return "";
+}
 function renderLeadVenueAssignments(enquiryId) {
     const container = document.getElementById("leadVenueAssignments");
     const count = document.getElementById("leadVenueAssignmentCount");
@@ -7755,6 +7762,33 @@ function renderLeadVenueAssignments(enquiryId) {
         return;
     }
 
+    const leadForWhatsApp = allLeads.find(item => String(item.id) === String(enquiryId)) || null;
+    const hasCustomerWhatsApp = Boolean(getCustomerWhatsAppNumber(leadForWhatsApp?.mobile));
+
+    if (!container.dataset.smvWhatsAppHandlerBound) {
+        container.addEventListener("click", event => {
+            const button = event.target.closest("[data-send-assignment-whatsapp]");
+            if (!button || button.disabled) return;
+            const leadId = button.dataset.enquiryId;
+            const venueName = button.dataset.venueName || "the assigned venue";
+            const lead = allLeads.find(item => String(item.id) === String(leadId));
+            const phone = getCustomerWhatsAppNumber(lead?.mobile);
+            if (!lead || !phone) {
+                showToast("Customer mobile number is missing or invalid.", "error");
+                return;
+            }
+            const message = [
+                "Select My Venue 😊", "",
+                "Aapki enquiry *" + venueName + "* ke saath share ki hai.",
+                "Please venue ki call receive karein.", "",
+                "More celebration options: https://selectmyvenue.com/", "",
+                "Aapki celebrations ho aur bhi special! 🎉"
+            ].join("\n");
+            const url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
+            window.open(url, "_blank", "noopener,noreferrer");
+        });
+        container.dataset.smvWhatsAppHandlerBound = "true";
+    }
     container.innerHTML = assignments.map(assignment => {
         const venue = assignedVenueDetails[String(assignment.venue_id)] || {};
         const status = safeValue(assignment.assignment_status) || "assigned";
@@ -7818,6 +7852,17 @@ function renderLeadVenueAssignments(enquiryId) {
                     </div>
                 </div>
                 <div class="lead-venue-assignment-controls">
+                    ${!isCancelled ? `
+                        <button
+                            type="button"
+                            class="venue-assignment-whatsapp-btn"
+                            data-send-assignment-whatsapp="true"
+                            data-enquiry-id="${escapeHTML(enquiryId)}"
+                            data-venue-name="${escapeHTML(venue.venue_name || "Assigned Venue")}"
+                            ${hasCustomerWhatsApp ? "" : "disabled"}
+                            title="${hasCustomerWhatsApp ? "Open a pre-filled WhatsApp message to the customer" : "Customer mobile number is missing"}"
+                        >Send WhatsApp to Customer</button>
+                    ` : ""}
                     <select
                         class="venue-assignment-status-select"
                         data-assignment-id="${escapeHTML(assignment.id)}"
